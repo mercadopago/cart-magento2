@@ -162,7 +162,7 @@ class Data
     /**
      * Return MercadoPago Api instance given AccessToken or ClientId and Secret
      *
-     * @return \MercadoPago_Core_Lib_Api
+     * @return \MercadoPago\Core\Lib\Api
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getApiInstance()
@@ -172,10 +172,10 @@ class Data
             throw new \Magento\Framework\Exception\LocalizedException("Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN");
         }
         if ($params == 1) {
-            $api = new \MercadoPago_Core_Lib_Api(func_get_arg(0));
+            $api = new \MercadoPago\Core\Lib\Api(func_get_arg(0));
             $api->set_platform(self::PLATFORM_OPENPLATFORM);
         } else {
-            $api = new \MercadoPago_Core_Lib_Api(func_get_arg(0), func_get_arg(1));
+            $api = new \MercadoPago\Core\Lib\Api(func_get_arg(0), func_get_arg(1));
             $api->set_platform(self::PLATFORM_STD);
         }
         if ($this->scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode')) {

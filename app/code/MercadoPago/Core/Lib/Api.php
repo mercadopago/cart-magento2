@@ -1,5 +1,5 @@
 <?php
-
+namespace MercadoPago\Core\Lib;
 /**
  * MercadoPago Integration Library
  * Access MercadoPago for payments integration
@@ -9,7 +9,7 @@
  */
 
 
-class MercadoPago_Core_Lib_Api {
+class Api {
 
     /**
      *
@@ -52,7 +52,7 @@ class MercadoPago_Core_Lib_Api {
 
 
     /**
-     * MercadoPago_Core_Lib_Api constructor.
+     * \MercadoPago\Core\Lib\Api constructor.
      */
     public function __construct() {
         $i = func_num_args();
@@ -98,10 +98,10 @@ class MercadoPago_Core_Lib_Api {
             'grant_type' => 'client_credentials'
         ));
 
-        $access_data = MercadoPago_Core_Lib_RestClient::post("/oauth/token", $app_client_values, "application/x-www-form-urlencoded");
+        $access_data = \MercadoPago\Core\Lib\RestClient::post("/oauth/token", $app_client_values, "application/x-www-form-urlencoded");
 
         if ($access_data["status"] != 200) {
-            throw new Exception ($access_data['response']['message'], $access_data['status']);
+            throw new \Exception ($access_data['response']['message'], $access_data['status']);
         }
 
         $this->access_data = $access_data['response'];
@@ -119,7 +119,7 @@ class MercadoPago_Core_Lib_Api {
 
         $uri_prefix = $this->sandbox ? "/sandbox" : "";
 
-        $payment_info = MercadoPago_Core_Lib_RestClient::get($uri_prefix."/collections/notifications/" . $id . "?access_token=" . $access_token);
+        $payment_info = \MercadoPago\Core\Lib\RestClient::get($uri_prefix."/collections/notifications/" . $id . "?access_token=" . $access_token);
         return $payment_info;
     }
 
@@ -140,7 +140,7 @@ class MercadoPago_Core_Lib_Api {
     public function get_authorized_payment($id) {
         $access_token = $this->get_access_token();
 
-        $authorized_payment_info = MercadoPago_Core_Lib_RestClient::get("/authorized_payments/" . $id . "?access_token=" . $access_token);
+        $authorized_payment_info = \MercadoPago\Core\Lib\RestClient::get("/authorized_payments/" . $id . "?access_token=" . $access_token);
         return $authorized_payment_info;
     }
 
@@ -156,7 +156,7 @@ class MercadoPago_Core_Lib_Api {
             "status" => "refunded"
         );
 
-        $response = MercadoPago_Core_Lib_RestClient::put("/collections/" . $id . "?access_token=" . $access_token, $refund_status);
+        $response = \MercadoPago\Core\Lib\RestClient::put("/collections/" . $id . "?access_token=" . $access_token, $refund_status);
         return $response;
     }
 
@@ -172,7 +172,7 @@ class MercadoPago_Core_Lib_Api {
             "status" => "cancelled"
         );
 
-        $response = MercadoPago_Core_Lib_RestClient::put("/collections/" . $id . "?access_token=" . $access_token, $cancel_status);
+        $response = \MercadoPago\Core\Lib\RestClient::put("/collections/" . $id . "?access_token=" . $access_token, $cancel_status);
         return $response;
     }
 
@@ -188,7 +188,7 @@ class MercadoPago_Core_Lib_Api {
             "status" => "cancelled"
         );
 
-        $response = MercadoPago_Core_Lib_RestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $cancel_status);
+        $response = \MercadoPago\Core\Lib\RestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $cancel_status);
         return $response;
     }
 
@@ -209,7 +209,7 @@ class MercadoPago_Core_Lib_Api {
 
         $uri_prefix = $this->sandbox ? "/sandbox" : "";
 
-        $collection_result = MercadoPago_Core_Lib_RestClient::get($uri_prefix."/collections/search?" . $filters . "&access_token=" . $access_token);
+        $collection_result = \MercadoPago\Core\Lib\RestClient::get($uri_prefix."/collections/search?" . $filters . "&access_token=" . $access_token);
         return $collection_result;
     }
 
@@ -222,7 +222,7 @@ class MercadoPago_Core_Lib_Api {
         $access_token = $this->get_access_token();
 
         $extra_params =  array('platform: ' . $this->_platform, 'so;', 'type: ' .  $this->_type);
-        $preference_result = MercadoPago_Core_Lib_RestClient::post("/checkout/preferences?access_token=" . $access_token, $preference, "application/json", $extra_params);
+        $preference_result = \MercadoPago\Core\Lib\RestClient::post("/checkout/preferences?access_token=" . $access_token, $preference, "application/json", $extra_params);
         return $preference_result;
     }
 
@@ -235,7 +235,7 @@ class MercadoPago_Core_Lib_Api {
     public function update_preference($id, $preference) {
         $access_token = $this->get_access_token();
 
-        $preference_result = MercadoPago_Core_Lib_RestClient::put("/checkout/preferences/{$id}?access_token=" . $access_token, $preference);
+        $preference_result = \MercadoPago\Core\Lib\RestClient::put("/checkout/preferences/{$id}?access_token=" . $access_token, $preference);
         return $preference_result;
     }
 
@@ -247,7 +247,7 @@ class MercadoPago_Core_Lib_Api {
     public function get_preference($id) {
         $access_token = $this->get_access_token();
 
-        $preference_result = MercadoPago_Core_Lib_RestClient::get("/checkout/preferences/{$id}?access_token=" . $access_token);
+        $preference_result = \MercadoPago\Core\Lib\RestClient::get("/checkout/preferences/{$id}?access_token=" . $access_token);
         return $preference_result;
     }
 
@@ -259,7 +259,7 @@ class MercadoPago_Core_Lib_Api {
     public function create_preapproval_payment($preapproval_payment) {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = MercadoPago_Core_Lib_RestClient::post("/preapproval?access_token=" . $access_token, $preapproval_payment);
+        $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::post("/preapproval?access_token=" . $access_token, $preapproval_payment);
         return $preapproval_payment_result;
     }
 
@@ -271,7 +271,7 @@ class MercadoPago_Core_Lib_Api {
     public function get_preapproval_payment($id) {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = MercadoPago_Core_Lib_RestClient::get("/preapproval/{$id}?access_token=" . $access_token);
+        $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::get("/preapproval/{$id}?access_token=" . $access_token);
         return $preapproval_payment_result;
     }
 
@@ -284,7 +284,7 @@ class MercadoPago_Core_Lib_Api {
     public function update_preapproval_payment($id, $preapproval_payment) {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = MercadoPago_Core_Lib_RestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $preapproval_payment);
+        $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $preapproval_payment);
         return $preapproval_payment_result;
     }
 
@@ -296,7 +296,7 @@ class MercadoPago_Core_Lib_Api {
     public function create_custon_payment($info) {
         $access_token = $this->get_access_token();
 
-        $preference_result = MercadoPago_Core_Lib_RestClient::post("/checkout/custom/create_payment?access_token=" . $access_token, $info);
+        $preference_result = \MercadoPago\Core\Lib\RestClient::post("/checkout/custom/create_payment?access_token=" . $access_token, $info);
         return $preference_result;
     }
 
@@ -322,7 +322,7 @@ class MercadoPago_Core_Lib_Api {
             $uri .= $this->build_query($params);
         }
 
-        $result = MercadoPago_Core_Lib_RestClient::get($uri);
+        $result = \MercadoPago\Core\Lib\RestClient::get($uri);
         return $result;
     }
 
@@ -344,7 +344,7 @@ class MercadoPago_Core_Lib_Api {
         }
 
         $extra_params =  array('platform: ' . $this->_platform, 'so;', 'type: ' .  $this->_type);
-        $result = MercadoPago_Core_Lib_RestClient::post($uri, $data, "application/json", $extra_params);
+        $result = \MercadoPago\Core\Lib\RestClient::post($uri, $data, "application/json", $extra_params);
         return $result;
     }
 
@@ -365,7 +365,7 @@ class MercadoPago_Core_Lib_Api {
             $uri .= $this->build_query($params);
         }
 
-        $result = MercadoPago_Core_Lib_RestClient::put($uri, $data);
+        $result = \MercadoPago\Core\Lib\RestClient::put($uri, $data);
         return $result;
     }
 
@@ -386,7 +386,7 @@ class MercadoPago_Core_Lib_Api {
             $uri .= $this->build_query($params);
         }
 
-        $result = MercadoPago_Core_Lib_RestClient::delete($uri);
+        $result = \MercadoPago\Core\Lib\RestClient::delete($uri);
         return $result;
     }
 

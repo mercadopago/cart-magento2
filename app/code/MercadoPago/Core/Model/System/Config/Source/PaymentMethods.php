@@ -86,7 +86,7 @@ class PaymentMethods
 
         $meHelper->log("Get payment methods by country... ", 'mercadopago');
         $meHelper->log("API payment methods: " . "/v1/payment_methods?access_token=" . $accessToken, 'mercadopago');
-        $response = \MercadoPago_Core_Lib_RestClient::get('/sites/'. strtoupper($country) .'/payment_methods?marketplace=NONE');
+        $response = \MercadoPago\Core\Lib\RestClient::get('/sites/'. strtoupper($country) .'/payment_methods?marketplace=NONE');
 
         $meHelper->log("API payment methods", 'mercadopago', $response);
 

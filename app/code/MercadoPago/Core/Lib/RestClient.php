@@ -1,11 +1,11 @@
 <?php
-
+namespace MercadoPago\Core\Lib;
 /**
  * MercadoPago cURL RestClient
  */
 
 
-class MercadoPago_Core_Lib_RestClient {
+class RestClient {
 
     /**
      *API URL
