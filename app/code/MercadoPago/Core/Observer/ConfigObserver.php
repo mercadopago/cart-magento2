@@ -119,6 +119,8 @@ class ConfigObserver
 
         $this->availableCheckout();
 
+        $this->validateRefundData();
+
         $this->checkBanner('mercadopago_custom');
         $this->checkBanner('mercadopago_customticket');
         $this->checkBanner('mercadopago_standard');
@@ -257,5 +259,18 @@ class ConfigObserver
             $this->configResource->saveConfig($path, $value, 'websites', $this->_switcher->getWebsiteId());
         }
 
+    }
+
+    protected function validateRefundData ()
+    {
+        $refundAvailable = $this->coreHelper->isRefundAvailable();
+
+        if ($refundAvailable) {
+            $maxDays = $this->coreHelper->getMaximumDaysRefund();
+            $maxRefunds = $this->coreHelper->getMaximumPartialRefunds();
+            if (!($maxDays !== 0) && !($maxRefunds !== 0)) {
+                throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - If refunds are available, you must set \'Maximum amount of partial refunds on the same order\' and \'Maximum amount of days until refund is not accepted\''));
+            }
+        }
     }
 }

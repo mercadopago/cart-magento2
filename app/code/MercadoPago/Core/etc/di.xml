@@ -33,6 +33,7 @@
             <argument name="statusDetailMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusDetailMessage</argument>
         </arguments>
     </type>
-
-
+    <type name="Magento\Sales\Model\Order">
+        <plugin name="mercadopago_order_cancel_plugin" type="MercadoPago\Core\Plugin\OrderCancelPlugin"/>
+    </type>
 </config>

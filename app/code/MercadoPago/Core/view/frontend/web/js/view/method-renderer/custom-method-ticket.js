@@ -64,7 +64,7 @@ define(
              * @returns {String}
              */
             getLogoUrl: function () {
-                if (window.checkoutConfig.payment['mercadopago_standard'] != undefined) {
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return configPayment['logoUrl'];
                 }
                 return '';

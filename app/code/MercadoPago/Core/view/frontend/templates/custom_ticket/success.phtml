@@ -34,3 +34,7 @@ $info_payment = $this->getInfoPayment();
 <div id="logo-mercadopago">
     <img src="https://secure.mlstatic.com/components/resources/mp/desktop/css/assets/desktop-logo-mercadopago.png"/>
 </div>
+
+<div class="primary button-success">
+    <a class="action primary continue" href="<?php /* @escapeNotVerified */ echo $block->getUrl() ?>"><span><?php /* @escapeNotVerified */ echo __('Continue Shopping') ?></span></a>
+</div>

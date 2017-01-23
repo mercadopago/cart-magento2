@@ -33,6 +33,12 @@ class Standard
     protected $_finalStatus = ['rejected', 'cancelled', 'refunded', 'charge_back'];
     protected $_notFinalStatus = ['authorized', 'process', 'in_mediation'];
 
+    /**
+     * @var \Magento\Sales\Model\OrderFactory
+     */
+    protected $_orderFactory;
+
+    protected $_creditmemoFactory;
 
     /**
      * Standard constructor.
@@ -46,12 +52,16 @@ class Standard
         \Magento\Framework\App\Action\Context $context,
         \MercadoPago\Core\Model\Standard\PaymentFactory $paymentFactory,
         \MercadoPago\Core\Helper\Data $coreHelper,
-        \MercadoPago\Core\Model\Core $coreModel
+        \MercadoPago\Core\Model\Core $coreModel,
+        \Magento\Sales\Model\OrderFactory $orderFactory,
+        \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
     )
     {
         $this->_paymentFactory = $paymentFactory;
         $this->coreHelper = $coreHelper;
         $this->coreModel = $coreModel;
+        $this->_orderFactory = $orderFactory;
+        $this->_creditmemoFactory = $creditmemoFactory;
         parent::__construct($context);
     }
 
@@ -80,7 +90,7 @@ class Standard
         $response = $this->coreModel->getPayment($paymentId);
         $payment = $response['response']['collection'];
 
-        return $this->formatArrayPayment($data, $payment);
+        return $this->_formatArrayPayment($data, $payment);
     }
 
     protected function _shipmentExists($shipmentData, $merchantOrder)
@@ -138,6 +148,11 @@ class Standard
             return;
         }
 
+        // if this happens, we need to generate a credit memo
+        if (isset($data["amount_refunded"]) && $data["amount_refunded"] > 0) {
+            $this->_generateCreditMemo($data);
+        }
+
         $this->coreHelper->log("Update Order", self::LOG_NAME);
         $this->coreHelper->setStatusUpdated($data);
         $this->coreModel->updateOrder($data);
@@ -170,6 +185,56 @@ class Standard
 
     }
 
+    /**
+     * @param $payment \Magento\Sales\Model\Order\Payment
+     */
+    protected function _generateCreditMemo($payment)
+    {
+        $order = $this->_orderFactory->create()->loadByIncrementId($payment["order_id"]);
+
+        if ($payment['amount_refunded'] == $payment['total_paid_amount']) {
+            $this->_createCreditmemo($order, $payment);
+            $order->setForcedCanCreditmemo(false);
+            $order->setActionFlag('ship', false);
+            $order->save();
+        } else {
+            $this->_createCreditmemo($order, $payment);
+        }
+    }
+
+
+    /**
+     * @var $order \Magento\Sales\Model\Order
+     * @var $creditMemo \Magento\Sales\Model\Order\Creditmemo
+     * @var $payment \Magento\Sales\Model\Order\Payment
+     */
+    protected function _createCreditmemo ($order, $data)
+    {
+        $order->setExternalRequest(true);
+        $creditMemos = $order->getCreditmemosCollection()->getItems();
+
+        $previousRefund = 0;
+        foreach ($creditMemos as $creditMemo) {
+            $previousRefund = $previousRefund + $creditMemo->getGrandTotal();
+        }
+        $amount = $data['amount_refunded'] - $previousRefund;
+        if ($amount > 0) {
+            $order->setExternalType('partial');
+            $creditmemo = $this->_creditmemoFactory->createByOrder($order, [-1]);
+            if (count($creditMemos) > 0) {
+                $creditmemo->setAdjustmentPositive($amount);
+            } else {
+                $creditmemo->setAdjustmentNegative($amount);
+            }
+            $creditmemo->setGrandTotal($amount);
+            $creditmemo->setBaseGrandTotal($amount);
+            //status "Refunded" for creditMemo
+            $creditmemo->setState(2);
+            $creditmemo->getResource()->save($creditmemo);
+            $order->setTotalRefunded($data['amount_refunded']);
+            $order->getResource()->save($order);
+        }
+    }
 
     /**
      * Collect data from notification content
@@ -206,6 +271,7 @@ class Standard
         $fields = [
             "status",
             "status_detail",
+            "order_id",
             "id",
             "payment_method_id",
             "transaction_amount",
@@ -213,6 +279,8 @@ class Standard
             "coupon_amount",
             "installments",
             "shipping_cost",
+            "refunds",
+            "amount_refunded"
         ];
 
         foreach ($fields as $field) {
@@ -275,7 +343,7 @@ class Standard
                 $dates[] = ['key' => $key, 'value' => $payment['last_modified']];
             }
         }
-        usort($dates, array(get_class($this), "_dateCompare"));
+        usort($dates, ['MercadoPago\Core\Controller\Notifications\Standard', "_dateCompare"]);
         if ($dates) {
             $lastModified = array_pop($dates);
 

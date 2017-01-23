@@ -94,7 +94,10 @@ class Page
         $this->_sendNewOrderMail();
         $checkoutTypeHandle = $this->getCheckoutHandle();
         $this->_view->loadLayout(['default', $checkoutTypeHandle]);
-
+        $this->_eventManager->dispatch(
+            'checkout_onepage_controller_success_action',
+            ['order_ids' => [$this->_getOrder()->getId()]]
+        );
         $this->_view->renderLayout();
     }
 

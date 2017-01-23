@@ -3,7 +3,7 @@ $order = $this->getOrder();
 $total = $this->getTotal();
 $payment = $this->getPayment();
 
-$linkToOrder = __('Your order %1 has been successfully generated.', '<a href="' . $this->getOrderUrl() . '">' . $order->getIncrementId() . '</a>');
+$linkToOrder = $this->__('Your order %1 has been successfully generated.', '<a href="' . $this->getOrderUrl() . '">' . $order->getIncrementId() . '</a>');
 
 $paymenMethod = $this->getPaymentMethod();
 $infoPayment = $this->getInfoPayment();
@@ -13,7 +13,7 @@ $infoPayment = $this->getInfoPayment();
 
     <?php if (!isset($infoPayment['status']['value'])): ?>
         <h2 class="mercadopago-title">
-            <?php echo __('Thank you for your purchase!'); ?>
+            <?php echo $this->__('Thank you for your purchase!'); ?>
         </h2><p><?php echo $linkToOrder; ?></p>
     <?php else: ?><?php
         $message_status = $this->getMessageByStatus(
@@ -30,10 +30,10 @@ $infoPayment = $this->getInfoPayment();
 
         <p><?php echo $linkToOrder; ?></p>
 
-        <h5 class="mercadopago-title-info-payment"><?php echo __('Payment information'); ?></h5>
+        <h3 class="mercadopago-title-info-payment"><?php echo $this->__('Payment information'); ?></h3>
 
         <?php foreach ($infoPayment as $info): ?>
-            <p><?php echo $info['text']; ?></p>
+            <p><?php echo $this->__($info['text']); ?></p>
         <?php endforeach; ?>
 
     <?php endif ?>
@@ -43,3 +43,9 @@ $infoPayment = $this->getInfoPayment();
 <div id="logo-mercadopago">
     <img src="https://secure.mlstatic.com/components/resources/mp/desktop/css/assets/desktop-logo-mercadopago.png"/>
 </div>
+
+
+    <div class="primary button-success">
+        <a class="action primary continue" href="<?php /* @escapeNotVerified */ echo $block->getUrl() ?>"><span><?php /* @escapeNotVerified */ echo __('Continue Shopping') ?></span></a>
+    </div>
+

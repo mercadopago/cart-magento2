@@ -35,6 +35,12 @@
 "Year","Año"
 "Card Holder Name","Titular de la Tarjeta"
 "Document Number","Número de Documento"
+"Document Type", "Tipo de documento"
+"Card Verification Number","Código de Seguridad"
+
+"Expiration Date","Fecha de Expiración"
+
+
 "CVV","Código de Seguridad"
 "Installments","Cuotas"
 "Banks","Bancos"
@@ -61,6 +67,25 @@
 "Payment Id (Mercado Pago): %1","Número de Pago (Mercado Pago): %1"
 "Payment Status: %1 (%2)","Estado del Pago: %1 (%2)"
 
+"Mercado Pago Payment Id: %s","Id transacción Mercado Pago: %s"
+"Payment Status: approved","Estado del Pago: Aprobado"
+"Payment Detail: accredited","Detalle del Pago: acreditado"
+"Payment Detail: pending_contingency","Detalle del Pago: pendiente"
+"Payment Detail: cc_rejected_call_for_authorize","Detalle del Pago: Tarjeta de crédito rechazada. Llamar para autorizar."
+"Payment Detail: cc_rejected_insufficient_amount","Detalle del Pago: Tarjeta de crédito rechazada por monto insuficiente."
+"Payment Detail: cc_rejected_bad_filled_security_code","Detalle del Pago: Tarjeta de crédito rechazada por código de seguridad."
+"Payment Detail: cc_rejected_bad_filled_other","Detalle del Pago: Tarjeta de crédito rechazada por error en formulario."
+"Payment Detail: cc_rejected_other_reason","Detalle del Pago: Rechazo general"
+"Payment Detail: cc_rejected_bad_filled_date","Detalle del Pago: Tarjeta de crédito rechazada por fecha de expiración."
+
+
+"Payment Status: in_process", "Estado del Pago: en proceso"
+"Payment Status: rejected", "Estado del Pago: rechazado"
+
+"Payment information", "Información de pago"
+
+
+
 "Click on the link to generate the ticket","Clique en el link para mostrar el ticket de pago"
 "Generate Ticket","Generar ticket de pago"
 
@@ -72,7 +97,7 @@
 
 
 "Thank you for your purchase!","Gracias por su compra!"
-"Your order %1 has been successfully generated.","Su pedido con el numero %1 fué generado con éxito."
+"Your order %1 has been successfully generated.","Su pedido con el numero %1 fue generado con éxito."
 "Done, your payment was accredited!","¡Listo, se acreditó tu pago!"
 "We are processing the payment.","Estamos procesando el pago."
 "In less than 2 business days we will tell you by e-mail if it is accredited or if we need more information.","Estamos procesando el pago. En menos de 2 días hábiles te avisaremos por e-mail si se acreditó o si necesitamos más información."
@@ -108,13 +133,13 @@
 
 "Verify the form data or wait until the validation of the payment data","Verifique los datos del formulario o aguarde la validación de los datos del pago."
 
-"Automatic notification of the Mercado Pago: The payment was approved.","Notificación automática de Mercado Pago: El pago fué aprobado."
-"Automatic notification of the Mercado Pago: The payment was refunded.","Notificación automática de Mercado Pago: El pago fué devuelto."
+"Automatic notification of the Mercado Pago: The payment was approved.","Notificación automática de Mercado Pago: El pago fue aprobado."
+"Automatic notification of the Mercado Pago: The payment was refunded.","Notificación automática de Mercado Pago: El pago fue devuelto."
 "Automatic notification of the Mercado Pago: The payment is being processed.","Notificación automática de Mercado Pago: El pago esta siendo procesado."
 "Automatic notification of the Mercado Pago: The payment is being processed. Will be approved within 2 business days.","Notificación automática de Mercado Pago: El pago esta siendo procesado. Será aprobado en hasta 2 días hábiles."
 "Automatic notification of the Mercado Pago: The payment is in the process of Dispute, check the graphic account of the Mercado Pago for more information.","Notificación automática de Mercado Pago: El pago está en un proceso de disputa, chequea tu cuenta de Mercado Pago para mayor información."
-"Automatic notification of the Mercado Pago: The payment was cancelled.","Notificación automática de Mercado Pago: El pago fué cancelado."
-"Automatic notification of the Mercado Pago: The payment was rejected.","Notificación automática de Mercado Pago: El pago fué rechazado."
+"Automatic notification of the Mercado Pago: The payment was cancelled.","Notificación automática de Mercado Pago: El pago fue cancelado."
+"Automatic notification of the Mercado Pago: The payment was rejected.","Notificación automática de Mercado Pago: El pago fue rechazado."
 "<br/> Payment id: %1","<br/> Número de Pago: %1"
 "<br/> Status: %1","<br/> Estado: %1"
 "<br/> Status Detail: %1","<br/> Detalle del Estado: %1"
@@ -181,3 +206,26 @@
 "Use Mercado Pago success page","Usar succes page de Mercado Pago"
 "If set this config with NO, magento success page will be used","Si esta configuración se setea en NO, se usará la success page de Magento"
 "Order # %1 in store %2","Orden # %1 realizada en %2"
+
+"It must be a number between 1 and 20","Tiene que ser un número entre 1 y 20"
+"It must be a number between 1 and 90","Tiene que ser un número entre 1 y 90"
+"Cancellation made by Mercado Pago","Cancelación efectuada mediante Mercado Pago"
+"Failed to make the cancellation by Mercado Pago","Error al efectuar la cancelación mediante Mercado Pago"
+"Order payment wasn't made by Mercado Pago. The cancellation will be made through Magento","El pago de la orden no fue realizado mediante Mercado Pago. La cancelación se hará a traves de Magento."
+"Mercado Pago cancellation are disabled. The cancellation will be made through Magento","Las cancelaciones de Mercado Pago están deshabilitadas. La cancelación se hará a traves de Magento"
+"You can only make cancellations on orders whose status is Processing or Pending","Solo se pueden hacer cancelaciones sobre ordenes cuyo estado sea En proceso o Pendiente"
+"You can only make cancellations on orders whose payment status is Rejected, Pending o In Process","Solo se pueden hacer cancelaciones sobre ordenes cuyo estado de pago sea Rechazado, Pendiente o En Proceso"
+"Mercado Pago - Cancellations not made","Mercado Pago - Cancelación no efectuada"
+"You can only refund orders paid by credit card","Solo se pueden hacer devoluciones sobre ordenes pagadas con tarjeta de credito"
+"You can only make refunds on orders whose status is Processing or Completed","Solo se pueden hacer devoluciones sobre ordenes cuyo estado sea En proceso o Completada"
+"You can only make refunds on orders whose payment status Approved","Solo se pueden hacer devoluciones sobre ordenes cuyo estado de pago sea Aprobado"
+"Refunds are accepted up to ","Las devoluciones son aceptadas hasta "
+" days after payment approval. The current order exceeds the limit set"," días después de aprobado el pago. La orden actual sobrepasa el límite establecido"
+"You can only make ","Solo se pueden efectuar "
+" partial refunds on the same order"," devoluciones parciales sobre la misma orden"
+"Refund made by Mercado Pago","Devolución efectuada mediante Mercado Pago"
+"Failed to make the refund by Mercado Pago","Error al efectuar la devolución mediante Mercado Pago"
+"Mercado Pago - Refund not made","Mercado Pago - Devolución no efectuada"
+"Order payment wasn't made by Mercado Pago. The refund will be made through Magento","El pago de la orden no fue realizado mediante Mercado Pago. La devolución se hará a traves de Magento"
+"Mercado Pago refunds are disabled. The refund will be made through Magento","Las devoluciones de Mercado Pago están deshabilitadas. La devolución se hará a traves de Magento"
+"No payment is recorded. You can't make a refund on a unpaid order","No se registra ningún pago. No se pueden hacer devoluciones en ordenes sin pagar"

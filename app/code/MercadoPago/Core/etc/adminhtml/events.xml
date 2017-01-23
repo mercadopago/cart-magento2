@@ -4,4 +4,8 @@
     <event name="admin_system_config_changed_section_payment">
         <observer name="mercadopago_config_validate_observer" instance="MercadoPago\Core\Observer\ConfigObserver"/>
     </event>
+
+    <event name="sales_order_creditmemo_save_before">
+        <observer name="mercadopago_creditmemo_before_save_observer" instance="MercadoPago\Core\Observer\RefundObserverBeforeSave"/>
+    </event>
 </config>

@@ -51,7 +51,8 @@
     padding-right: 20px;
 }
 
-#docNumber, #doc_type__mp {
+#doc_number__mp, #doc_type__mp {
+    display: inline-block;
     width: 160px;
 }
 

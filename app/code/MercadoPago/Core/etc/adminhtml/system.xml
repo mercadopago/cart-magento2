@@ -11,6 +11,20 @@
                     <label>Category of your store</label>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Category</source_model>
                 </field>
+                <field id="refund_available" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Refund Available</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="maximum_partial_refunds" translate="label comment" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Maximum amount of partial refunds on the same order</label>
+                    <frontend_class>validate-number-range number-range-1-20</frontend_class>
+                    <comment>It must be a number between 1 and 20</comment>
+                </field>
+                <field id="maximum_days_refund" translate="label comment" type="text" sortOrder="9" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <label>Maximum amount of days until refund is not accepted</label>
+                    <frontend_class>validate-number-range number-range-1-90</frontend_class>
+                    <comment>It must be a number between 1 and 90</comment>
+                </field>
                 <field id="order_status_approved" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Choose the status of approved orders</label>
                     <comment>To manage the status available go to System > Order Statuses</comment>

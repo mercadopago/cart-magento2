@@ -130,7 +130,7 @@ class Data
         $order = $this->_orderFactory->create()->loadByIncrementId($notificationData["external_reference"]);
         $status = $notificationData['status'];
         $currentStatus = $order->getPayment()->getAdditionalInformation('status');
-        if (($status == $currentStatus) && ($order->getState() === \Magento\Sales\Model\Order::STATE_COMPLETE)) {
+        if (($status == $currentStatus)) {
             $this->_statusUpdatedFlag = true;
         }
     }
@@ -430,5 +430,33 @@ class Data
         }
 
         return $url;
+    }
+
+    public function isRefundAvailable () {
+        return $this->scopeConfig->getValue('payment/mercadopago/refund_available');
+    }
+
+    public function getMaximumDaysRefund () {
+        return (int) $this->scopeConfig->getValue('payment/mercadopago/maximum_days_refund');
+    }
+
+    public function getMaximumPartialRefunds () {
+        return (int) $this->scopeConfig->getValue('payment/mercadopago/maximum_partial_refunds');
+    }
+    
+    public function getClientId () {
+        return $this->scopeConfig->getValue('payment/mercadopago_standard/client_id');
+    }
+    
+    public function getClientSecret() {
+        return $this->scopeConfig->getValue('payment/mercadopago_standard/client_secret');
+    }
+
+    public function getPublicKey() {
+        return $this->scopeConfig->getValue('payment/mercadopago_custom_checkout/public_key');
+    }
+
+    public function getOrderStatusRefunded() {
+        return $this->scopeConfig->getValue('payment/mercadopago/order_status_refunded');
     }
 }
