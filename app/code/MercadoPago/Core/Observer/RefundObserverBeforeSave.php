@@ -81,7 +81,7 @@ class RefundObserverBeforeSave
         $orderStatus = $order->getData('status');
         $orderPaymentStatus = $order->getPayment()->getData('additional_information')['status'];
         $payment = $order->getPayment();
-        $paymentID = $order->getPayment()->getData('additional_information')['id'];
+
         $paymentMethod = $order->getPayment()->getMethodInstance()->getCode();
         $orderStatusHistory = $order->getAllStatusHistory();
         $isCreditCardPayment = ($order->getPayment()->getData('additional_information')['installments'] != null ? true : false);
@@ -105,7 +105,7 @@ class RefundObserverBeforeSave
                 $order);
 
             if ($isValidBasicData && $isValidaData) {
-                $this->sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund, $paymentID);
+                $this->sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund);
             }
         }
 
@@ -207,12 +207,13 @@ class RefundObserverBeforeSave
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund, $paymentID)
+    protected function sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund)
     {
         $response = null;
         $amount = $creditMemo->getGrandTotal();
 
         if ($paymentMethod == 'mercadopago_standard') {
+            $paymentID = $order->getPayment()->getData('additional_information')['id'];
             $clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID);
             $clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET);
             $mp = $this->_dataHelper->getApiInstance($clientId, $clientSecret);
@@ -232,6 +233,7 @@ class RefundObserverBeforeSave
                 $response = $mp->post('/collections/' . $paymentID . '/refunds?access_token=' . $mp->get_access_token(), $params);
             }
         } else {
+            $paymentID = $order->getPayment()->getData('additional_information')['payment_method_id'];
             $accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN);
             $mp = $this->_dataHelper->getApiInstance($accessToken, $accessToken);
             if ($isTotalRefund) {
