@@ -7,7 +7,7 @@
       "email": "info@mercadopago.com"
     }
   ],
-  "type": "magento2-module",
+  "type": "magento2-component",
   "version": "1.0.0",
   "license": [
     "OSL-3.0",
@@ -20,7 +20,8 @@
     }
   ],
   "require": {
-    "composer/composer": "@alpha"
+    "composer/composer": "@alpha",
+    "magento/magento-composer-installer": "*"
   },
   "require-dev": {
     "magento/product-community-edition": "2.*",
@@ -35,32 +36,14 @@
   "config": {
     "use-include-path": true
   },
-  "psr-4": {
-    "MercadoPago\\": "app/code/MercadoPago/"
-  },
   "autoload": {
-    "psr-0": {
-      "": "app/code/"
+    "psr-4": {
+      "MercadoPago\\Core\\": "app/code/MercadoPago/Core",
+      "MercadoPago\\MercadoEnvios\\": "app/code/MercadoPago/MercadoEnvios"
     },
     "files": [
-      "app/etc/NonComposerComponentRegistration.php"
+      "app/code/MercadoPago/Core/registration.php",
+      "app/code/MercadoPago/MercadoEnvios/registration.php"
     ]
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Magento\\Sniffs\\": "dev/tests/static/framework/Magento/Sniffs/",
-      "Magento\\Tools\\": "dev/tools/Magento/Tools/",
-      "Magento\\Tools\\Sanity\\": "dev/build/publication/sanity/Magento/Tools/Sanity/",
-      "Magento\\TestFramework\\Inspection\\": "dev/tests/static/framework/Magento/TestFramework/Inspection/",
-      "Magento\\TestFramework\\Utility\\": "dev/tests/static/framework/Magento/TestFramework/Utility/",
-      "Magento\\Framework\\": "lib/internal/Magento/Framework/",
-      "Magento\\Setup\\": "setup/src/Magento/Setup/",
-      "Magento\\": "app/code/Magento/"
-    }
-  },
-  "minimum-stability": "beta",
-  "prefer-stable": true,
-  "extra": {
-    "map" : [["app/code/MercadoPago/MercadoEnvios", "MercadoPago/MercadoEnvios"], ["app/code/MercadoPago/Core", "MercadoPago/Core"]]
   }
 }
