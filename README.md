@@ -61,7 +61,7 @@ This feature allows to setup and integrate with MercadoEnvios shipment method as
 
 
 <a name="installation"></a>
-## Installation:
+## Installation copying files:
 
 1. Copy the folder **app/code/MercadoPago** to the Magento root installation. Make sure to keep the Magento folders structure intact.
 
