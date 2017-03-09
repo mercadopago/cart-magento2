@@ -43,6 +43,23 @@ This feature allows to setup and integrate with MercadoEnvios shipment method as
 
 *Available for Argentina, Brazil and Mexico only with Standard Checkout*
 
+<a name="composer_installation"></a>
+## Installation using composer:
+
+1. Add repository to your Magento installation composer.json file
+	
+	- "repositories": [
+				{
+				"type": "vcs",
+				"url": "https://github.com/mercadopago/cart-magento2"
+				}
+	      		  ]
+	
+2. Execute composer command to download plugin package
+
+	- composer require mercadopago/magento2-plugin
+
+
 <a name="installation"></a>
 ## Installation:
 
