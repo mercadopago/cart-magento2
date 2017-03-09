@@ -823,6 +823,7 @@ var MercadoPagoCustom = (function () {
                 for (var i = 0; i < payerCosts.length; i++) {
                     option = new Option(payerCosts[i].recommended_message || payerCosts[i].installments, payerCosts[i].installments);
                     selectorInstallments.appendChild(option);
+                    TinyJ(option).attribute(self.constants.cost, payerCosts[i].total_amount);
                     var finance = payerCosts[i]['labels'][0].split('|');
                     TinyJ(option).attribute('cft', finance[0].replace('_', ': '));
                     TinyJ(option).attribute('tea', finance[1].replace('_', ': '));
