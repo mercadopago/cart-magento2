@@ -119,7 +119,12 @@ class MercadoEnvios
                 return null;
             }
 
-            $postcode = preg_replace('/[^0-9]/', '', $shippingAddress->getPostcode());
+            $postcode = $shippingAddress->getPostcode();
+            if (empty($postcode)) {
+                $postcode = $this->_request->getPostcode();
+            }
+
+            $postcode = preg_replace('/[^0-9]/', '', $postcode);
 
             try {
                 $dimensions = $this->_helperCarrierData->getDimensions($this->_helperCarrierData->getAllItems($this->_request->getAllItems()));
