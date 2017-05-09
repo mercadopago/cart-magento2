@@ -65,6 +65,11 @@ class OrderCancelPlugin
         }
 
         $orderStatus = $this->order->getData('status');
+
+        if(!isset($this->order->getPayment()->getData('additional_information')['status'])){
+            return ;
+        }
+
         $orderPaymentStatus = $this->order->getPayment()->getData('additional_information')['status'];
 
         $paymentID = $this->order->getPayment()->getData('additional_information')['payment_id_detail'];
