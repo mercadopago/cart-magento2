@@ -20,7 +20,8 @@
     }
   ],
   "require": {
-    "magento/magento-composer-installer": "*"
+    "magento/magento-composer-installer": "*",
+    "magento/framework": "100.1.*"
   },
   "require-dev": {
     "magento/product-community-edition": "2.*",
