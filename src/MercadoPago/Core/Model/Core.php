@@ -255,21 +255,21 @@ class Core
         $payment = $order->getPayment();
         $info_payments = [];
         $fields = [
-            ["field" => "cardholderName", "title" => "Card Holder Name: %1"],
-            ["field" => "trunc_card", "title" => "Card Number: %1"],
-            ["field" => "payment_method", "title" => "Payment Method: %1"],
-            ["field" => "expiration_date", "title" => "Expiration Date: %1"],
-            ["field" => "installments", "title" => "Installments: %1"],
-            ["field" => "statement_descriptor", "title" => "Statement Descriptor: %1"],
-            ["field" => "payment_id", "title" => "Payment id (Mercado Pago): %1"],
-            ["field" => "status", "title" => "Payment Status: %1"],
-            ["field" => "status_detail", "title" => "Payment Detail: %1"],
-            ["field" => "activation_uri", "title" => "Generate Ticket"]
+            ["field" => "cardholderName", "title" => __("Card Holder Name: %1", $payment->getAdditionalInformation('cardholderName'))],
+            ["field" => "trunc_card", "title" => __("Card Number: %1", $payment->getAdditionalInformation('trunc_card'))],
+            ["field" => "payment_method", "title" => __("Payment Method: %1", $payment->getAdditionalInformation('payment_method'))],
+            ["field" => "expiration_date", "title" => __("Expiration Date: %1", $payment->getAdditionalInformation('expiration_date'))],
+            ["field" => "installments", "title" => __("Installments: %1", $payment->getAdditionalInformation('installments'))],
+            ["field" => "statement_descriptor", "title" => __("Statement Descriptor: %1", $payment->getAdditionalInformation('statement_descriptor'))],
+            ["field" => "payment_id", "title" => __("Payment id (Mercado Pago): %1", $payment->getAdditionalInformation('payment_id'))],
+            ["field" => "status", "title" => __("Payment Status: %1", $payment->getAdditionalInformation('status'))],
+            ["field" => "status_detail", "title" => __("Payment Detail: %1", $payment->getAdditionalInformation('status_detail'))],
+            ["field" => "activation_uri", "title" => __("Generate Ticket")]
         ];
 
         foreach ($fields as $field) {
             if ($payment->getAdditionalInformation($field['field']) != "") {
-                $text = __($field['title'], $payment->getAdditionalInformation($field['field']));
+                $text = $field['title'];
                 $info_payments[$field['field']] = array(
                     "text"  => $text,
                     "value" => $payment->getAdditionalInformation($field['field'])
