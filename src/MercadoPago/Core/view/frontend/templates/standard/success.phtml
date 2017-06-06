@@ -1,9 +1,16 @@
 <?php
+/**
+ * @var MercadoPago\Core\Block\Standard\Success $block
+ */
+
 $order = $this->getOrder();
 $total = $this->getTotal();
 $payment = $this->getPayment();
 
-$linkToOrder = __('Your order %1 has been successfully generated.', '<a href="' . $this->getOrderUrl() . '">' . $order->getIncrementId() . '</a>');
+$linkToOrder = __(
+    'Your order %1 has been successfully generated.',
+    '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>'
+);
 
 $paymenMethod = $this->getPaymentMethod();
 $infoPayment = $this->getInfoPayment();
@@ -13,8 +20,8 @@ $infoPayment = $this->getInfoPayment();
 
     <?php if (!isset($infoPayment['status']['value'])): ?>
         <h2 class="mercadopago-title">
-            <?php echo __('Thank you for your purchase!'); ?>
-        </h2><p><?php echo $linkToOrder; ?></p>
+            <?php /* @escapeNotVerified */ echo __('Thank you for your purchase!'); ?>
+        </h2><p><?php /* @escapeNotVerified */ echo $linkToOrder; ?></p>
     <?php else: ?><?php
         $message_status = $this->getMessageByStatus(
             (isset($infoPayment['status']['value'])?$infoPayment['status']['value']:''),
@@ -24,16 +31,16 @@ $infoPayment = $this->getInfoPayment();
             $this->getTotal()
         );
         ?>
-        <h2 class="mercadopago-title"><?php echo $message_status['title']; ?></h2>
+        <h2 class="mercadopago-title"><?php echo $block->escapeHtml($message_status['title']); ?></h2>
 
-        <p><?php echo $message_status['message']; ?></p>
+        <p><?php echo $block->escapeHtml($message_status['message']); ?></p>
 
-        <p><?php echo $linkToOrder; ?></p>
+        <p><?php /* @escapeNotVerified */ echo $linkToOrder; ?></p>
 
-        <h3 class="mercadopago-title-info-payment"><?php echo __('Payment information'); ?></h3>
+        <h3 class="mercadopago-title-info-payment"><?php /* @escapeNotVerified */ echo __('Payment information'); ?></h3>
 
         <?php foreach ($infoPayment as $info): ?>
-            <p><?php echo __($info['text']); ?></p>
+            <p><?php /* @escapeNotVerified */ echo __($info['text']); ?></p>
         <?php endforeach; ?>
 
     <?php endif ?>

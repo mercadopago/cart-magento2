@@ -1,4 +1,5 @@
 <?php
+/** @var MercadoPago\Core\Block\Calculator\CalculatorLink $block */
 $currentAmount = 0;
 $link_to_calculator = $this->getUrlCalculatorPayment();
 
@@ -12,10 +13,10 @@ $link_to_calculator = $this->getUrlCalculatorPayment();
         ?>
         <div id="mercadopago_calculator_link">
             <a href="javascript:void(0)" id="calculatorTrigger">
-                <?php echo __('Calculate your payments ')?>
+                <?php /* @escapeNotVerified */ echo __('Calculate your payments ')?>
             </a>
-            <p><?php echo __('with ')?></p>
-            <img id="meli-logo" src="<?php echo $this->getUrlLogo() ?>" alt="MercadoPago"/>
+            <p><?php /* @escapeNotVerified */ echo __('with ')?></p>
+            <img id="meli-logo" src="<?php echo $block->escapeUrl($this->getUrlLogo()) ?>" alt="MercadoPago"/>
         </div>
         <?php
         $this->getChildBlock("mercadopago.calculator.form")->setAmount($currentAmount);

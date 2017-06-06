@@ -1,10 +1,13 @@
 <?php
+/**
+ * @var MercadoPago\Core\Block\Custom\Success $block
+ */
     $order = $this->getOrder();
     $total = $this->getTotal();
     $payment = $this->getPayment();
     
     //monta link para o pedido
-$link_to_order = __('Your order %1 has been successfully generated.', '<a href="' . $this->getOrderUrl() . '">' . $order->getIncrementId() . '</a>');
+$link_to_order = __('Your order %1 has been successfully generated.', '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>');
     
     $payment_method = $this->getPaymentMethod();
     $info_payment = $this->getInfoPayment();
@@ -13,8 +16,8 @@ $link_to_order = __('Your order %1 has been successfully generated.', '<a href="
 <div id="box-mercadopago">
 
     <?php if(!isset($info_payment['status']['value'])): ?>
-        <h2 class="mercadopago-title"><?php echo __('Thank you for your purchase!'); ?></h2>
-        <p><?php echo $link_to_order; ?></p>
+        <h2 class="mercadopago-title"><?php /* @escapeNotVerified */ echo __('Thank you for your purchase!'); ?></h2>
+        <p><?php /* @escapeNotVerified */ echo $link_to_order; ?></p>
     <?php else: ?>
         <?php
             $message_status = $this->getMessageByStatus(
@@ -25,16 +28,16 @@ $link_to_order = __('Your order %1 has been successfully generated.', '<a href="
                 $this->getTotal()
             );
         ?>
-        <h2 class="mercadopago-title"><?php echo $message_status['title']; ?></h2>
+        <h2 class="mercadopago-title"><?php echo $block->escapeHtml($message_status['title']); ?></h2>
 
-        <p><?php echo $message_status['message']; ?></p>
+        <p><?php echo $block->escapeHtml($message_status['message']); ?></p>
 
-        <p><?php echo $link_to_order; ?></p>
+        <p><?php /* @escapeNotVerified */ echo $link_to_order; ?></p>
 
-        <h3 class="mercadopago-title-info-payment"><?php echo __('Payment information'); ?></h3>
+        <h3 class="mercadopago-title-info-payment"><?php /* @escapeNotVerified */ echo __('Payment information'); ?></h3>
 
         <?php foreach($info_payment as $info): ?>
-            <p><?php echo __($info['text']); ?></p>
+            <p><?php /* @escapeNotVerified */ echo __($info['text']); ?></p>
         <?php endforeach; ?>
             
     <?php endif; ?>

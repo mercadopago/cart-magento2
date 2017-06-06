@@ -1,2 +1,7 @@
-<p><?php echo $block->getErrorMessage();?></p>
-<p><?php echo __('Click <a href="%1" target="_top">here</a> to continue shopping.',$block->escapeUrl($block->getUrlHome())) ?></p>
+<?php
+/**
+ * @var MercadoPago\Core\Block\Standard\Failure $block
+ */
+?>
+<p><?php echo $block->escapeHtml($block->getErrorMessage());?></p>
+<p><?php /* @escapeNotVerified */ echo __('Click <a href="%1" target="_top">here</a> to continue shopping.', $block->escapeUrl($block->getUrlHome())) ?></p>

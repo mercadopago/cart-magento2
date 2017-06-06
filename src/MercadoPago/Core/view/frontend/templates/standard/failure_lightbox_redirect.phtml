@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var MercadoPago\Core\Block\Standard\Failure $block
+ */
+?>
 <script>
-    parent.window.location='<?php echo $block->getUrlHome(); ?>mercadopago/standard/failure'
+    parent.window.location='<?php echo $block->escapeUrl($block->getUrlHome()); ?>mercadopago/standard/failure'
 </script>

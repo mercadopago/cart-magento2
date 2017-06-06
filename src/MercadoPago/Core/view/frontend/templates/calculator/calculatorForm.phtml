@@ -1,4 +1,5 @@
 <?php
+/** @var MercadoPago\Core\Block\Calculator\CalculatorForm $block */
 const STATUS_ACTIVE = 'active';
 const PAYMENT_TYPE_CREDIT_CARD = 'credit_card';
 
@@ -16,9 +17,9 @@ $amount = $this->getAmount();
                 <div class="loading-overlay"> </div>
                 <div class="payment-titles">
                     <!--            'Pagar con Mercado Pago'-->
-                    <h2 class="title-border-line"><?php echo __('Pay with MercadoPago')?></h2>
+                    <h2 class="title-border-line"><?php /* @escapeNotVerified */ echo __('Pay with MercadoPago')?></h2>
                     <!--            'Tarjeta de crédito'-->
-                    <h3 id="title-payment-cards"><?php echo __('Payment cards')?></h3>
+                    <h3 id="title-payment-cards"><?php /* @escapeNotVerified */ echo __('Payment cards')?></h3>
                 </div>
 
                 <div class="columns">
@@ -26,10 +27,10 @@ $amount = $this->getAmount();
                         <ul id="op-payment-cards-list">
                             <?php foreach ($list as $i) { ?>
                                 <?php if ($i['status'] === STATUS_ACTIVE & $i['payment_type_id'] === PAYMENT_TYPE_CREDIT_CARD): ?>
-                                    <li id="<?php echo $i['id']; ?>-li">
-                                        <label for="<?php echo $i['id']; ?>">
-                                            <input id="<?php echo $i['id']; ?>" type="radio" name="paymentMethods" value="<?php echo $i['id']; ?>" />
-                                            <img src="<?php echo $i['thumbnail']; ?>" alt="<?php echo $i['id']; ?>"/>
+                                    <li id="<?php echo $block->escapeQuote($i['id']); ?>-li">
+                                        <label for="<?php echo $block->escapeQuote($i['id']); ?>">
+                                            <input id="<?php echo $block->escapeQuote($i['id']); ?>" type="radio" name="paymentMethods" value="<?php /* @escapeNotVerified */ echo $i['id']; ?>" />
+                                            <img src="<?php echo $block->escapeQuote($i['thumbnail']); ?>" alt="<?php echo $block->escapeQuote($i['thumbnail']); ?>"/>
                                         </label>
                                     </li>
                                 <?php endif; ?>
@@ -40,19 +41,19 @@ $amount = $this->getAmount();
                     <div class="data-column">
                         <div id="paymentCost" class="op-section-actions price-conditions ">
                             <div id="op-bank-select">
-                                <label for="issuerSelect"><?php echo __('Bank')?></label>
+                                <label for="issuerSelect"><?php /* @escapeNotVerified */ echo __('Bank')?></label>
                                 <select id="issuerSelect"></select>
                             </div>
 
                             <div class="op-installments" id="finalPrice" data-state="visible">
-                                <label for="installmentSelect"><?php echo __('Pay')?></label>
+                                <label for="installmentSelect"><?php /* @escapeNotVerified */ echo __('Pay')?></label>
                                 <select id="installmentSelect" name="installmentSelect" class="installmentSelect"></select>
                                 <span id="installmentX">x</span>
                                 <div class="op-price-box">
                                     <span id="installmentsPrice" class="op-price ch-price"></span>
                                     <strong id="installmentsInterestFreeText" class="op-installments-free-text stand-out">
                                         <!-- remove if interest free -->
-                                        <?php echo __('Interest-free')?>
+                                        <?php /* @escapeNotVerified */ echo __('Interest-free')?>
                                     </strong>
                                 </div>
                             </div>
@@ -82,14 +83,14 @@ $amount = $this->getAmount();
                 </div>
             </section>
         <?php else : ?>
-            <h2> <?php echo __('XXXXXXXX')?> </h2>
+            <h2> <?php /* @escapeNotVerified */ echo __('XXXXXXXX')?> </h2>
         <?php endif; ?>
     </main>
 
     <script type="text/javascript">
-        var PublicKeyMercadoPagoCustom = '<?php echo $pk; ?>';
-        var AllPaymentMethods = '<?php echo json_encode($list); ?>';
-        var Amount = '<?php echo $amount ?>';
+        var PublicKeyMercadoPagoCustom = '<?php /* @escapeNotVerified */ echo $pk; ?>';
+        var AllPaymentMethods = '<?php /* @escapeNotVerified */ echo json_encode($list); ?>';
+        var Amount = '<?php /* @escapeNotVerified */ echo $amount ?>';
     </script>
     <script>
         require(['MPcustom', 'tinyj', 'tiny', 'meli', 'calculator'],
