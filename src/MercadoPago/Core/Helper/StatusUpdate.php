@@ -37,7 +37,24 @@ class StatusUpdate
      */
     protected $_creditmemoFactory;
 
+    /**
+     * @var \Magento\Framework\DB\TransactionFactory
+     */
+    protected $_transactionFactory;
+
+    /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\InvoiceSender
+     */
+    protected $_invoiceSender;
+
+    /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     */
+    protected $_orderSender;
+
+
     protected $_dataHelper;
+    protected $_coreHelper;
 
     public function __construct(
         \MercadoPago\Core\Helper\Message\MessageInterface $messageInterface,
@@ -50,7 +67,11 @@ class StatusUpdate
         \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory,
-        \MercadoPago\Core\Helper\Data $dataHelper
+        \MercadoPago\Core\Helper\Data $dataHelper,
+        \MercadoPago\Core\Model\Core $coreHelper,
+        \Magento\Framework\DB\TransactionFactory $transactionFactory,
+        \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender,
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
     )
     {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
@@ -59,6 +80,10 @@ class StatusUpdate
         $this->_statusFactory = $statusFactory;
         $this->_creditmemoFactory = $creditmemoFactory;
         $this->_dataHelper = $dataHelper;
+        $this->_coreHelper = $coreHelper;
+        $this->_transactionFactory = $transactionFactory;
+        $this->_invoiceSender = $invoiceSender;
+        $this->_orderSender = $orderSender;
     }
 
     /**
@@ -82,17 +107,28 @@ class StatusUpdate
      *
      * @param $notificationData
      */
-    public function setStatusUpdated($notificationData)
+    public function setStatusUpdated($notificationData, $order)
     {
-        /**
-         * $order \Magento\Sales\Model\Order
-         */
-        $order = $this->_orderFactory->create()->loadByIncrementId($notificationData["external_reference"]);
         $status = $notificationData['status'];
+        $statusDetail = $notificationData['status_detail'];
         $currentStatus = $order->getPayment()->getAdditionalInformation('status');
-        if (($status == $currentStatus)) {
+        $currentStatusDetail = $order->getPayment()->getAdditionalInformation('status_detail');
+
+        if (!is_null($order->getPayment()) && $order->getPayment()->getAdditionalInformation('second_card_token')) {
+            $this->_statusUpdatedFlag = false;
+
+            return;
+        }
+        if ($status == $currentStatus && $statusDetail == $currentStatusDetail) {
             $this->_statusUpdatedFlag = true;
         }
+    }
+
+    protected function _getMulticardLastValue($value)
+    {
+        $statuses = explode('|', $value);
+
+        return str_replace(' ', '', array_pop($statuses));
     }
 
     /**
@@ -342,7 +378,6 @@ class StatusUpdate
             "coupon_amount",
             "installments",
             "shipping_cost",
-            "refunds",
             "amount_refunded"
         ];
 
@@ -356,12 +391,34 @@ class StatusUpdate
             }
         }
 
+        if (isset($payment['refunds'])) {
+            foreach ($payment['refunds'] as $refund) {
+                if (isset($data['refunds'])) {
+                    $data['refunds'] .= " | " . $refund['id'];
+                } else {
+                    $data['refunds'] = $refund['id'];
+                }
+            }
+        }
+
         $data = $this->_updateAtributesData($data, $payment);
 
         $data['external_reference'] = $payment['external_reference'];
         $data['payer_first_name'] = $payment['payer']['first_name'];
         $data['payer_last_name'] = $payment['payer']['last_name'];
         $data['payer_email'] = $payment['payer']['email'];
+
+        if (isset($data['payer_identification_type'])) {
+            $data['payer_identification_type'] .= " | " . $payment['payer']['identification']['type'];
+        } else {
+            $data['payer_identification_type'] = $payment['payer']['identification']['type'];
+        }
+
+        if (isset($data['payer_identification_number'])) {
+            $data['payer_identification_number'] .= " | " . $payment['payer']['identification']['number'];
+        } else {
+            $data['payer_identification_number'] = $payment['payer']['identification']['number'];
+        }
 
         return $data;
     }
@@ -393,6 +450,177 @@ class StatusUpdate
         }
 
         return $data;
+    }
+
+    /**
+     * Updates order status ond creates invoice
+     *
+     * @param      $payment
+     * @param null $stateObject
+     *
+     * @return array
+     */
+    public function setStatusOrder($payment)
+    {
+        $order = $this->_coreHelper->_getOrder($payment["external_reference"]);
+
+        $statusDetail = $payment['status_detail'];
+        $status = $payment['status'];
+
+        if (isset($payment['status_final'])) {
+            $status = $payment['status_final'];
+        }
+        $message = $this->getMessage($status, $payment);
+        if ($this->isStatusUpdated()) {
+            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
+        }
+
+        //if state is not complete updates according to setting
+        $this->_updateStatus($order, $status, $message, $statusDetail);
+
+        $statusSave = $order->save();
+        $this->_dataHelper->log("Update order", 'mercadopago.log', $statusSave->getData());
+        $this->_dataHelper->log($message, 'mercadopago.log');
+
+        try {
+            $infoPayments = $order->getPayment()->getAdditionalInformation();
+            if ($this->_getMulticardLastValue($status) == 'approved') {
+                $this->_handleTwoCards($payment, $infoPayments);
+
+                $this->_dataHelper->setOrderSubtotals($payment, $order);
+                $this->_createInvoice($order, $message);
+
+                //Associate card to customer
+                $additionalInfo = $order->getPayment()->getAdditionalInformation();
+                if (isset($additionalInfo['token'])) {
+                    $order->getPayment()->getMethodInstance()->customerAndCards($additionalInfo['token'], $payment);
+                }
+
+
+            } elseif ($status == 'refunded' || $status == 'cancelled') {
+                $order->setExternalRequest(true);
+                $order->cancel();
+            }
+
+            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
+        } catch (\Exception $e) {
+            $this->_dataHelper->log("erro in set order status: " . $e, 'mercadopago.log');
+
+            return ['text' => $e, 'code' => \MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST];
+        }
+    }
+
+    protected function _handleTwoCards(&$payment, $infoPayments)
+    {
+        if (isset($infoPayments['second_card_token']) && !empty($infoPayments['second_card_token'])) {
+            $payment['total_paid_amount'] = $infoPayments['total_paid_amount'];
+            $payment['transaction_amount'] = $infoPayments['transaction_amount'];
+            $payment['status'] = $infoPayments['status'];
+        }
+    }
+
+    protected function _createInvoice($order, $message)
+    {
+        if (!$order->hasInvoices()) {
+            $invoice = $order->prepareInvoice();
+            $invoice->register();
+            $invoice->pay();
+            $this->_transactionFactory->create()
+                ->addObject($invoice)
+                ->addObject($invoice->getOrder())
+                ->save();
+
+            $this->_invoiceSender->send($invoice, true, $message);
+        }
+    }
+
+    /**
+     * @param $order        \Magento\Sales\Model\Order
+     * @param $statusHelper \MercadoPago\Core\Helper\StatusUpdate
+     * @param $status
+     * @param $message
+     * @param $statusDetail
+     */
+    protected function _updateStatus($order, $status, $message, $statusDetail)
+    {
+        if ($order->getState() !== \Magento\Sales\Model\Order::STATE_COMPLETE) {
+            $statusOrder = $this->getStatusOrder($status, $statusDetail, $order->canCreditmemo());
+
+            $order->setState($this->_getAssignedState($statusOrder));
+            $order->addStatusToHistory($statusOrder, $message, true);
+            if (!$order->getEmailSent()){
+                $this->_orderSender->send($order, true, $message);
+            }
+        }
+    }
+    /**
+     * Set order and payment info
+     *
+     * @param $data
+     */
+    public function updateOrder($data, $order = null)
+    {
+        $this->_dataHelper->log("Update Order", 'mercadopago-notification.log');
+        if (!$this->isStatusUpdated()) {
+            try {
+                if (!$order) {
+                    $order = $this->_coreHelper->_getOrder($data["external_reference"]);
+                }
+
+                //update payment info
+                $paymentOrder = $order->getPayment();
+                $paymentAdditionalInfo = $paymentOrder->getAdditionalInformation();
+
+                $additionalFields = [
+                    'status',
+                    'status_detail',
+                    'id',
+                    'transaction_amount',
+                    'cardholderName',
+                    'installments',
+                    'statement_descriptor',
+                    'trunc_card',
+                    'payer_identification_type',
+                    'payer_identification_number'
+
+                ];
+
+
+                foreach ($additionalFields as $field) {
+                    if (isset($data[$field]) && empty($paymentAdditionalInfo['second_card_token'])) {
+                        $paymentOrder->setAdditionalInformation($field, $data[$field]);
+                    }
+                }
+
+                if (isset($data['id'])) {
+                    $paymentOrder->setAdditionalInformation('payment_id_detail', $data['id']);
+                }
+
+                if (isset($data['payer_identification_type']) & isset($data['payer_identification_number'])) {
+                    $paymentOrder->setAdditionalInformation($data['payer_identification_type'], $data['payer_identification_number']);
+                }
+
+                if (isset($data['payment_method_id'])) {
+                    $paymentOrder->setAdditionalInformation('payment_method', $data['payment_method_id']);
+                }
+
+                if (isset($data['merchant_order_id'])) {
+                    $paymentOrder->setAdditionalInformation('merchant_order_id', $data['merchant_order_id']);
+                }
+
+                $paymentStatus = $paymentOrder->save();
+                $this->_dataHelper->log("Update Payment", 'mercadopago.log', $paymentStatus->getData());
+
+                $statusSave = $order->save();
+                $this->_dataHelper->log("Update order", 'mercadopago.log', $statusSave->getData());
+            } catch (\Exception $e) {
+                $this->_dataHelper->log("erro in update order status: " . $e, 'mercadopago.log');
+                $this->getResponse()->setBody($e);
+
+                //if notification proccess returns error, mercadopago will resend the notification.
+                $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST);
+            }
+        }
     }
 
 }

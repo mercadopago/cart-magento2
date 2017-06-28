@@ -143,7 +143,7 @@
 "Order # %1 in store %2","Pedido # %1 realizado na loja %2"
 
 "$", "R$"
-"Choice", "Escolha"
+"Select", "Escolha"
 "Default issuer", "Qualquer Banco"
 
 "Get your public_key in the following address: https://www.mercadopago.com/mlb/account/credentials","Obtenha seu public_key no seguinte endereço: https://www.mercadopago.com/mlb/account/credentials"
@@ -207,3 +207,6 @@
  "If set this config with NO, magento success page will be used","Se definir essa configuração com NO, página de sucesso magento será usado"
 
  "Order # %1 in store %2","Pedido # %1 realizado na loja %2"
+
+"Consider Discounts","Considerar desconto"
+"Consider discount of Mercado Pago to invoicing","Considere o desconto do Mercado Pago para faturamento"

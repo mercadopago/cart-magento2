@@ -25,6 +25,9 @@ class Custom
      * @var \MercadoPago\Core\Model\Core
      */
     protected $coreModel;
+    protected $_order;
+    protected $_statusHelper;
+    protected $_requestData;
 
     /**
      * Log file name
@@ -44,12 +47,14 @@ class Custom
         \Magento\Framework\App\Action\Context $context,
         \MercadoPago\Core\Model\Standard\PaymentFactory $paymentFactory,
         \MercadoPago\Core\Helper\Data $coreHelper,
-        \MercadoPago\Core\Model\Core $coreModel
+        \MercadoPago\Core\Model\Core $coreModel,
+        \MercadoPago\Core\Helper\StatusUpdate $statusHelper
     )
     {
         $this->_paymentFactory = $paymentFactory;
         $this->coreHelper = $coreHelper;
         $this->coreModel = $coreModel;
+        $this->_statusHelper = $statusHelper;
         parent::__construct($context);
     }
 
@@ -58,23 +63,32 @@ class Custom
      */
     public function execute()
     {
-        $request = $this->getRequest();
-        $this->coreHelper->log("Custom Received notification", self::LOG_NAME, $request->getParams());
+        $this->_requestData = $this->getRequest();
+        //$request = $this->getRequest();
+        $this->coreHelper->log("Custom Received notification", self::LOG_NAME, $this->_requestData->getParams());
 
-        $dataId = $request->getParam('data_id');
-        $type = $request->getParam('type');
+        $dataId = $this->_requestData->getParam('data_id');
+        $type = $this->_requestData->getParam('type');
         if (!empty($dataId) && $type == 'payment') {
             $response = $this->coreModel->getPaymentV1($dataId);
             $this->coreHelper->log("Return payment", self::LOG_NAME, $response);
 
             if ($response['status'] == 200 || $response['status'] == 201) {
                 $payment = $response['response'];
-
                 $payment = $this->coreHelper->setPayerInfo($payment);
 
+                $this->_order = $this->coreModel->_getOrder($payment['external_reference']);
+                if (!$this->_orderExists() || $this->_order->getStatus() == 'canceled') {
+                    return;
+                }
+
                 $this->coreHelper->log("Update Order", self::LOG_NAME);
-                $this->coreModel->updateOrder($payment);
-                $setStatusResponse = $this->coreModel->setStatusOrder($payment);
+                $this->_statusHelper->setStatusUpdated($payment, $this->_order);
+
+                $data = $this->_statusHelper->formatArrayPayment($data = [], $payment, self::LOG_FILE);
+
+                $this->_statusHelper->updateOrder($data, $this->_order);
+                $setStatusResponse = $this->_statusHelper->setStatusOrder($payment);
                 $this->getResponse()->setBody($setStatusResponse['text']);
                 $this->getResponse()->setHttpResponseCode($setStatusResponse['code']);
                 $this->coreHelper->log("Http code", self::LOG_NAME, $this->getResponse()->getHttpResponseCode());
@@ -83,10 +97,22 @@ class Custom
             }
         }
 
-        $this->coreHelper->log("Payment not found", self::LOG_NAME, $request->getParams());
+        $this->coreHelper->log("Payment not found", self::LOG_NAME, $this->_requestData->getParams());
         $this->getResponse()->getBody("Payment not found");
         $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND);
         $this->coreHelper->log("Http code", self::LOG_NAME, $this->getResponse()->getHttpResponseCode());
     }
 
+    protected function _orderExists()
+    {
+        if ($this->_order->getId()) {
+            return true;
+        }
+        $this->coreHelper->log(\MercadoPago\Core\Helper\Response::INFO_EXTERNAL_REFERENCE_NOT_FOUND, self::LOG_NAME, $this->_requestData->getParams());
+        $this->getResponse()->getBody(\MercadoPago\Core\Helper\Response::INFO_EXTERNAL_REFERENCE_NOT_FOUND);
+        $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND);
+        $this->coreHelper->log("Http code", self::LOG_NAME, $this->getResponse()->getHttpResponseCode());
+
+        return false;
+    }
 }

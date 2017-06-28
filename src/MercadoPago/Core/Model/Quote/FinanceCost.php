@@ -75,6 +75,23 @@ class FinanceCost
 
         return $subtotal;
     }
+    
+    /**
+     * Return subtotal quote
+     *
+     * @return float
+     */
+    protected function _getTaxAmount()
+    {
+        $totals = $this->_checkoutSession->getQuote()->getTotals();
+        $tax = 0;
+        if (isset($totals['tax'])) {
+            $tax = ($totals['tax']->getValue() > 0) ? $totals['tax']->getValue() : 0;
+
+        }
+
+        return $tax;
+    }
 
     /**
      * Return mp discount
@@ -103,7 +120,9 @@ class FinanceCost
         }
         $initAmount = $this->_getSubtotalAmount();
         $discountAmount = $this->_getDiscountAmount();
-        $balance = $totalAmount - $initAmount - $discountAmount;
+        $taxAmount = $this->_getTaxAmount();
+        
+        $balance = $totalAmount - $initAmount - $discountAmount - $taxAmount;
 
         return $balance;
     }

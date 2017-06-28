@@ -14,17 +14,17 @@ class CalculatorForm
 
     protected $_amount;
 
+
     /**
      * CalculatorForm constructor.
      *
-     * @param \Magento\Framework\View\Element\Template\Context   $context
-     * @param \MercadoPago\Core\Helper\Data                      $helper
-     * @param array                                              $data
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \MercadoPago\Core\Helper\Data                    $helper
+     * @param array                                            $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context    $context,
         \MercadoPago\Core\Helper\Data                       $helper,
-
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -51,6 +51,16 @@ class CalculatorForm
     {
         $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         return $this->_helperData->getMercadoPagoPaymentMethods($accessToken);
+    }
+
+    /**
+     * Check if current requested URL is secure
+     *
+     * @return boolean
+     */
+    public function isCurrentlySecure()
+    {
+        return $this->_storeManager->getStore()->isCurrentlySecure();
     }
 
     public function setAmount($amount){

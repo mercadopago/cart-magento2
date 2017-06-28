@@ -3,9 +3,11 @@ define(
         'Magento_Checkout/js/view/payment/default',
         'ko',
         'MercadoPago_Core/js/model/iframe',
-        'Magento_Checkout/js/model/full-screen-loader'
+        'Magento_Checkout/js/model/full-screen-loader',
+        'MercadoPago_Core/js/model/set-analytics-information',
+        'MPanalytics'
     ],
-    function (Component, ko, iframe, fullScreenLoader) {
+    function (Component, ko, iframe, fullScreenLoader, setAnalyticsInformation) {
         'use strict';
 
         return Component.extend({
@@ -86,6 +88,10 @@ define(
              */
             iframeLoaded: function () {
                 fullScreenLoader.stopLoader();
+            },
+            initialize: function () {
+                this._super();
+                setAnalyticsInformation.beforePlaceOrder(this.getCode());
             }
         });
     }

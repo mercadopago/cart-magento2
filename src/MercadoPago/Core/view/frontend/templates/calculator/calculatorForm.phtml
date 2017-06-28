@@ -7,6 +7,8 @@ $list = $this->getPaymentMethods();
 $pk = $this->getPublicKey();
 $amount = $this->getAmount();
 
+$isSecure = $this->isCurrentlySecure();
+
 ?>
 <div id="mercadopago-popup" class="mercadopago-popup" style="display: none;">
     <div class="mercadopago-popup-overlay" onclick="MercadoPagoCustomCalculator.hidePopup()"></div>
@@ -29,8 +31,12 @@ $amount = $this->getAmount();
                                 <?php if ($i['status'] === STATUS_ACTIVE & $i['payment_type_id'] === PAYMENT_TYPE_CREDIT_CARD): ?>
                                     <li id="<?php echo $block->escapeQuote($i['id']); ?>-li">
                                         <label for="<?php echo $block->escapeQuote($i['id']); ?>">
-                                            <input id="<?php echo $block->escapeQuote($i['id']); ?>" type="radio" name="paymentMethods" value="<?php /* @escapeNotVerified */ echo $i['id']; ?>" />
-                                            <img src="<?php echo $block->escapeQuote($i['thumbnail']); ?>" alt="<?php echo $block->escapeQuote($i['thumbnail']); ?>"/>
+                                            <input id="<?php echo $block->escapeQuote($i['id']); ?>" type="radio" name="paymentMethods" value="<?php echo $i['id']; ?>" />
+                                            <?php if ($isSecure): ?>
+                                                <img src="<?php echo $block->escapeQuote($i['secure_thumbnail']); ?>" alt="<?php echo $i['id']; ?>"/>
+                                            <?php else : ?>
+                                                <img src="<?php echo $block->escapeQuote($i['thumbnail']); ?>" alt="<?php echo $i['id']; ?>"/>
+                                            <?php endif; ?>
                                         </label>
                                     </li>
                                 <?php endif; ?>

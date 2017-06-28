@@ -2,9 +2,11 @@
 define(
     [
         'Magento_Checkout/js/view/payment/default',
+        'MercadoPago_Core/js/model/set-analytics-information',
         'MPcheckout',
+        'MPanalytics'
     ],
-    function (Component) {
+    function (Component, setAnalyticsInformation) {
         'use strict';
 
         return Component.extend({
@@ -54,15 +56,20 @@ define(
             /**
              * Places order in pending payment status.
              */
+            afterPlaceOrder: function () {
+                window.location = this.getActionUrl();
+            },
+            /**
+             * Places order in pending payment status.
+             */
             placePendingPaymentOrder: function () {
                 this.placeOrder();
             },
-            /**
-             * Waits for order placement and redirects.
-             */
-            afterPlaceOrder: function () {
-                window.location = this.getActionUrl();
+            initialize: function () {
+                this._super();
+                setAnalyticsInformation.beforePlaceOrder(this.getCode());
             }
+
         });
     }
 );

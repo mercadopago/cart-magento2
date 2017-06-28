@@ -58,7 +58,7 @@ class Api {
         $i = func_num_args();
 
         if ($i > 2 || $i < 1) {
-            throw new \Exception("Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN");
+            throw new \Exception('Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN');
         }
 
         if ($i == 1) {

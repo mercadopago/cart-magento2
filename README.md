@@ -23,6 +23,7 @@ Offers a fully customized checkout to your brand experience with our simple-to-u
 * Accept tickets in addition to cards.
 * Accept MercadoPago's discount coupons.
 * Improve conversion rate.
+* Accept Payment with two cards <sup>*</sup>
 * Debug Mode.
 
 *Available for Argentina, Brazil, Chile, Colombia, Mexico, Peru and Venezuela**
@@ -70,6 +71,12 @@ This feature allows to add an installment calculator within Magento pages.
 It can be enabled/disabled from the Magento admin panel.
 The calculator can be visualized within product, cart, or both pages.
 The customer can use the installment calculator to see the financing options available and the final amount to be paid.
+
+**Split payments in custom checkout**<sup>*</sup>
+
+This feature allows customer to split Custom Checkout payments by using two different cards.
+This payment modality behaves in the same way as the equivalent payment mode in the classic checkout.
+This functionality can also be enabled/disabled from Magento plugin configuration.
 
 <a name="composer_installation"></a>
 ## Installation using composer:
@@ -136,7 +143,7 @@ The customer can use the installment calculator to see the financing options ava
     * **Show Calculator on selected pages**: Select the pages to show the Installments Calculator.
 
 <a name="checkout_custom"></a>
-###Custom Checkout Payment Solution: ###
+### Custom Checkout Payment Solution: 
 
 1. Go to **Stores > Configuration > Sales > Payment Methods**. Select **MercadoPago - Custom Checkout**.
 ![MercadoPago Custom Checkout Configuration](/README.img/mercadopago_custom_checkout_configuration.png?raw=true)
@@ -144,13 +151,13 @@ The customer can use the installment calculator to see the financing options ava
 2. Set your **Public Key** and **Access Token**.
  	In order to get them check the following links according to the country you are operating in:
 	
-	* Argentina: [https://www.mercadopago.com/mla/account/credentials](https://www.mercadopago.com/mla/account/credentials)
-	* Brazil: [https://www.mercadopago.com/mlb/account/credentials](https://www.mercadopago.com/mlb/account/credentials)
-    * Chile: [https://www.mercadopago.com/mlc/account/credentials](https://www.mercadopago.com/mlc/account/credentials)
-	* Colombia: [https://www.mercadopago.com/mco/account/credentials](https://www.mercadopago.com/mco/account/credentials)
-	* Mexico: [https://www.mercadopago.com/mlm/account/credentials](https://www.mercadopago.com/mlm/account/credentials)
-	* Peru: [https://www.mercadopago.com/mpe/account/credentials](https://www.mercadopago.com/mpe/account/credentials)
-	* Venezuela: [https://www.mercadopago.com/mlv/account/credentials](https://www.mercadopago.com/mlv/account/credentials)
+* Argentina: [https://www.mercadopago.com/mla/account/credentials](https://www.mercadopago.com/mla/account/credentials)
+* Brazil: [https://www.mercadopago.com/mlb/account/credentials](https://www.mercadopago.com/mlb/account/credentials)
+* Chile: [https://www.mercadopago.com/mlc/account/credentials](https://www.mercadopago.com/mlc/account/credentials)
+* Colombia: [https://www.mercadopago.com/mco/account/credentials](https://www.mercadopago.com/mco/account/credentials)
+* Mexico: [https://www.mercadopago.com/mlm/account/credentials](https://www.mercadopago.com/mlm/account/credentials)
+* Peru: [https://www.mercadopago.com/mpe/account/credentials](https://www.mercadopago.com/mpe/account/credentials)
+* Venezuela: [https://www.mercadopago.com/mlv/account/credentials](https://www.mercadopago.com/mlv/account/credentials)
 
 If you want to enable credit card solution, check the configurations under **Checkout Custom - Credit Card**:
 ![MercadoPago Custom Checkout Credit Card](/README.img/mercadopago_custom_checkout_cc.png?raw=true)
@@ -174,21 +181,22 @@ If you want to enable ticket solution, check the configurations under **Checkout
 * **Marketing - Coupon MercadoPago**: Enables/disables the coupon form.
 
 <a name="checkout_standard"></a>
-###Classic Checkout Payment Solution: ###
+### Classic Checkout Payment Solution: 
 
 1. Go to **Stores > Configuration > Sales > Payment Methods**. Select **MercadoPago - Classic Checkout**.
 
 2. Enable the solution and set your **Client Id** and **Client Secret**.
 
 Get them in the following address:
-	* Argentina: [https://www.mercadopago.com/mla/account/credentials](https://www.mercadopago.com/mla/account/credentials)
-    * Brazil: [https://www.mercadopago.com/mlb/account/credentials](https://www.mercadopago.com/mlb/account/credentials)
-    * Chile: [https://www.mercadopago.com/mlc/account/credentials](https://www.mercadopago.com/mlc/account/credentials)
-    * Colombia: [https://www.mercadopago.com/mco/account/credentials](https://www.mercadopago.com/mco/account/credentials)
-    * Mexico: [https://www.mercadopago.com/mlm/account/credentials](https://www.mercadopago.com/mlm/account/credentials)
-    * Peru: [https://www.mercadopago.com/mpe/account/credentials](https://www.mercadopago.com/mpe/account/credentials)
-    * Venezuela: [https://www.mercadopago.com/mlv/account/credentials](https://www.mercadopago.com/mlv/account/credentials)
-    * Uruguay: [https://www.mercadopago.com/mlu/account/credentials](https://www.mercadopago.com/mlu/account/credentials)
+
+* Argentina: [https://www.mercadopago.com/mla/account/credentials](https://www.mercadopago.com/mla/account/credentials)
+* Brazil: [https://www.mercadopago.com/mlb/account/credentials](https://www.mercadopago.com/mlb/account/credentials)
+* Chile: [https://www.mercadopago.com/mlc/account/credentials](https://www.mercadopago.com/mlc/account/credentials)
+* Colombia: [https://www.mercadopago.com/mco/account/credentials](https://www.mercadopago.com/mco/account/credentials)
+* Mexico: [https://www.mercadopago.com/mlm/account/credentials](https://www.mercadopago.com/mlm/account/credentials)
+* Peru: [https://www.mercadopago.com/mpe/account/credentials](https://www.mercadopago.com/mpe/account/credentials)
+* Venezuela: [https://www.mercadopago.com/mlv/account/credentials](https://www.mercadopago.com/mlv/account/credentials)
+* Uruguay: [https://www.mercadopago.com/mlu/account/credentials](https://www.mercadopago.com/mlu/account/credentials)
 
 3. Check the additional configurations:
 	* **Payment Title**: Sets the payment title.
@@ -207,7 +215,7 @@ Get them in the following address:
 	
 <a name="mercadoenvios">
 
-## MercadoEnvios ##
+## MercadoEnvios 
 
 In order to setup MercadoEnvios follow these instructions:
 
@@ -234,7 +242,7 @@ In order to setup MercadoEnvios follow these instructions:
 * **Sort order**: Sets up the sort order to be displayed in the shipping step in checkout process.
 * **Shipping label download option**: Set the format option for downloading shipping labels.
 <a name="Feedback"></a>
-## Feedback ##
+## Feedback 
 
 We want to know your opinion, please answer the following form.
 

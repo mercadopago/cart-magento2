@@ -4,6 +4,44 @@
  *
  */
 
+#mercadopago_checkout_custom,
+#mercadopago_checkout_custom_second_card {
+    border: 1px solid #cccccc;
+    box-sizing: border-box;
+    margin: 0 0 10px;
+    padding: 15px;
+    width: 48%;
+}
+
+#mercadopago_checkout_custom {
+    float: left;
+}
+
+#mercadopago_checkout_custom_second_card {
+    float: right;
+    position: relative;
+}
+
+#hide_second_card {
+    padding: 3px 0;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 25px;
+}
+#hide_second_card:hover {
+    text-decoration: none;
+}
+
+#co-mercadopago-form h3 {
+    margin-top: 0;
+    text-transform: uppercase;
+}
+
+.use-2-cards-box {
+    clear: both;
+}
+
 #mercadopago_checkout_custom ul li {
     float: left;
     width: 100%;
@@ -18,28 +56,18 @@
     height: 20px;
 }
 
-#cardId {
+#cardId,
+#second_card_cardId {
+    background-color: #fff !important;
     background-position: 93% 50% !important;
     height: 32px !important;
-    background-color: #fff !important;
 }
 
-#cardNumber {
+#cardNumber,
+#second_card_cardNumber {
+    background-color: #fff !important;
     background-position: 98% 50% !important;
-    width: 225px;
-    background-color: #fff !important;
-}
-
-#issuer__mp {
-    width: 225px;
-}
-
-#cardholderName {
-    width: 160px;
-}
-
-#installments__mp, #paymentMethod__mp, #mercadopago_checkout_custom_ocp {
-    width: 225px;
+    width: 100%;
 }
 
 #securityCode, #securityCodeOCP {
@@ -51,9 +79,91 @@
     padding-right: 20px;
 }
 
-#doc_number__mp, #doc_type__mp {
+.cvv .field-tooltip .field-tooltip-content {
+    left: -64px;
+    top: 38px;
+}
+
+@media screen and (min-width: 768px) {
+    .cvv .field-tooltip .field-tooltip-content:before {
+        left: 64px;
+        top: -20px;
+        transform: rotate(90deg);
+    }
+
+    .cvv .field-tooltip .field-tooltip-content:after {
+        left: 64px;
+        top: -19px;
+        transform: rotate(90deg);
+        width: 0;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .cvv .field-tooltip .field-tooltip-content:before,
+    .cvv .field-tooltip .field-tooltip-content:after {
+        left: 64px;
+        right: auto;
+        top: 2px;
+    }
+}
+
+.cvv .field-tooltip {
+    left: 65px;
+}
+
+#doc_type__mp,
+#second_card_doc_type__mp {
     display: inline-block;
-    width: 160px;
+    margin-right: 1px;
+    margin-top: 28px;
+    width: 90px;
+}
+
+#doc_number__mp,
+#second_card_doc_number__mp {
+    display: inline-block;
+    vertical-align: top;
+    width: 120px;
+}
+
+#doc_number__mp .control,
+#second_card_doc_number__mp .control {
+    margin-top: 28px;
+}
+
+.document-box {
+    margin: 0 0 20px !important;
+    position: relative;
+}
+
+.document-box label {
+    display: inline-block;
+    font-weight: 600;
+    left: 0;
+    margin: 0 0 8px;
+    position: absolute;
+    white-space: nowrap;
+}
+
+.document-box.required label:after {
+    content: '*';
+    color: #e02b27;
+    font-size: 1.2rem;
+    margin: 0 0 0 5px;
+}
+
+#docNumber.mage-error,
+#second_card_docNumber.mage-error {
+    margin-bottom: 24px;
+}
+
+#docNumber-error,
+#second_card_docNumber-error {
+    bottom: 0;
+    position: absolute;
+    left: 0;
+    white-space: nowrap;
 }
 
 #box_month, #box_year {
@@ -70,11 +180,23 @@
 }
 
 #securityCodeOCP__mp {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .message-error {
     display: none;
+}
+
+.message-error span {
+    color: #e02b27;
+    font-size: 1.2rem;
+    margin-top: 7px;
+}
+
+input.has-error,
+select.has-error,
+textarea.has-error {
+    border-color: #ed8380;
 }
 
 #mercadopago_checkout_custom_ticket .form-mercadopago {
@@ -298,6 +420,13 @@
     margin-bottom: -12px !important;
 }
 
+.total_buy_price {
+    font-weight: bold;
+}
+
+.total_buy_price:before {
+    content: '$';
+}
 
 #mercadopago_calculator_link {
     display: block;
@@ -314,4 +443,38 @@
     margin-bottom: 0px;
     display: inline-block;
     vertical-align: middle;
+}
+
+@media screen and (max-width: 900px) {
+    #mercadopago_checkout_custom,
+    #mercadopago_checkout_custom_second_card {
+        margin: 0 0 15px;
+        width: 100%;
+    }
+
+    .checkout-payment-method .ccard .month .select {
+        width: 135px;
+    }
+
+    .checkout-payment-method .ccard .year .select {
+        width: 65px;
+    }
+
+    #second_card_docType {
+        max-width: 90px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    #mercadopago_checkout_custom,
+    #mercadopago_checkout_custom_second_card {
+        width: 49%;
+    }
+}
+
+@media screen and (max-width: 540px) {
+    #mercadopago_checkout_custom,
+    #mercadopago_checkout_custom_second_card {
+        width: 100%;
+    }
 }

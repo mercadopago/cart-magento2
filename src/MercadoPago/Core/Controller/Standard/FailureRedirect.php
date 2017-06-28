@@ -37,8 +37,11 @@ class FailureRedirect
      */
     public function execute()
     {
-        $this->_view->loadLayout(['default', 'mercadopago_standard_failure_lightbox_redirect']);
-
+        if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
+            $this->_view->loadLayout(['default', 'checkout_onepage_failure']);
+        } else{
+            $this->_view->loadLayout(['default', 'mercadopago_standard_failure_lightbox_redirect']);
+        }
         $this->_view->renderLayout();
     }
 

@@ -7,13 +7,14 @@ define(
         'Magento_Checkout/js/action/get-totals',
         'jquery',
         'Magento_Checkout/js/model/full-screen-loader',
+        'MercadoPago_Core/js/model/set-analytics-information',
         'MPcheckout',
         'Magento_Checkout/js/model/payment/additional-validators',
         'meli',
         'tinyj',
         'MPcustom'
     ],
-    function (Component,paymentService,paymentMethodList,getTotalsAction,$,fullScreenLoader) {
+    function (Component,paymentService,paymentMethodList,getTotalsAction,$,fullScreenLoader, setAnalyticsInformation) {
         'use strict';
 
         var configPayment = window.checkoutConfig.payment.mercadopago_customticket;

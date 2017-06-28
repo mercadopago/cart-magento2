@@ -48,7 +48,7 @@ class PaymentMethods
         $methods = [];
 
         //default empty value
-        $methods[] = ["value" => "", "label" => ""];
+        $methods[] = ["value" => "", "label" => "Include all"];
         $accessToken = $this->scopeConfig->getValue(
             \MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,

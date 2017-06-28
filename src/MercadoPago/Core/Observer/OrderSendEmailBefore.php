@@ -14,6 +14,10 @@ class OrderSendEmailBefore
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $transport = $observer->getTransport();
+
+        if (is_array($transport)) {
+            return;
+        }
         if ($transport->getOrder()->getPayment()->getMethod() == \MercadoPago\Core\Model\Custom\Payment::CODE ||
             $transport->getOrder()->getPayment()->getMethod() == \MercadoPago\Core\Model\Standard\Payment::CODE ||
             $transport->getOrder()->getPayment()->getMethod() == \MercadoPago\Core\Model\CustomTicket\Payment::CODE) {

@@ -52,7 +52,7 @@ class Method
         if (isset($this->_countryOptions[$country])) {
             return $this->_countryOptions[$country];
         }
-        return array();
+        return [];
     }
 
     /**

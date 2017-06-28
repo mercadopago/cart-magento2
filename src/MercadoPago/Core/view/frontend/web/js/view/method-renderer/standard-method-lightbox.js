@@ -1,9 +1,11 @@
 define(
     [
         'Magento_Checkout/js/view/payment/default',
+        'MercadoPago_Core/js/model/set-analytics-information',
         'MPcheckout',
+        'MPanalytics'
     ],
-    function (Component) {
+    function (Component, setAnalyticsInformation) {
         'use strict';
 
         return Component.extend({
@@ -67,6 +69,10 @@ define(
                     });
                 }
             },
+            initialize: function () {
+                this._super();
+                setAnalyticsInformation.beforePlaceOrder(this.getCode());
+            }
         });
     }
 );

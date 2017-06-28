@@ -33,7 +33,8 @@ class DiscountCoupon
      */
     public function initTotals()
     {
-        if ((float)$this->getSource()->getDiscountCouponAmount() == 0) {
+        if ((float)$this->getSource()->getDiscountCouponAmount() == 0
+            || !$this->_scopeConfig->isSetFlag('payment/mercadopago/consider_discount',\Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
             return $this;
         }
         $total = new \Magento\Framework\DataObject([

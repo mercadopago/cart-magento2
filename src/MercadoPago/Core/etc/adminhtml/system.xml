@@ -4,7 +4,7 @@
             <group id="mercadopago" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Mercado Pago - Global Configuration</label>
 
-                <field id="country" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="country" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Country</label>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Country</source_model>
                 </field>
@@ -18,17 +18,23 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
 
-                <field id="heading_order_status_cron" translate="label" sortOrder="8" showInDefault="1" showInWebsite="1">
+                <field id="consider_discount" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>Consider Discounts</label>
+                    <comment>Consider discount of Mercado Pago to invoicing</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="heading_order_status_cron" translate="label" sortOrder="13" showInDefault="1" showInWebsite="1">
                     <label>Order Status Update - Cron Configuration</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                     <attribute type="shared">1</attribute>
                 </field>
 
-                <field id="time_between_verifications" translate="label" type="text" sortOrder="9" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="time_between_verifications" translate="label" type="text" sortOrder="15" showInDefault="1" showInStore="0" showInWebsite="0">
                     <label>Time between verifications</label>
                 </field>
                 <!-- requiere verificacion de, vacio, y que solo sea nuemeros-->
-                <field id="number_of_hours" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="number_of_hours" translate="label comment" type="text" sortOrder="18" showInDefault="1" showInStore="0" showInWebsite="0">
                     <label>Number of hours</label>
                     <comment>Try to update all the orders created 'Amount of hours' before time to the moment to execute the cron</comment>
                 </field>
@@ -38,22 +44,22 @@
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                     <attribute type="shared">1</attribute>
                 </field>
-                <field id="refund_available" translate="label" type="select" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="refund_available" translate="label" type="select" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Refund Available</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="maximum_partial_refunds" translate="label comment" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="maximum_partial_refunds" translate="label comment" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Maximum amount of partial refunds on the same order</label>
                     <frontend_class>validate-number-range number-range-1-20</frontend_class>
                     <comment>It must be a number between 1 and 20</comment>
                 </field>
 
-                <field id="maximum_days_refund" translate="label comment" type="text" sortOrder="27" showInDefault="1" showInStore="1" showInWebsite="1">
+                <field id="maximum_days_refund" translate="label comment" type="text" sortOrder="27" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Maximum amount of days until refund is not accepted</label>
                     <frontend_class>validate-number-range number-range-1-90</frontend_class>
                     <comment>It must be a number between 1 and 90</comment>
                 </field>
-                <field id="order_status_partially_refunded" translate="label" type="select" sortOrder="29" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="order_status_partially_refunded" translate="label" type="select" sortOrder="29" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Choose the status when payment was partially refunded</label>
                     <comment>To manage the status available go to System > Order Statuses</comment>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Order\Status</source_model>
@@ -65,37 +71,37 @@
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                     <attribute type="shared">1</attribute>
                 </field>
-                <field id="order_status_approved" translate="label" type="select" sortOrder="51" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="order_status_approved" translate="label" type="select" sortOrder="51" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Choose the status of approved orders</label>
                     <comment>To manage the status available go to System > Order Statuses</comment>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Order\Status</source_model>
                 </field>
-                <field id="order_status_in_process" translate="label" type="select" sortOrder="53" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="order_status_in_process" translate="label" type="select" sortOrder="53" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Choose the status when payment is pending</label>
                     <comment>To manage the status available go to System > Order Statuses</comment>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Order\Status</source_model>
                 </field>
-                <field id="order_status_rejected" translate="label" type="select" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="order_status_rejected" translate="label" type="select" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Choose the status when payment was reject</label>
                     <comment>To manage the status available go to System > Order Statuses</comment>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Order\Status</source_model>
                 </field>
-                <field id="order_status_cancelled" translate="label" type="select" sortOrder="57" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="order_status_cancelled" translate="label" type="select" sortOrder="57" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Choose the status when payment was canceled</label>
                     <comment>To manage the status available go to System > Order Statuses</comment>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Order\Status</source_model>
                 </field>
-                <field id="order_status_chargeback" translate="label" type="select" sortOrder="59" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Choose the status when payment was chargeback</label>
+                <field id="order_status_chargeback" translate="label" type="select" sortOrder="59" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Choose the status when payment was charge back</label>
                     <comment>To manage the status available go to System > Order Statuses</comment>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Order\Status</source_model>
                 </field>
-                <field id="order_status_in_mediation" translate="label" type="select" sortOrder="61" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="order_status_in_mediation" translate="label" type="select" sortOrder="61" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Choose the status when client open a mediation</label>
                     <comment>To manage the status available go to System > Order Statuses</comment>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Order\Status</source_model>
                 </field>
-                <field id="order_status_refunded" translate="label" type="select" sortOrder="63" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="order_status_refunded" translate="label" type="select" sortOrder="63" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Choose the status of refunded orders</label>
                     <comment>To manage the status available go to System > Order Statuses</comment>
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Order\Status</source_model>
@@ -108,7 +114,7 @@
                 </field>
                 <field id="logs" translate="label" type="select" sortOrder="81" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Logs</label>
-                    <comment>Enable logs to analise plugin activity</comment>
+                    <comment>Enable logs to analyse plugin activity</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="debug_mode" translate="label" type="select" sortOrder="83" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -170,7 +176,12 @@
                                         <a href="https://www.mercadopago.com.ar/developers/solutions/payments/custom-checkout/appliance-requirements/" target="_blank">Learn More</a>]]>
                         </comment>
                     </field>
-                    <field id="title" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="allow_2_cards" translate="label" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Allow Payment with 2 Cards</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/mercadopago_custom/allow_2_cards</config_path>
+                    </field>
+                    <field id="title" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Payment Title</label>
                         <config_path>payment/mercadopago_custom/title</config_path>
                     </field>
@@ -179,12 +190,12 @@
                         <comment>Check availability for your country</comment>
                         <config_path>payment/mercadopago_custom/statement_descriptor</config_path>
                     </field>
-                    <field id="binary_mode" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="binary_mode" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Binary Mode</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_custom/binary_mode</config_path>
                     </field>
-                    <field id="banner_checkout" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="banner_checkout" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Banner Checkout</label>
                         <config_path>payment/mercadopago_custom/banner_checkout</config_path>
                     </field>
@@ -193,7 +204,7 @@
                         <frontend_class>validate-number</frontend_class>
                         <config_path>payment/mercadopago_custom/sort_order</config_path>
                     </field>
-                    <field id="coupon_mercadopago" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="coupon_mercadopago" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Marketing - Coupon Mercado Pago</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_custom/coupon_mercadopago</config_path>
@@ -202,7 +213,7 @@
                 <group id="customticket_checkout" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Custom Checkout - Ticket</label>
                     <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
-                    <field id="active" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="active" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_customticket/active</config_path>
@@ -211,7 +222,7 @@
                         <label>Payment Title</label>
                         <config_path>payment/mercadopago_customticket/title</config_path>
                     </field>
-                    <field id="banner_checkout" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="banner_checkout" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Banner Checkout</label>
                         <config_path>payment/mercadopago_customticket/banner_checkout</config_path>
                     </field>
@@ -220,7 +231,7 @@
                         <frontend_class>validate-number</frontend_class>
                         <config_path>payment/mercadopago_customticket/sort_order</config_path>
                     </field>
-                    <field id="coupon_mercadopago" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="coupon_mercadopago" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Marketing - Coupon Mercado Pago</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_customticket/coupon_mercadopago</config_path>
@@ -232,7 +243,7 @@
                 <group id="checkout" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Classic Checkout</label>
                     <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
-                    <field id="active" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="active" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enabled</label>
                         <comment>For the operation of the Checkout Standard is necessary to configure the Credentials 'CLIENT_ID' and 'CLIENT_SECRET' below</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -246,7 +257,7 @@
                         <label>Client Secret</label>
                         <config_path>payment/mercadopago_standard/client_secret</config_path>
                     </field>
-                    <field id="title" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="title" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Payment Title</label>
                         <config_path>payment/mercadopago_standard/title</config_path>
                     </field>
@@ -254,7 +265,7 @@
                         <label>Banner Checkout</label>
                         <config_path>payment/mercadopago_standard/banner_checkout</config_path>
                     </field>
-                    <field id="sort_order" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="sort_order" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Checkout Position</label>
                         <frontend_class>validate-number</frontend_class>
                         <config_path>payment/mercadopago_standard/sort_order</config_path>
@@ -264,7 +275,7 @@
                         <source_model>MercadoPago\Core\Model\System\Config\Source\TypeCheckout</source_model>
                         <config_path>payment/mercadopago_standard/type_checkout</config_path>
                     </field>
-                    <field id="auto_return" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="auto_return" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Auto Redirect</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/mercadopago_standard/auto_return</config_path>

@@ -10,13 +10,16 @@ define(
         'Magento_Checkout/js/model/payment/additional-validators',
         'Magento_Checkout/js/action/set-payment-information',
         'Magento_Checkout/js/action/place-order',
+        'Magento_Customer/js/model/customer',
+        'MercadoPago_Core/js/model/set-analytics-information',
         'mage/translate',
         'meli',
         'tinyj',
         'MPcustom',
-        'tiny'
+        'tiny',
+        'MPanalytics'
     ],
-    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader,additionalValidators, setPaymentInformationAction, placeOrderAction) {
+    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader,additionalValidators, setPaymentInformationAction, placeOrderAction, customer, setAnalyticsInformation) {
         'use strict';
 
         return Component.extend({
@@ -88,6 +91,16 @@ define(
                 }
             },
 
+            initSecondCard: function () {
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    MercadoPagoCustom.getInstance().initSecondCard();
+
+                    if (this.isOCPReady()) {
+                        MercadoPagoCustom.getInstance().initSecondCardOCP();
+                    }
+                }
+            },
+
             initDiscountApp: function () {
                 if (this.isCouponEnabled()) {
                     MercadoPagoCustom.getInstance().initDiscount();
@@ -102,6 +115,12 @@ define(
             isCouponEnabled: function () {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return (window.checkoutConfig.payment[this.getCode()]['discount_coupon']);
+                }
+            },
+            isSecondCardEnabled: function () {
+                console.log(window.checkoutConfig.payment[this.getCode()]['second_card']);
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    return (window.checkoutConfig.payment[this.getCode()]['second_card']);
                 }
             },
 
@@ -225,8 +244,8 @@ define(
                         'total_amount': TinyJ('#mercadopago_checkout_custom').getElem('.total_amount').val(),
                         'amount': TinyJ('#mercadopago_checkout_custom').getElem('.amount').val(),
                         'site_id': this.getCountry(),
-                        'token': TinyJ('.token').val(),
-                        'payment_method_id': TinyJ('#mercadopago_checkout_custom').getElem('.payment_method_id').val(),
+                        'token': TinyJ('#token').val(),
+                        'payment_method_id': TinyJ('#mercadopago_checkout_custom').getElem('#payment_method_id').val(),
                         'one_click_pay': TinyJ('#one_click_pay_mp').val(),
                         'issuer_id': TinyJ('#issuer').val()
                     }
@@ -238,15 +257,43 @@ define(
                     }
                 }
                 if (this.isOCPReady()) {
-                    dataObj.additional_data['customer_id'] = TinyJ('#customer_id').val();
+                    dataObj.additional_data['customer_id'] = this.getCustomerAttribute('id');
                 }
+
+                if (this.isSecondCardEnabled()) {
+                    dataObj.additional_data['second_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_amount').val();
+                    dataObj.additional_data['second_card_installments'] = TinyJ('#second_card_installments').val();
+                    dataObj.additional_data['second_card_payment_method_id'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_payment_method_id').val();
+                    dataObj.additional_data['second_card_token'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_token').val();
+                    dataObj.additional_data['first_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.first_card_amount').val();
+
+                }
+
                 return dataObj;
             },
             afterPlaceOrder: function () {
+                setAnalyticsInformation.afterPlaceOrder(this.getCode());
                 window.location = this.getSuccessUrl();
             },
             validate: function () {
                 return this.validateHandler();
+            },
+
+            hasErrors: function () {
+                var allMessageErrors = jQuery('p.message-error');
+                if (allMessageErrors.length > 1) {
+                    for (var x = 0; x < allMessageErrors.length; x++) {
+                        if ($(allMessageErrors[x]).css('display') !== 'none') {
+                            return true
+                        }
+                    }
+                } else {
+                    if (allMessageErrors.css('display') !== 'none') {
+                        return true
+                    }
+                }
+
+                return false;
             },
 
             /**
@@ -259,7 +306,7 @@ define(
                     event.preventDefault();
                 }
 
-                if (this.validate() && additionalValidators.validate()) {
+                if (this.validate() && additionalValidators.validate() && !this.hasErrors()) {
                     this.isPlaceOrderActionAllowed(false);
 
                     this.getPlaceOrderDeferredObject()
@@ -287,8 +334,12 @@ define(
                 return $.when(
                     placeOrderAction(this.getData(), this.messageContainer)
                 );
-            }
+            },
 
+            initialize: function () {
+                this._super();
+                setAnalyticsInformation.beforePlaceOrder(this.getCode());
+            }
 
         });
     }

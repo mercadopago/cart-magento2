@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Model;
 
 /**
@@ -90,11 +91,6 @@ class Core
     protected $_coreHelper;
 
     /**
-     * @var \MercadoPago\Core\Helper\StatusUpdate
-     */
-    protected $_statusHelper;
-
-    /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $_scopeConfig;
@@ -160,7 +156,6 @@ class Core
      *
      * @param \Magento\Store\Model\StoreManagerInterface            $storeManager
      * @param \MercadoPago\Core\Helper\Data                         $coreHelper
-     * @param \MercadoPago\Core\Helper\StatusUpdate                 $statusHelper
      * @param \Magento\Sales\Model\OrderFactory                     $orderFactory
      * @param \MercadoPago\Core\Helper\Message\MessageInterface     $statusMessage
      * @param \MercadoPago\Core\Helper\Message\MessageInterface     $statusDetailMessage
@@ -182,7 +177,6 @@ class Core
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \MercadoPago\Core\Helper\Data $coreHelper,
-        \MercadoPago\Core\Helper\StatusUpdate $statusHelper,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \MercadoPago\Core\Helper\Message\MessageInterface $statusMessage,
         \MercadoPago\Core\Helper\Message\MessageInterface $statusDetailMessage,
@@ -205,7 +199,6 @@ class Core
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
         $this->_storeManager = $storeManager;
         $this->_coreHelper = $coreHelper;
-        $this->_statusHelper = $statusHelper;
         $this->_orderFactory = $orderFactory;
         $this->_statusMessage = $statusMessage;
         $this->_statusDetailMessage = $statusDetailMessage;
@@ -255,16 +248,18 @@ class Core
         $payment = $order->getPayment();
         $info_payments = [];
         $fields = [
-            ["field" => "cardholderName", "title" => __("Card Holder Name: %1", $payment->getAdditionalInformation('cardholderName'))],
-            ["field" => "trunc_card", "title" => __("Card Number: %1", $payment->getAdditionalInformation('trunc_card'))],
-            ["field" => "payment_method", "title" => __("Payment Method: %1", $payment->getAdditionalInformation('payment_method'))],
-            ["field" => "expiration_date", "title" => __("Expiration Date: %1", $payment->getAdditionalInformation('expiration_date'))],
-            ["field" => "installments", "title" => __("Installments: %1", $payment->getAdditionalInformation('installments'))],
-            ["field" => "statement_descriptor", "title" => __("Statement Descriptor: %1", $payment->getAdditionalInformation('statement_descriptor'))],
-            ["field" => "payment_id", "title" => __("Payment id (Mercado Pago): %1", $payment->getAdditionalInformation('payment_id'))],
-            ["field" => "status", "title" => __("Payment Status: %1", $payment->getAdditionalInformation('status'))],
-            ["field" => "status_detail", "title" => __("Payment Detail: %1", $payment->getAdditionalInformation('status_detail'))],
-            ["field" => "activation_uri", "title" => __("Generate Ticket")]
+            ["field" => "cardholderName", "title" => "Card Holder Name: %1"],
+            ["field" => "trunc_card", "title" => "Card Number: %1"],
+            ["field" => "payment_method", "title" => "Payment Method: %1"],
+            ["field" => "expiration_date", "title" => "Expiration Date: %1"],
+            ["field" => "installments", "title" => "Installments: %1"],
+            ["field" => "statement_descriptor", "title" => "Statement Descriptor: %1"],
+            ["field" => "payment_id", "title" => "Payment id (Mercado Pago): %1"],
+            ["field" => "status", "title" => "Payment Status: %1"],
+            ["field" => "status_detail", "title" => "Payment Detail: %1"],
+            ["field" => "activation_uri", "title" => "Generate Ticket"],
+            ["field" => "payment_id_detail", "title" => "Mercado Pago Payment Id: %1"],
+            ["field" => "id", "title" => "Collection Id: %1"],
         ];
 
         foreach ($fields as $field) {
@@ -275,6 +270,13 @@ class Core
                     "value" => $payment->getAdditionalInformation($field['field'])
                 );
             }
+        }
+
+        if ($payment->getAdditionalInformation('payer_identification_type') != "") {
+            $text = __($payment->getAdditionalInformation('payer_identification_type'));
+            $info_payments[$payment->getAdditionalInformation('payer_identification_type')] = array(
+                "text"  => $text. ': ' . $payment->getAdditionalInformation('payer_identification_number')
+            );
         }
 
         return $info_payments;
@@ -447,7 +449,7 @@ class Core
      *
      * @return array
      */
-    public function makeDefaultPreferencePaymentV1($payment_info = array(), $quote = null, $order = null)
+    public function makeDefaultPreferencePaymentV1($paymentInfo = [], $quote = null, $order = null)
     {
         if (!$quote) {
             $quote = $this->_getQuote();
@@ -467,13 +469,18 @@ class Core
 
         $preference['notification_url'] = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
         $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
-        $preference['transaction_amount'] = (float)$this->getAmount($quote);
+        if (isset($paymentInfo['transaction_amount'])) {
+            $preference['transaction_amount'] = (float)$paymentInfo['transaction_amount'];
+        } else {
+            $preference['transaction_amount'] = (float)$this->getAmount();
+        }
+
         $preference['external_reference'] = $order->getIncrementId();
         $preference['payer']['email'] = $customerInfo['email'];
 
-        if (!empty($payment_info['identification_type'])) {
-            $preference['payer']['identification']['type'] = $payment_info['identification_type'];
-            $preference['payer']['identification']['number'] = $payment_info['identification_number'];
+        if (!empty($paymentInfo['identification_type'])) {
+            $preference['payer']['identification']['type'] = $paymentInfo['identification_type'];
+            $preference['payer']['identification']['number'] = $paymentInfo['identification_number'];
         }
         $preference['additional_info']['items'] = $this->getItemsInfo($order);
 
@@ -507,25 +514,25 @@ class Core
             );
         }
 
-        if (!empty($payment_info['coupon_code'])) {
-            $coupon_code = $payment_info['coupon_code'];
-            $this->_coreHelper->log("Validating coupon_code: " . $coupon_code, 'mercadopago-custom.log');
+        if (!empty($paymentInfo['coupon_code'])) {
+            $couponCode = $paymentInfo['coupon_code'];
+            $this->_coreHelper->log("Validating coupon_code: " . $couponCode, 'mercadopago-custom.log');
 
-            $coupon = $this->validCoupon($coupon_code);
+            $coupon = $this->validCoupon($couponCode);
             $this->_coreHelper->log("Response API Coupon: ", 'mercadopago-custom.log', $coupon);
 
-            $couponInfo = $this->getCouponInfo($coupon, $coupon_code);
+            $couponInfo = $this->getCouponInfo($coupon, $couponCode);
             $preference['coupon_amount'] = $couponInfo['coupon_amount'];
             $preference['coupon_code'] = $couponInfo['coupon_code'];
             $preference['campaign_id'] = $couponInfo['campaign_id'];
 
         }
 
-        $sponsor_id = $this->_scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        $this->_coreHelper->log("Sponsor_id", 'mercadopago-standard.log', $sponsor_id);
-        if (!empty($sponsor_id)) {
-            $this->_coreHelper->log("Sponsor_id identificado", 'mercadopago-custom.log', $sponsor_id);
-            $preference['sponsor_id'] = (int)$sponsor_id;
+        $sponsorId = $this->_scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $this->_coreHelper->log("Sponsor_id", 'mercadopago-standard.log', $sponsorId);
+        if (!empty($sponsorId)) {
+            $this->_coreHelper->log("Sponsor_id identificado", 'mercadopago-custom.log', $sponsorId);
+            $preference['sponsor_id'] = (int)$sponsorId;
         }
 
         return $preference;
@@ -710,157 +717,5 @@ class Core
         return $details_discount;
     }
 
-    protected function _createInvoice($order, $message)
-    {
-        if (!$order->hasInvoices()) {
-            $invoice = $order->prepareInvoice();
-            $invoice->register();
-            $invoice->pay();
-            $this->_transactionFactory->create()
-                ->addObject($invoice)
-                ->addObject($invoice->getOrder())
-                ->save();
-
-            $this->_invoiceSender->send($invoice, true, $message);
-        }
-    }
-
-    /**
-     * Updates order status ond creates invoice
-     *
-     * @param      $payment
-     * @param null $stateObject
-     *
-     * @return array
-     */
-    public function setStatusOrder($payment)
-    {
-        $helper = $this->_coreHelper;
-        /**
-         * $statusHelper \MercadoPago\Core\Helper\StatusUpdate
-         */
-        $statusHelper = $this->_statusHelper;
-        $order = $this->_getOrder($payment["external_reference"]);
-
-        $statusDetail = $payment['status_detail'];
-        $status = $payment['status'];
-
-        if (isset($payment['status_final'])) {
-            $status = $payment['status_final'];
-        }
-        $message = $statusHelper->getMessage($status, $payment);
-        if ($this->_statusHelper->isStatusUpdated()) {
-            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
-        }
-        try {
-            if ($status == 'approved') {
-                $this->_coreHelper->setOrderSubtotals($payment, $order);
-                $this->_createInvoice($order, $message);
-
-                //Associate card to customer
-                $additionalInfo = $order->getPayment()->getAdditionalInformation();
-                if (isset($additionalInfo['token'])) {
-                    $order->getPayment()->getMethodInstance()->customerAndCards($additionalInfo['token'], $payment);
-                }
-
-
-            } elseif ($status == 'refunded' || $status == 'cancelled') {
-                $order->setExternalRequest(true);
-                $order->cancel();
-            }
-
-            //if state is not complete updates according to setting
-            $this->_updateStatus($order, $statusHelper, $status, $message, $statusDetail);
-
-            $statusSave = $order->save();
-            $helper->log("Update order", 'mercadopago.log', $statusSave->getData());
-            $helper->log($message, 'mercadopago.log');
-
-            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
-        } catch (\Exception $e) {
-            $helper->log("erro in set order status: " . $e, 'mercadopago.log');
-
-            return ['text' => $e, 'code' => \MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST];
-        }
-    }
-
-
-    /**
-     * @param $order \Magento\Sales\Model\Order
-     * @param $statusHelper \MercadoPago\Core\Helper\StatusUpdate
-     * @param $status
-     * @param $message
-     * @param $statusDetail
-     */
-    protected function _updateStatus($order, $statusHelper, $status, $message, $statusDetail)
-    {
-        if ($order->getState() !== \Magento\Sales\Model\Order::STATE_COMPLETE) {
-            $statusOrder = $statusHelper->getStatusOrder($status, $statusDetail, $order->canCreditmemo());
-
-            $order->setState($statusHelper->_getAssignedState($statusOrder));
-            $order->addStatusToHistory($statusOrder, $message, true);
-            $this->_orderSender->send($order, true, $message);
-        }
-    }
-
-
-    /**
-     * Set order and payment info
-     *
-     * @param $data
-     */
-    public function updateOrder($data, $order = null)
-    {
-        $this->_coreHelper->log("Update Order", 'mercadopago-notification.log');
-        if (true or !$this->_statusHelper->isStatusUpdated()) {
-            try {
-                if (!$order) {
-                    $order = $this->_getOrder($data["external_reference"]);
-                }
-
-                //update payment info
-                $paymentOrder = $order->getPayment();
-
-                $additionalFields = array(
-                    'status',
-                    'status_detail',
-                    'id',
-                    'transaction_amount',
-                    'cardholderName',
-                    'installments',
-                    'statement_descriptor',
-                    'trunc_card',
-                    'id'
-
-                );
-
-                foreach ($additionalFields as $field) {
-                    if (isset($data[$field])) {
-                        $paymentOrder->setAdditionalInformation($field, $data[$field]);
-                    }
-                }
-
-                if (isset($data['payment_method_id'])) {
-                    $paymentOrder->setAdditionalInformation('payment_method', $data['payment_method_id']);
-                }
-
-                if (isset($data['merchant_order_id'])) {
-                    $paymentOrder->setAdditionalInformation('merchant_order_id', $data['merchant_order_id']);
-                }
-
-                $payment_status = $paymentOrder->save();
-                $this->_coreHelper->log("Update Payment", 'mercadopago.log', $payment_status->getData());
-
-                $status_save = $order->save();
-                $this->_coreHelper->log("Update order", 'mercadopago.log', $status_save->getData());
-            } catch (\Exception $e) {
-                $this->_coreHelper->log("erro in update order status: " . $e, 'mercadopago.log');
-                $this->getResponse()->setBody($e);
-
-                //if notification proccess returns error, mercadopago will resend the notification.
-                $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST);
-            }
-        }
-    }
 
 }

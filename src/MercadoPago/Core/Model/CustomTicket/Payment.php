@@ -39,7 +39,7 @@ class Payment
     }
 
 
-    public function preparePostPayment()
+    public function preparePostPayment($usingSecondCardInfo = null)
     {
         $this->_helperData->log("Ticket -> init prepare post payment", 'mercadopago-custom.log');
         $quote = $this->_getQuote();

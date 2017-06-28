@@ -43,7 +43,6 @@ class Pay
      */
     public function execute()
     {
-
         $standard = $this->_paymentFactory->create();
         $array_assign = $standard->postPago();
         $resultRedirect = $this->resultRedirectFactory->create();

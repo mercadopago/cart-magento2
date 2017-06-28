@@ -42,6 +42,7 @@ class Standard
      * @var \MercadoPago\Core\Helper\StatusUpdate
      */
     protected $_statusHelper;
+    protected $_order;
 
     /**
      * Standard constructor.
@@ -152,10 +153,14 @@ class Standard
         if (isset($data["amount_refunded"]) && $data["amount_refunded"] > 0) {
             $this->_statusHelper->generateCreditMemo($data);
         }
+        $this->_order = $this->coreModel->_getOrder($data['external_reference']);
+        if (!$this->_orderExists() || $this->_order->getStatus() == 'canceled') {
+            return;
+        }
 
         $this->coreHelper->log("Update Order", self::LOG_NAME);
-        $this->_statusHelper->setStatusUpdated($data);
-        $this->coreModel->updateOrder($data);
+        $this->_statusHelper->setStatusUpdated($data, $this->_order);
+        $this->_statusHelper->updateOrder($data, $this->_order);
 
         if ($this->_shipmentExists($shipmentData, $merchantOrder)) {
             $this->_eventManager->dispatch(
@@ -167,7 +172,7 @@ class Standard
         if ($statusFinal != false) {
             $data['status_final'] = $statusFinal;
             $this->coreHelper->log("Received Payment data", self::LOG_NAME, $data);
-            $setStatusResponse = $this->coreModel->setStatusOrder($data);
+            $setStatusResponse = $this->_statusHelper->setStatusOrder($data);
             $this->getResponse()->setBody($setStatusResponse['text']);
             $this->getResponse()->setHttpResponseCode($setStatusResponse['code']);
         } else {
@@ -203,11 +208,24 @@ class Standard
         return $data;
     }
 
-    protected function _dateCompare($a, $b)
+    public static function _dateCompare($a, $b)
     {
         $t1 = strtotime($a['value']);
         $t2 = strtotime($b['value']);
 
         return $t2 - $t1;
+    }
+
+    protected function _orderExists()
+    {
+        if ($this->_order->getId()) {
+            return true;
+        }
+        $this->coreHelper->log(\MercadoPago\Core\Helper\Response::INFO_EXTERNAL_REFERENCE_NOT_FOUND, self::LOG_NAME, $this->_requestData->getParams());
+        $this->getResponse()->getBody(\MercadoPago\Core\Helper\Response::INFO_EXTERNAL_REFERENCE_NOT_FOUND);
+        $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND);
+        $this->coreHelper->log("Http code", self::LOG_NAME, $this->getResponse()->getHttpResponseCode());
+
+        return false;
     }
 }
