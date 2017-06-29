@@ -19,7 +19,7 @@ class RestClient {
      * @param array $extra_params
      *
      * @return resource
-     * @throws Exception
+     * @throws \Exception
      */
     private static function get_connect($uri, $method, $content_type, $extra_params = array()) {
         if (!extension_loaded ("curl")) {
@@ -48,7 +48,7 @@ class RestClient {
      * @param $data
      * @param $content_type
      *
-     * @throws Exception
+     * @throws \Exception
      */
     private static function set_data(&$connect, $data, $content_type) {
         if ($content_type == "application/json") {
@@ -77,7 +77,7 @@ class RestClient {
      * @param $extra_params
      *
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     private static function exec($method, $uri, $data, $content_type, $extra_params) {
         $connect = self::get_connect($uri, $method, $content_type, $extra_params);
@@ -109,7 +109,7 @@ class RestClient {
                 }
             }
 
-            throw new Exception ($message, $response['status']);
+            throw new \Exception ($message, $response['status']);
         }*/
 
         curl_close($connect);
@@ -123,7 +123,7 @@ class RestClient {
      * @param array  $extra_params
      *
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public static function get($uri, $content_type = "application/json", $extra_params = array()) {
         return self::exec("GET", $uri, null, $content_type, $extra_params);
@@ -136,7 +136,7 @@ class RestClient {
      * @param array  $extra_params
      *
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public static function post($uri, $data, $content_type = "application/json", $extra_params = array()) {
         return self::exec("POST", $uri, $data, $content_type, $extra_params);
@@ -149,7 +149,7 @@ class RestClient {
      * @param array  $extra_params
      *
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public static function put($uri, $data, $content_type = "application/json", $extra_params = array()) {
         return self::exec("PUT", $uri, $data, $content_type, $extra_params);
@@ -161,7 +161,7 @@ class RestClient {
      * @param array  $extra_params
      *
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
     public static function delete($uri, $content_type = "application/json", $extra_params = array()) {
         return self::exec("DELETE", $uri, null, $content_type, $extra_params);

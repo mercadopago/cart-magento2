@@ -69,7 +69,7 @@ class Payment
      * @param \Magento\Framework\DataObject|mixed $data
      *
      * @return $this
-     * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
