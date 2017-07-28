@@ -41,6 +41,13 @@
                 <field id="free_shipping_subtotal" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Minimum Order Amount for Free Shipping</label>
                 </field>
+                <field id="add_days" translate="label comment" type="text" sortOrder="81" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Adding days to delivery time</label>
+                    <validate>integer</validate>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
                 <field id="showmethod" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show method if not applicable</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

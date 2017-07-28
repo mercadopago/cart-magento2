@@ -289,6 +289,10 @@ class MercadoEnvios
     {
         $current = new \Zend_Date();
         $current->setTime(0);
+
+        $aditionalDays = (int) $this->_scopeConfig->getValue('carriers/mercadoenvios/add_days', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) * 24;
+
+        $dataTime['shipping'] = $dataTime['shipping'] + $aditionalDays;
         $nextNotificationDate = $current->add($dataTime['shipping'], \Zend_Date::HOUR);
 
         return $this->_timezone->formatDate('@' . $nextNotificationDate->getTimestamp());
