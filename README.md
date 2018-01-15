@@ -10,7 +10,7 @@
 <a name="features"></a>
 ## Features:
 
-Checkout options right for your business: 
+Checkout options right for your business:
 We offer two checkout methods that make it easy to securely accept payments from anyone, anywhere.
 
 **Custom Checkout**
@@ -23,7 +23,7 @@ Offers a fully customized checkout to your brand experience with our simple-to-u
 * Accept tickets in addition to cards.
 * Accept MercadoPago's discount coupons.
 * Improve conversion rate.
-* Accept Payment with two cards <sup>*</sup>
+* Accept Payment with two cards.<sup>*</sup>
 * Debug Mode.
 
 *Available for Argentina, Brazil, Chile, Colombia, Mexico, Peru and Venezuela**
@@ -42,14 +42,14 @@ Great for merchants who want to get going quickly and easily.
 
 **Shipment integration**
 
-This feature allows to setup and integrate with MercadoEnvios shipment method as another shipment option for customers. 
-It includes the possibility to print the shipping label directly from the Magento Admin Panel. 
+This feature allows to setup and integrate with MercadoEnvios shipment method as another shipment option for customers.
+It includes the possibility to print the shipping label directly from the Magento Admin Panel.
 
 *Available for Argentina, Brazil and Mexico only with Standard Checkout*
 
 **Returns and Cancellations between MercadoPago and Magento**
 
-This feature synchronizes orders between MercadoPago and Magento. 
+This feature synchronizes orders between MercadoPago and Magento.
 Returns and cancellations made from Magento are synchronized in MercadoPago and vice versa.
 Returns can be enabled/disabled within Magento admin panel.
 You can also define the maximum amount of partial refunds on the same order and the maximum amount of days until refund is not accepted by using Magento admin panel.
@@ -61,7 +61,7 @@ Within Magento admin panel, you can select between success page from MercadoPago
 
 **Debug Mode in custom checkout**
 
-This feature enabled allows testing the plugin without a SSL certificate. 
+This feature enabled allows testing the plugin without a SSL certificate.
 The custom checkout does not appear as a payment method if you operate over HTTP and with the configuration disabled.
 It is not recommended enable this option in production environment.
 
@@ -82,14 +82,14 @@ This functionality can also be enabled/disabled from Magento plugin configuratio
 ## Installation using composer:
 
 1. Add repository to your Magento installation composer.json file
-	
+
 	- "repositories": [
 				{
 				"type": "vcs",
 				"url": "https://github.com/mercadopago/cart-magento2"
 				}
 	      		  ]
-	
+
 2. Execute composer command to download plugin package
 
 	- composer require mercadopago/magento2-plugin
@@ -104,10 +104,10 @@ This functionality can also be enabled/disabled from Magento plugin configuratio
 
 	  - bin/magento module:enable MercadoPago_Core
 	  - bin/magento module:enable MercadoPago_MercadoEnvios
-    
+
     Then update magento with new modules:
-    
-      - bin/magento setup:upgrade 
+
+      - bin/magento setup:upgrade
 
 <a name="configuration"></a>
 ## Configuration
@@ -117,7 +117,7 @@ This functionality can also be enabled/disabled from Magento plugin configuratio
 
 2. Set your Country to the same where your account was created on, and save config.
 	**Note: If you change the Country where your account was created you need save configuration in order to refresh the excluded payment methods.**
-	
+
 3. Other general configurations:
 
     * **Category of your store**: Sets up the category of the store.
@@ -143,14 +143,14 @@ This functionality can also be enabled/disabled from Magento plugin configuratio
     * **Show Calculator on selected pages**: Select the pages to show the Installments Calculator.
 
 <a name="checkout_custom"></a>
-### Custom Checkout Payment Solution: 
+### Custom Checkout Payment Solution:
 
 1. Go to **Stores > Configuration > Sales > Payment Methods**. Select **MercadoPago - Custom Checkout**.
 ![MercadoPago Custom Checkout Configuration](/README.img/mercadopago_custom_checkout_configuration.png?raw=true)
 
 2. Set your **Public Key** and **Access Token**.
  	In order to get them check the following links according to the country you are operating in:
-	
+
 * Argentina: [https://www.mercadopago.com/mla/account/credentials](https://www.mercadopago.com/mla/account/credentials)
 * Brazil: [https://www.mercadopago.com/mlb/account/credentials](https://www.mercadopago.com/mlb/account/credentials)
 * Chile: [https://www.mercadopago.com/mlc/account/credentials](https://www.mercadopago.com/mlc/account/credentials)
@@ -181,7 +181,7 @@ If you want to enable ticket solution, check the configurations under **Checkout
 * **Marketing - Coupon MercadoPago**: Enables/disables the coupon form.
 
 <a name="checkout_standard"></a>
-### Classic Checkout Payment Solution: 
+### Classic Checkout Payment Solution:
 
 1. Go to **Stores > Configuration > Sales > Payment Methods**. Select **MercadoPago - Classic Checkout**.
 
@@ -205,17 +205,17 @@ Get them in the following address:
 	* **Type Checkout**: Sets the type of checkout, the options are:
 		*  *Iframe*: Opens a Magento URL with a iframe as the content.
 		*  *Redirect*: Redirects to MercadoPago URL.
-		*  *Lightbox*: Similar to Iframe option but opens a lightbox instead of an iframe. 
+		*  *Lightbox*: Similar to Iframe option but opens a lightbox instead of an iframe.
 	* **Auto Redirect**: If enable, the web return to your store when the payment is approved.
 	* **Exclude Payment Methods**: Select the payment methods that you want to not work with MercadoPago.
 	* **Maximum number of accepted installments**: Set the maximum installments allowed for your customers.
 	* **Width Checkout Iframe**: Set width -in pixels- Checkout Iframe .
 	* **Height Checkout Iframe**: Set height -in pixels- Checkout Iframe.
 	* **Sandbox Mode**:  Enables/disables MercadoPago sandbox environment.
-	
+
 <a name="mercadoenvios">
 
-## MercadoEnvios 
+## MercadoEnvios
 
 In order to setup MercadoEnvios follow these instructions:
 
@@ -242,7 +242,7 @@ In order to setup MercadoEnvios follow these instructions:
 * **Sort order**: Sets up the sort order to be displayed in the shipping step in checkout process.
 * **Shipping label download option**: Set the format option for downloading shipping labels.
 <a name="Feedback"></a>
-## Feedback 
+## Feedback
 
 We want to know your opinion, please answer the following form.
 
