@@ -122,11 +122,6 @@ class Data
     protected $_statusFactory;
 
     /**
-     * @var \Magento\Framework\Setup\ModuleContextInterface
-     */
-    protected $_moduleContext;
-
-    /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     protected $_orderFactory;
@@ -147,7 +142,6 @@ class Data
      * @param \Magento\Store\Model\App\Emulation                   $appEmulation
      * @param \Magento\Payment\Model\Config                        $paymentConfig
      * @param \Magento\Framework\App\Config\Initial                $initialConfig
-     * @param \Magento\Framework\Setup\ModuleContextInterface      $moduleContext
      * @param \MercadoPago\Core\Logger\Logger                      $logger
      * @param \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
      */
@@ -159,7 +153,6 @@ class Data
         \Magento\Store\Model\App\Emulation $appEmulation,
         \Magento\Payment\Model\Config $paymentConfig,
         \Magento\Framework\App\Config\Initial $initialConfig,
-        \Magento\Framework\Setup\ModuleContextInterface $moduleContext,
         \MercadoPago\Core\Logger\Logger $logger,
         \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
@@ -171,7 +164,6 @@ class Data
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
         $this->_mpLogger = $logger;
-        $this->_moduleContext = $moduleContext;
         $this->_statusFactory = $statusFactory;
         $this->_orderFactory = $orderFactory;
         $this->_switcher = $switcher;
@@ -233,8 +225,6 @@ class Data
 
 
         $api->set_type(self::TYPE);
-
-        //$api->set_so((string)$this->_moduleContext->getVersion()); //TODO tracking
 
         return $api;
 
