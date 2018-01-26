@@ -1,4 +1,4 @@
-﻿![Mercado Pago](https://raw.githubusercontent.com/mercadopago/cart-magento2/master/README.img/logo.png)
+﻿![Mercado Pago](https://raw.githubusercontent.com/mercadopago/cart-magento2/master/README.img/logo_mp.png)
 
 ## Documentation in English
 
