@@ -94,9 +94,9 @@ $isSecure = $this->isCurrentlySecure();
     </main>
 
     <script type="text/javascript">
-        var PublicKeyMercadoPagoCustom = '<?php /* @escapeNotVerified */ echo $pk; ?>';
-        var AllPaymentMethods = '<?php /* @escapeNotVerified */ echo json_encode($list); ?>';
-        var Amount = '<?php /* @escapeNotVerified */ echo $amount ?>';
+        var PublicKeyMercadoPagoCustom = '<?php echo $block->escapeJs($pk); ?>';
+        var AllPaymentMethods = '<?php /* @noEscape */ echo json_encode($list); ?>';
+        var Amount = '<?php echo $block->escapeJs($amount); ?>';
     </script>
     <script>
         require(['MPcustom', 'tinyj', 'tiny', 'meli', 'calculator'],
