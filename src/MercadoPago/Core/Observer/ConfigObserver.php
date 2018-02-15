@@ -370,6 +370,9 @@ class ConfigObserver
 
     }
 
+    /**
+     * @param \MercadoPago\Core\Lib\Api $api
+     */
     protected function sendAnalyticsData($api)
     {
         $request = [
@@ -412,8 +415,13 @@ class ConfigObserver
         $request['data']['checkout_custom_ticket_coupon'] = $customTicketCoupon == 1 ? 'true' : 'false';
 
         $this->coreHelper->log("Analytics settings request sent /modules/tracking/settings", self::LOG_NAME, $request);
-        $response = $api->post("/modules/tracking/settings", $request['data']);
-        $this->coreHelper->log("Analytics settings response", self::LOG_NAME, $response);
+
+        try {
+            $response = $api->post("/modules/tracking/settings", $request['data']);
+            $this->coreHelper->log("Analytics settings response", self::LOG_NAME, $response);
+        } catch (\Exception $exception) {
+            $this->coreHelper->log("Exception thrown on Analytics request", self::LOG_NAME, $exception->getMessage());
+        }
 
     }
 }

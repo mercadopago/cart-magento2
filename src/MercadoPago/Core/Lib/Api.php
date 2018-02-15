@@ -86,6 +86,9 @@ class Api {
 
     /**
      * Get Access Token for API use
+     *
+     * @return mixed
+     * @throws \Exception
      */
     public function get_access_token() {
         if (isset ($this->ll_access_token) && !is_null($this->ll_access_token)) {
@@ -331,6 +334,7 @@ class Api {
      * @param uri
      * @param data
      * @param params
+     * @throws \Exception
      */
     public function post($uri, $data, $params = null) {
         $params = is_array ($params) ? $params : array();
