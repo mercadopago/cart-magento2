@@ -469,7 +469,7 @@ class Core
 
         // Check if notification URL contains localhost
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
-        if ( isset( $notification_url ) && ! strrpos( get_site_url(), 'localhost' ) ) {
+        if ( isset( $notification_url )/* && ! strrpos( get_site_url(), 'localhost' )*/ ) {
             $preference['notification_url'] = $notification_url;
         }
 
