@@ -93,38 +93,6 @@ define(
                 // }
             },
 
-            getExpirationMonthValues: function(){   
-                console.log("aquiii");
-
-                var months = [];
-
-                for(var x = 1; x <= 12; x++){
-                    months.push({
-                        'value': x,
-                        'text': x,
-                    });
-                }
-
-                return months
-            },
-
-            getExpirationYearValues: function(){   
-                console.log("aquiii");
-
-                var yearNow = (new Date()).getFullYear();
-                var years = [];
-
-                for(var x = 0; x <= 20; x++){
-                    console.log(yearNow + x);
-                    years.push({
-                        'value': yearNow + x,
-                        'text': yearNow + x,
-                    });
-                }
-
-                return years
-            },
-
             setPlaceOrderHandler: function (handler) {
                 this.placeOrderHandler = handler;
             },

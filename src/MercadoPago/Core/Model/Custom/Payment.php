@@ -337,9 +337,7 @@ class Payment
             if ($response) {
                 $payment = $response['response'];
                 //set status
-                $infoInstance->setAdditionalInformation('status', $payment['status']);
                 $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
-                $infoInstance->setAdditionalInformation('status_detail', $payment['status_detail']);
                 $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
                 $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
                 return true;
