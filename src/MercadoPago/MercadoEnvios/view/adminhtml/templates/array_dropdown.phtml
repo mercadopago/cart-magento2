@@ -25,7 +25,7 @@ $prevValues = $block->_getStoredMappingValues();
         <?php foreach($meCode as $key => $meOption):?>
             <tr id="<?php /* @noEscape */ echo $meOption ?>">
                     <td>
-                        <label><?php echo $block->escapeHtml($meLabel[$key]) ?>:</label>
+                        <label><?php /* @escapeNotVerified */ echo $meLabel[$key] ?>:</label>
                     </td>
                     <td>
                         <select name="groups[mercadoenvios][fields][attributesmapping][value][<?php /* @noEscape */ echo $meOption ?>][attribute_code]">

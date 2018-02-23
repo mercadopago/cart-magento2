@@ -33,7 +33,7 @@
     text-decoration: none;
 }
 
-#co-mercadopago-form h3 {
+#co-mercadopago-form h3, #co-mercadopago-form-ticket h3 {
     margin-top: 0;
     text-transform: uppercase;
 }

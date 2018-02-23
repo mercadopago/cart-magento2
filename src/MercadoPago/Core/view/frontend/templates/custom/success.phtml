@@ -7,8 +7,7 @@
     $payment = $this->getPayment();
     
     //monta link para o pedido
-    $link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>';
-    $successMsg = 'Your order %1 has been successfully generated.';
+$link_to_order = __('Your order %1 has been successfully generated.', '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>');
     
     $payment_method = $this->getPaymentMethod();
     $info_payment = $this->getInfoPayment();
@@ -18,7 +17,7 @@
 
     <?php if(!isset($info_payment['status']['value'])): ?>
         <h2 class="mercadopago-title"><?php /* @escapeNotVerified */ echo __('Thank you for your purchase!'); ?></h2>
-        <p><?php /* @escapeNotVerified */ echo __($successMsg, $link_to_order); ?></p>
+        <p><?php /* @escapeNotVerified */ echo $link_to_order; ?></p>
     <?php else: ?>
         <?php
             $message_status = $this->getMessageByStatus(
@@ -33,7 +32,7 @@
 
         <p><?php echo $block->escapeHtml($message_status['message']); ?></p>
 
-        <p><?php /* @escapeNotVerified */ echo __($successMsg, $link_to_order); ?></p>
+        <p><?php /* @escapeNotVerified */ echo $link_to_order; ?></p>
 
         <h3 class="mercadopago-title-info-payment"><?php /* @escapeNotVerified */ echo __('Payment information'); ?></h3>
 
@@ -50,6 +49,6 @@
 
 
 <div class="primary button-success">
-    <a class="action primary continue" href="<?php echo $block->escapeUrl($block->getUrl()) ?>"><span><?php /* @escapeNotVerified */ echo __('Continue Shopping') ?></span></a>
+    <a class="action primary continue" href="<?php /* @escapeNotVerified */ echo $block->getUrl() ?>"><span><?php /* @escapeNotVerified */ echo __('Continue Shopping') ?></span></a>
 </div>
 
