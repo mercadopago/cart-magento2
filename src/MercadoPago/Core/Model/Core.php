@@ -471,7 +471,7 @@ class Core
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
 
         // Skip notification_url field on local server
-        if (isset( $notification_url ) && ! $this->_coreHelper->isNotificationUrlAllowed()) {
+        if (isset( $notification_url ) && $this->_coreHelper->isNotificationUrlAllowed()) {
             $preference['notification_url'] = $notification_url;
         }
 
