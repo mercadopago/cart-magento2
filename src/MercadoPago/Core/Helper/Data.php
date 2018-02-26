@@ -533,4 +533,14 @@ class Data
         }
         return $analyticsData;
     }
+
+    /**
+     * Whether the notification_url field is allowed in preference for the current environment
+     *
+     * @return bool
+     */
+    public function isNotificationUrlAllowed()
+    {
+        return !in_array($this->_remoteAddress->getRemoteAddress(), ['127.0.0.1', '::1']);
+    }
 }
