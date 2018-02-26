@@ -73,10 +73,12 @@ before_script:
     # clone main magento github repository
     #- git clone https://github.com/magento/magento2
     - mkdir magento2
-    - cp -f .travis/composer.json magento2
+    #- cp -f .travis/composer.json magento2
     - cd magento2
     - composer global config http-basic.repo.magento.com f2618fa3a9f0fe7002b8c5edaea0ed22 3db3f6c9b5cf1734e2dfa13979ef9d3a
+    - composer config repositories.magento2 composer "https://repo.magento.com/"
     - composer install --no-interaction
+    - php bin/magento sampledata:deploy
     # install Magento
     - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/000-default.conf
     - sudo service apache2 restart
