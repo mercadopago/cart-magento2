@@ -318,9 +318,9 @@ class Payment
                 } else {
                     //second card payment failed, refund for first card
                     $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                    $mp = $this->_helperData->getApiInstance($accessToken);
+                    $apiInstance = $this->_helperData->getApiInstance($accessToken);
                     $id = $paymentFirstCard['id'];
-                    $refundResponse = $mp->post("/v1/payments/$id/refunds?access_token=$accessToken", null);
+                    $refundResponse = $apiInstance->post("/v1/payments/$id/refunds?access_token=$accessToken", null);
                     $this->_helperData->log("Second payment refund response", self::LOG_NAME, $refundResponse);
 
                     return false;
@@ -331,15 +331,22 @@ class Payment
 
 
         } else {
-
             $response = $this->preparePostPayment();
 
             if ($response) {
                 $payment = $response['response'];
                 //set status
+                $infoInstance->setAdditionalInformation('status', $payment['status']);
+                $infoInstance->setAdditionalInformation('status_detail', $payment['status_detail']);
                 $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
-                $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
-                $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
+                $infoInstance->setAdditionalInformation(
+                    'payer_identification_type',
+                    $payment['payer']['identification']['type']
+                );
+                $infoInstance->setAdditionalInformation(
+                    'payer_identification_number',
+                    $payment['payer']['identification']['number']
+                );
                 return true;
             }
         }
