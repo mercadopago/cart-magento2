@@ -65,7 +65,7 @@ install:
   - composer config minimum-stability dev
   - composer install --no-interaction --prefer-dist
   - composer config repositories.test_target git https://github.com/${TRAVIS_REPO_SLUG}.git
-  - composer require $COMPOSER_TEST_MODULE dev-$TRAVIS_BRANCH
+  - composer require $TEST_COMPOSER_MODULE dev-$TRAVIS_BRANCH
 before_script:
   - ./dev/travis/before_script.sh
 script:
