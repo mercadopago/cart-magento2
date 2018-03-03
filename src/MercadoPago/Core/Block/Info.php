@@ -33,23 +33,23 @@ class Info extends \Magento\Payment\Block\Info
         $data = [];
         $info = $this->getInfo();
         $fields = [
-            ["field" => "cardholderName", "title" => "Card Holder Name"],
-            ["field" => "trunc_card", "title" => "Card Number"],
-            ["field" => "payment_method", "title" => "Payment Method"],
-            ["field" => "expiration_date", "title" => "Expiration Date"],
-            ["field" => "installments", "title" => "Installments"],
-            ["field" => "statement_descriptor", "title" => "Statement Descriptor"],
-            ["field" => "payment_id", "title" => "Payment id (MercadoPago)"],
-            ["field" => "status", "title" => "Payment Status"],
-            ["field" => "status_detail", "title" => "Payment Detail"],
-            ["field" => "activation_uri", "title" => "Generate Ticket"],
-            ["field" => "payment_id_detail", "title" => "Mercado Pago Payment Id"],
+            ["field" => "cardholderName", "title" => __("Card Holder Name")],
+            ["field" => "trunc_card", "title" => __("Card Number")],
+            ["field" => "payment_method", "title" => __("Payment Method")],
+            ["field" => "expiration_date", "title" => __("Expiration Date")],
+            ["field" => "installments", "title" => __("Installments")],
+            ["field" => "statement_descriptor", "title" => __("Statement Descriptor")],
+            ["field" => "payment_id", "title" => __("Payment id (MercadoPago)")],
+            ["field" => "status", "title" => __("Payment Status")],
+            ["field" => "status_detail", "title" => __("Payment Detail")],
+            ["field" => "activation_uri", "title" => __("Generate Ticket")],
+            ["field" => "payment_id_detail", "title" => __("Mercado Pago Payment Id")],
         ];
 
         foreach ($fields as $field) {
 
             if ($info->getAdditionalInformation($field['field']) != "") {
-                $text = __($field['title'], $info->getAdditionalInformation($field['field']));
+                $text = $field['title'];
                 $data[$text->getText()] = $info->getAdditionalInformation($field['field']);
             };
         };

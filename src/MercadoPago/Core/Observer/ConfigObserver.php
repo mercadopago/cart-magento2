@@ -142,7 +142,7 @@ class ConfigObserver
     /**
      * Disables custom checkout if selected country is not available
      */
-    public function availableCheckout()
+    private function availableCheckout()
     {
         $country = $this->_scopeConfig->getValue(
             \MercadoPago\Core\Helper\Data::XML_PATH_COUNTRY,
@@ -164,7 +164,7 @@ class ConfigObserver
      *
      * @param $typeCheckout
      */
-    public function checkBanner($typeCheckout)
+    private function checkBanner($typeCheckout)
     {
         //get country
         $country = $this->_scopeConfig->getValue(
@@ -205,7 +205,7 @@ class ConfigObserver
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setSponsor()
+    private function setSponsor()
     {
         $sponsorIdConfig = $this->_scopeConfig->getValue(
             \MercadoPago\Core\Helper\Data::XML_PATH_SPONSOR_ID,
@@ -370,6 +370,9 @@ class ConfigObserver
 
     }
 
+    /**
+     * @param \MercadoPago\Core\Lib\Api $api
+     */
     protected function sendAnalyticsData($api)
     {
         $request = [
@@ -412,8 +415,13 @@ class ConfigObserver
         $request['data']['checkout_custom_ticket_coupon'] = $customTicketCoupon == 1 ? 'true' : 'false';
 
         $this->coreHelper->log("Analytics settings request sent /modules/tracking/settings", self::LOG_NAME, $request);
-        $response = $api->post("/modules/tracking/settings", $request['data']);
-        $this->coreHelper->log("Analytics settings response", self::LOG_NAME, $response);
+
+        try {
+            $response = $api->post("/modules/tracking/settings", $request['data']);
+            $this->coreHelper->log("Analytics settings response", self::LOG_NAME, $response);
+        } catch (\Exception $exception) {
+            $this->coreHelper->log("Exception thrown on Analytics request", self::LOG_NAME, $exception->getMessage());
+        }
 
     }
 }
