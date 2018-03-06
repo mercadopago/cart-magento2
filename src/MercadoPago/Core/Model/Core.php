@@ -467,13 +467,7 @@ class Core
         /* INIT PREFERENCE */
         $preference = array();
 
-        // Check if notification URL contains localhost
-        $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');	
-        if ( isset( $notification_url ) && ! strrpos( get_site_url(), 'localhost' ) ) {	
-            $preference['notification_url'] = $notification_url;	
-        }
-
-
+        $preference['notification_url'] = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
         $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
         if (isset($paymentInfo['transaction_amount'])) {
             $preference['transaction_amount'] = (float)$paymentInfo['transaction_amount'];
@@ -555,10 +549,6 @@ class Core
      */
     public function postPaymentV1($preference)
     {
-
-
-        error_log("postPaymentV1");
-        
 
         //get access_token
         if (!$this->_accessToken) {

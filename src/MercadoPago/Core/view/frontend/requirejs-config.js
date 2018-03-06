@@ -13,7 +13,7 @@ var config = {
             tinyj: 'MercadoPago_Core/js/tinyJ',
             tiny: 'MercadoPago_Core/js/tiny.min',
             calculator: 'MercadoPago_Core/js/mercadopago_calculator',
-            MPv1: 'MercadoPago_Core/js/MPv1'
+            MPv1: 'MercadoPago_Core/js/mercadopago_calculator'
         }
     }
 };

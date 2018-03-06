@@ -337,7 +337,9 @@ class Payment
             if ($response) {
                 $payment = $response['response'];
                 //set status
+                $infoInstance->setAdditionalInformation('status', $payment['status']);
                 $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
+                $infoInstance->setAdditionalInformation('status_detail', $payment['status_detail']);
                 $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
                 $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
                 return true;
@@ -388,18 +390,12 @@ class Payment
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
-        $this->_helperData->log("assigData", self::LOG_NAME);
-        
-
         // route /checkout/onepage/savePayment
         if (!($data instanceof \Magento\Framework\DataObject)) {
             $data = new \Magento\Framework\DataObject($data);
         }
 
         $infoForm = $data->getData('additional_data');
-        
-        $this->_helperData->log("assigData: ". json_encode($infoForm), self::LOG_NAME);
-
         //$infoForm = $infoForm['mercadopago_custom'];
         if (isset($infoForm['one_click_pay']) && $infoForm['one_click_pay'] == 1) {
             $infoForm = $this->cleanFieldsOcp($infoForm);
@@ -458,7 +454,8 @@ class Payment
             $preference['token'] = $payment->getAdditionalInformation("token");
         }
 
-        if($payment->getAdditionalInformation("issuer_id") != "" && $payment->getAdditionalInformation("issuer_id") > -1){
+
+        if ($payment->getAdditionalInformation("issuer_id") != "") {
             $preference['issuer_id'] = (int)$payment->getAdditionalInformation("issuer_id");
         }
 

@@ -65,6 +65,9 @@ class OrderCancelPlugin
         }
 
         $orderStatus = $this->order->getData('status');
+
+        error_log("Aqui...");
+        exit;
         $additionalInformation = $this->order->getPayment()->getAdditionalInformation();
 
         $orderPaymentStatus = isset($additionalInformation['status']) ? $additionalInformation['status'] : null ;

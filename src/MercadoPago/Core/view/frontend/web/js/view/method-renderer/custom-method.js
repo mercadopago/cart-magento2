@@ -17,81 +17,20 @@ define(
         'tinyj',
         'MPcustom',
         'tiny',
-        'MPanalytics',
-        'MPv1'
+        'MPanalytics'
     ],
-    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader, additionalValidators, 
-                setPaymentInformationAction, placeOrderAction, customer, setAnalyticsInformation) {
+    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader,additionalValidators, setPaymentInformationAction, placeOrderAction, customer, setAnalyticsInformation) {
         'use strict';
 
         return Component.extend({
             defaults: {
                 template: 'MercadoPago_Core/payment/custom-method'
-            },
+            }, 
             placeOrderHandler: null,
             validateHandler: null,
             redirectAfterPlaceOrder: false,
             initialGrandTotal: null,
 
-            initApp: function () {
-                
-                console.log("teste:", this.getCode());
-
-                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-
-                    var mercadopago_public_key = window.checkoutConfig.payment[this.getCode()]['public_key']
-                    var mercadopago_site_id = window.checkoutConfig.payment[this.getCode()]['country']
-                    MPv1.Initialize(mercadopago_site_id, mercadopago_public_key, false);
-
-                    // var yearNow = (new Date()).getFullYear();
-                    // var selectExpirationYear = document.querySelector(MPv1.selectors.cardExpirationYear);
-                    // var selectExpirationMonth = document.querySelector(MPv1.selectors.cardExpirationMonth);
-
-                    // console.log(selectExpirationYear, selectExpirationMonth);
-                    // for(var x = 0; x <= 10; x++){
-                    //     var option = document.createElement("option");
-                    //     option.text = yearNow + x;
-                    //     option.value = yearNow + x;
-                    //     selectExpirationYear.appendChild(option);
-                    // }
-
-                    // for(var x = 1; x <= 12; x++){
-                    //     var option = document.createElement("option");
-                    //     option.text = x;
-                    //     option.value = x;
-                    //     selectExpirationMonth.appendChild(option);
-                    // }
-                }
-                // console.log("MercadoPagoCustom: ", MercadoPagoCustom);
-                console.log("MPv1: ", MPv1);
-                console.log("Pulic Key:", window.checkoutConfig.payment[this.getCode()]['public_key']);
-                console.log("Other params:", window.checkoutConfig.payment[this.getCode()]);
-
-                // if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                //     window.PublicKeyMercadoPagoCustom = window.checkoutConfig.payment[this.getCode()]['public_key'];
-                //     MercadoPagoCustom.enableLog(window.checkoutConfig.payment[this.getCode()]['logEnabled']);
-                //     MercadoPagoCustom.getInstance().setFullScreenLoader(fullScreenLoader);
-                //     MercadoPagoCustom.getInstance().init();
-                //     MercadoPagoCustom.getInstance().setPaymentService(paymentService);
-                //     MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
-                //     MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction, $);
-
-                //     if (this.isOCPReady()) {
-                //         MercadoPagoCustom.getInstance().initOCP();
-                //     }
-                //     var resetTotalsRef = this.resetTotals;
-
-                //     require(['domReady!'],function($)
-                //     {
-                //         var radios = TinyJ('#co-payment-form').getElem('input[name="payment[method]"]');
-                //         if (radios.length > 0) {
-                //             radios.forEach(function (radioButton) {
-                //                 radioButton.click(resetTotalsRef);
-                //             });
-                //         }
-                //     })
-                // }
-            },
 
             setPlaceOrderHandler: function (handler) {
                 this.placeOrderHandler = handler;
@@ -123,6 +62,34 @@ define(
 
             isOCPReady: function () {
                 return ((this.getCustomer() != false) && (this.getCustomer().cards.length > 0));
+            },
+
+            initApp: function () {
+                console.log("here", this);
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    window.PublicKeyMercadoPagoCustom = window.checkoutConfig.payment[this.getCode()]['public_key'];
+                    MercadoPagoCustom.enableLog(window.checkoutConfig.payment[this.getCode()]['logEnabled']);
+                    MercadoPagoCustom.getInstance().setFullScreenLoader(fullScreenLoader);
+                    MercadoPagoCustom.getInstance().init();
+                    MercadoPagoCustom.getInstance().setPaymentService(paymentService);
+                    MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
+                    MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction, $);
+
+                    if (this.isOCPReady()) {
+                        MercadoPagoCustom.getInstance().initOCP();
+                    }
+                    var resetTotalsRef = this.resetTotals;
+
+                    require(['domReady!'],function($)
+                    {
+                        var radios = TinyJ('#co-payment-form').getElem('input[name="payment[method]"]');
+                        if (radios.length > 0) {
+                            radios.forEach(function (radioButton) {
+                                radioButton.click(resetTotalsRef);
+                            });
+                        }
+                    })
+                }
             },
 
             initSecondCard: function () {
@@ -265,48 +232,47 @@ define(
              * @override
              */
             getData: function () {
-                // data to Post in backend
-                console.log("getData", MPv1);
+                
+                console.log("teste 1234");
+                console.log("teste 1234");
+
                 var dataObj = {
-                    'method': this.item.method,
-                    'additional_data': {
-                        'payment[method]': this.getCode(),
-                        'card_expiration_month': document.querySelector(MPv1.selectors.cardExpirationMonth).value,
-                        'card_expiration_year': document.querySelector(MPv1.selectors.cardExpirationYear).value,
-                        'card_holder_name': document.querySelector(MPv1.selectors.cardholderName).value,
-                        'doc_type': document.querySelector(MPv1.selectors.docType).value,
-                        'doc_number': document.querySelector(MPv1.selectors.docNumber).value,
-                        'installments': document.querySelector(MPv1.selectors.installments).value,
-
-                        'total_amount': document.querySelector(MPv1.selectors.amount).value,
-                        'amount': document.querySelector(MPv1.selectors.amount).value,
-                        'site_id': this.getCountry(),
-                        'token': document.querySelector(MPv1.selectors.token).value,
-                        'payment_method_id': document.querySelector(MPv1.selectors.paymentMethodId).value,
-                        'one_click_pay': document.querySelector(MPv1.selectors.CustomerAndCard).value,
-                        'issuer_id': document.querySelector(MPv1.selectors.issuer).value
+                    'method': this.item.method
+                    // 'additional_data': {
+                    //     'payment[method]': this.getCode(),
+                    //     'card_expiration_month': TinyJ('#cardExpirationMonth').val(),
+                    //     'card_expiration_year': TinyJ('#cardExpirationYear').val(),
+                    //     'card_holder_name': TinyJ('#cardholderName').val(),
+                    //     'doc_type': TinyJ('#docType').val(),
+                    //     'doc_number': TinyJ('#docNumber').val(),
+                    //     'installments': TinyJ('#installments').val(),
+                    //     'total_amount': TinyJ('#mercadopago_checkout_custom').getElem('.total_amount').val(),
+                    //     'amount': TinyJ('#mercadopago_checkout_custom').getElem('.amount').val(),
+                    //     'site_id': this.getCountry(),
+                    //     'token': TinyJ('#token').val(),
+                    //     'payment_method_id': TinyJ('#mercadopago_checkout_custom').getElem('#payment_method_id').val(),
+                    //     'one_click_pay': TinyJ('#one_click_pay_mp').val(),
+                    //     'issuer_id': TinyJ('#issuer').val()
                     }
-                };
+                // };
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    if (window.checkoutConfig.payment[this.getCode()]['discount_coupon']) {
+                        dataObj.additional_data['mercadopago-discount-amount'] = TinyJ('#mercadopago_checkout_custom').getElem('.mercadopago-discount-amount').val();
+                        dataObj.additional_data['coupon_code'] = TinyJ('#mercadopago_checkout_custom').getElem('#input-coupon-discount').val();
+                    }
+                }
+                if (this.isOCPReady()) {
+                    dataObj.additional_data['customer_id'] = this.getCustomerAttribute('id');
+                }
 
-                console.log("getData", "dataObj", dataObj);
-                // if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                //     if (window.checkoutConfig.payment[this.getCode()]['discount_coupon']) {
-                //         dataObj.additional_data['mercadopago-discount-amount'] = TinyJ('#mercadopago_checkout_custom').getElem('.mercadopago-discount-amount').val();
-                //         dataObj.additional_data['coupon_code'] = TinyJ('#mercadopago_checkout_custom').getElem('#input-coupon-discount').val();
-                //     }
-                // }
-                // if (this.isOCPReady()) {
-                //     dataObj.additional_data['customer_id'] = this.getCustomerAttribute('id');
-                // }
+                if (this.isSecondCardEnabled()) {
+                    dataObj.additional_data['second_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_amount').val();
+                    dataObj.additional_data['second_card_installments'] = TinyJ('#second_card_installments').val();
+                    dataObj.additional_data['second_card_payment_method_id'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_payment_method_id').val();
+                    dataObj.additional_data['second_card_token'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_token').val();
+                    dataObj.additional_data['first_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.first_card_amount').val();
 
-                // if (this.isSecondCardEnabled()) {
-                //     dataObj.additional_data['second_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_amount').val();
-                //     dataObj.additional_data['second_card_installments'] = TinyJ('#second_card_installments').val();
-                //     dataObj.additional_data['second_card_payment_method_id'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_payment_method_id').val();
-                //     dataObj.additional_data['second_card_token'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_token').val();
-                //     dataObj.additional_data['first_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.first_card_amount').val();
-
-                // }
+                }
 
                 return dataObj;
             },
@@ -319,9 +285,7 @@ define(
             },
 
             hasErrors: function () {
-                var allMessageErrors = jQuery('.mp-error');
-                console.log("allMessageErrors", allMessageErrors);
-                console.log("allMessageErrors qty", allMessageErrors.length);
+                var allMessageErrors = jQuery('p.message-error');
                 if (allMessageErrors.length > 1) {
                     for (var x = 0; x < allMessageErrors.length; x++) {
                         if ($(allMessageErrors[x]).css('display') !== 'none') {
@@ -329,9 +293,6 @@ define(
                         }
                     }
                 } else {
-
-                    console.log("allMessageErrors display", allMessageErrors.css('display'));
-
                     if (allMessageErrors.css('display') !== 'none') {
                         return true
                     }
@@ -344,21 +305,14 @@ define(
              * Place order.
              */
             placeOrder: function (data, event) {
+                console.log("teste");
                 var self = this;
-                console.log("placeOrder");
 
                 if (event) {
                     event.preventDefault();
                 }
 
-                console.log("placeOrder 2");
-
-                console.log(this.validate(), additionalValidators.validate(), this.hasErrors());
-
                 if (this.validate() && additionalValidators.validate() && !this.hasErrors()) {
-                    
-                    console.log("placeOrder 3");
-
                     this.isPlaceOrderActionAllowed(false);
 
                     this.getPlaceOrderDeferredObject()
@@ -379,8 +333,6 @@ define(
                     return true;
                 }
 
-
-                console.log("placeOrder false...");
                 return false;
             },
 

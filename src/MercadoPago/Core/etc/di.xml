@@ -9,6 +9,11 @@
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
         </arguments>
     </type>    
+	<type name="Magento\Setup\Model\ModuleContext">
+        <arguments>
+            <argument name="version" xsi:type="string">2.0.0</argument>
+        </arguments>
+    </type>
 	<type name="MercadoPago\Core\Logger\Handler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>

@@ -43,5 +43,5 @@ $info_payment = $this->getInfoPayment();
 </div>
 
 <div class="primary button-success">
-    <a class="action primary continue" href="<?php echo $block->escapeUrl($block->getUrl()) ?>"><span><?php /* @escapeNotVerified */ echo __('Continue Shopping') ?></span></a>
+    <a class="action primary continue" href="<?php /* @escapeNotVerified */ echo $block->getUrl() ?>"><span><?php /* @escapeNotVerified */ echo __('Continue Shopping') ?></span></a>
 </div>
