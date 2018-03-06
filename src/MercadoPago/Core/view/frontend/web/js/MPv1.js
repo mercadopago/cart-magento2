@@ -185,7 +185,7 @@
         MPv1.AJAX({
           url: url,
           method : "GET",
-          timeout : 5000,
+          timeout : 30000,
           error: function(){
             // request failed
             document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
@@ -196,6 +196,7 @@
             document.querySelector(MPv1.selectors.couponCode).value = "";
             document.querySelector(MPv1.selectors.couponCode).style.background = null;
             document.querySelector(MPv1.selectors.discount).value = 0;
+            document.querySelector(MPv1.selectors.applyCoupon).disabled = false;
             MPv1.cardsHandler();
           },
           success : function (status, response){
@@ -813,11 +814,12 @@
           });
         }
       };
-  
-      MPv1.addListenerEvent(document.querySelector(MPv1.selectors.cardNumber), 'keyup', MPv1.guessingPaymentMethod);
-      MPv1.addListenerEvent(document.querySelector(MPv1.selectors.cardNumber), 'keyup', MPv1.clearOptions);
-      MPv1.addListenerEvent(document.querySelector(MPv1.selectors.cardNumber), 'change', MPv1.guessingPaymentMethod);
-  
+
+      MPv1.InitializeEvents = function(){
+        MPv1.addListenerEvent(document.querySelector(MPv1.selectors.cardNumber), 'keyup', MPv1.guessingPaymentMethod);
+        MPv1.addListenerEvent(document.querySelector(MPv1.selectors.cardNumber), 'keyup', MPv1.clearOptions);
+        MPv1.addListenerEvent(document.querySelector(MPv1.selectors.cardNumber), 'change', MPv1.guessingPaymentMethod);
+      }
   
       // MPv1.cardsHandler();
   
@@ -945,6 +947,9 @@
         MPv1.coupon_of_discounts.payer_email = payer_email
   
         Mercadopago.setPublishableKey(MPv1.public_key);
+
+        //Initialize events
+        MPv1.InitializeEvents();
   
         // flow coupon of discounts
         if (MPv1.coupon_of_discounts.default) {

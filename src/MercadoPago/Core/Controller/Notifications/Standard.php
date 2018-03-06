@@ -113,10 +113,6 @@ class Standard
         $id = $request->getParam('id');
         $topic = $request->getParam('topic');
 
-        $this->coreHelper->log("Request ... " . json_encode($request));
-        $this->coreHelper->log("Id ... " . $id);
-        $this->coreHelper->log("Topic ... " . $topic);
-
         if ($this->_emptyParams($id, $topic)) {
             $this->coreHelper->log("Merchant Order not found", self::LOG_NAME, $request->getParams());
             $this->getResponse()->setBody("Merchant Order not found");
@@ -147,6 +143,11 @@ class Standard
         } elseif ($topic == 'payment') {
             $data = $this->_getFormattedPaymentData($id);
             $statusFinal = $data['status'];
+
+            // TODO: check and test if IPN updates the payment informaiton	
+            // $response = $this->coreModel->getPaymentV1($id);	
+            // $payment = $response['response'];	
+            // $payment = $this->coreHelper->setPayerInfo($payment);
         } else {
             $this->_responseLog();
 

@@ -62,11 +62,6 @@ class CustomConfigProvider
      */
     protected $_productMetaData;
 
-    /**
-     * @var \Magento\Framework\Setup\ModuleContextInterface
-     */
-    protected $_moduleContext;
-
     protected $_composerInformation;
 
     protected $_coreHelper;
@@ -82,7 +77,6 @@ class CustomConfigProvider
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\View\Asset\Repository $assetRepo,
         \Magento\Framework\App\ProductMetadataInterface $productMetadata,
-        \Magento\Framework\Setup\ModuleContextInterface $moduleContext,
         \MercadoPago\Core\Helper\Data $coreHelper
     )
     {
@@ -94,7 +88,6 @@ class CustomConfigProvider
         $this->_assetRepo = $assetRepo;
         $this->_context = $context;
         $this->_productMetaData = $productMetadata;
-        $this->_moduleContext = $moduleContext;
         $this->_coreHelper = $coreHelper;
     }
 

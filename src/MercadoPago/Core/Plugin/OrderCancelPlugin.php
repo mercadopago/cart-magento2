@@ -64,11 +64,15 @@ class OrderCancelPlugin
             return;
         }
 
-        $orderStatus = $this->order->getData('status');
+        //get data
+        $dataOrder = $this->order->getData();
 
-        error_log("Aqui...");
-        exit;
+        //get status
+        $orderStatus = isset($dataOrder['status']) ? $dataOrder['status'] : null;
+
         $additionalInformation = $this->order->getPayment()->getAdditionalInformation();
+
+        $this->dataHelper->log("salesOrderBeforeCancel 2 - ", 'mercadopago-custom.log', $orderStatus);
 
         $orderPaymentStatus = isset($additionalInformation['status']) ? $additionalInformation['status'] : null ;
         $paymentID = isset($additionalInformation['payment_id_detail']) ? $additionalInformation['payment_id_detail'] : null ;

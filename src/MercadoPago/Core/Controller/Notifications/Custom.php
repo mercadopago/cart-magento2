@@ -1,9 +1,6 @@
 <?php
 namespace MercadoPago\Core\Controller\Notifications;
 
-ini_set('display_errors',1);
-ini_set('display_startup_erros',1);
-error_reporting(E_ALL);
 
 /**
  * Class Custom
@@ -66,8 +63,6 @@ class Custom
      */
     public function execute()
     {
-        $this->coreHelper->log("Teste ...");
-
         $this->_requestData = $this->getRequest();
         //$request = $this->getRequest();
         $this->coreHelper->log("Custom Received notification", self::LOG_NAME, $this->_requestData->getParams());

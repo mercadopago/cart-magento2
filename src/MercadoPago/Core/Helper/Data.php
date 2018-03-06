@@ -122,11 +122,6 @@ class Data
     protected $_statusFactory;
 
     /**
-     * @var \Magento\Framework\Setup\ModuleContextInterface
-     */
-    protected $_moduleContext;
-
-    /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     protected $_orderFactory;
@@ -147,7 +142,6 @@ class Data
      * @param \Magento\Store\Model\App\Emulation                   $appEmulation
      * @param \Magento\Payment\Model\Config                        $paymentConfig
      * @param \Magento\Framework\App\Config\Initial                $initialConfig
-     * @param \Magento\Framework\Setup\ModuleContextInterface      $moduleContext
      * @param \MercadoPago\Core\Logger\Logger                      $logger
      * @param \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
      */
@@ -159,7 +153,6 @@ class Data
         \Magento\Store\Model\App\Emulation $appEmulation,
         \Magento\Payment\Model\Config $paymentConfig,
         \Magento\Framework\App\Config\Initial $initialConfig,
-        \Magento\Framework\Setup\ModuleContextInterface $moduleContext,
         \MercadoPago\Core\Logger\Logger $logger,
         \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
@@ -171,7 +164,6 @@ class Data
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
         $this->_mpLogger = $logger;
-        $this->_moduleContext = $moduleContext;
         $this->_statusFactory = $statusFactory;
         $this->_orderFactory = $orderFactory;
         $this->_switcher = $switcher;
@@ -327,7 +319,7 @@ class Data
         $originalAmount = $transactionAmount + $shippingCost;
 
         if ($couponAmount
-            && $this->_scopeConfig->isSetFlag(self::XML_PATH_CONSIDER_DISCOUNT,\Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+            && $this->scopeConfig->isSetFlag(self::XML_PATH_CONSIDER_DISCOUNT,\Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
             $order->setDiscountCouponAmount($couponAmount * -1);
             $order->setBaseDiscountCouponAmount($couponAmount * -1);
             $financingCost = $paidAmount + $couponAmount - $originalAmount;
@@ -360,7 +352,23 @@ class Data
      */
     public function setPayerInfo(&$payment)
     {
-        $payment["trunc_card"] = "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
+        $this->log("setPayerInfo", 'mercadopago-custom.log', $payment);
+
+        if ($payment['payment_method_id']) {
+            $payment["payment_method"] = $payment['payment_method_id'];	
+        }	
+        if ($payment['installments']) {	
+            $payment["installments"] = $payment['installments'];	
+        }	
+        if ($payment['id']) {	
+            $payment["payment_id_detail"] = $payment['id'];	
+        }	
+        if (isset($payment['trunc_card'])) {	
+            $payment["trunc_card"] = $payment['trunc_card'];	
+        } else {	
+            $payment["trunc_card"] = "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];	
+        }
+
         $payment["cardholder_name"] = $payment['card']["cardholder"]["name"];
         $payment['payer_first_name'] = $payment['payer']['first_name'];
         $payment['payer_last_name'] = $payment['payer']['last_name'];

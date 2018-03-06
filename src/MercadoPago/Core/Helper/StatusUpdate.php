@@ -462,6 +462,9 @@ class StatusUpdate
      */
     public function setStatusOrder($payment)
     {
+
+        $this->_dataHelper->log("teste ======>", 'mercadopago.log', $payment);
+        
         $order = $this->_coreHelper->_getOrder($payment["external_reference"]);
 
         $statusDetail = $payment['status_detail'];
@@ -471,9 +474,9 @@ class StatusUpdate
             $status = $payment['status_final'];
         }
         $message = $this->getMessage($status, $payment);
-        if ($this->isStatusUpdated()) {
-            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
-        }
+        // if ($this->isStatusUpdated()) {
+        //     return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
+        // }
 
         //if state is not complete updates according to setting
         $this->_updateStatus($order, $status, $message, $statusDetail);
@@ -491,11 +494,9 @@ class StatusUpdate
                 $this->_createInvoice($order, $message);
 
                 //Associate card to customer
-                $additionalInfo = $order->getPayment()->getAdditionalInformation();
-                if (isset($additionalInfo['token'])) {
-                    $order->getPayment()->getMethodInstance()->customerAndCards($additionalInfo['token'], $payment);
+                if (isset($payment['metadata']) && isset($payment['metadata']['token'])) {
+                    $order->getPayment()->getMethodInstance()->customerAndCards($payment['metadata']['token'], $payment);
                 }
-
 
             } elseif ($status == 'refunded' || $status == 'cancelled') {
                 $order->setExternalRequest(true);
