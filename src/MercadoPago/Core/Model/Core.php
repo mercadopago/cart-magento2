@@ -382,7 +382,7 @@ class Core
     /**
      * Return info about items of order
      *
-     * @param $order
+     * @param \Magento\Sales\Model\Order $order
      *
      * @return array
      */
@@ -469,7 +469,8 @@ class Core
 
         // Check if notification URL contains localhost
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
-        if ( isset( $notification_url ) && ! strrpos( get_site_url(), 'localhost' ) ) {
+
+        if (isset($notification_url)) {
             $preference['notification_url'] = $notification_url;
         }
 
@@ -479,6 +480,8 @@ class Core
         } else {
             $preference['transaction_amount'] = (float)$this->getAmount();
         }
+
+        $preference['transaction_amount'] = round($preference['transaction_amount'], 2);
 
         $preference['external_reference'] = $order->getIncrementId();
         $preference['payer']['email'] = $customerInfo['email'];
@@ -501,7 +504,6 @@ class Core
         $preference['additional_info']['payer']['registration_date'] = date('Y-m-d', $customer->getCreatedAtTimestamp()) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp());
 
         if ($order->canShip()) {
-
             $shipping = $order->getShippingAddress()->getData();
 
             $preference['additional_info']['shipments']['receiver_address'] = array(
@@ -684,6 +686,7 @@ class Core
         if (!$quote) {
             $quote = $this->_getQuote();
         }
+
         $total = $quote->getBaseSubtotalWithDiscount() + $quote->getShippingAddress()->getShippingAmount() + $quote->getShippingAddress()->getBaseTaxAmount();
 
         return (float)$total;
