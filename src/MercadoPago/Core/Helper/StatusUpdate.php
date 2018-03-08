@@ -474,9 +474,9 @@ class StatusUpdate
             $status = $payment['status_final'];
         }
         $message = $this->getMessage($status, $payment);
-        // if ($this->isStatusUpdated()) {
-        //     return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
-        // }
+        if ($this->isStatusUpdated()) {
+            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
+        }
 
         //if state is not complete updates according to setting
         $this->_updateStatus($order, $status, $message, $statusDetail);
