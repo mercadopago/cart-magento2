@@ -50,7 +50,7 @@
       selectors:{
   
         couponCode: "#couponCode",
-        applyCoupon: "#applyCoupon",
+        applyCoupon: "#applyCouponCard",
         mpCouponApplyed: "#mpCouponApplyed",
         mpCouponError: "#mpCouponError",
   
@@ -246,7 +246,10 @@
     MPv1.getBin = function () {
       var cardSelector = document.querySelector(MPv1.selectors.paymentMethodSelector);
       if (cardSelector && cardSelector[cardSelector.options.selectedIndex].value != "-1") {
-        return cardSelector[cardSelector.options.selectedIndex].getAttribute('first_six_digits');
+        var first_six_digits = cardSelector[cardSelector.options.selectedIndex].getAttribute('first_six_digits');
+        if(first_six_digits){
+          return first_six_digits;
+        }
       }
   
       var ccNumber = document.querySelector(MPv1.selectors.cardNumber);
@@ -354,8 +357,8 @@
     MPv1.getIssuersPaymentMethod = function (payment_method_id){
       var amount = MPv1.getAmount();
   
-      //flow: MLM mercadopagocard
-      if(payment_method_id == 'mercadopagocard'){
+      //flow: MLM mercadopagocard & amex
+      if(payment_method_id == 'mercadopagocard' || (MPv1.site_id == "MLM" && payment_method_id == 'amex')){
         Mercadopago.getInstallments({
           "payment_method_id": payment_method_id,
           "amount": amount
@@ -489,7 +492,7 @@
       var type_checkout = cardSelector[cardSelector.options.selectedIndex].getAttribute("type_checkout");
       var amount = MPv1.getAmount();
   
-  
+      console.log("cardsHandler", cardSelector, type_checkout, amount);
       if(MPv1.customer_and_card.default){
   
         if (cardSelector &&
@@ -510,9 +513,13 @@
   
           }else{
             document.querySelector(MPv1.selectors.paymentMethodId).value = cardSelector.value != -1 ? cardSelector.value : "";
+
+            console.log("cardsHandler ", MPv1.customer_and_card.status);
             MPv1.customer_and_card.status = false;
             MPv1.resetBackgroundCard();
             MPv1.guessingPaymentMethod({type: "keyup"});
+
+            console.log("status ?!? cardsHandler ", MPv1.customer_and_card.status);
           }
   
           MPv1.setForm();
@@ -525,6 +532,7 @@
       */
   
       MPv1.getPaymentMethods = function(){
+
         var fragment = document.createDocumentFragment();
         var paymentMethodsSelector = document.querySelector(MPv1.selectors.paymentMethodSelector)
         var mainPaymentMethodSelector = document.querySelector(MPv1.selectors.paymentMethodSelector)
@@ -533,7 +541,16 @@
         mainPaymentMethodSelector.style.background = "url("+MPv1.paths.loading+") 95% 50% no-repeat #fff";
   
         //if customer and card
-        if(MPv1.customer_and_card.status){
+        var paymentCustomerAndCard = document.querySelector(MPv1.selectors.pmCustomerAndCards)
+        var customerCard = false;
+        for(var x = 0; paymentMethodsSelector.length > x; x++){
+          if(paymentMethodsSelector[x].getAttribute("type_checkout") == 'customer_and_card'){
+            customerCard = true;
+          }
+        }
+
+        console.log("===> getPaymentMethods", customerCard, MPv1.customer_and_card.status);
+        if(customerCard || MPv1.customer_and_card.status){
           paymentMethodsSelector = document.querySelector(MPv1.selectors.pmListOtherCards)
   
           //clean payment methods
@@ -545,7 +562,6 @@
         }
   
         Mercadopago.getAllPaymentMethods(function(code, payment_methods){
-  
           for(var x=0; x < payment_methods.length; x++){
             var pm = payment_methods[x];
   
@@ -561,12 +577,13 @@
             }//end if
   
           } //end for
-  
+
+          paymentMethodsSelector.innerHTML = "";
           paymentMethodsSelector.appendChild(fragment);
           mainPaymentMethodSelector.style.background = "#fff";
         });
       }
-  
+
       /*
       *
       * Functions related to Create Tokens
@@ -958,18 +975,27 @@
           document.querySelector(MPv1.selectors.formCoupon).style.display = 'none';
         }
   
+
         //flow: customer & cards
         var selectorPmCustomerAndCards = document.querySelector(MPv1.selectors.pmCustomerAndCards);
-        if(MPv1.customer_and_card.default && selectorPmCustomerAndCards.childElementCount > 0){
+        if(selectorPmCustomerAndCards && MPv1.customer_and_card.default && selectorPmCustomerAndCards.childElementCount > 0){
+          console.log("CUSTOMER CARD enable?...... ");
+
           MPv1.addListenerEvent(document.querySelector(MPv1.selectors.paymentMethodSelector), 'change', MPv1.cardsHandler);
           MPv1.cardsHandler();
         }else{
+          
           //if customer & cards is disabled
           //or customer does not have cards
+
+          console.log("CUSTOMER CARD disable...... ");
           MPv1.customer_and_card.status = false;
           document.querySelector(MPv1.selectors.formCustomerAndCard).style.display = 'none';
         }
   
+
+        console.log("CUSTOMER CARD STATUS: ", MPv1.customer_and_card.status);
+
         if(MPv1.create_token_on.event){
           MPv1.createTokenByEvent();
         }else{

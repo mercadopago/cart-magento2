@@ -369,7 +369,8 @@ class Data
 
         if ($payment['payment_method_id']) {
             $payment["payment_method"] = $payment['payment_method_id'];	
-        }	
+        }
+
         if ($payment['installments']) {	
             $payment["installments"] = $payment['installments'];	
         }	
@@ -378,14 +379,25 @@ class Data
         }	
         if (isset($payment['trunc_card'])) {	
             $payment["trunc_card"] = $payment['trunc_card'];	
-        } else {	
-            $payment["trunc_card"] = "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];	
+        }else if(isset($payment['card']) && isset($payment['card']['last_four_digits'])) {	
+            $payment["trunc_card"] = "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
         }
 
-        $payment["cardholder_name"] = $payment['card']["cardholder"]["name"];
-        $payment['payer_first_name'] = $payment['payer']['first_name'];
-        $payment['payer_last_name'] = $payment['payer']['last_name'];
-        $payment['payer_email'] = $payment['payer']['email'];
+        if (isset($payment['card']["cardholder"]["name"])) {
+            $payment["cardholder_name"] = $payment['card']["cardholder"]["name"];
+        }
+
+        if (isset($payment['payer']['first_name'])) {
+            $payment['payer_first_name'] = $payment['payer']['first_name'];
+        }
+
+        if (isset($payment['payer']['last_name'])) {
+            $payment['payer_last_name'] = $payment['payer']['last_name'];
+        }
+
+        if (isset($payment['payer']['email'])) {
+            $payment['payer_email'] = $payment['payer']['email'];
+        }
 
         return $payment;
     }

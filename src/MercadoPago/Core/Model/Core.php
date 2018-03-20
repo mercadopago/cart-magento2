@@ -566,6 +566,10 @@ class Core
         //set sdk php mercadopago
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
         $response = $mp->post("/v1/payments", $preference);
+
+        error_log("preference postPaymentV1 " . json_encode($preference));
+        error_log("postPaymentV1 " . json_encode($response));
+        
         $this->_coreHelper->log("POST /v1/payments", 'mercadopago-custom.log', $response);
 
         if ($response['status'] == 200 || $response['status'] == 201) {

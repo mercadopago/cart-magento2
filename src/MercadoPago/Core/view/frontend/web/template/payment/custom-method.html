@@ -61,7 +61,7 @@
                     </div>
           
                     <div class="mp-box-inputs mp-col-25">
-                        <input type="button" class="button" id="applyCoupon" data-bind="attr: {value: $t('Apply')}">
+                        <input type="button" class="button" id="applyCouponCard" data-bind="attr: {value: $t('Apply')}">
                     </div>
           
                     <div class="mp-box-inputs mp-col-100 mp-box-message">
@@ -235,14 +235,6 @@
 
             <!-- END MPV1-->
 
-            <!-- ko if: isSecondCardEnabled() -->
-            <!-- ko template: 'MercadoPago_Core/payment/second_card' --><!-- /ko -->
-            <!-- /ko -->
-
-            <div class="total_buy">
-                <label><!-- ko i18n: 'Total amount:'--><!-- /ko --></label>
-                <span class="total_buy_price" data-bind="html: getInitialGrandTotal()"> </span>
-            </div>
         </form>
         
 
@@ -250,7 +242,7 @@
             <!--<img class="banner_checkout_mp" data-bind="attr: {src: getBannerUrl()}"/>-->
         <!--</div>-->
 
-        <div id="mercadopago-init" data-bind="template: {afterRender: initApp()}"></div>
+        <div data-bind="template: {afterRender: initApp()}"></div>
 
         <div class="checkout-agreements-block">
             <!-- ko foreach: $parent.getRegion('before-place-order') -->

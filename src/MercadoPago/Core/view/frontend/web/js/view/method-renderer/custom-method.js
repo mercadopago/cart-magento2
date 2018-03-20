@@ -49,7 +49,10 @@ define(
                     //change url loading
                     MPv1.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
 
-                    MPv1.Initialize(mercadopago_site_id, mercadopago_public_key, mercadopago_coupon, mercadopago_url, payer_email);
+
+                    setTimeout(function(){
+                        MPv1.Initialize(mercadopago_site_id, mercadopago_public_key, mercadopago_coupon, mercadopago_url, payer_email);
+                    }, 1000);
 
                 }
 
@@ -72,59 +75,62 @@ define(
                 return this;
             },
 
-            isShowLegend: function () {
-                return true;
-            },
+            // isShowLegend: function () {
+            //     return true;
+            // },
 
             getCode: function () {
                 return 'mercadopago_custom';
             },
 
-            getTokenCodeArray: function (code) {
-                return "payment[" + this.getCode() + "][" + code + "]";
-            },
+            // getTokenCodeArray: function (code) {
+            //     return "payment[" + this.getCode() + "][" + code + "]";
+            // },
 
             isActive: function () {
                 return true;
             },
 
-            isOCPReady: function () {
-                return ((this.getCustomer() != false) && (this.getCustomer().cards.length > 0));
-            },
+            // isOCPReady: function () {
+            //     return ((this.getCustomer() != false) && (this.getCustomer().cards.length > 0));
+            // },
 
-            initSecondCard: function () {
-                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                    MercadoPagoCustom.getInstance().initSecondCard();
+            // initSecondCard: function () {
+            //     if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+            //         MercadoPagoCustom.getInstance().initSecondCard();
 
-                    if (this.isOCPReady()) {
-                        MercadoPagoCustom.getInstance().initSecondCardOCP();
-                    }
-                }
-            },
+            //         if (this.isOCPReady()) {
+            //             MercadoPagoCustom.getInstance().initSecondCardOCP();
+            //         }
+            //     }
+            // },
 
-            initDiscountApp: function () {
-                if (this.isCouponEnabled()) {
-                    MercadoPagoCustom.getInstance().initDiscount();
-                }
-            },
+            // initDiscountApp: function () {
+            //     if (this.isCouponEnabled()) {
+            //         MercadoPagoCustom.getInstance().initDiscount();
+            //     }
+            // },
 
-            resetTotals: function () {
-                MercadoPagoCustom.getInstance().globalRemoveDiscount();
-                MercadoPagoCustom.getInstance().setTotalAmount();
-            },
+            // resetTotals: function () {
+            //     MercadoPagoCustom.getInstance().globalRemoveDiscount();
+            //     MercadoPagoCustom.getInstance().setTotalAmount();
+            // },
 
-            isCouponEnabled: function () {
-                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                    return (window.checkoutConfig.payment[this.getCode()]['discount_coupon']);
-                }
-            },
-            isSecondCardEnabled: function () {
-                console.log(window.checkoutConfig.payment[this.getCode()]['second_card']);
-                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                    return (window.checkoutConfig.payment[this.getCode()]['second_card']);
-                }
-            },
+            // isCouponEnabled: function () {
+            //     if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+            //         return (window.checkoutConfig.payment[this.getCode()]['discount_coupon']);
+            //     }
+            // },
+            // isSecondCardEnabled: function () {
+            //     console.log(window.checkoutConfig.payment[this.getCode()]['second_card']);
+            //     if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+            //         return (window.checkoutConfig.payment[this.getCode()]['second_card']);
+            //     }
+            // },
             getCardListCustomerCards: function(){
+
+                console.log("...... getCardListCustomerCards .....");
+
                 var cards = []
                 
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
@@ -279,31 +285,12 @@ define(
                         'site_id': this.getCountry(),
                         'token': document.querySelector(MPv1.selectors.token).value,
                         'payment_method_id': document.querySelector(MPv1.selectors.paymentMethodId).value,
+                        'payment_method_selector': document.querySelector(MPv1.selectors.paymentMethodSelector).value,
                         'one_click_pay': document.querySelector(MPv1.selectors.CustomerAndCard).value,
                         'issuer_id': document.querySelector(MPv1.selectors.issuer).value,
                         'coupon_code': document.querySelector(MPv1.selectors.couponCode).value
                     }
                 };
-
-                console.log("getData", "dataObj", dataObj);
-                // if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                //     if (window.checkoutConfig.payment[this.getCode()]['discount_coupon']) {
-                //         dataObj.additional_data['mercadopago-discount-amount'] = TinyJ('#mercadopago_checkout_custom').getElem('.mercadopago-discount-amount').val();
-                //         dataObj.additional_data['coupon_code'] = TinyJ('#mercadopago_checkout_custom').getElem('#input-coupon-discount').val();
-                //     }
-                // }
-                // if (this.isOCPReady()) {
-                //     dataObj.additional_data['customer_id'] = this.getCustomerAttribute('id');
-                // }
-
-                // if (this.isSecondCardEnabled()) {
-                //     dataObj.additional_data['second_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_amount').val();
-                //     dataObj.additional_data['second_card_installments'] = TinyJ('#second_card_installments').val();
-                //     dataObj.additional_data['second_card_payment_method_id'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_payment_method_id').val();
-                //     dataObj.additional_data['second_card_token'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_token').val();
-                //     dataObj.additional_data['first_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.first_card_amount').val();
-
-                // }
 
                 return dataObj;
             },

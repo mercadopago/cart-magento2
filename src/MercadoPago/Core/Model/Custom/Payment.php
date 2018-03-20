@@ -364,7 +364,14 @@ class Payment
 
         $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($paymentInfo, $quote, $order);
         $preference['installments'] = (int) $payment->getAdditionalInformation("installments");
-        $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method_id");
+        
+        $paymentMethod = $payment->getAdditionalInformation("payment_method_id");
+        if($paymentMethod == ""){
+            // MLM: does not have payment method guessing
+            $paymentMethod = $payment->getAdditionalInformation("payment_method_selector");
+        }
+
+        $preference['payment_method_id'] = $paymentMethod;
         $preference['token'] = $payment->getAdditionalInformation("token");
         $preference['metadata']['token'] = $payment->getAdditionalInformation("token");
 
