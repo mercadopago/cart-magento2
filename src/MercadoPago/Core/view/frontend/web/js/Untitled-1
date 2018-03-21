@@ -1,7 +1,0 @@
-
-
-var paymentMethodsSelector = document.querySelector(MPv1.selectors.paymentMethodSelector)
-var q = paymentMethodsSelector.length;
-for(var x = 0;  < x; x++){
-	paymentMethodsSelector[x]
-}
