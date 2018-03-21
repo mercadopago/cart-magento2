@@ -21,12 +21,12 @@ define(
         'MPv1'
     ],
     function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader, additionalValidators, 
-                setPaymentInformationAction, placeOrderAction, customer, setAnalyticsInformation) {
+                setPaymentInformationAction, placeOrderAction, customer, setAnalyticsInformation, $t) {
         'use strict';
 
         return Component.extend({
             defaults: {
-                template: 'MercadoPago_Core/payment/custom-method'
+                template: 'MercadoPago_Core/payment/custom_method'
             },
             placeOrderHandler: null,
             validateHandler: null,
@@ -43,13 +43,23 @@ define(
                     var mercadopago_url = "/mercadopago/api/coupon";
                     var payer_email = window.checkoutConfig.payment[this.getCode()]['customer']['email'];
                     
+                    MPv1.text.choose = $t('Choose');
+                    MPv1.text.other_bank = $t('Other Bank');
+                    MPv1.text.discount_info1 = $t('You will save');
+                    MPv1.text.discount_info2 = $t('with discount from');
+                    MPv1.text.discount_info3 = $t('Total of your purchase:');
+                    MPv1.text.discount_info4 = $t('Total of your purchase with discount:');
+                    MPv1.text.discount_info5 = $t('*Uppon payment approval');
+                    MPv1.text.discount_info6 = $t('Terms and Conditions of Use');
+                    MPv1.text.apply = $t('Apply');
+                    MPv1.text.remove = $t('Remove');
+                    MPv1.text.coupon_empty = $t('Please, inform your coupon code');
+
                     //change url loading
                     MPv1.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
 
-
-                    setTimeout(function(){
-                        MPv1.Initialize(mercadopago_site_id, mercadopago_public_key, mercadopago_coupon, mercadopago_url, payer_email);
-                    }, 1000);
+                    //Initialize MPv1
+                    MPv1.Initialize(mercadopago_site_id, mercadopago_public_key, mercadopago_coupon, mercadopago_url, payer_email);
 
                 }
 
@@ -90,7 +100,7 @@ define(
                             var card = cards_list[x];
 
                             cards.push({
-                                text: card.payment_method.id + " ended in " + card.last_four_digits,
+                                text: card.payment_method.id + ' ' + $t('ended in') + ' ' + card.last_four_digits,
                                 id: card.id,
                                 first_six_digits: card.first_six_digits,
                                 last_four_digits: card.last_four_digits,
@@ -103,6 +113,15 @@ define(
                 }
              
                 return cards;
+            },
+
+            existBanner: function (){
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    if(window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null){
+                        return true;
+                    }
+                }   
+                return false;
             },
 
             getBannerUrl: function () {

@@ -9,6 +9,7 @@ define(
         'jquery',
         'Magento_Checkout/js/model/full-screen-loader',
         'MercadoPago_Core/js/model/set-analytics-information',
+        'mage/translate',
         'MPcheckout',
         'Magento_Checkout/js/model/payment/additional-validators',
         'meli',
@@ -16,7 +17,7 @@ define(
         'MPcustom',
         'MPv1Ticket'
     ],
-    function (Component, quote, paymentService, paymentMethodList, getTotalsAction, $, fullScreenLoader, setAnalyticsInformation) {
+    function (Component, quote, paymentService, paymentMethodList, getTotalsAction, $, fullScreenLoader, setAnalyticsInformation, $t) {
         'use strict';
 
         var configPayment = window.checkoutConfig.payment.mercadopago_customticket;
@@ -32,6 +33,18 @@ define(
 
             initializeMethod: function(){
                 var mercadopago_site_id = configPayment['country'];
+                
+                MPv1Ticket.text.choose = $t('Choose');
+                MPv1Ticket.text.other_bank = $t('Other Bank');
+                MPv1Ticket.text.discount_info1 = $t('You will save');
+                MPv1Ticket.text.discount_info2 = $t('with discount from');
+                MPv1Ticket.text.discount_info3 = $t('Total of your purchase:');
+                MPv1Ticket.text.discount_info4 = $t('Total of your purchase with discount:');
+                MPv1Ticket.text.discount_info5 = $t('*Uppon payment approval');
+                MPv1Ticket.text.discount_info6 = $t('Terms and Conditions of Use');
+                MPv1Ticket.text.apply = $t('Apply');
+                MPv1Ticket.text.remove = $t('Remove');
+                MPv1Ticket.text.coupon_empty = $t('Please, inform your coupon code');
 
                 MPv1Ticket.Initialize( mercadopago_site_id, false);
             },
@@ -118,6 +131,15 @@ define(
 
             getCountryId: function () {
                 return configPayment['country'];
+            },
+
+            existBanner: function (){
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    if(window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null){
+                        return true;
+                    }
+                }   
+                return false;
             },
 
             getBannerUrl: function () {

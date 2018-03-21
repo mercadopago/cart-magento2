@@ -36,6 +36,16 @@ define(
                 }
                 return '';
             },
+            
+            existBanner: function (){
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    if(window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null){
+                        return true;
+                    }
+                }   
+                return false;
+            },
+
             /**
              * Get url to show banner
              * @returns {String}

@@ -191,7 +191,7 @@ class RefundObserverBeforeSave
             $isValidaData = false;
         }
 
-        if (!($orderStatus == 'processing' || $orderStatus == 'completed')) {
+        if (!($orderStatus == 'processing' || $orderStatus == 'completed' || $orderStatus == 'closed')) {
             $this->_messageManager->addErrorMessage(__('You can only make refunds on orders whose status is Processing or Completed'));
             $isValidaData = false;
         }
@@ -265,7 +265,7 @@ class RefundObserverBeforeSave
                 $response = $mp->post('/collections/' . $paymentID . '/refunds?access_token=' . $mp->get_access_token(), $params);
             }
         } else {
-            $paymentID = $order->getPayment()->getData('additional_information')['payment_method_id'];
+            $paymentID = $order->getPayment()->getData('additional_information')['id'];
             $accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
             $mp = $this->_dataHelper->getApiInstance($accessToken);
             if ($isTotalRefund) {
