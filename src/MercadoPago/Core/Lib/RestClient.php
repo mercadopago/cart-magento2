@@ -150,8 +150,8 @@ class RestClient {
                 
                 self::sendErrorLog($response['status'], $errors);
                 
-		  	} catch (Exception $e) {
-			   throw new MercadoPagoException("error to call API LOGS" . $e);
+		  	} catch (\Exception $e) {
+			   error_log("error to call API LOGS" . $e);
 			}
 		}
 		self::$check_loop = 0;
