@@ -31,9 +31,6 @@ define(
             validateHandler: null,
 
             initializeMethod: function(){
-                console.log("initializeMethod", configPayment);
-
-
                 var mercadopago_site_id = configPayment['country'];
 
                 MPv1Ticket.Initialize( mercadopago_site_id, false);
@@ -141,16 +138,12 @@ define(
             getCountTickets: function () {
                 var options = this.getTicketsData();
 
-                console.log("getFirstTicketId", options, options.length);
-
                 return options.length;
             },
 
             getFirstTicketId: function () {
                 
                 var options = this.getTicketsData();
-
-                console.log("getFirstTicketId", options, options[0]['id']);
 
                 return options[0]['id'];
             },
@@ -232,23 +225,14 @@ define(
              */
             getData: function () {
 
-                console.log("getData");
                 var dataObj = {
                     'method': this.item.method,
                     'additional_data': {
                         'method': this.getCode(),
                         'site_id': this.getCountryId(),
                         'payment_method_ticket':this.getPaymentSelected()
-                        // 'total_amount':  TinyJ('#mercadopago_checkout_custom_ticket .total_amount').val(),
-                        // 'amount': TinyJ('#mercadopago_checkout_custom_ticket .amount').val(),
                     }
                 };
-                // if (configPayment != undefined) {
-                //     if (configPayment['discount_coupon'] == 1) {
-                //         dataObj.additional_data['mercadopago-discount-amount'] = TinyJ('#mercadopago_checkout_custom_ticket .mercadopago-discount-amount').val();
-                //         dataObj.additional_data['coupon_code'] = TinyJ('#mercadopago_checkout_custom_ticket #input-coupon-discount').val();
-                //     }
-                // }
 
                 if(this.getCountryId() == 'MLB'){
                     

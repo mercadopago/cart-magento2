@@ -492,7 +492,6 @@
       var type_checkout = cardSelector[cardSelector.options.selectedIndex].getAttribute("type_checkout");
       var amount = MPv1.getAmount();
   
-      console.log("cardsHandler", cardSelector, type_checkout, amount);
       if(MPv1.customer_and_card.default){
   
         if (cardSelector &&
@@ -514,12 +513,9 @@
           }else{
             document.querySelector(MPv1.selectors.paymentMethodId).value = cardSelector.value != -1 ? cardSelector.value : "";
 
-            console.log("cardsHandler ", MPv1.customer_and_card.status);
             MPv1.customer_and_card.status = false;
             MPv1.resetBackgroundCard();
             MPv1.guessingPaymentMethod({type: "keyup"});
-
-            console.log("status ?!? cardsHandler ", MPv1.customer_and_card.status);
           }
   
           MPv1.setForm();
@@ -549,7 +545,6 @@
           }
         }
 
-        console.log("===> getPaymentMethods", customerCard, MPv1.customer_and_card.status);
         if(customerCard || MPv1.customer_and_card.status){
           paymentMethodsSelector = document.querySelector(MPv1.selectors.pmListOtherCards)
   
@@ -979,22 +974,16 @@
         //flow: customer & cards
         var selectorPmCustomerAndCards = document.querySelector(MPv1.selectors.pmCustomerAndCards);
         if(selectorPmCustomerAndCards && MPv1.customer_and_card.default && selectorPmCustomerAndCards.childElementCount > 0){
-          console.log("CUSTOMER CARD enable?...... ");
-
           MPv1.addListenerEvent(document.querySelector(MPv1.selectors.paymentMethodSelector), 'change', MPv1.cardsHandler);
           MPv1.cardsHandler();
         }else{
           
           //if customer & cards is disabled
           //or customer does not have cards
-
-          console.log("CUSTOMER CARD disable...... ");
           MPv1.customer_and_card.status = false;
           document.querySelector(MPv1.selectors.formCustomerAndCard).style.display = 'none';
         }
-  
 
-        console.log("CUSTOMER CARD STATUS: ", MPv1.customer_and_card.status);
 
         if(MPv1.create_token_on.event){
           MPv1.createTokenByEvent();

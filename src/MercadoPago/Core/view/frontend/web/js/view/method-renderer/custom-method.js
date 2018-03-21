@@ -34,9 +34,6 @@ define(
             initialGrandTotal: null,
 
             initApp: function () {
-                
-                console.log("teste:", this.getCode());
-                console.log('teste ...: ', window.checkoutConfig.payment[this.getCode()]['customer']);
 
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
 
@@ -56,11 +53,6 @@ define(
 
                 }
 
-                // console.log("MercadoPagoCustom: ", MercadoPagoCustom);
-                console.log("MPv1: ", MPv1);
-                console.log("Pulic Key:", window.checkoutConfig.payment[this.getCode()]['public_key']);
-                console.log("Other params:", window.checkoutConfig.payment[this.getCode()]);
-
             },
 
             setPlaceOrderHandler: function (handler) {
@@ -75,61 +67,15 @@ define(
                 return this;
             },
 
-            // isShowLegend: function () {
-            //     return true;
-            // },
-
             getCode: function () {
                 return 'mercadopago_custom';
             },
-
-            // getTokenCodeArray: function (code) {
-            //     return "payment[" + this.getCode() + "][" + code + "]";
-            // },
 
             isActive: function () {
                 return true;
             },
 
-            // isOCPReady: function () {
-            //     return ((this.getCustomer() != false) && (this.getCustomer().cards.length > 0));
-            // },
-
-            // initSecondCard: function () {
-            //     if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-            //         MercadoPagoCustom.getInstance().initSecondCard();
-
-            //         if (this.isOCPReady()) {
-            //             MercadoPagoCustom.getInstance().initSecondCardOCP();
-            //         }
-            //     }
-            // },
-
-            // initDiscountApp: function () {
-            //     if (this.isCouponEnabled()) {
-            //         MercadoPagoCustom.getInstance().initDiscount();
-            //     }
-            // },
-
-            // resetTotals: function () {
-            //     MercadoPagoCustom.getInstance().globalRemoveDiscount();
-            //     MercadoPagoCustom.getInstance().setTotalAmount();
-            // },
-
-            // isCouponEnabled: function () {
-            //     if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-            //         return (window.checkoutConfig.payment[this.getCode()]['discount_coupon']);
-            //     }
-            // },
-            // isSecondCardEnabled: function () {
-            //     console.log(window.checkoutConfig.payment[this.getCode()]['second_card']);
-            //     if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-            //         return (window.checkoutConfig.payment[this.getCode()]['second_card']);
-            //     }
-            // },
             getCardListCustomerCards: function(){
-
-                console.log("...... getCardListCustomerCards .....");
 
                 var cards = []
                 
@@ -159,43 +105,6 @@ define(
                 return cards;
             },
 
-            // getAvailableCards: function () {
-            //     console.log("getAvailableCards", "teste");
-            //     if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-            //         var _customer = window.checkoutConfig.payment[this.getCode()]['customer'];
-            //         if (!_customer) return [];
-
-            //         var Card = function(value, name, firstSix, securityCodeLength, secureThumbnail) {
-            //             this.cardName = name;
-            //             this.value = value;
-            //             this.firstSix = firstSix;
-            //             this.securityCodeLength = securityCodeLength;
-            //             this.secureThumbnail = secureThumbnail;
-            //         };
-
-            //         var availableCards = [];
-            //         _customer.cards.forEach(function(card) {
-            //             availableCards.push(new Card(card['id'],
-            //                 card['payment_method']['name']+ ' ended in ' + card['last_four_digits'],
-            //                 card['first_six_digits'],
-            //                 card['security_code']['length'],
-            //                 card['payment_method']['secure_thumbnail']));
-            //         });
-            //         return availableCards;
-            //     }
-            //     return [];
-            // },
-            // setOptionsExtraValues: function (option, item) {
-            //     jQuery(option).attr('first_six_digits', item.firstSix);
-            //     jQuery(option).attr('security_code_length', item.securityCodeLength);
-            //     jQuery(option).attr('secure_thumb', item.secureThumbnail);
-            // },
-            // getCustomerAttribute: function (attribute) {
-            //     if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-            //         return window.checkoutConfig.payment[this.getCode()]['customer'][attribute];
-            //     }
-            //     return '';
-            // },
             getBannerUrl: function () {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['bannerUrl'];
@@ -268,7 +177,7 @@ define(
              */
             getData: function () {
                 // data to Post in backend
-                console.log("getData", MPv1);
+
                 var dataObj = {
                     'method': this.item.method,
                     'additional_data': {
@@ -304,8 +213,6 @@ define(
 
             hasErrors: function () {
                 var allMessageErrors = jQuery('.mp-error');
-                console.log("allMessageErrors", allMessageErrors);
-                console.log("allMessageErrors qty", allMessageErrors.length);
                 if (allMessageErrors.length > 1) {
                     for (var x = 0; x < allMessageErrors.length; x++) {
                         if ($(allMessageErrors[x]).css('display') !== 'none') {
@@ -313,8 +220,6 @@ define(
                         }
                     }
                 } else {
-
-                    console.log("allMessageErrors display", allMessageErrors.css('display'));
 
                     if (allMessageErrors.css('display') !== 'none') {
                         return true
@@ -329,19 +234,12 @@ define(
              */
             placeOrder: function (data, event) {
                 var self = this;
-                console.log("placeOrder");
 
                 if (event) {
                     event.preventDefault();
                 }
 
-                console.log("placeOrder 2");
-
-                console.log(this.validate(), additionalValidators.validate(), this.hasErrors());
-
                 if (this.validate() && additionalValidators.validate() && !this.hasErrors()) {
-                    
-                    console.log("placeOrder 3");
 
                     this.isPlaceOrderActionAllowed(false);
 
@@ -363,8 +261,6 @@ define(
                     return true;
                 }
 
-
-                console.log("placeOrder false...");
                 return false;
             },
 
