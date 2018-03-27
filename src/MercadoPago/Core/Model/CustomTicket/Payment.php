@@ -45,14 +45,10 @@ class Payment
 
     public function preparePostPayment($usingSecondCardInfo = null)
     {
-
-        error_log("preparePostPayment.... ");
         $this->_helperData->log("Ticket -> init prepare post payment", 'mercadopago-custom.log');
         $quote = $this->_getQuote();
         $order = $this->getInfoInstance()->getOrder();
         $payment = $order->getPayment();
-
-        error_log("preparePostPayment.... " . $payment->getAdditionalInformation("firstName"));
 
         $payment_info = array();
 
@@ -100,10 +96,8 @@ class Payment
         }
 
         $this->_helperData->log("Ticket -> PREFERENCE to POST /v1/payments", 'mercadopago-custom.log', $preference);
-
-        error_log("Post payment: " . json_encode($preference));
+        
         /* POST /v1/payments */
-
         return $this->_coreModel->postPaymentV1($preference);
     }
 
@@ -126,8 +120,6 @@ class Payment
         //get array info
         $infoForm = $data->getData();
 
-        error_log("assignData " . json_encode($infoForm));
-
         $this->_helperData->log("info form", self::LOG_NAME, $infoForm);
 
         $info = $this->getInfoInstance();
@@ -140,13 +132,9 @@ class Payment
         // Fields for new febraban rule
         foreach ($this->fields_febraban as $key) {
             if (isset($infoForm['additional_data'][$key])) {
-                error_log("assignData " .  $key . " " . $infoForm['additional_data'][$key]);
                 $info->setAdditionalInformation($key, $infoForm['additional_data'][$key]);
             }
         }
-
-
-        error_log("assignData true");
 
         return $this;
     }
