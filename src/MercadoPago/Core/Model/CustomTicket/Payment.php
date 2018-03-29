@@ -17,6 +17,10 @@ class Payment
 
     protected $_code = self::CODE;
 
+    protected $fields_febraban = array(
+        "firstName", "lastName", "docType","docNumber", "address", "addressNumber", "addressCity", "addressState", "addressZipcode"
+    );
+
     /**
      * @param string $paymentAction
      * @param object $stateObject
@@ -56,10 +60,44 @@ class Payment
 
         $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method");
 
+
+        if ($payment->getAdditionalInformation("firstName") != "") {
+            $preference['payer']['first_name'] = $payment->getAdditionalInformation("firstName");
+        }
+        if ($payment->getAdditionalInformation("lastName") != "") {
+            $preference['payer']['last_name'] = $payment->getAdditionalInformation("lastName");
+        }
+        if ($payment->getAdditionalInformation("docType") != "") {
+            $preference['payer']['identification']['type'] = $payment->getAdditionalInformation("docType");
+            //remove last-name pessoa juridica
+            if($preference['payer']['identification']['type'] == "CNPJ"){
+                $preference['payer']['last_name'] = "";
+            }
+        }
+
+        if ($payment->getAdditionalInformation("docNumber") != "") {
+            $preference['payer']['identification']['number'] = $payment->getAdditionalInformation("docNumber");
+        }
+        if ($payment->getAdditionalInformation("address") != "") {
+            $preference['payer']['address']['street_name'] = $payment->getAdditionalInformation("address");
+        }
+        if ($payment->getAdditionalInformation("addressNumber") != "") {
+            $preference['payer']['address']['street_number'] = $payment->getAdditionalInformation("addressNumber");
+        }
+        if ($payment->getAdditionalInformation("addressCity") != "") {
+            $preference['payer']['address']['city'] = $payment->getAdditionalInformation("addressCity");
+            $preference['payer']['address']['neighborhood'] = $payment->getAdditionalInformation("addressCity");
+        }
+        if ($payment->getAdditionalInformation("addressState") != "") {
+            $preference['payer']['address']['federal_unit'] = $payment->getAdditionalInformation("addressState");
+        }
+        if ($payment->getAdditionalInformation("addressZipcode") != "") {
+            $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation("addressZipcode");
+        }
+
         $this->_helperData->log("Ticket -> PREFERENCE to POST /v1/payments", 'mercadopago-custom.log', $preference);
-
+        
         /* POST /v1/payments */
-
         return $this->_coreModel->postPaymentV1($preference);
     }
 
@@ -80,14 +118,22 @@ class Payment
         }
 
         //get array info
-        $info_form = $data->getData();
+        $infoForm = $data->getData();
 
-        $this->_helperData->log("info form", self::LOG_NAME, $info_form);
+        $this->_helperData->log("info form", self::LOG_NAME, $infoForm);
+
         $info = $this->getInfoInstance();
-        $info->setAdditionalInformation('payment_method', $info_form['additional_data']['payment_method_ticket']);
+        $info->setAdditionalInformation('payment_method', $infoForm['additional_data']['payment_method_ticket']);
         
-        if (!empty($info_form['coupon_code'])) {
-            $info->setAdditionalInformation('coupon_code', $info_form['coupon_code']);
+        if (!empty($infoForm['coupon_code'])) {
+            $info->setAdditionalInformation('coupon_code', $infoForm['coupon_code']);
+        }
+
+        // Fields for new febraban rule
+        foreach ($this->fields_febraban as $key) {
+            if (isset($infoForm['additional_data'][$key])) {
+                $info->setAdditionalInformation($key, $infoForm['additional_data'][$key]);
+            }
         }
 
         return $this;

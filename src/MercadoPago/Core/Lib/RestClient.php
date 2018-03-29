@@ -80,6 +80,7 @@ class RestClient {
      * @throws Exception
      */
     private static function exec($method, $uri, $data, $content_type, $extra_params) {
+
         $connect = self::get_connect($uri, $method, $content_type, $extra_params);
         if ($data) {
             self::set_data($connect, $data, $content_type);
@@ -111,6 +112,49 @@ class RestClient {
 
             throw new Exception ($message, $response['status']);
         }*/
+
+        if ($response != null && $response['status'] >= 400 && self::$check_loop == 0) {
+			try {
+				self::$check_loop = 1;
+				$message = null;
+				$payloads = null;
+			 	$endpoint = null;
+				$errors = array();
+				if (isset($response['response'])) {
+					if (isset($response['response']['message'])) {
+						$message = $response['response']['message'];
+					}
+					if (isset($response['response']['cause'])) {
+				 		if (isset($response['response']['cause']['code']) && isset($response['response']['cause']['description'])) {
+				 			$message .= " - " . $response['response']['cause']['code'] . ': ' . $response['response']['cause']['description'];
+				 		} else if (is_array($response['response']['cause'])) {
+				 			foreach ($response['response']['cause'] as $cause) {
+				 				$message .= " - " . $cause['code'] . ': ' . $cause['description'];
+				 			}
+				 		}
+				 	}
+				}
+                //add data
+                if (isset($data) && $data != null) {
+                    $payloads = json_encode($data);
+                }
+                //add uri
+                if (isset($uri) && $uri != null) {
+                    $endpoint = $uri;
+                }
+				$errors[] = array(
+					"endpoint" => $endpoint,
+					"message" => $message,
+					"payloads" => $payloads
+				);
+                
+                self::sendErrorLog($response['status'], $errors);
+                
+		  	} catch (\Exception $e) {
+			   error_log("error to call API LOGS" . $e);
+			}
+		}
+		self::$check_loop = 0;
 
         curl_close($connect);
 
@@ -166,4 +210,50 @@ class RestClient {
     public static function delete($uri, $content_type = "application/json", $extra_params = array()) {
         return self::exec("DELETE", $uri, null, $content_type, $extra_params);
     }
+
+
+    /**************
+     * 
+     * Error implementation tracking
+     * 
+    ***************/
+
+    static $module_version = "";
+    static $url_store = "";
+    static $email_admin = "";
+    static $country_initial = "";
+    static $check_loop = 0;
+
+    public static function setModuleVersion($module_version){
+        self::$module_version = $module_version; 
+    }
+    public static function setUrlStore($url_store){
+        self::$url_store = $url_store; 
+    }
+    public static function setEmailAdmin($email_admin){
+        self::$email_admin = $email_admin; 
+    }
+    public static function setCountryInitial($country_initial){
+        self::$country_initial = $country_initial; 
+    }
+    
+    public static function sendErrorLog($code, $errors) {
+        $server_version = php_uname();
+        $php_version = phpversion();
+        
+        $data = array(
+            "code" => $code,
+            "errors" => $errors, 
+            "module" => "Magento2",
+            "module_version" => self::$module_version,
+            "url_store" => self::$url_store,
+            "email_admin" => self::$email_admin,
+            "country_initial" => self::$country_initial,
+            "server_version" => $server_version,
+            "code_lang" => "PHP " . $php_version
+        );
+
+        return self::post("/modules/log" , $data);
+    }
+
 }

@@ -300,6 +300,68 @@ class Api {
         return $preference_result;
     }
 
+
+    public function get_or_create_customer($payer_email){
+        $customer = $this->search_customer($payer_email);
+        if($customer['status'] == 200 && $customer['response']['paging']['total'] > 0){
+            $customer = $customer['response']['results'][0];
+        }else{
+            $customer = $this->create_customer($payer_email)['response'];
+        }
+        return $customer;
+    }
+
+    public function create_customer($email) {
+
+        $access_token = $this->get_access_token();
+
+        $request = array(
+            "email" => $email
+        );
+
+        $customer = \MercadoPago\Core\Lib\RestClient::post("/v1/customers?access_token=" . $access_token, $request);
+
+        return $customer;
+    }
+    public function search_customer($email) {
+
+        $access_token = $this->get_access_token();
+
+        $customer = \MercadoPago\Core\Lib\RestClient::get("/v1/customers/search?access_token=" . $access_token . "&email=" . $email);
+        return $customer;
+    }
+    public function create_card_in_customer($customer_id, $token, $payment_method_id = null, $issuer_id = null) {
+        
+        $access_token = $this->get_access_token();
+
+        $request =  array(
+            "token" => $token,
+            "issuer_id" => $issuer_id,
+            "payment_method_id" => $payment_method_id
+        );
+
+        $card = \MercadoPago\Core\Lib\RestClient::post("/v1/customers/" . $customer_id . "/cards?access_token=" . $access_token, $request);
+
+        return $card;
+    }
+    public function get_all_customer_cards($customer_id, $token) {
+
+        $access_token = $this->get_access_token();
+
+        $cards = \MercadoPago\Core\Lib\RestClient::get("/v1/customers/" . $customer_id . "/cards?access_token=" . $access_token);
+
+        return $cards;
+    }
+
+    public function check_discount_campaigns($transaction_amount, $payer_email, $coupon_code) {
+        
+        $access_token = $this->get_access_token();
+
+        $discount_info = \MercadoPago\Core\Lib\RestClient::get("/discount_campaigns?access_token=$access_token&transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code");
+        
+        return $discount_info;
+    }
+
     /* Generic resource call methods */
 
     /**

@@ -17,20 +17,53 @@ define(
         'tinyj',
         'MPcustom',
         'tiny',
-        'MPanalytics'
+        'MPanalytics',
+        'MPv1'
     ],
-    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader,additionalValidators, setPaymentInformationAction, placeOrderAction, customer, setAnalyticsInformation) {
+    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader, additionalValidators, 
+                setPaymentInformationAction, placeOrderAction, customer, setAnalyticsInformation, $t) {
         'use strict';
 
         return Component.extend({
             defaults: {
-                template: 'MercadoPago_Core/payment/custom-method'
+                template: 'MercadoPago_Core/payment/custom_method'
             },
             placeOrderHandler: null,
             validateHandler: null,
             redirectAfterPlaceOrder: false,
             initialGrandTotal: null,
 
+            initApp: function () {
+
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+
+                    var mercadopago_public_key = window.checkoutConfig.payment[this.getCode()]['public_key']
+                    var mercadopago_site_id = window.checkoutConfig.payment[this.getCode()]['country']
+                    var mercadopago_coupon = window.checkoutConfig.payment[this.getCode()]['discount_coupon'];
+                    var mercadopago_url = "/mercadopago/api/coupon";
+                    var payer_email = window.checkoutConfig.payment[this.getCode()]['customer']['email'];
+                    
+                    MPv1.text.choose = $t('Choose');
+                    MPv1.text.other_bank = $t('Other Bank');
+                    MPv1.text.discount_info1 = $t('You will save');
+                    MPv1.text.discount_info2 = $t('with discount from');
+                    MPv1.text.discount_info3 = $t('Total of your purchase:');
+                    MPv1.text.discount_info4 = $t('Total of your purchase with discount:');
+                    MPv1.text.discount_info5 = $t('*Uppon payment approval');
+                    MPv1.text.discount_info6 = $t('Terms and Conditions of Use');
+                    MPv1.text.apply = $t('Apply');
+                    MPv1.text.remove = $t('Remove');
+                    MPv1.text.coupon_empty = $t('Please, inform your coupon code');
+
+                    //change url loading
+                    MPv1.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
+
+                    //Initialize MPv1
+                    MPv1.Initialize(mercadopago_site_id, mercadopago_public_key, mercadopago_coupon, mercadopago_url, payer_email);
+
+                }
+
+            },
 
             setPlaceOrderHandler: function (handler) {
                 this.placeOrderHandler = handler;
@@ -44,122 +77,53 @@ define(
                 return this;
             },
 
-            isShowLegend: function () {
-                return true;
-            },
-
             getCode: function () {
                 return 'mercadopago_custom';
-            },
-
-            getTokenCodeArray: function (code) {
-                return "payment[" + this.getCode() + "][" + code + "]";
             },
 
             isActive: function () {
                 return true;
             },
 
-            isOCPReady: function () {
-                return ((this.getCustomer() != false) && (this.getCustomer().cards.length > 0));
-            },
+            getCardListCustomerCards: function(){
 
-            initApp: function () {
-                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                    window.PublicKeyMercadoPagoCustom = window.checkoutConfig.payment[this.getCode()]['public_key'];
-                    MercadoPagoCustom.enableLog(window.checkoutConfig.payment[this.getCode()]['logEnabled']);
-                    MercadoPagoCustom.getInstance().setFullScreenLoader(fullScreenLoader);
-                    MercadoPagoCustom.getInstance().init();
-                    MercadoPagoCustom.getInstance().setPaymentService(paymentService);
-                    MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
-                    MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction, $);
-
-                    if (this.isOCPReady()) {
-                        MercadoPagoCustom.getInstance().initOCP();
-                    }
-                    var resetTotalsRef = this.resetTotals;
-
-                    require(['domReady!'],function($)
-                    {
-                        var radios = TinyJ('#co-payment-form').getElem('input[name="payment[method]"]');
-                        if (radios.length > 0) {
-                            radios.forEach(function (radioButton) {
-                                radioButton.click(resetTotalsRef);
-                            });
-                        }
-                    })
-                }
-            },
-
-            initSecondCard: function () {
-                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                    MercadoPagoCustom.getInstance().initSecondCard();
-
-                    if (this.isOCPReady()) {
-                        MercadoPagoCustom.getInstance().initSecondCardOCP();
-                    }
-                }
-            },
-
-            initDiscountApp: function () {
-                if (this.isCouponEnabled()) {
-                    MercadoPagoCustom.getInstance().initDiscount();
-                }
-            },
-
-            resetTotals: function () {
-                MercadoPagoCustom.getInstance().globalRemoveDiscount();
-                MercadoPagoCustom.getInstance().setTotalAmount();
-            },
-
-            isCouponEnabled: function () {
-                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                    return (window.checkoutConfig.payment[this.getCode()]['discount_coupon']);
-                }
-            },
-            isSecondCardEnabled: function () {
-                console.log(window.checkoutConfig.payment[this.getCode()]['second_card']);
-                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                    return (window.checkoutConfig.payment[this.getCode()]['second_card']);
-                }
-            },
-
-            getAvailableCards: function () {
+                var cards = []
+                
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     var _customer = window.checkoutConfig.payment[this.getCode()]['customer'];
-                    if (!_customer) return [];
+                    if (_customer){
 
-                    var Card = function(value, name, firstSix, securityCodeLength, secureThumbnail) {
-                        this.cardName = name;
-                        this.value = value;
-                        this.firstSix = firstSix;
-                        this.securityCodeLength = securityCodeLength;
-                        this.secureThumbnail = secureThumbnail;
-                    };
+                        var cards_list = window.checkoutConfig.payment[this.getCode()]['customer'].cards;
 
-                    var availableCards = [];
-                    _customer.cards.forEach(function(card) {
-                        availableCards.push(new Card(card['id'],
-                            card['payment_method']['name']+ ' ended in ' + card['last_four_digits'],
-                            card['first_six_digits'],
-                            card['security_code']['length'],
-                            card['payment_method']['secure_thumbnail']));
-                    });
-                    return availableCards;
+                        for(var x = 0; x < cards_list.length; x++){
+
+                            var card = cards_list[x];
+
+                            cards.push({
+                                text: card.payment_method.id + ' ' + $t('ended in') + ' ' + card.last_four_digits,
+                                id: card.id,
+                                first_six_digits: card.first_six_digits,
+                                last_four_digits: card.last_four_digits,
+                                security_code_length: card.security_code.length,
+                                type_checkout: "customer_and_card",
+                                payment_method_id: card.payment_method.id
+                            });
+                        }
+                    }
                 }
-                return [];
+             
+                return cards;
             },
-            setOptionsExtraValues: function (option, item) {
-                jQuery(option).attr('first_six_digits', item.firstSix);
-                jQuery(option).attr('security_code_length', item.securityCodeLength);
-                jQuery(option).attr('secure_thumb', item.secureThumbnail);
-            },
-            getCustomerAttribute: function (attribute) {
+
+            existBanner: function (){
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                    return window.checkoutConfig.payment[this.getCode()]['customer'][attribute];
-                }
-                return '';
+                    if(window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null){
+                        return true;
+                    }
+                }   
+                return false;
             },
+
             getBannerUrl: function () {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['bannerUrl'];
@@ -231,43 +195,30 @@ define(
              * @override
              */
             getData: function () {
+                // data to Post in backend
+
                 var dataObj = {
                     'method': this.item.method,
                     'additional_data': {
                         'payment[method]': this.getCode(),
-                        'card_expiration_month': TinyJ('#cardExpirationMonth').val(),
-                        'card_expiration_year': TinyJ('#cardExpirationYear').val(),
-                        'card_holder_name': TinyJ('#cardholderName').val(),
-                        'doc_type': TinyJ('#docType').val(),
-                        'doc_number': TinyJ('#docNumber').val(),
-                        'installments': TinyJ('#installments').val(),
-                        'total_amount': TinyJ('#mercadopago_checkout_custom').getElem('.total_amount').val(),
-                        'amount': TinyJ('#mercadopago_checkout_custom').getElem('.amount').val(),
+                        'card_expiration_month': document.querySelector(MPv1.selectors.cardExpirationMonth).value,
+                        'card_expiration_year': document.querySelector(MPv1.selectors.cardExpirationYear).value,
+                        'card_holder_name': document.querySelector(MPv1.selectors.cardholderName).value,
+                        'doc_type': document.querySelector(MPv1.selectors.docType).value,
+                        'doc_number': document.querySelector(MPv1.selectors.docNumber).value,
+                        'installments': document.querySelector(MPv1.selectors.installments).value,
+
+                        'total_amount': document.querySelector(MPv1.selectors.amount).value,
+                        'amount': document.querySelector(MPv1.selectors.amount).value,
                         'site_id': this.getCountry(),
-                        'token': TinyJ('#token').val(),
-                        'payment_method_id': TinyJ('#mercadopago_checkout_custom').getElem('#payment_method_id').val(),
-                        'one_click_pay': TinyJ('#one_click_pay_mp').val(),
-                        'issuer_id': TinyJ('#issuer').val()
+                        'token': document.querySelector(MPv1.selectors.token).value,
+                        'payment_method_id': document.querySelector(MPv1.selectors.paymentMethodId).value,
+                        'payment_method_selector': document.querySelector(MPv1.selectors.paymentMethodSelector).value,
+                        'one_click_pay': document.querySelector(MPv1.selectors.CustomerAndCard).value,
+                        'issuer_id': document.querySelector(MPv1.selectors.issuer).value,
+                        'coupon_code': document.querySelector(MPv1.selectors.couponCode).value
                     }
                 };
-                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                    if (window.checkoutConfig.payment[this.getCode()]['discount_coupon']) {
-                        dataObj.additional_data['mercadopago-discount-amount'] = TinyJ('#mercadopago_checkout_custom').getElem('.mercadopago-discount-amount').val();
-                        dataObj.additional_data['coupon_code'] = TinyJ('#mercadopago_checkout_custom').getElem('#input-coupon-discount').val();
-                    }
-                }
-                if (this.isOCPReady()) {
-                    dataObj.additional_data['customer_id'] = this.getCustomerAttribute('id');
-                }
-
-                if (this.isSecondCardEnabled()) {
-                    dataObj.additional_data['second_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_amount').val();
-                    dataObj.additional_data['second_card_installments'] = TinyJ('#second_card_installments').val();
-                    dataObj.additional_data['second_card_payment_method_id'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_payment_method_id').val();
-                    dataObj.additional_data['second_card_token'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.second_card_token').val();
-                    dataObj.additional_data['first_card_amount'] = TinyJ('#mercadopago_checkout_custom_second_card').getElem('.first_card_amount').val();
-
-                }
 
                 return dataObj;
             },
@@ -280,7 +231,7 @@ define(
             },
 
             hasErrors: function () {
-                var allMessageErrors = jQuery('p.message-error');
+                var allMessageErrors = jQuery('.mp-error');
                 if (allMessageErrors.length > 1) {
                     for (var x = 0; x < allMessageErrors.length; x++) {
                         if ($(allMessageErrors[x]).css('display') !== 'none') {
@@ -288,6 +239,7 @@ define(
                         }
                     }
                 } else {
+
                     if (allMessageErrors.css('display') !== 'none') {
                         return true
                     }
@@ -307,6 +259,7 @@ define(
                 }
 
                 if (this.validate() && additionalValidators.validate() && !this.hasErrors()) {
+
                     this.isPlaceOrderActionAllowed(false);
 
                     this.getPlaceOrderDeferredObject()

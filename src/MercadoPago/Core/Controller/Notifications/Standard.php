@@ -144,11 +144,10 @@ class Standard
             $data = $this->_getFormattedPaymentData($id);
             $statusFinal = $data['status'];
 
-            // TODO: check and test if IPN updates the payment informaiton
-            $response = $this->coreModel->getPaymentV1($id);
-            $payment = $response['response'];
-            $payment = $this->coreHelper->setPayerInfo($payment);
-
+            // TODO: check and test if IPN updates the payment informaiton	
+            // $response = $this->coreModel->getPaymentV1($id);	
+            // $payment = $response['response'];	
+            // $payment = $this->coreHelper->setPayerInfo($payment);
         } else {
             $this->_responseLog();
 

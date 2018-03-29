@@ -273,98 +273,18 @@ class Payment
 
         $infoInstance = $this->getInfoInstance();
 
-        if (!empty($infoInstance->getAdditionalInformation('second_card_token'))) {
-            $usingSecondCardInfo['first_card']['amount'] = $infoInstance->getAdditionalInformation('first_card_amount');
-            $usingSecondCardInfo['first_card']['installments'] = $infoInstance->getAdditionalInformation('installments');
-            $usingSecondCardInfo['first_card']['payment_method_id'] = $infoInstance->getAdditionalInformation('payment_method');
-            $usingSecondCardInfo['first_card']['token'] = $infoInstance->getAdditionalInformation('token');
+        $response = $this->preparePostPayment();
 
-            $usingSecondCardInfo['second_card']['amount'] = $infoInstance->getAdditionalInformation('second_card_amount');
-            $usingSecondCardInfo['second_card']['installments'] = $infoInstance->getAdditionalInformation('second_card_installments');
-            $usingSecondCardInfo['second_card']['payment_method_id'] = $infoInstance->getAdditionalInformation('second_card_payment_method_id');
-            $usingSecondCardInfo['second_card']['token'] = $infoInstance->getAdditionalInformation('second_card_token');
-
-            $responseFirstCard = $this->preparePostPayment($usingSecondCardInfo['first_card']);
-            $this->_helperData->log("First payment response", self::LOG_NAME, $responseFirstCard);
-
-            if (isset($responseFirstCard) && ($responseFirstCard['response']['status'] == 'approved')) {
-                $paymentFirstCard = $responseFirstCard['response'];
-
-                $responseSecondCard = $this->preparePostPayment($usingSecondCardInfo['second_card']);
-                $this->_helperData->log("Second payment response", self::LOG_NAME, $responseSecondCard);
-
-                if (isset($responseSecondCard) && ($responseSecondCard['response']['status'] == 'approved')) {
-                    $paymentSecondCard = $responseSecondCard['response'];
-                    $additionalInfo = [
-                        'status'                       => $paymentFirstCard['status'] . ' | ' . $paymentSecondCard['status'],
-                        'payment_id_detail'            => $paymentFirstCard['id'] . ' | ' . $paymentSecondCard['id'],
-                        'status_detail'                => $paymentFirstCard['status_detail'] . ' | ' . $paymentSecondCard['status_detail'],
-                        'installments'                 => $paymentFirstCard['installments'] . ' | ' . $paymentSecondCard['installments'],
-                        'payment_method'               => $paymentFirstCard['payment_method_id'] . ' | ' . $paymentSecondCard['payment_method_id'],
-                        'first_payment_id'             => $paymentFirstCard['id'] . ' | ' . $paymentSecondCard['id'],
-                        'first_payment_status'         => $paymentFirstCard['status'] . ' | ' . $paymentSecondCard['status'],
-                        'first_payment_status_detail'  => $paymentFirstCard['status_detail'] . ' | ' . $paymentSecondCard['status_detail'],
-                        'total_paid_amount'            => $paymentFirstCard['transaction_details']['total_paid_amount'] . '|' . $paymentSecondCard['transaction_details']['total_paid_amount'],
-                        'transaction_amount'           => $paymentFirstCard['transaction_amount'] . '|' . $paymentSecondCard['transaction_amount'],
-                        'payer_identification_type'    => $paymentFirstCard['payer']['identification']['type']. '|' . $paymentSecondCard['payer']['identification']['type'],
-                        'payer_identification_number'  => $paymentFirstCard['payer']['identification']['number'] . '|' . $paymentSecondCard['payer']['identification']['number']
-                    ];
-
-                    foreach ($additionalInfo as $infoKey => $infoValue) {
-                        $infoInstance->setAdditionalInformation($infoKey, $infoValue);
-                    };
-
-                    return true;
-                } else {
-                    //second card payment failed, refund for first card
-                    $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                    $mp = $this->_helperData->getApiInstance($accessToken);
-                    $id = $paymentFirstCard['id'];
-                    $refundResponse = $mp->post("/v1/payments/$id/refunds?access_token=$accessToken", null);
-                    $this->_helperData->log("Second payment refund response", self::LOG_NAME, $refundResponse);
-
-                    return false;
-                }
-            } else {
-                return false;
-            }
-
-
-        } else {
-
-            $response = $this->preparePostPayment();
-
-            if ($response) {
-                $payment = $response['response'];
-                //set status
-                $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
-                $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
-                $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
-                return true;
-            }
+        if ($response) {
+            $payment = $response['response'];
+            //set status
+            $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
+            $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
+            $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
+            return true;
         }
 
         return false;
-
-
-//        if ($this->getInfoInstance()->getAdditionalInformation('token') == "") {
-//            throw new \Exception(__('Verify the form data or wait until the validation of the payment data'));
-//        }
-//
-//        $response = $this->preparePostPayment();
-//
-//        if ($response) {
-//            $payment = $response['response'];
-//            $this->_helperData->log("Payment response", self::LOG_NAME, $payment);
-//            //set status
-//            $this->getInfoInstance()->setAdditionalInformation('status', $payment['status']);
-//            $this->getInfoInstance()->setAdditionalInformation('status_detail', $payment['status_detail']);
-//            $this->getInfoInstance()->setAdditionalInformation('payment_id_detail', $payment['id']);
-//
-//            return true;
-//        }
-//
-//        return false;
     }
 
     /**
@@ -388,12 +308,18 @@ class Payment
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
+        $this->_helperData->log("assigData", self::LOG_NAME);
+        
+
         // route /checkout/onepage/savePayment
         if (!($data instanceof \Magento\Framework\DataObject)) {
             $data = new \Magento\Framework\DataObject($data);
         }
 
         $infoForm = $data->getData('additional_data');
+        
+        $this->_helperData->log("assigData: ". json_encode($infoForm), self::LOG_NAME);
+
         //$infoForm = $infoForm['mercadopago_custom'];
         if (isset($infoForm['one_click_pay']) && $infoForm['one_click_pay'] == 1) {
             $infoForm = $this->cleanFieldsOcp($infoForm);
@@ -436,30 +362,45 @@ class Payment
         $payment = $order->getPayment();
         $paymentInfo = $this->getPaymentInfo($payment);
 
-        if (isset($usingSecondCardInfo)) {
-            $paymentInfo['transaction_amount'] = $usingSecondCardInfo ['amount'];
-        }
-
         $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($paymentInfo, $quote, $order);
-
-        if (isset($usingSecondCardInfo)) {
-            $preference['installments'] = (int)$usingSecondCardInfo['installments'];
-            $preference['payment_method_id'] = $usingSecondCardInfo['payment_method_id'];
-            $preference['token'] = $usingSecondCardInfo['token'];
-        } else {
-            $preference['installments'] = (int)$payment->getAdditionalInformation("installments");
-            $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method");
-            $preference['token'] = $payment->getAdditionalInformation("token");
+        $preference['installments'] = (int) $payment->getAdditionalInformation("installments");
+        
+        $paymentMethod = $payment->getAdditionalInformation("payment_method_id");
+        if($paymentMethod == ""){
+            // MLM: does not have payment method guessing
+            $paymentMethod = $payment->getAdditionalInformation("payment_method_selector");
         }
 
+        $preference['payment_method_id'] = $paymentMethod;
+        $preference['token'] = $payment->getAdditionalInformation("token");
+        $preference['metadata']['token'] = $payment->getAdditionalInformation("token");
 
-        if ($payment->getAdditionalInformation("issuer_id") != "") {
+        if($payment->getAdditionalInformation("issuer_id") != "" && $payment->getAdditionalInformation("issuer_id") > -1){
             $preference['issuer_id'] = (int)$payment->getAdditionalInformation("issuer_id");
         }
+        
+        $this->_helperData->log("Credit Card ----> here", self::LOG_NAME, $preference);
 
-        if ($payment->getAdditionalInformation("customer_id") != "") {
-            $preference['payer']['id'] = $payment->getAdditionalInformation("customer_id");
+        if(isset($preference['payer']) && isset($preference['payer']['email'])){
+            
+            $this->_accessToken = $this->_scopeConfig->getValue('payment/mercadopago_custom/access_token', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+            $mp = $this->_helperData->getApiInstance($this->_accessToken);
+            $customer = $mp->get_or_create_customer($preference['payer']['email']);
+
+            if($payment->getAdditionalInformation("one_click_pay") == 'true'){
+                $preference['payer']['id'] = $customer['id'];
+            }
+
+            //add customer in metadata
+            $preference['metadata']['customer_id'] = $customer['id'];
         }
+
+        $this->_helperData->log("Credit Card -> Preferences ---->", self::LOG_NAME, $preference);
+
+        // if ($payment->getAdditionalInformation("customer_id") != "") {
+        //     $preference['payer']['id'] = $payment->getAdditionalInformation("customer_id");
+        // }
 
         $preference['binary_mode'] = $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/binary_mode');
         $preference['statement_descriptor'] = $this->_scopeConfig->getValue('payment/mercadopago_custom/statement_descriptor');

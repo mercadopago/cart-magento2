@@ -7,8 +7,8 @@
     $payment = $this->getPayment();
     
     //monta link para o pedido
-    $link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>';
     $successMsg = 'Your order %1 has been successfully generated.';
+    $link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>';
     
     $payment_method = $this->getPaymentMethod();
     $info_payment = $this->getInfoPayment();
