@@ -111,16 +111,22 @@ class StatusUpdate
     {
         $status = $notificationData['status'];
         $statusDetail = $notificationData['status_detail'];
-        $currentStatus = $order->getPayment()->getAdditionalInformation('status');
-        $currentStatusDetail = $order->getPayment()->getAdditionalInformation('status_detail');
 
         if (!is_null($order->getPayment()) && $order->getPayment()->getAdditionalInformation('second_card_token')) {
             $this->_statusUpdatedFlag = false;
-
             return;
         }
-        if ($status == $currentStatus && $statusDetail == $currentStatusDetail) {
-            $this->_statusUpdatedFlag = true;
+
+        //get the posible status update order
+        $statusToUpdate = $this->getStatusOrder($status, $statusDetail, false);
+        $order = $this->_coreHelper->_getOrder($notificationData["external_reference"]);
+        $commentsObject = $order->getStatusHistoryCollection(true);
+
+        //check if the status has been updated in some time
+        foreach ($commentsObject as $commentObj) {
+            if($commentObj->getStatus() == $statusToUpdate){
+                $this->_statusUpdatedFlag = true;
+            }
         }
     }
 
@@ -462,9 +468,6 @@ class StatusUpdate
      */
     public function setStatusOrder($payment)
     {
-
-        $this->_dataHelper->log("teste ======>", 'mercadopago.log', $payment);
-        
         $order = $this->_coreHelper->_getOrder($payment["external_reference"]);
 
         $statusDetail = $payment['status_detail'];
@@ -473,6 +476,7 @@ class StatusUpdate
         if (isset($payment['status_final'])) {
             $status = $payment['status_final'];
         }
+
         $message = $this->getMessage($status, $payment);
         if ($this->isStatusUpdated()) {
             return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
@@ -547,7 +551,12 @@ class StatusUpdate
         if ($order->getState() !== \Magento\Sales\Model\Order::STATE_COMPLETE) {
             $statusOrder = $this->getStatusOrder($status, $statusDetail, $order->canCreditmemo());
 
-            $order->setState($this->_getAssignedState($statusOrder));
+            if($statusOrder == 'canceled'){
+                $order->cancel();
+            }else{
+                $order->setState($this->_getAssignedState($statusOrder));
+            }
+            
             $order->addStatusToHistory($statusOrder, $message, true);
             if (!$order->getEmailSent()){
                 $this->_orderSender->send($order, true, $message);
