@@ -12,6 +12,7 @@
     
     $payment_method = $this->getPaymentMethod();
     $info_payment = $this->getInfoPayment();
+
 ?>
 
 <div id="box-mercadopago">
@@ -32,8 +33,10 @@
         <h2 class="mercadopago-title"><?php echo $block->escapeHtml($message_status['title']); ?></h2>
 
         <p><?php echo $block->escapeHtml($message_status['message']); ?></p>
-
-        <p><?php /* @escapeNotVerified */ echo __($successMsg, $link_to_order); ?></p>
+    
+        <?php if($info_payment['status']['value'] != 'rejected'): ?>
+            <p><?php /* @escapeNotVerified */ echo __($successMsg, $link_to_order); ?></p>            
+        <?php endif; ?>
 
         <h3 class="mercadopago-title-info-payment"><?php /* @escapeNotVerified */ echo __('Payment information'); ?></h3>
 
@@ -50,6 +53,9 @@
 
 
 <div class="primary button-success">
-    <a class="action primary continue" href="<?php echo $block->escapeUrl($block->getUrl()) ?>"><span><?php /* @escapeNotVerified */ echo __('Continue Shopping') ?></span></a>
+    <?php if($info_payment['status']['value'] == 'rejected'): ?>
+        <a class="action primary continue" href="<?php echo $block->escapeUrl($block->getReOrderUrl()) ?>"><span><?php /* @escapeNotVerified */ echo __('Retry order') ?></span></a> 
+    <?php else: ?>
+        <a class="action primary continue" href="<?php echo $block->escapeUrl($block->getUrl()) ?>"><span><?php /* @escapeNotVerified */ echo __('Continue Shopping') ?></span></a>    
+    <?php endif; ?>
 </div>
-

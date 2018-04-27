@@ -687,9 +687,16 @@ class Core
         if (!$quote) {
             $quote = $this->_getQuote();
         }
-        $total = $quote->getBaseSubtotalWithDiscount() + $quote->getShippingAddress()->getShippingAmount() + $quote->getShippingAddress()->getBaseTaxAmount();
 
-        return (float)$total;
+        //get grant total
+        $total = $quote->getGrandTotal();
+
+        //if not exist calculate
+        if(! $total ){
+            $total = $quote->getBaseSubtotalWithDiscount() + $quote->getShippingAddress()->getShippingAmount() + $quote->getShippingAddress()->getBaseTaxAmount();
+        }
+
+        return (float) $total;
 
     }
 
@@ -711,20 +718,9 @@ class Core
         $payer_email = $this->getEmailCustomer();
         $coupon_code = $id;
 
-        $this->_coreHelper->log("Discount: " . $transaction_amount . " teste: " . $payer_email . " teste: " . $coupon_code, 'mercadopago-custom.log');
-
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
         $details_discount = $mp->check_discount_campaigns($transaction_amount, $payer_email, $coupon_code);
-        // $params = array(
-        //     "transaction_amount" => $this->getAmount(),
-        //     "payer_email"        => $this->getEmailCustomer(),
-        //     "coupon_code"        => $id
-        // );
-
-        // $details_discount = $mp->get("/discount_campaigns", $params);
-
-        // $this->_coreHelper->log("Discount: " . $transaction_amount . " teste: " . $payer_email . " teste: " . $coupon_code, 'mercadopago-custom.log');
 
         //add value on return api discount
         $details_discount['response']['transaction_amount'] = $transaction_amount;

@@ -53,7 +53,6 @@ class OrderCancelPlugin
      */
     protected function salesOrderBeforeCancel()
     {
-
         if ($this->order->getExternalRequest()) {
             return;
         }
@@ -83,28 +82,30 @@ class OrderCancelPlugin
             if ($isValidaData){
                 $clientId = $this->dataHelper->getClientId();
                 $clientSecret = $this->dataHelper->getClientSecret();
-
+                $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
                 $response = null;
 
-                $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-
+                $mp = $this->dataHelper->getApiInstance($accessToken);
                 if ($paymentMethod == 'mercadopago_standard') {
                     $mp = $this->dataHelper->getApiInstance($clientId, $clientSecret);
-                    $response = $mp->cancel_payment($paymentID);
-                } else {
-                    $mp = $this->dataHelper->getApiInstance($accessToken);
-                    $data = [
-                        "status" => 'cancelled'
-                    ];
-                    $response = $mp->put("/v1/payments/$paymentID?access_token=$accessToken", $data);
                 }
+                
+                $mp = $this->dataHelper->getApiInstance($accessToken);
+                $response = $mp->get("/v1/payments/$paymentID?access_token=$accessToken");
 
-                if ($response['status'] == 200) {
-                    $this->messageManager->addSuccessMessage(__('Cancellation made by Mercado Pago'));
-                } else {
-                    $this->messageManager->addErrorMessage(__('Failed to make the cancellation by Mercado Pago'));
-                    $this->messageManager->addErrorMessage($response['status'] . ' ' . $response['response']['message']);
-                    $this->throwCancelationException();
+                if ($response['status'] == 200 && ($response['response']['status'] == 'pending' || $response['response']['status'] == 'in_process')) {
+
+                    $data = ["status" => 'cancelled'];
+
+                    $response = $mp->put("/v1/payments/$paymentID?access_token=$accessToken", $data);
+
+                    if ($response['status'] == 200) {
+                        $this->messageManager->addSuccessMessage(__('Cancellation made by Mercado Pago'));
+                    } else {
+                        $this->messageManager->addErrorMessage(__('Failed to make the cancellation by Mercado Pago'));
+                        $this->messageManager->addErrorMessage($response['status'] . ' ' . $response['response']['message']);
+                        $this->throwCancelationException();
+                    }
                 }
             }
         }

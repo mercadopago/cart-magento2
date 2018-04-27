@@ -281,6 +281,15 @@ class Payment
             $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
             $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
             $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
+
+            if(isset($response['response']['status'])){
+                $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
+            }
+
+            if(isset($response['response']['status_detail'])){
+                $this->getInfoInstance()->setAdditionalInformation('status_detail', $response['response']['status_detail']);
+            }
+            
             return true;
         }
 
