@@ -688,13 +688,7 @@ class Core
             $quote = $this->_getQuote();
         }
 
-        //get grant total
-        $total = $quote->getGrandTotal();
-
-        //if not exist calculate
-        if(! $total ){
-            $total = $quote->getBaseSubtotalWithDiscount() + $quote->getShippingAddress()->getShippingAmount() + $quote->getShippingAddress()->getBaseTaxAmount();
-        }
+        $total = $quote->getBaseSubtotalWithDiscount() + $quote->getShippingAddress()->getShippingAmount() + $quote->getShippingAddress()->getBaseTaxAmount();
 
         return (float) $total;
 
