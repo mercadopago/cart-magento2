@@ -124,11 +124,15 @@ class Payment
 
         //get array info
         $infoForm = $data->getData();
-
+      
+        if(isset($infoForm['additional_data'])){
+          $infoForm = $infoForm['additional_data'];
+        }
+      
         $this->_helperData->log("info form", self::LOG_NAME, $infoForm);
 
         $info = $this->getInfoInstance();
-        $info->setAdditionalInformation('payment_method', $infoForm['additional_data']['payment_method_ticket']);
+        $info->setAdditionalInformation('payment_method', $infoForm['payment_method_ticket']);
         
         if (!empty($infoForm['coupon_code'])) {
             $info->setAdditionalInformation('coupon_code', $infoForm['coupon_code']);
@@ -136,8 +140,8 @@ class Payment
 
         // Fields for new febraban rule
         foreach ($this->fields_febraban as $key) {
-            if (isset($infoForm['additional_data'][$key])) {
-                $info->setAdditionalInformation($key, $infoForm['additional_data'][$key]);
+            if (isset($infoForm[$key])) {
+                $info->setAdditionalInformation($key, $infoForm[$key]);
             }
         }
 
