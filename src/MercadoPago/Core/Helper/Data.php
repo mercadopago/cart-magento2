@@ -209,19 +209,31 @@ class Data
      * @return \MercadoPago\Core\Lib\Api
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getApiInstance()
-    {
-        $params = func_num_args();
-        if ($params > 2 || $params < 1) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN'));
-        }
-        if ($params == 1) {
-            $api = new \MercadoPago\Core\Lib\Api(func_get_arg(0));
-            $api->set_platform(self::PLATFORM_OPENPLATFORM);
-        } else {
-            $api = new \MercadoPago\Core\Lib\Api(func_get_arg(0), func_get_arg(1));
-            $api->set_platform(self::PLATFORM_STD);
-        }
+    public function getApiInstance($access_or_client_id = null, $client_secret = null) { 
+      
+      if(is_null($access_or_client_id) && is_null($client_secret)){
+        throw new \Magento\Framework\Exception\LocalizedException(__('Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN'));     
+      }
+      
+      if ($access_or_client_id != null && $client_secret == null) {
+        $api = new \MercadoPago\Core\Lib\Api($access_or_client_id);
+        $api->set_platform(self::PLATFORM_OPENPLATFORM);
+      } else {
+        $api = new \MercadoPago\Core\Lib\Api($access_or_client_id, $client_secret);
+        $api->set_platform(self::PLATFORM_STD);
+      }
+
+      //         if ($params > 2 || $params < 1) {
+      //             throw new \Magento\Framework\Exception\LocalizedException(__('Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN'));
+      //         }
+      //         if ($params == 1) {
+      //             $api = new \MercadoPago\Core\Lib\Api(func_get_arg(0));
+      //             $api->set_platform(self::PLATFORM_OPENPLATFORM);
+      //         } else {
+      //             $api = new \MercadoPago\Core\Lib\Api(func_get_arg(0), func_get_arg(1));
+      //             $api->set_platform(self::PLATFORM_STD);
+      //         }
+      
         if ($this->_switcher->getWebsiteId() != 0) {
             if ($this->scopeConfig->getValue('payment/mercadopago_standard/sandbox_mode', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE, $this->_switcher->getWebsiteId())) {
                 $api->sandbox_mode(true);
@@ -279,14 +291,14 @@ class Data
      */
     public function isValidClientCredentials($clientId, $clientSecret)
     {
-        $mp = $this->getApiInstance($clientId, $clientSecret);
-        try {
-            $mp->get_access_token();
-        } catch (\Exception $e) {
-            return false;
-        }
+      $mp = $this->getApiInstance($clientId, $clientSecret);
+      try {
+        $mp->get_access_token();
+      } catch (\Exception $e) {
+        return false;
+      }
 
-        return true;
+      return true;
     }
 
     /**
