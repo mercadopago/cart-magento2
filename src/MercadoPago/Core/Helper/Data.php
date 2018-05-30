@@ -267,6 +267,11 @@ class Data
      */
     public function isValidAccessToken($accessToken)
     {
+      
+        if(is_null($accessToken) || $accessToken == ""){
+          return false;
+        }
+      
         $mp = $this->getApiInstance($accessToken);
         try {
             $response = $mp->get("/v1/payment_methods");
