@@ -458,3 +458,10 @@ Es un requisito que usted cuente con un certificado SSL, y que el formulario de 
 "City required","Obligatorio completar el Ciudad"
 "State required","Obligatorio completar el Estado"
 "Zipcode required","Obligatorio completar el Código postal"
+
+"========== Version 2.1.0 ==========","========== Version 2.1.0 =========="
+"Order creation email","Enviar email cuando se crea el pedido"
+"Order update email","Enviar email cuando el pedido es actualizado"
+"Do not send","No enviar"
+"Email sent when the order is created does not mean that the payment has been approved","El email es enviado cuando se crea el pedido, no significa que el pago haya sido aprobado"
+"Select the statuses you want to send update emails to. This email is only sent when the order status is updated. It is not sent on the first status update because the order creation email is sent. If the order creation email is deactivated, then the email of the first order update will be sent","Seleccione los estados a los que desea enviar emails de actualización. Este email solo se envía cuando se actualiza el estado del pedido. No se envía en la primera actualización de estado porque se envía el email de creación de pedido. Si el email de creación de pedido está desactivado, se enviará el email en la primera actualización de pedido"
