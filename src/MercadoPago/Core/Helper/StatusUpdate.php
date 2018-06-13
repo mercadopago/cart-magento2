@@ -52,7 +52,6 @@ class StatusUpdate
      */
     protected $_orderSender;
 
-
     protected $_dataHelper;
     protected $_coreHelper;
 
@@ -550,16 +549,40 @@ class StatusUpdate
     {
         if ($order->getState() !== \Magento\Sales\Model\Order::STATE_COMPLETE) {
             $statusOrder = $this->getStatusOrder($status, $statusDetail, $order->canCreditmemo());
+            $emailAlreadySent = false;
+            //get scope config
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $scopeConfig = $objectManager->create('\Magento\Framework\App\Config\ScopeConfigInterface');
+            $emailOrderCreate = $scopeConfig->getValue('payment/mercadopago/email_order_create', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
             if($statusOrder == 'canceled'){
                 $order->cancel();
             }else{
                 $order->setState($this->_getAssignedState($statusOrder));
             }
-            
+
+            //add comment to history
             $order->addStatusToHistory($statusOrder, $message, true);
-            if (!$order->getEmailSent()){
-                $this->_orderSender->send($order, true, $message);
+
+            //ckeck is active send email when create order
+            if($emailOrderCreate){
+                if (!$order->getEmailSent()){
+                    $this->_orderSender->send($order, true, $message);
+                    $emailAlreadySent = true;
+                }
+            }
+
+            //if the email has not been sent check sent in status
+            if($emailAlreadySent === false){
+                // search the list of statuses that can send email
+                $statusEmail = $scopeConfig->getValue('payment/mercadopago/email_order_update', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+                $statusEmailList = explode(",", $statusEmail);
+    
+                //check if the status is on the authorized list
+                if(in_array($status, $statusEmailList)){    
+                    $orderCommentSender = $objectManager->create('Magento\Sales\Model\Order\Email\Sender\OrderCommentSender');
+                    $orderCommentSender->send($order, $notify = '1' , str_replace("<br/>", "", $message));
+                }
             }
         }
     }

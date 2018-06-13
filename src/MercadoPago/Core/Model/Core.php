@@ -569,6 +569,8 @@ class Core
         
         $this->_coreHelper->log("POST /v1/payments", 'mercadopago-custom.log', $response);
 
+
+        error_log("Resultado: " . json_encode($response));
         if ($response['status'] == 200 || $response['status'] == 201) {
             return $response;
         } else {
