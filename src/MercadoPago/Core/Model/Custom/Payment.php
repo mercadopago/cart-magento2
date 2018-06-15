@@ -325,7 +325,11 @@ class Payment
             $data = new \Magento\Framework\DataObject($data);
         }
 
-        $infoForm = $data->getData('additional_data');
+        $infoForm = $data->getData();
+      
+        if(isset($infoForm['additional_data'])){
+          $infoForm = $infoForm['additional_data'];
+        }
         
         $this->_helperData->log("assigData: ". json_encode($infoForm), self::LOG_NAME);
 

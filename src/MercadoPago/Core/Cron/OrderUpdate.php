@@ -135,7 +135,7 @@ class OrderUpdate
         }else{
             $order->setState($this->_statusHelper->_getAssignedState($statusOrder));
         }
-        
+
         $order->addStatusToHistory($statusOrder, $this->_statusHelper->getMessage($statusOrder, $statusOrder), true);
         $order->sendOrderUpdateEmail(true, $this->_statusHelper->getMessage($statusOrder, $paymentOrder));
         $order->save();

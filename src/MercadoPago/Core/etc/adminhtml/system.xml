@@ -107,6 +107,27 @@
                     <source_model>MercadoPago\Core\Model\System\Config\Source\Order\Status</source_model>
                 </field>
 
+
+                <field id="heading_email" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1">
+                    <label>Email Options</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                    <attribute type="shared">1</attribute>
+                </field>
+
+                <field id="email_order_create" translate="label" type="select" sortOrder="71" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Order creation email</label>
+                    <comment>Email sent when the order is created does not mean that the payment has been approved</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                 <field id="email_order_update" translate="label" type="multiselect" sortOrder="72" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Order update email</label>
+                    <comment>Select the statuses you want to send update emails to. This email is only sent when the order status is updated. It is not sent on the first status update because the order creation email is sent. If the order creation email is deactivated, then the email of the first order update will be sent</comment>
+                    <source_model>MercadoPago\Core\Model\System\Config\Source\ListStatus</source_model>
+                </field>
+
+
+
                 <field id="heading_developer" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1">
                     <label>Developer Options</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>

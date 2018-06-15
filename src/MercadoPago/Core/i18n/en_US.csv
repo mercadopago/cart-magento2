@@ -270,3 +270,11 @@
 "City required","City required"
 "State required","State required"
 "Zipcode required","Zipcode required"
+
+
+"========== Version 2.1.0 ==========","========== Version 2.1.0 =========="
+"Order creation email","Order creation email"
+"Order update email","Order update email"
+"Do not send","Do not send"
+"Email sent when the order is created does not mean that the payment has been approved","Email sent when the order is created does not mean that the payment has been approved"
+"Select the statuses you want to send update emails to. This email is only sent when the order status is updated. It is not sent on the first status update because the order creation email is sent. If the order creation email is deactivated, then the email of the first order update will be sent","Select the statuses you want to send update emails to. This email is only sent when the order status is updated. It is not sent on the first status update because the order creation email is sent. If the order creation email is deactivated, then the email of the first order update will be sent"

@@ -278,3 +278,10 @@
 "City required","Obrigatório informar a Cidade"
 "State required","Obrigatório informar o Estado"
 "Zipcode required","Obrigatório informar o CEP"
+
+"========== Version 2.1.0 ==========","========== Version 2.1.0 =========="
+"Order creation email","Enviar email quando pedido é criado"
+"Order update email","Enviar email quando pedido é atualizado"
+"Do not send","Não enviar"
+"Email sent when the order is created does not mean that the payment has been approved","E-mail enviado quando o pedido é criado, não significa que o pagamento foi aprovado"
+"Select the statuses you want to send update emails to. This email is only sent when the order status is updated. It is not sent on the first status update because the order creation email is sent. If the order creation email is deactivated, then the email of the first order update will be sent","Selecione os status para os quais você deseja enviar e-mails de atualização. Este e-mail é enviado somente quando o status do pedido é atualizado. Ele não é enviado na primeira atualização de status porque o email de criação do pedido é enviado. Se o e-mail de criação do pedido for desativado, o e-mail da atualização do primeiro pedido será enviado"
