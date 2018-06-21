@@ -277,10 +277,17 @@ class Payment
 
         if ($response) {
             $payment = $response['response'];
-            //set status
-            $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
-            $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
-            $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
+
+            if(isset($payment['id'])){
+                $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
+            }
+
+            if(isset($payment['payer']['identification']['type'])){
+                $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
+            }
+            if(isset($payment['payer']['identification']['number'])){
+                $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
+            }
 
             if(isset($response['response']['status'])){
                 $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
@@ -406,14 +413,12 @@ class Payment
             }
 
             //add customer in metadata
-            $preference['metadata']['customer_id'] = $customer['id'];
+            if(isset($customer['status']) && ($customer['status'] == 200 || $customer['status'] == 201)){
+                $preference['metadata']['customer_id'] = $customer['id'];
+            }
         }
 
         $this->_helperData->log("Credit Card -> Preferences ---->", self::LOG_NAME, $preference);
-
-        // if ($payment->getAdditionalInformation("customer_id") != "") {
-        //     $preference['payer']['id'] = $payment->getAdditionalInformation("customer_id");
-        // }
 
         $preference['binary_mode'] = $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/binary_mode');
         $preference['statement_descriptor'] = $this->_scopeConfig->getValue('payment/mercadopago_custom/statement_descriptor');
