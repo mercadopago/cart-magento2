@@ -267,40 +267,57 @@ class Payment
      */
     public function initialize($paymentAction, $stateObject)
     {
+
         if ($this->getInfoInstance()->getAdditionalInformation('token') == "") {
             throw new \Exception(__('Verify the form data or wait until the validation of the payment data'));
         }
+        try {
 
-        $infoInstance = $this->getInfoInstance();
+            $infoInstance = $this->getInfoInstance();
 
-        $response = $this->preparePostPayment();
+            $response = $this->preparePostPayment();
 
-        if ($response) {
-            $payment = $response['response'];
+            if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
+                $payment = $response['response'];
 
-            if(isset($payment['id'])){
-                $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
+                if(isset($payment['id'])){
+                    $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
+                }
+
+                if(isset($payment['payer']['identification']['type'])){
+                    $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
+                }
+                if(isset($payment['payer']['identification']['number'])){
+                    $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
+                }
+
+                if(isset($response['response']['status'])){
+                    $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
+                }
+
+                if(isset($response['response']['status_detail'])){
+                    $this->getInfoInstance()->setAdditionalInformation('status_detail', $response['response']['status_detail']);
+                }
+                
+                return true;
+            }else{
+
+                if(isset($response['response']) && isset($response['response']['message'])){
+                    throw new \Magento\Framework\Exception\LocalizedException(__($response['response']['message']));
+                }else{
+                    throw new \Magento\Framework\Exception\LocalizedException(__('An error occurred when creating the payment.'));
+                }
+                
+                return $this;
             }
 
-            if(isset($payment['payer']['identification']['type'])){
-                $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
-            }
-            if(isset($payment['payer']['identification']['number'])){
-                $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
-            }
+        } catch (\Exception $e) {
+            $this->_helperData->log("Serious error when creating payment: " . $e->getMessage(), self::LOG_NAME);
 
-            if(isset($response['response']['status'])){
-                $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
-            }
+            throw new \Magento\Framework\Exception\LocalizedException(__('There was an internal error when creating the payment.'));
 
-            if(isset($response['response']['status_detail'])){
-                $this->getInfoInstance()->setAdditionalInformation('status_detail', $response['response']['status_detail']);
-            }
-            
-            return true;
+            return $this;
         }
-
-        return false;
     }
 
     /**
@@ -325,7 +342,6 @@ class Payment
     public function assignData(\Magento\Framework\DataObject $data)
     {
         $this->_helperData->log("assigData", self::LOG_NAME);
-        
 
         // route /checkout/onepage/savePayment
         if (!($data instanceof \Magento\Framework\DataObject)) {
@@ -375,6 +391,7 @@ class Payment
      */
     public function preparePostPayment($usingSecondCardInfo = null)
     {
+
         $this->_helperData->log("Credit Card -> init prepare post payment", self::LOG_NAME);
 
         $quote = $this->_getQuote();
