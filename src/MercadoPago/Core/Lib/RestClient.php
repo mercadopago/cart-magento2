@@ -113,52 +113,54 @@ class RestClient {
             throw new Exception ($message, $response['status']);
         }*/
 
-        if ($response != null && $response['status'] >= 400 && self::$check_loop == 0) {
-			try {
-				self::$check_loop = 1;
-				$message = null;
-				$payloads = null;
-			 	$endpoint = null;
-				$errors = array();
-				if (isset($response['response'])) {
-					if (isset($response['response']['message'])) {
-						$message = $response['response']['message'];
-					}
-					if (isset($response['response']['cause'])) {
-				 		if (isset($response['response']['cause']['code']) && isset($response['response']['cause']['description'])) {
-				 			$message .= " - " . $response['response']['cause']['code'] . ': ' . $response['response']['cause']['description'];
-				 		} else if (is_array($response['response']['cause'])) {
-				 			foreach ($response['response']['cause'] as $cause) {
-				 				$message .= " - " . $cause['code'] . ': ' . $cause['description'];
-				 			}
-				 		}
-				 	}
-				}
-                //add data
-                if (isset($data) && $data != null) {
-                    $payloads = json_encode($data);
+      if ($response != null && $response['status'] >= 400 && self::$check_loop == 0) {
+        try {
+          self::$check_loop = 1;
+          $message = null;
+          $payloads = null;
+          $endpoint = null;
+          $errors = array();
+          if (isset($response['response'])) {
+            if (isset($response['response']['message'])) {
+              $message = $response['response']['message'];
+            }
+            if (isset($response['response']['cause'])) {
+              if (isset($response['response']['cause']['code']) && isset($response['response']['cause']['description'])) {
+                $message .= " - " . $response['response']['cause']['code'] . ': ' . $response['response']['cause']['description'];
+              } else if (is_array($response['response']['cause'])) {
+                foreach ($response['response']['cause'] as $cause) {
+                  $message .= " - " . $cause['code'] . ': ' . $cause['description'];
                 }
-                //add uri
-                if (isset($uri) && $uri != null) {
-                    $endpoint = $uri;
-                }
-				$errors[] = array(
-					"endpoint" => $endpoint,
-					"message" => $message,
-					"payloads" => $payloads
-				);
-                
-                self::sendErrorLog($response['status'], $errors);
-                
-		  	} catch (\Exception $e) {
-			   error_log("error to call API LOGS" . $e);
-			}
-		}
-		self::$check_loop = 0;
+              }
+            }
+          }
 
-        curl_close($connect);
+          //add data
+          if (isset($data) && $data != null) {
+            $payloads = json_encode($data);
+          }
+          //add uri
+          if (isset($uri) && $uri != null) {
+            $endpoint = $uri;
+          }
 
-        return $response;
+          $errors[] = array(
+            "endpoint" => $endpoint,
+            "message" => $message,
+            "payloads" => $payloads
+          );
+
+          self::sendErrorLog($response['status'], $errors);
+
+        } catch (\Exception $e) {
+          error_log("error to call API LOGS" . $e);
+        }
+      }
+      self::$check_loop = 0;
+
+      curl_close($connect);
+
+      return $response;
     }
 
     /**

@@ -370,79 +370,83 @@ class StatusUpdate
      */
     public function formatArrayPayment($data, $payment, $logName)
     {
-        $this->_dataHelper->log("Format Array", $logName);
+      $this->_dataHelper->log("Format Array", $logName);
 
-        $fields = [
-            "status",
-            "status_detail",
-            "order_id",
-            "id",
-            "payment_method_id",
-            "transaction_amount",
-            "total_paid_amount",
-            "coupon_amount",
-            "installments",
-            "shipping_cost",
-            "amount_refunded"
-        ];
+      $fields = [
+        "status",
+        "status_detail",
+        "id",
+        "payment_method_id",
+        "transaction_amount",
+        "coupon_amount",
+        "installments",
+        "amount_refunded"
+      ];
 
-        foreach ($fields as $field) {
-            if (isset($payment[$field])) {
-                if (isset($data[$field])) {
-                    $data[$field] .= " | " . $payment[$field];
-                } else {
-                    $data[$field] = $payment[$field];
-                }
-            }
+      foreach ($fields as $field) {
+        if (isset($payment[$field])) {
+          if (isset($data[$field])) {
+            $data[$field] .= " | " . $payment[$field];
+          } else {
+            $data[$field] = $payment[$field];
+          }
         }
+      }
 
-        if (isset($payment['refunds'])) {
-            foreach ($payment['refunds'] as $refund) {
-                if (isset($data['refunds'])) {
-                    $data['refunds'] .= " | " . $refund['id'];
-                } else {
-                    $data['refunds'] = $refund['id'];
-                }
-            }
+      if (isset($payment['refunds'])) {
+        foreach ($payment['refunds'] as $refund) {
+          if (isset($data['refunds'])) {
+            $data['refunds'] .= " | " . $refund['id'];
+          } else {
+            $data['refunds'] = $refund['id'];
+          }
         }
+      }
 
-        $data = $this->_updateAtributesData($data, $payment);
+      $data = $this->_updateAtributesData($data, $payment);
+      
+      $data['external_reference'] = $payment['external_reference'];
+      $data['order_id'] = $payment['external_reference'];
+      $data['payer_first_name'] = $payment['payer']['first_name'];
+      $data['payer_last_name'] = $payment['payer']['last_name'];
+      $data['payer_email'] = $payment['payer']['email'];
+      $data['total_paid_amount'] = $payment['transaction_details']['total_paid_amount'];
+      $data['shipping_cost'] = isset($payment['shipping_amount']) ? $payment['shipping_amount'] : "0"; 
 
-        $data['external_reference'] = $payment['external_reference'];
-        $data['payer_first_name'] = $payment['payer']['first_name'];
-        $data['payer_last_name'] = $payment['payer']['last_name'];
-        $data['payer_email'] = $payment['payer']['email'];
-
-        if (isset($data['payer_identification_type'])) {
-            $data['payer_identification_type'] .= " | " . $payment['payer']['identification']['type'];
-        } else {
-            $data['payer_identification_type'] = $payment['payer']['identification']['type'];
+      if (isset($data['payer_identification_type'])) {
+        $data['payer_identification_type'] .= " | " . $payment['payer']['identification']['type'];
+      } else {
+        if (isset($payment['payer']) && isset($payment['payer']['identification']) && isset($payment['payer']['identification']['type'])) {
+          $data['payer_identification_type'] = $payment['payer']['identification']['type'];
         }
-
-        if (isset($data['payer_identification_number'])) {
-            $data['payer_identification_number'] .= " | " . $payment['payer']['identification']['number'];
-        } else {
-            $data['payer_identification_number'] = $payment['payer']['identification']['number'];
+      }
+      
+      if (isset($data['payer_identification_number'])) {
+        $data['payer_identification_number'] .= " | " . $payment['payer']['identification']['number'];
+      } else {
+        if (isset($payment['payer']) && isset($payment['payer']['identification']) && isset($payment['payer']['identification']['number'])) {
+          $data['payer_identification_number'] = $payment['payer']['identification']['number'];
         }
+      }
 
-        return $data;
+      return $data;
     }
 
     protected function _updateAtributesData($data, $payment)
     {
-        if (isset($payment["last_four_digits"])) {
+        if (isset($payment['card']["last_four_digits"])) {
             if (isset($data["trunc_card"])) {
-                $data["trunc_card"] .= " | " . "xxxx xxxx xxxx " . $payment["last_four_digits"];
+                $data["trunc_card"] .= " | " . "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
             } else {
-                $data["trunc_card"] = "xxxx xxxx xxxx " . $payment["last_four_digits"];
+                $data["trunc_card"] = "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
             }
         }
 
-        if (isset($payment['cardholder']['name'])) {
+        if (isset($payment['card']['cardholder']['name'])) {
             if (isset($data["cardholder_name"])) {
-                $data["cardholder_name"] .= " | " . $payment["cardholder"]["name"];
+                $data["cardholder_name"] .= " | " . $payment['card']["cardholder"]["name"];
             } else {
-                $data["cardholder_name"] = $payment["cardholder"]["name"];
+                $data["cardholder_name"] = $payment['card']["cardholder"]["name"];
             }
         }
 
@@ -450,8 +454,8 @@ class StatusUpdate
             $data['statement_descriptor'] = $payment['statement_descriptor'];
         }
 
-        if (isset($payment['merchant_order_id'])) {
-            $data['merchant_order_id'] = $payment['merchant_order_id'];
+        if (isset($payment['order']) && isset($payment['order']['type']) && $payment['order']['type'] == "mercadopago") {
+            $data['merchant_order_id'] = $payment['order']['id'] ;
         }
 
         return $data;

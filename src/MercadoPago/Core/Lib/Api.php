@@ -114,23 +114,24 @@ class Api {
      * @param int $id
      * @return array(json)
      */
-    public function get_payment($id) {
-        $access_token = $this->get_access_token();
+  // @deletar
+//     public function get_payment($id) {
+//         $access_token = $this->get_access_token();
 
-        $uri_prefix = $this->sandbox ? "/sandbox" : "";
+//         $uri_prefix = $this->sandbox ? "/sandbox" : "";
 
-        $payment_info = \MercadoPago\Core\Lib\RestClient::get($uri_prefix."/collections/notifications/" . $id . "?access_token=" . $access_token);
-        return $payment_info;
-    }
+//         $payment_info = \MercadoPago\Core\Lib\RestClient::get($uri_prefix."/collections/notifications/" . $id . "?access_token=" . $access_token);
+//         return $payment_info;
+//     }
 
     /**
      * @param $id
      *
      * @return array
      */
-    public function get_payment_info($id) {
-        return $this->get_payment($id);
-    }
+//     public function get_payment_info($id) {
+//         return $this->get_payment($id);
+//     }
 
     /**
      * Get information for specific authorized payment
@@ -152,11 +153,7 @@ class Api {
     public function refund_payment($id) {
         $access_token = $this->get_access_token();
 
-        $refund_status = array(
-            "status" => "refunded"
-        );
-
-        $response = \MercadoPago\Core\Lib\RestClient::put("/collections/" . $id . "?access_token=" . $access_token, $refund_status);
+        $response = \MercadoPago\Core\Lib\RestClient::post("/v1/payments/$id/refunds?access_token=$access_token", array());
         return $response;
     }
 
@@ -165,16 +162,17 @@ class Api {
      * @param int $id
      * @return array(json)
      */
-    public function cancel_payment($id) {
-        $access_token = $this->get_access_token();
+  //@deletar
+//     public function cancel_payment($id) {
+//         $access_token = $this->get_access_token();
 
-        $cancel_status = array(
-            "status" => "cancelled"
-        );
+//         $cancel_status = array(
+//             "status" => "cancelled"
+//         );
 
-        $response = \MercadoPago\Core\Lib\RestClient::put("/collections/" . $id . "?access_token=" . $access_token, $cancel_status);
-        return $response;
-    }
+//         $response = \MercadoPago\Core\Lib\RestClient::put("/collections/" . $id . "?access_token=" . $access_token, $cancel_status);
+//         return $response;
+//     }
 
     /**
      * Cancel preapproval payment
@@ -199,19 +197,20 @@ class Api {
      * @param int $limit
      * @return array(json)
      */
-    public function search_payment($filters, $offset = 0, $limit = 0) {
-        $access_token = $this->get_access_token();
+  //@deletar
+//     public function search_payment($filters, $offset = 0, $limit = 0) {
+//         $access_token = $this->get_access_token();
 
-        $filters["offset"] = $offset;
-        $filters["limit"] = $limit;
+//         $filters["offset"] = $offset;
+//         $filters["limit"] = $limit;
 
-        $filters = $this->build_query($filters);
+//         $filters = $this->build_query($filters);
 
-        $uri_prefix = $this->sandbox ? "/sandbox" : "";
+//         $uri_prefix = $this->sandbox ? "/sandbox" : "";
 
-        $collection_result = \MercadoPago\Core\Lib\RestClient::get($uri_prefix."/collections/search?" . $filters . "&access_token=" . $access_token);
-        return $collection_result;
-    }
+//         $collection_result = \MercadoPago\Core\Lib\RestClient::get($uri_prefix."/collections/search?" . $filters . "&access_token=" . $access_token);
+//         return $collection_result;
+//     }
 
     /**
      * Create a checkout preference

@@ -89,7 +89,7 @@ class Standard
     protected function _getFormattedPaymentData($paymentId, $data = [])
     {
         $response = $this->coreModel->getPayment($paymentId);
-        $payment = $response['response']['collection'];
+        $payment = $response['response'];
 
         return  $this->_statusHelper->formatArrayPayment($data, $payment, self::LOG_NAME);
     }
@@ -207,7 +207,7 @@ class Standard
         $data = array();
         foreach ($merchantOrder['payments'] as $payment) {
             $response = $this->coreModel->getPayment($payment['id']);
-            $payment = $response['response']['collection'];
+            $payment = $response['response'];
             $data = $this->_statusHelper->formatArrayPayment($data, $payment, self::LOG_NAME);
         }
         return $data;

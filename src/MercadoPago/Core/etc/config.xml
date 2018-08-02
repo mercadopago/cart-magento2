@@ -13,6 +13,7 @@
             <logs>0</logs>
             <debug_mode>0</debug_mode>
             <use_successpage_mp>1</use_successpage_mp>
+            <financing_cost>0</financing_cost>
             <calculalator_available>0</calculalator_available>
             <time_between_verifications>*/5 * * * *</time_between_verifications>
         </mercadopago>
