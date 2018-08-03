@@ -56,9 +56,15 @@ class CalculatorLink
      */
     public function isAvailableCalculator(){
 
+        if(empty($this->_helperData->getPublicKey())){
+           return false;
+        }
         $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $isValidAccessToken = $this->_helperData->isValidAccessToken($accessToken);
-        return  ($isValidAccessToken & !empty($this->_helperData->getPublicKey()) & $this->_helperData->isAvailableCalculator());
+        if(!$isValidAccessToken){
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -113,7 +119,17 @@ class CalculatorLink
      * @return bool
      */
     public function isHasToShowing($nameLayout){
-        return $this->isAvailableCalculator() & $this->isPageToShow($nameLayout);
+
+        if(!$this->_helperData->isAvailableCalculator()){
+            return false;
+        }
+        if(!$this->isPageToShow($nameLayout)){
+            return false;
+        }
+        if(!$this->isAvailableCalculator()){
+            return false;
+        }
+        return true;
     }
 
 
