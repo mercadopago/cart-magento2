@@ -605,8 +605,8 @@ class Core
             $this->_clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
         $mp = $this->_coreHelper->getApiInstance($this->_clientId, $this->_clientSecret);
-
-        return $mp->get_payment($payment_id);
+      
+        return $mp->get("/v1/payments/" . $payment_id);
     }
 
     /**

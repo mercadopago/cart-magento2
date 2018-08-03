@@ -82,6 +82,8 @@ class Data
     const XML_PATH_SPONSOR_ID = 'payment/mercadopago/sponsor_id';
 
     const XML_PATH_CONSIDER_DISCOUNT = 'payment/mercadopago/consider_discount';
+  
+    const XML_PATH_CONSIDER_FINANCING_COST = 'payment/mercadopago/financing_cost';
 
 
     /**
@@ -354,7 +356,7 @@ class Data
         }
 
 
-        if (\Zend_Locale_Math::round($financingCost, 4) > 0) {
+        if (\Zend_Locale_Math::round($financingCost, 4) > 0 && $this->scopeConfig->isSetFlag(self::XML_PATH_CONSIDER_FINANCING_COST,\Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
             $order->setFinanceCostAmount($financingCost);
             $order->setBaseFinanceCostAmount($financingCost);
         }

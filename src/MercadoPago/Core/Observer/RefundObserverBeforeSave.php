@@ -230,62 +230,62 @@ class RefundObserverBeforeSave
      */
     protected function sendRefundRequest($order, $creditMemo, $paymentMethod, $isTotalRefund)
     {
-        $response = null;
-        $amount = $creditMemo->getGrandTotal();
+      $response = null;
+      $amount = $creditMemo->getGrandTotal();
 
-        if ($paymentMethod == 'mercadopago_standard') {
-            $paymentID = $order->getPayment()->getData('additional_information')['id'];
+      if ($paymentMethod == 'mercadopago_standard') {
+        $paymentID = $order->getPayment()->getData('additional_information')['id'];
 
-            $clientId = $this->_scopeConfig->getValue(
-                \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID,
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                $this->_scopeCode
-            );
+        $clientId = $this->_scopeConfig->getValue(
+          \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID,
+          \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+          $this->_scopeCode
+        );
 
-            $clientSecret = $this->_scopeConfig->getValue(
-                \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET,
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                $this->_scopeCode
-            );
+        $clientSecret = $this->_scopeConfig->getValue(
+          \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET,
+          \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+          $this->_scopeCode
+        );
 
-            $mp = $this->_dataHelper->getApiInstance($clientId, $clientSecret);
-            if ($isTotalRefund) {
-                $response = $mp->refund_payment($paymentID);
-                $order->setMercadoPagoRefundType('total');
-            } else {
-                $order->setMercadoPagoRefundType('partial');
-                $metadata = [
-                    "reason"             => '',
-                    "external_reference" => $order->getIncrementId(),
-                ];
-                $params = [
-                    "amount"   => $amount,
-                    "metadata" => $metadata,
-                ];
-                $response = $mp->post('/collections/' . $paymentID . '/refunds?access_token=' . $mp->get_access_token(), $params);
-            }
+        $mp = $this->_dataHelper->getApiInstance($clientId, $clientSecret);
+        if ($isTotalRefund) {
+          $response = $mp->refund_payment($paymentID);
+          $order->setMercadoPagoRefundType('total');
         } else {
-            $paymentID = $order->getPayment()->getData('additional_information')['id'];
-            $accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            $mp = $this->_dataHelper->getApiInstance($accessToken);
-            if ($isTotalRefund) {
-                $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=$accessToken", null);
-            } else {
-                $params = [
-                    "amount" => $amount,
-                ];
-                $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=$accessToken", $params);
-            }
+          $order->setMercadoPagoRefundType('partial');
+          $metadata = [
+            "reason"             => '',
+            "external_reference" => $order->getIncrementId(),
+          ];
+          $params = [
+            "amount"   => $amount,
+            "metadata" => $metadata,
+          ];
+          $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=" . $mp->get_access_token(), $params);
         }
-
-        if ($response['status'] == 201 || $response['status'] == 200) {
-            $order->setMercadoPagoRefund(true);
-            $this->_messageManager->addSuccessMessage(__('Refund made by Mercado Pago'));
+      } else {
+        $paymentID = $order->getPayment()->getData('additional_information')['id'];
+        $accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $mp = $this->_dataHelper->getApiInstance($accessToken);
+        if ($isTotalRefund) {
+          $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=$accessToken", null);
         } else {
-            $this->_messageManager->addErrorMessage(__('Failed to make the refund by Mercado Pago'));
-            $this->_messageManager->addErrorMessage($response['status'] . ' ' . $response['response']['message']);
-            $this->throwRefundException();
+          $params = [
+            "amount" => $amount,
+          ];
+          $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=$accessToken", $params);
         }
+      }
+
+      if ($response['status'] == 201 || $response['status'] == 200) {
+        $order->setMercadoPagoRefund(true);
+        $this->_messageManager->addSuccessMessage(__('Refund made by Mercado Pago'));
+      } else {
+        $this->_messageManager->addErrorMessage(__('Failed to make the refund by Mercado Pago'));
+        $this->_messageManager->addErrorMessage($response['status'] . ' ' . $response['response']['message']);
+        $this->throwRefundException();
+      }
     }
 
     /**

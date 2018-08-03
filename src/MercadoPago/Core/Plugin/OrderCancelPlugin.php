@@ -58,8 +58,7 @@ class OrderCancelPlugin
         }
 
         $paymentMethod = $this->order->getPayment()->getMethodInstance()->getCode();
-
-        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
+        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom' || $paymentMethod == 'mercadopago_customticket')) {
             return;
         }
 
@@ -75,7 +74,7 @@ class OrderCancelPlugin
 
         $orderPaymentStatus = isset($additionalInformation['status']) ? $additionalInformation['status'] : null ;
         $paymentID = isset($additionalInformation['payment_id_detail']) ? $additionalInformation['payment_id_detail'] : null ;
-
+      
         $isValidBasicData = $this->checkCancelationBasicData($paymentID, $paymentMethod);
         if ($isValidBasicData){
             $isValidaData = $this->checkCancelationData($orderStatus, $orderPaymentStatus);
@@ -94,11 +93,8 @@ class OrderCancelPlugin
                 $response = $mp->get("/v1/payments/$paymentID?access_token=$accessToken");
 
                 if ($response['status'] == 200 && ($response['response']['status'] == 'pending' || $response['response']['status'] == 'in_process')) {
-
                     $data = ["status" => 'cancelled'];
-
                     $response = $mp->put("/v1/payments/$paymentID?access_token=$accessToken", $data);
-
                     if ($response['status'] == 200) {
                         $this->messageManager->addSuccessMessage(__('Cancellation made by Mercado Pago'));
                     } else {
@@ -131,7 +127,7 @@ class OrderCancelPlugin
             return false;
         }
 
-        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
+        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom' || $paymentMethod == 'mercadopago_customticket')) {
             $this->messageManager->addWarningMessage(__('Order payment wasn\'t made by Mercado Pago. The cancellation will be made through Magento'));
             return false;
         }
@@ -149,11 +145,6 @@ class OrderCancelPlugin
     protected function checkCancelationData($orderStatus, $orderPaymentStatus)
     {
         $isValidaData = true;
-
-        if (!($orderStatus == 'processing' || $orderStatus == 'pending')) {
-            $this->messageManager->addErrorMessage(__('You can only make cancellations on orders whose status is Processing or Pending'));
-            $isValidaData = false;
-        }
 
         if (!isset($orderPaymentStatus)){
             $this->messageManager->addErrorMessage(__('The order didn\'t have payment status'));

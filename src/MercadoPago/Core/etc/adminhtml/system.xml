@@ -17,27 +17,33 @@
                     <comment>If set this config with NO, magento success page will be used</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-
+              
+                <field id="financing_cost" translate="label comment" type="select" sortOrder="9" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>Calculate Financing Cost</label>
+                    <comment></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+              
                 <field id="consider_discount" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Consider Discounts</label>
                     <comment>Consider discount of Mercado Pago to invoicing</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
 
-                <field id="heading_order_status_cron" translate="label" sortOrder="13" showInDefault="1" showInWebsite="1">
-                    <label>Order Status Update - Cron Configuration</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                    <attribute type="shared">1</attribute>
-                </field>
+              <!--                 <field id="heading_order_status_cron" translate="label" sortOrder="13" showInDefault="1" showInWebsite="1"> -->
+              <!--                     <label>Order Status Update - Cron Configuration</label> -->
+              <!--                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model> -->
+              <!--                     <attribute type="shared">1</attribute> -->
+              <!--                 </field> -->
 
-                <field id="time_between_verifications" translate="label" type="text" sortOrder="15" showInDefault="1" showInStore="0" showInWebsite="0">
-                    <label>Time between verifications</label>
-                </field>
-                <!-- requiere verificacion de, vacio, y que solo sea nuemeros-->
-                <field id="number_of_hours" translate="label comment" type="text" sortOrder="18" showInDefault="1" showInStore="0" showInWebsite="0">
-                    <label>Number of hours</label>
-                    <comment>Try to update all the orders created 'Amount of hours' before time to the moment to execute the cron</comment>
-                </field>
+              <!--                 <field id="time_between_verifications" translate="label" type="text" sortOrder="15" showInDefault="1" showInStore="0" showInWebsite="0"> -->
+              <!--                     <label>Time between verifications</label> -->
+              <!--                 </field> -->
+              <!-- requiere verificacion de, vacio, y que solo sea nuemeros-->
+              <!--                 <field id="number_of_hours" translate="label comment" type="text" sortOrder="18" showInDefault="1" showInStore="0" showInWebsite="0"> -->
+              <!--                     <label>Number of hours</label> -->
+              <!--                     <comment>Try to update all the orders created 'Amount of hours' before time to the moment to execute the cron</comment> -->
+              <!--                 </field> -->
 
                 <field id="heading_refund" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1">
                     <label>Refund Options</label>
@@ -196,11 +202,6 @@
                                         but for homologation you'll need to acquire the certificate in case you don't have it.
                                         <a href="https://www.mercadopago.com.ar/developers/solutions/payments/custom-checkout/appliance-requirements/" target="_blank">Learn More</a>]]>
                         </comment>
-                    </field>
-                    <field id="allow_2_cards" translate="label" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Allow Payment with 2 Cards</label>
-                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/mercadopago_custom/allow_2_cards</config_path>
                     </field>
                     <field id="title" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Payment Title</label>

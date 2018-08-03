@@ -11,6 +11,11 @@ class RestClient {
      *API URL
      */
     const API_BASE_URL = "https://api.mercadopago.com";
+    
+    /**
+     *Product Id 
+     */
+    const PRODUCT_ID = "BC32CANTRPP001U8NHO0";
 
     /**
      * @param       $uri
@@ -34,6 +39,12 @@ class RestClient {
         curl_setopt($connect, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
         $header_opt = array("Accept: application/json", "Content-Type: " . $content_type);
+        
+        //set x_product_id
+        if($method == 'POST'){
+          $header_opt[] = "x-product-id: " . self::PRODUCT_ID;
+        }
+      
         if (count($extra_params) > 0) {
             $header_opt = array_merge($header_opt, $extra_params);
         }
@@ -113,52 +124,54 @@ class RestClient {
             throw new Exception ($message, $response['status']);
         }*/
 
-        if ($response != null && $response['status'] >= 400 && self::$check_loop == 0) {
-			try {
-				self::$check_loop = 1;
-				$message = null;
-				$payloads = null;
-			 	$endpoint = null;
-				$errors = array();
-				if (isset($response['response'])) {
-					if (isset($response['response']['message'])) {
-						$message = $response['response']['message'];
-					}
-					if (isset($response['response']['cause'])) {
-				 		if (isset($response['response']['cause']['code']) && isset($response['response']['cause']['description'])) {
-				 			$message .= " - " . $response['response']['cause']['code'] . ': ' . $response['response']['cause']['description'];
-				 		} else if (is_array($response['response']['cause'])) {
-				 			foreach ($response['response']['cause'] as $cause) {
-				 				$message .= " - " . $cause['code'] . ': ' . $cause['description'];
-				 			}
-				 		}
-				 	}
-				}
-                //add data
-                if (isset($data) && $data != null) {
-                    $payloads = json_encode($data);
+      if ($response != null && $response['status'] >= 400 && self::$check_loop == 0) {
+        try {
+          self::$check_loop = 1;
+          $message = null;
+          $payloads = null;
+          $endpoint = null;
+          $errors = array();
+          if (isset($response['response'])) {
+            if (isset($response['response']['message'])) {
+              $message = $response['response']['message'];
+            }
+            if (isset($response['response']['cause'])) {
+              if (isset($response['response']['cause']['code']) && isset($response['response']['cause']['description'])) {
+                $message .= " - " . $response['response']['cause']['code'] . ': ' . $response['response']['cause']['description'];
+              } else if (is_array($response['response']['cause'])) {
+                foreach ($response['response']['cause'] as $cause) {
+                  $message .= " - " . $cause['code'] . ': ' . $cause['description'];
                 }
-                //add uri
-                if (isset($uri) && $uri != null) {
-                    $endpoint = $uri;
-                }
-				$errors[] = array(
-					"endpoint" => $endpoint,
-					"message" => $message,
-					"payloads" => $payloads
-				);
-                
-                self::sendErrorLog($response['status'], $errors);
-                
-		  	} catch (\Exception $e) {
-			   error_log("error to call API LOGS" . $e);
-			}
-		}
-		self::$check_loop = 0;
+              }
+            }
+          }
 
-        curl_close($connect);
+          //add data
+          if (isset($data) && $data != null) {
+            $payloads = json_encode($data);
+          }
+          //add uri
+          if (isset($uri) && $uri != null) {
+            $endpoint = $uri;
+          }
 
-        return $response;
+          $errors[] = array(
+            "endpoint" => $endpoint,
+            "message" => $message,
+            "payloads" => $payloads
+          );
+
+          self::sendErrorLog($response['status'], $errors);
+
+        } catch (\Exception $e) {
+          error_log("error to call API LOGS" . $e);
+        }
+      }
+      self::$check_loop = 0;
+
+      curl_close($connect);
+
+      return $response;
     }
 
     /**
