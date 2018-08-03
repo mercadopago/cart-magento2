@@ -11,6 +11,11 @@ class RestClient {
      *API URL
      */
     const API_BASE_URL = "https://api.mercadopago.com";
+    
+    /**
+     *Product Id 
+     */
+    const PRODUCT_ID = "BC32CANTRPP001U8NHO0";
 
     /**
      * @param       $uri
@@ -34,6 +39,12 @@ class RestClient {
         curl_setopt($connect, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
         $header_opt = array("Accept: application/json", "Content-Type: " . $content_type);
+        
+        //set x_product_id
+        if($method == 'POST'){
+          $header_opt[] = "x-product-id: " . self::PRODUCT_ID;
+        }
+      
         if (count($extra_params) > 0) {
             $header_opt = array_merge($header_opt, $extra_params);
         }
