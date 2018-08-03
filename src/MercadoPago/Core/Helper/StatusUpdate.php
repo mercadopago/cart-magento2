@@ -434,7 +434,7 @@ class StatusUpdate
 
     protected function _updateAtributesData($data, $payment)
     {
-        if (isset($payment['card']["last_four_digits"])) {
+        if (isset($payment['card']) && isset($payment['card']["last_four_digits"])) {
             if (isset($data["trunc_card"])) {
                 $data["trunc_card"] .= " | " . "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
             } else {
@@ -442,7 +442,7 @@ class StatusUpdate
             }
         }
 
-        if (isset($payment['card']['cardholder']['name'])) {
+        if (isset($payment['card']) && isset($payment['card']['cardholder']) && isset($payment['card']['cardholder']['name'])) {
             if (isset($data["cardholder_name"])) {
                 $data["cardholder_name"] .= " | " . $payment['card']["cardholder"]["name"];
             } else {
