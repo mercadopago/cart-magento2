@@ -30,21 +30,6 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
 
-              <!--                 <field id="heading_order_status_cron" translate="label" sortOrder="13" showInDefault="1" showInWebsite="1"> -->
-              <!--                     <label>Order Status Update - Cron Configuration</label> -->
-              <!--                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model> -->
-              <!--                     <attribute type="shared">1</attribute> -->
-              <!--                 </field> -->
-
-              <!--                 <field id="time_between_verifications" translate="label" type="text" sortOrder="15" showInDefault="1" showInStore="0" showInWebsite="0"> -->
-              <!--                     <label>Time between verifications</label> -->
-              <!--                 </field> -->
-              <!-- requiere verificacion de, vacio, y que solo sea nuemeros-->
-              <!--                 <field id="number_of_hours" translate="label comment" type="text" sortOrder="18" showInDefault="1" showInStore="0" showInWebsite="0"> -->
-              <!--                     <label>Number of hours</label> -->
-              <!--                     <comment>Try to update all the orders created 'Amount of hours' before time to the moment to execute the cron</comment> -->
-              <!--                 </field> -->
-
                 <field id="heading_refund" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1">
                     <label>Refund Options</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
@@ -148,26 +133,7 @@
                     <label>Debug Mode</label>
                     <comment>Enable to display actual error messages to frontend users (not recommended on production environment)</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-
-                <!-- BEGIN : Mercado Pago - Payments Calculator -->
-                <field id="heading_calculator" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1">
-                    <label>Payments Calculator</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                    <attribute type="shared">1</attribute>
-                </field>
-                <field id="calculalator_available" translate="label" type="select" sortOrder="105" showInDefault="1" showInWebsite="1" showInStore="0" >
-                    <label>Enable Mercado Pago Installments Calculator</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>if set to YES, Calculator will appear on the selected pages - Custom checkout credentials (Public Key and Access Token) must be set</comment>
-                </field>
-                <field id="show_in_pages" translate="label" type="multiselect" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <!--<can_be_empty>1</can_be_empty>-->
-                    <label>Show Calculator on selected pages</label>
-                    <source_model>MercadoPago\Core\Model\System\Config\Source\ListPages</source_model>
-                </field>
-                <!-- END : Mercado Pago - Payments Calculator -->
-
+              </field>
             </group>
             <group id="mercadopago_custom" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Mercado Pago - Custom Checkout</label>

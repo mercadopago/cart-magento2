@@ -74,7 +74,8 @@ class OrderCancelPlugin
 
         $orderPaymentStatus = isset($additionalInformation['status']) ? $additionalInformation['status'] : null ;
         $paymentID = isset($additionalInformation['payment_id_detail']) ? $additionalInformation['payment_id_detail'] : null ;
-      
+        
+        error_log("salesOrderBeforeCancel" . json_encode($additionalInformation));
         $isValidBasicData = $this->checkCancelationBasicData($paymentID, $paymentMethod);
         if ($isValidBasicData){
             $isValidaData = $this->checkCancelationData($orderStatus, $orderPaymentStatus);
@@ -115,6 +116,9 @@ class OrderCancelPlugin
      */
     protected function checkCancelationBasicData($paymentID, $paymentMethod)
     {
+      
+        error_log("checkCancelationBasicData " . $paymentID . " " . $paymentMethod);
+      
         $refundAvailable = $this->dataHelper->isRefundAvailable();
 
         if (!$refundAvailable) {
