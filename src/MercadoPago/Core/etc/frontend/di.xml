@@ -4,7 +4,6 @@
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="mercadopago_core_standard_provider" xsi:type="object">MercadoPago\Core\Model\StandardConfigProvider</item>
                 <item name="mercadopago_core_custom_provider" xsi:type="object">MercadoPago\Core\Model\CustomConfigProvider</item>
                 <item name="mercadopago_core_customTicket_provider" xsi:type="object">MercadoPago\Core\Model\CustomTicketConfigProvider</item>
             </argument>

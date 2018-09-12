@@ -12,8 +12,6 @@ define(
         'mage/translate',
         'MPcheckout',
         'Magento_Checkout/js/model/payment/additional-validators',
-        'meli',
-        'tinyj',
         'MPcustom',
         'MPv1Ticket'
     ],

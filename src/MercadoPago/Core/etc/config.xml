@@ -32,23 +32,6 @@
                 <coupon_mercadopago>0</coupon_mercadopago>
             </mercadopago_custom>
 
-            <mercadopago_standard>
-                <active>0</active>
-                <model>MercadoPago\Core\Model\Standard\Payment</model>
-                <order_status>pending</order_status>
-                <title>Mercado Pago</title>
-                <allowspecific>0</allowspecific>
-                <banner_checkout>http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg</banner_checkout>
-                <sort_order>-1</sort_order>
-                <installments>24</installments>
-                <type_checkout>iframe</type_checkout>
-                <auto_return>1</auto_return>
-                <iframe_width>900</iframe_width>
-                <iframe_height>700</iframe_height>
-                <sandbox_mode>0</sandbox_mode>
-				<group>offline</group>
-            </mercadopago_standard>
-
             <mercadopago_customticket>
                 <active>0</active>
                 <model>MercadoPago\Core\Model\CustomTicket\Payment</model>

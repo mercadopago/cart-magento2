@@ -13,10 +13,7 @@ define(
         'Magento_Customer/js/model/customer',
         'MercadoPago_Core/js/model/set-analytics-information',
         'mage/translate',
-        'meli',
-        'tinyj',
         'MPcustom',
-        'tiny',
         'MPanalytics',
         'MPv1'
     ],
@@ -58,6 +55,8 @@ define(
                     //change url loading
                     MPv1.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
 
+                    MPv1.customer_and_card.default = true;
+                  
                     //Initialize MPv1
                     MPv1.Initialize(mercadopago_site_id, mercadopago_public_key, mercadopago_coupon, mercadopago_url, payer_email);
 

@@ -43,17 +43,5 @@
                 </argument>
             </arguments>
         </referenceBlock>
-
-        <referenceContainer name="checkout.cart.methods">
-            <block class="MercadoPago\Core\Block\Calculator\CalculatorLink"
-                   name="checkout.cart.calculator"
-                   template="MercadoPago_Core::calculator/calculatorLink.phtml"
-                   after="checkout.cart.methods.onepage.bottom">
-                    <block class="MercadoPago\Core\Block\Calculator\CalculatorForm"
-                           name="mercadopago.calculator.form"
-                           template="MercadoPago_Core::calculator/calculatorForm.phtml" />
-            </block>
-        </referenceContainer>
-
     </body>
 </page>
