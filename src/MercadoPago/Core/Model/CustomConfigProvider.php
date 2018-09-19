@@ -99,6 +99,8 @@ class CustomConfigProvider
      */
     public function getConfig()
     {
+      
+        error_log("Testeee");
 
         if (!$this->methodInstance->isAvailable()) {
             return [];

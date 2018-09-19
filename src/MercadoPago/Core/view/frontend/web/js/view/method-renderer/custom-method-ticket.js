@@ -56,38 +56,13 @@ define(
                 return initialTotal;
             },
 
-            // initObservable: function () {
-            //     this._super()
-            //         .observe('paymentReady');
-
-            //     return this;
-            // },
             setValidateHandler: function (handler) {
                 this.validateHandler = handler;
             },
 
-            // isPaymentReady: function () {
-            //     return this.paymentReady();
-            // },
-
             context: function () {
                 return this;
             },
-
-            // isShowLegend: function () {
-            //     return true;
-            // },
-
-            // getTokenCodeArray: function (code) {
-            //     return "payment[" + this.getCode() + "][" + code + "]";
-            // },
-
-            // getLoadingGifUrl: function () {
-            //     if (configPayment != undefined) {
-            //         return configPayment['loading_gif'];
-            //     }
-            //     return '';
-            // },
 
             /**
              * Get url to logo
@@ -103,29 +78,6 @@ define(
             setPlaceOrderHandler: function (handler) {
                 this.placeOrderHandler = handler;
             },
-
-            // /**
-            //  * Get action url for payment method.
-            //  * @returns {String}
-            //  */
-            // getActionUrl: function () {
-            //     if (configPayment != undefined) {
-            //         return configPayment['actionUrl'];
-            //     }
-            //     return '';
-            // },
-
-            // initDiscountApp: function () {
-            //     if (configPayment != undefined) {
-            //         if (configPayment['discount_coupon'] == 1) {
-            //             MercadoPagoCustom.getInstance().setFullScreenLoader(fullScreenLoader);
-            //             MercadoPagoCustom.getInstance().initDiscountTicket();
-            //             MercadoPagoCustom.getInstance().setPaymentService(paymentService);
-            //             MercadoPagoCustom.getInstance().setPaymentMethodList(paymentMethodList);
-            //             MercadoPagoCustom.getInstance().setTotalsAction(getTotalsAction,$);
-            //         }
-            //     }
-            // },
 
             getCountryId: function () {
                 return configPayment['country'];
@@ -174,42 +126,6 @@ define(
                 }
                 return '';
             },
-            // getCountry: function () {
-            //     if (configPayment != undefined) {
-            //         return configPayment['country'];
-            //     }
-            //     return '';
-            // },
-
-            // getBaseUrl: function () {
-            //     if (configPayment != undefined) {
-            //         return configPayment['base_url'];
-            //     }
-            //     return '';
-            // },
-            // getRoute: function () {
-            //     if (configPayment != undefined) {
-            //         return configPayment['route'];
-            //     }
-            //     return '';
-            // },
-
-            // getPaymentSelected: function() {
-            //     if (this.getCountTickets()==1) {
-            //         var option = TinyJ('.optionsTicketMp');
-            //         return option.val();
-            //     }
-            //     var options = TinyJ('.optionsTicketMp');
-            //     if (options.length > 0) {
-            //         for (var i = 0; i < options.length; i++) {
-            //             option = options[i];
-            //             if (option.isChecked()){
-            //                 return option.val();
-            //             }
-            //         }
-            //     }
-            //     return false;
-            // },
 
             getSuccessUrl: function () {
                 if (configPayment != undefined) {
@@ -217,10 +133,6 @@ define(
                 }
                 return '';
             },
-
-            // couponActive: function () {
-            //     return configPayment['discount_coupon'];
-            // },
 
             getPaymentSelected: function() {
 
