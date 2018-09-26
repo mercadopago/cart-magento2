@@ -314,15 +314,11 @@ class Payment
 
         $url = $this->_helperData->getSuccessUrl();
         $arr['back_urls']['success'] = $this->_urlBuilder->getUrl($url);
-
-        $typeCheckout = $this->_scopeConfig->getValue('payment/mercadopago_standard/type_checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        if ($typeCheckout == 'redirect') {
-            $arr['back_urls']['pending'] = $this->_urlBuilder->getUrl($url);
-            if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
-                $arr['back_urls']['failure'] = $this->_urlBuilder->getUrl('checkout/onepage/failure');
-            }else{
-                $arr['back_urls']['failure'] = $this->_urlBuilder->getUrl('mercadopago/standard/failure');
-            }
+        $arr['back_urls']['pending'] = $this->_urlBuilder->getUrl($url);
+        if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
+            $arr['back_urls']['failure'] = $this->_urlBuilder->getUrl('checkout/onepage/failure');
+        }else{
+            $arr['back_urls']['failure'] = $this->_urlBuilder->getUrl('mercadopago/standard/failure');
         }
 
         $arr['notification_url'] = $this->_urlBuilder->getUrl("mercadopago/notifications/standard");
