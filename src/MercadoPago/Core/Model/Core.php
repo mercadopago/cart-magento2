@@ -559,35 +559,17 @@ class Core
     {
         //get access_token
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
+      
         $this->_coreHelper->log("Access Token for Post", 'mercadopago-custom.log', $this->_accessToken);
 
         //set sdk php mercadopago
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
+      
         $response = $mp->post("/v1/payments", $preference);
-        
-        $this->_coreHelper->log("POST /v1/payments", 'mercadopago-custom.log', $response);
-
-        if ($response['status'] == 200 || $response['status'] == 201) {
-            return $response;
-        } else {
-            $e = "";
-            $exception = new \MercadoPago\Core\Model\Api\V1\Exception(new \Magento\Framework\Phrase($e), $this->_scopeConfig);
-            if (count($response['response']['cause']) > 0) {
-                foreach ($response['response']['cause'] as $error) {
-                    $e .= $exception->getUserMessage($error) . " ";
-                }
-            } else {
-                $e = $exception->getUserMessage();
-            }
-
-            $this->_coreHelper->log("erro post pago: " . $e, 'mercadopago-custom.log');
-            $this->_coreHelper->log("response post pago: ", 'mercadopago-custom.log', $response);
-
-            $exception->setPhrase(new \Magento\Framework\Phrase($e));
-            throw $exception;
-        }
+      
+        return $response;
     }
 
     /**
@@ -620,7 +602,7 @@ class Core
     public function getPaymentV1($payment_id)
     {
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKENN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
@@ -653,7 +635,7 @@ class Core
     public function getPaymentMethods()
     {
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
@@ -705,7 +687,7 @@ class Core
     public function validCoupon($id)
     {
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
         $transaction_amount = $this->getAmount();

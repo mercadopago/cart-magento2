@@ -116,7 +116,7 @@ class ConfigObserver
 
         $this->validateClientCredentials();
 
-        $this->setSponsor();
+        $this->setUserInfo();
 
         $this->availableCheckout();
 
@@ -126,7 +126,7 @@ class ConfigObserver
 
         $this->checkBanner('mercadopago_custom');
         $this->checkBanner('mercadopago_customticket');
-        $this->checkBanner('mercadopago_standard');
+//         $this->checkBanner('mercadopago_standard');
 
     }
 
@@ -196,60 +196,72 @@ class ConfigObserver
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setSponsor()
+    public function setUserInfo()
     {
-        $sponsorIdConfig = $this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\Data::XML_PATH_SPONSOR_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_scopeCode
-        );
+      $sponsorIdConfig = $this->_scopeConfig->getValue(
+        \MercadoPago\Core\Helper\Data::XML_PATH_SPONSOR_ID,
+        \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+        $this->_scopeCode
+      );
 
-        $this->coreHelper->log("Sponsor_id: " . $sponsorIdConfig, self::LOG_NAME);
+      error_log("set user info: " . $sponsorIdConfig);
 
-        $sponsorId = "";
-        $this->coreHelper->log("Valid user test", self::LOG_NAME);
+      $this->coreHelper->log("Sponsor_id: " . $sponsorIdConfig, self::LOG_NAME);
 
-        $accessToken = $this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_scopeCode
-        );
+      $sponsorId = "";
+      $siteId = "not_defined";
+      
+      $this->coreHelper->log("Valid user test", self::LOG_NAME);
 
-        $this->coreHelper->log("Get access_token: " . $accessToken, self::LOG_NAME);
+      $accessToken = $this->_scopeConfig->getValue(
+        \MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
+        \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+        $this->_scopeCode
+      );
 
-        if (!$accessToken) {
-            return;
+      $this->coreHelper->log("Get access_token: " . $accessToken, self::LOG_NAME);
+
+      if (!$accessToken) {
+        return;
+      }
+
+      $mp = $this->coreHelper->getApiInstance($accessToken);
+      $user = $mp->get("/users/me");
+      $this->coreHelper->log("API Users response", self::LOG_NAME, $user);
+
+      error_log("Teste:" . json_encode($user));
+
+      if($user['status'] == 200){
+
+        $siteId = $user['response']['site_id'];
+
+        if (!in_array("test_user", $user['response']['tags'])) {
+
+          $sponsors = [
+            'MLA' => 222568987,
+            'MLB' => 222567845,
+            'MLM' => 222568246,
+            'MCO' => 222570694,
+            'MLC' => 222570571,
+            'MLV' => 222569730,
+            'MPE' => 222568315,
+            'MLU' => 247030424,
+          ];
+          $countryCode = $user['response']['site_id'];
+
+          if (isset($sponsors[$countryCode])) {
+            $sponsorId = $sponsors[$countryCode];
+          } else {
+            $sponsorId = '';
+          }
+
+          $this->coreHelper->log("Sponsor id set", self::LOG_NAME, $sponsorId);
         }
+      }
 
-        $mp = $this->coreHelper->getApiInstance($accessToken);
-        $user = $mp->get("/users/me");
-        $this->coreHelper->log("API Users response", self::LOG_NAME, $user);
-
-        if ($user['status'] == 200 && !in_array("test_user", $user['response']['tags'])) {
-
-            $sponsors = [
-                'MLA' => 222568987,
-                'MLB' => 222567845,
-                'MLM' => 222568246,
-                'MCO' => 222570694,
-                'MLC' => 222570571,
-                'MLV' => 222569730,
-                'MPE' => 222568315,
-                'MLU' => 247030424,
-            ];
-            $countryCode = $user['response']['site_id'];
-
-            if (isset($sponsors[$countryCode])) {
-                $sponsorId = $sponsors[$countryCode];
-            } else {
-                $sponsorId = '';
-            }
-
-            $this->coreHelper->log("Sponsor id set", self::LOG_NAME, $sponsorId);
-        }
-
-        $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\Data::XML_PATH_SPONSOR_ID, $sponsorId);
-        $this->coreHelper->log("Sponsor saved", self::LOG_NAME, $sponsorId);
+      $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\ConfigData::PATH_SPONSOR_ID, $sponsorId);
+      $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, $siteId);
+      $this->coreHelper->log("Sponsor saved", self::LOG_NAME, $sponsorId);
     }
 
     /**
@@ -261,7 +273,7 @@ class ConfigObserver
     {
 
         $accessToken = $this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN,
+            \MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
             $this->_scopeCode
         );
@@ -334,10 +346,12 @@ class ConfigObserver
     protected function checkAnalyticsData()
     {
         $accessToken = $this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN,
+            \MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
             $this->_scopeCode
         );
+      
+      
         if (!$this->coreHelper->isValidAccessToken($accessToken)) {
             $clientId = $this->_scopeConfig->getValue(
                 \MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID,

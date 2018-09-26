@@ -82,7 +82,7 @@ class OrderCancelPlugin
             if ($isValidaData){
                 $clientId = $this->dataHelper->getClientId();
                 $clientSecret = $this->dataHelper->getClientSecret();
-                $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Model\Core::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+                $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
                 $response = null;
 
                 $mp = $this->dataHelper->getApiInstance($accessToken);

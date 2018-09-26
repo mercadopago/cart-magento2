@@ -19,7 +19,6 @@ class Data
      */
     const XML_PATH_MERCADOPAGO_TICKET_ACTIVE = 'payment/mercadopago_customticket/active';
 
-
     /**
      *path to access token config
      */
@@ -191,7 +190,7 @@ class Data
     public function log($message, $name = "mercadopago", $array = null)
     {
         //load admin configuration value, default is true
-        $actionLog = $this->scopeConfig->getValue('payment/mercadopago/logs', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $actionLog = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (!$actionLog) {
             return;
         }
@@ -213,6 +212,10 @@ class Data
      */
     public function getApiInstance($access_or_client_id = null, $client_secret = null) { 
       
+      error_log("Teste access: " . $access_or_client_id);
+      error_log("Teste secret: " . $client_secret);
+//       echo json_encode(debug_backtrace());
+//       exit;
       if(is_null($access_or_client_id) && is_null($client_secret)){
         throw new \Magento\Framework\Exception\LocalizedException(__('Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN'));     
       }
@@ -487,10 +490,10 @@ class Data
     /**
      * @return boolean
      */
-    public function isAvailableCalculator()
-    {
-        return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_AVAILABLE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-    }
+//     public function isAvailableCalculator()
+//     {
+//         return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_AVAILABLE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+//     }
 
     /**
      * @return mixed
@@ -598,7 +601,7 @@ class Data
                 $analyticsData['checkout_type'] = 'basic';
                 $analyticsData['payment_type'] = isset($additionalInfo['payment_type_id']) ? $order->getPayment()->getData('additional_information')['payment_type_id'] : 'credit_card';
             } else {
-                $analyticsData['analytics_key'] = $this->getClientIdFromAccessToken($this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+                $analyticsData['analytics_key'] = $this->getClientIdFromAccessToken($this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
                 $analyticsData['payment_type'] = 'ticket';
             }
         }

@@ -102,7 +102,7 @@ class CustomTicketConfigProvider
                     'loading_gif'     => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
                     'logEnabled'      => $this->_scopeConfig->getValue('payment/mercadopago/logs', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                     'logoUrl'         => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
-                    'analytics_key'   => $this->_coreHelper->getClientIdFromAccessToken($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
+                    'analytics_key'   => $this->_coreHelper->getClientIdFromAccessToken($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
                     'platform_version' => $this->_productMetaData->getVersion(),
                     'module_version'   => $this->_coreHelper->getModuleVersion()
                 ],

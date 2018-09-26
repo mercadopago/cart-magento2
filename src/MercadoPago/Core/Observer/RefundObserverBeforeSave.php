@@ -266,7 +266,7 @@ class RefundObserverBeforeSave
         }
       } else {
         $paymentID = $order->getPayment()->getData('additional_information')['id'];
-        $accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $mp = $this->_dataHelper->getApiInstance($accessToken);
         if ($isTotalRefund) {
           $response = $mp->post("/v1/payments/$paymentID/refunds?access_token=$accessToken", null);
