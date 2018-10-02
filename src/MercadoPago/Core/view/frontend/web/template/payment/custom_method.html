@@ -93,8 +93,11 @@
                     <div class="mp-box-inputs mp-line" id="mp-securityCode-customer-and-card">
                       <div class="mp-box-inputs mp-col-45">
                         <label for="customer-and-card-securityCode"><!-- ko i18n: 'Security code'--><!-- /ko --> <em>*</em></label>
-                        <input type="text" id="customer-and-card-securityCode" data-checkout="securityCode" autocomplete="off" maxlength="4"/>
-          
+                        <input type="text" id="customer-and-card-securityCode" data-checkout="securityCode" autocomplete="off" 
+                               maxlength="4" data-bind="attr: {
+                                                        'data-validate': JSON.stringify({required:true})}, 
+                                                         event: { keyup: onlyNumbersInSecurityCode, blur: validateSecurityCode }" />
+                        
                         <span class="mp-error" id="mp-error-224" data-main="#customer-and-card-securityCode"> <!-- ko i18n: 'Parameter securityCode can not be null/empty'--><!-- /ko --> </span>
                         <span class="mp-error" id="mp-error-E302" data-main="#customer-and-card-securityCode"> <!-- ko i18n: 'Invalid Security Code'--><!-- /ko --></span>
                         <span class="mp-error" id="mp-error-E203" data-main="#customer-and-card-securityCode"> <!-- ko i18n: 'Invalid Security Code'--><!-- /ko --></span>
@@ -106,7 +109,9 @@
                   <div id="mercadopago-form">
                     <div class="mp-box-inputs mp-col-100">
                       <label for="cardNumber"> <!-- ko i18n: 'Credit card number'--><!-- /ko --> <em>*</em></label>
-                      <input type="text" id="cardNumber" data-checkout="cardNumber" autocomplete="off"/>
+                      <input type="text" id="cardNumber" data-checkout="cardNumber" autocomplete="off" maxlength="19" minlength="16" required data-bind="event: {
+                                blur: validateCreditCardNumber
+                            }"/>
                       <span class="mp-error" id="mp-error-205" data-main="#cardNumber"> <!-- ko i18n: 'Parameter cardNumber can not be null/empty'--><!-- /ko --> </span>
                       <span class="mp-error" id="mp-error-E301" data-main="#cardNumber"> <!-- ko i18n: 'Invalid Card Number'--><!-- /ko --> </span>
                     </div>
@@ -123,7 +128,10 @@
                                             options: getCcMonthsValues(),
                                             optionsValue: 'value',
                                             optionsText: 'month',
-                                            optionsCaption: $t('Month')">
+                                            optionsCaption: $t('Month'),
+                                            event: { change: validateExpirationDate }">
+                          
+                          
                         </select>
                       </div>
           
@@ -137,7 +145,8 @@
                                            options: getCcYearsValues(),
                                            optionsValue: 'value',
                                            optionsText: 'year',
-                                           optionsCaption: $t('Year')">
+                                           optionsCaption: $t('Year'),
+                                           event: { change: validateExpirationDate }">
                         </select>
                       </div>
           
@@ -151,7 +160,8 @@
           
                     <div class="mp-box-inputs mp-col-100">
                       <label for="cardholderName"> <!-- ko i18n: 'Card holder name'--><!-- /ko --> <em>*</em></label>
-                      <input type="text" id="cardholderName" name="mercadopago_custom[cardholderName]" data-checkout="cardholderName" autocomplete="off"/>
+                      <input type="text" id="cardholderName" name="mercadopago_custom[cardholderName]" data-checkout="cardholderName" 
+                             autocomplete="off" data-bind="attr: {'data-validate': JSON.stringify({required:true})}, event: { blur: validateCardHolderName }" />
           
                       <span class="mp-error" id="mp-error-221" data-main="#cardholderName"> <!-- ko i18n: 'Parameter cardholderName can not be null/empty'--><!-- /ko --> </span>
                       <span class="mp-error" id="mp-error-316" data-main="#cardholderName"> <!-- ko i18n: 'Invalid Card Holder Name'--><!-- /ko --> </span>
@@ -160,7 +170,10 @@
                     <div class="mp-box-inputs mp-line">
                       <div class="mp-box-inputs mp-col-45">
                         <label for="securityCode"> <!-- ko i18n: 'Security code'--><!-- /ko -->  <em>*</em></label>
-                        <input type="text" id="securityCode" data-checkout="securityCode" autocomplete="off" maxlength="4"/>
+                        <input type="text" id="securityCode" data-checkout="securityCode" 
+                               autocomplete="off" maxlength="4" required data-bind="attr: {
+                                                                                    'data-validate': JSON.stringify({required:true})}, 
+                                                                                     event: { keyup: onlyNumbersInSecurityCode, blur: validateSecurityCode }" />
           
                         <span class="mp-error" id="mp-error-224" data-main="#securityCode"> <!-- ko i18n: 'Parameter securityCode can not be null/empty'--><!-- /ko -->  </span>
                         <span class="mp-error" id="mp-error-E302" data-main="#securityCode"> <!-- ko i18n: 'Invalid Security Code'--><!-- /ko -->  </span>

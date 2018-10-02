@@ -261,7 +261,6 @@ class Data
      */
     public function isValidAccessToken($accessToken)
     {
-      
         if(empty($accessToken)){
           return false;
         }
@@ -272,7 +271,6 @@ class Data
             if ($response['status'] == 401 || $response['status'] == 400) {
                 return false;
             }
-
             return true;
         } catch (\Exception $e) {
             return false;

@@ -291,7 +291,78 @@ define(
             initialize: function () {
                 this._super();
                 setAnalyticsInformation.beforePlaceOrder(this.getCode());
+            },
+          
+          /*
+           *
+           * Validation of the main fields to process a payment by credit card
+           *
+           */
+          
+          validateCreditCardNumber: function (a, b){
+            var self = this;
+            self.hideError('E301');
+            var cardNumber = document.querySelector(MPv1.selectors.cardNumber).value;
+            if(cardNumber !== ""){
+              Mercadopago.validateCardNumber(cardNumber, function(response, status){
+                if(status === false){
+                  self.showError('E301');
+                }
+              })
             }
+          },
+
+          validateExpirationDate: function (a, b){
+            var self = this;
+            self.hideError('208');
+            var monthExperitaion = document.querySelector(MPv1.selectors.cardExpirationMonth).value;
+            var yearExperitation = document.querySelector(MPv1.selectors.cardExpirationYear).value;
+
+            if(monthExperitaion !== "" && yearExperitation !== ""){
+              if(Mercadopago.validateExpiryDate(monthExperitaion, yearExperitation) === false){
+                self.showError('208');
+              }
+            }
+          },
+
+          validateCardHolderName: function (a, b){
+            var self = this;
+            self.hideError('316');
+            var cardHolderName = document.querySelector(MPv1.selectors.cardholderName).value;
+            if(cardNumber !== ""){
+              if(Mercadopago.validateCardholderName(cardHolderName) === false){
+                self.showError('316');
+              }
+            }
+          },
+
+          validateSecurityCode: function (a, b){
+            var self = this;
+            self.hideError('E302');
+            var securityCode = document.querySelector(MPv1.selectors.securityCode).value;            
+            if(securityCode !== "" && securityCode.length < 3){
+              self.showError('E302');
+            }
+          },
+          
+          onlyNumbersInSecurityCode: function(t, evt){
+            var securityCode = document.querySelector(MPv1.selectors.securityCode);            
+            if (securityCode.value.match(/[^0-9 ]/g)) {
+              securityCode.value = securityCode.value.replace(/[^0-9 ]/g, '');
+            }
+          },
+
+          showError: function (code){
+            var $form = MPv1.getForm();
+            var $span = $form.querySelector('#mp-error-' + code);
+            $span.style.display = 'inline-block';
+          },
+
+          hideError: function (code){
+            var $form = MPv1.getForm();
+            var $span = $form.querySelector('#mp-error-' + code);
+            $span.style.display = 'none';
+          }
 
         });
     }

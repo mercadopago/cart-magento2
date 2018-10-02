@@ -398,7 +398,7 @@ class Core
                 "title"       => $product->getName(),
                 "description" => $product->getName(),
                 "picture_url" => $image->getUrl(),
-                "category_id" => $this->_scopeConfig->getValue('payment/mercadopago/category_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                "category_id" => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CATEGORY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                 "quantity"    => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
                 "unit_price"  => (float)number_format($item->getPrice(), 2, '.', '')
             ];
