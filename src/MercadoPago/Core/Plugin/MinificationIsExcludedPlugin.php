@@ -17,6 +17,8 @@ class MinificationIsExcludedPlugin
         $returnValue = $proceed($contentType);
         if ($contentType == 'js') {
             $returnValue[] = 'mercadopago.js';
+            $returnValue[] = 'mptools/buttons/render.js';
+            $returnValue[] = 'mptools/render.js';
         }
 
         return $returnValue;
