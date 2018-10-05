@@ -179,7 +179,7 @@ class CarrierData
     {
         if (empty($this->_mapping)) {
             $mapping = $this->scopeConfig->getValue(self::XML_PATH_ATTRIBUTES_MAPPING);
-            $mapping = unserialize($mapping);
+            $mapping = json_decode($mapping, true);
             $mappingResult = [];
             foreach ($mapping as $key => $map) {
                 $mappingResult[$key] = ['code' => $map['attribute_code'], 'unit' => $map['unit']];
