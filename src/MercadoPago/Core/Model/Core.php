@@ -571,6 +571,39 @@ class Core
       
         return $response;
     }
+  
+  /**
+     * Return response of api to a preference
+     *
+     * @param $preference
+     *
+     * @return array
+     * @throws \MercadoPago\Core\Model\Api\V1\Exception
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getMessageError($response)
+    {
+      $errors = \MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS;
+
+      //set default error
+      $messageErrorToClient = $errors['NOT_IDENTIFIED'];
+
+      if( isset($response['response']) && 
+         isset($response['response']['cause']) &&
+         count($response['response']['cause']) > 0){
+
+        // get first error
+        $cause = $response['response']['cause'][0];
+
+        if(isset($errors[$cause['code']])){
+
+          //if exist get message error
+          $messageErrorToClient = $errors[$cause['code']];
+        }
+      }
+      
+      return $messageErrorToClient;
+    }
 
     /**
      * Return info of payment returned by MP api

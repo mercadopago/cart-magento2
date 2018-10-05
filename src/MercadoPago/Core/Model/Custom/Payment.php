@@ -265,8 +265,6 @@ class Payment
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
-        $this->_helperData->log("assigData", self::LOG_NAME);
-
         // route /checkout/onepage/savePayment
         if (!($data instanceof \Magento\Framework\DataObject)) {
             $data = new \Magento\Framework\DataObject($data);
@@ -278,7 +276,7 @@ class Payment
           $infoForm = $infoForm['additional_data'];
         }
         
-        $this->_helperData->log("assigData: ". json_encode($infoForm), self::LOG_NAME);
+        $this->_helperData->log("CustomPayment::assignData - ". json_encode($infoForm), self::LOG_NAME);
 
         //$infoForm = $infoForm['mercadopago_custom'];
         if (isset($infoForm['one_click_pay']) && $infoForm['one_click_pay'] == 1) {
@@ -323,7 +321,7 @@ class Payment
       }
       
       try {
-        $this->_helperData->log("Credit Card: init prepare post payment", self::LOG_NAME);
+        $this->_helperData->log("CustomPayment::initialize - Credit Card: init prepare post payment", self::LOG_NAME);
         
         $infoInstance = $this->getInfoInstance();
         $quote = $this->_getQuote();
@@ -366,14 +364,11 @@ class Payment
         $preference['binary_mode'] = $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BINARY_MODE);
         $preference['statement_descriptor'] = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_STATEMENT_DESCRIPTOR);
 
-        $this->_helperData->log("Credit Card: Preference to POST /v1/payments", self::LOG_NAME, $preference);
-        
+        $this->_helperData->log("CustomPayment::initialize - Credit Card: Preference to POST /v1/payments", self::LOG_NAME, $preference);
       } catch (\Exception $e) {
-        
         $this->_helperData->log("CustomPayment::initialize - There was an error retrieving the information to create the payment, more details: " . $e->getMessage());
         throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
         return $this;
-        
       }
       
       // POST /v1/payments 
@@ -384,6 +379,8 @@ class Payment
 
         $payment = $response['response'];
 
+        $infoInstance->setAdditionalInformation($payment);
+        
         // @REFACTOR
         if(isset($payment['id'])){
           $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
@@ -403,33 +400,15 @@ class Payment
 
         return true;
       }else{
-        
-        $errors = \MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS;
-        
-        //set default error
-        $messageErrorToClient = $errors['NOT_IDENTIFIED'];
 
-        if( isset($response['response']) && 
-           isset($response['response']['cause']) &&
-           count($response['response']['cause']) > 0){
+        $messageErrorToClient = $this->_coreModel->getMessageError($response);
 
-          // get first error
-          $cause = $response['response']['cause'][0];
-
-          if(isset($errors[$cause['code']])){
-
-            //if exist get message error
-            $messageErrorToClient = $errors[$cause['code']];
-          }
-        }
-        
         $this->_helperData->log("CustomPayment::initialize - The API returned an error while creating the payment, more details: " . json_encode($response));
 
         throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
 
         return $this;
       }
-    
     }
 
     /**

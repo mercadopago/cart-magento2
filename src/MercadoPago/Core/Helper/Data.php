@@ -211,7 +211,6 @@ class Data
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getApiInstance($access_or_client_id = null, $client_secret = null) { 
-      
       error_log("Teste access: " . $access_or_client_id);
       error_log("Teste secret: " . $client_secret);
 //       echo json_encode(debug_backtrace());

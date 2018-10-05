@@ -534,3 +534,9 @@
   #mercadopago-payment-methods-ticket li{
     list-style: none;
   }
+
+
+  /* Ticket */
+  #co-mercadopago-form-ticket .field-error, div.mage-error[generated] {
+    margin-top: -10px;
+  }

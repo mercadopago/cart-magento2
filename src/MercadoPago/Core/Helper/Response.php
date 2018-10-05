@@ -111,8 +111,18 @@ class Response
     "4039" => "application_fee cannot be a negative value.",
     "4050" => "payer.email must be a valid email.",
     "4051" => "payer.email must be shorter than 254 characters.",
+    
+    // Ticket
+    "4094" => "Payer firstname required.",
+    "4095" => "Payer lastname required.",
+    "4096" => "Payer required.",
+    "4097" => "Payer identification type required.",
+    "4098" => "Payer identification number required.",
+    
+    // 'default' errors 
     "NOT_IDENTIFIED" => "An error occurred when creating the payment.",
     "TOKEN_EMPTY" => "Verify the form data or wait until the validation of the payment data",
     "INTERNAL_ERROR_MODULE" => "There was an internal error when creating the payment."
+    
   );
 }
