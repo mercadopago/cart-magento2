@@ -381,24 +381,8 @@ class Payment
 
         $infoInstance->setAdditionalInformation($payment);
         
-        // @REFACTOR
-        //         if(isset($payment['id'])){
-        //           $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
-        //         }
-        //         if(isset($payment['payer']['identification']['type'])){
-        //           $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
-        //         }
-        //         if(isset($payment['payer']['identification']['number'])){
-        //           $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
-        //         }
-        //         if(isset($response['response']['status'])){
-        //           $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
-        //         }
-        //         if(isset($response['response']['status_detail'])){
-        //           $this->getInfoInstance()->setAdditionalInformation('status_detail', $response['response']['status_detail']);
-        //         }
-
         return true;
+        
       }else{
 
         $messageErrorToClient = $this->_coreModel->getMessageError($response);
@@ -421,72 +405,6 @@ class Payment
 
         return $this;
     }
-
-    /**
-     * Fill preference with patment data
-     *
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \MercadoPago\Core\Model\Api\V1\Exception
-     */
-    // @delete
-//     public function preparePostPayment($usingSecondCardInfo = null)
-//     {
-
-//         $this->_helperData->log("Credit Card -> init prepare post payment", self::LOG_NAME);
-
-//         $quote = $this->_getQuote();
-//         $order = $this->getInfoInstance()->getOrder();
-//         $payment = $order->getPayment();
-//         $paymentInfo = $this->getPaymentInfo($payment);
-
-//         $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($paymentInfo, $quote, $order);
-//         $preference['installments'] = (int) $payment->getAdditionalInformation("installments");
-//         $paymentMethod = $payment->getAdditionalInformation("payment_method_id");
-//         if($paymentMethod == ""){
-//             // MLM: does not have payment method guessing
-//             $paymentMethod = $payment->getAdditionalInformation("payment_method_selector");
-//         }
-
-//         $preference['payment_method_id'] = $paymentMethod;
-//         $preference['token'] = $payment->getAdditionalInformation("token");
-//         $preference['metadata']['token'] = $payment->getAdditionalInformation("token");
-
-//         if($payment->getAdditionalInformation("issuer_id") != "" && $payment->getAdditionalInformation("issuer_id") > -1){
-//             $preference['issuer_id'] = (int)$payment->getAdditionalInformation("issuer_id");
-//         }
-        
-//         $this->_helperData->log("Credit Card ----> here", self::LOG_NAME, $preference);
-
-//         if(isset($preference['payer']) && isset($preference['payer']['email'])){
-            
-//             $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-//             $mp = $this->_helperData->getApiInstance($this->_accessToken);
-//             $customer = $mp->get_or_create_customer($preference['payer']['email']);
-
-//             if($payment->getAdditionalInformation("one_click_pay") == 'true'){
-//                 $preference['payer']['id'] = $customer['id'];
-//             }
-
-//             //add customer in metadata
-//             if(isset($customer['status']) && ($customer['status'] == 200 || $customer['status'] == 201)){
-//                 $preference['metadata']['customer_id'] = $customer['id'];
-//             }
-//         }
-      
-//         $this->_helperData->log("Credit Card -> Preferences ---->", self::LOG_NAME, $preference);
-
-//         $preference['binary_mode'] = $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/binary_mode');
-//         $preference['statement_descriptor'] = $this->_scopeConfig->getValue('payment/mercadopago_custom/statement_descriptor');
-
-//         $this->_helperData->log("Credit Card -> PREFERENCE to POST /v1/payments", self::LOG_NAME, $preference);
-      
-//         /* POST /v1/payments */
-//         $response = $this->_coreModel->postPaymentV1($preference);
-
-//         return $response;
-//     }
-
 
     /**
      * Retrieves quote

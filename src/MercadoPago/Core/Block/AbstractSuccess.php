@@ -113,6 +113,7 @@ class AbstractSuccess
      */
     public function getInfoPayment()
     {
+      error_log("aqui");
         $order_id = $this->_checkoutSession->getLastRealOrderId();
         $info_payments = $this->_coreFactory->create()->getInfoPaymentByOrder($order_id);
 
@@ -122,24 +123,19 @@ class AbstractSuccess
     /**
      * Return a message to show in success page
      *
-     * @param string  $status
-     * @param string  $status_detail
-     * @param string  $payment_method
-     * @param float   $amount
-     * @param integer $installment
+     * @param object  $payment
      *
      * @return string
      */
     public function getMessageByStatus($payment)
     {
-      
       $status = $payment['status'] != "" ? $payment['status'] : '';
       $status_detail = $payment['status_detail'] != "" ? $payment['status_detail'] : '';
       $payment_method = $payment['payment_method_id'] != "" ? $payment['payment_method_id'] : '';
       $amount = $payment['transaction_amount'] != "" ? $payment['transaction_amount'] : '';
       $installments = $payment['installments'] != "" ? $payment['installments'] : '';
-      
-        return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $installments, $amount);
+
+      return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $installments, $amount);
     }
 
     /**

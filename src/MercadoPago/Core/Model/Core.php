@@ -18,12 +18,6 @@ class Core
     protected $_code = 'mercadopago';
 
     /**
-     * Define path of access token config
-     */
-    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
-    const XML_PATH_PUBLIC_KEY = 'payment/mercadopago_custom/public_key';
-
-    /**
      * {@inheritdoc}
      */
     protected $_isGateway = true;
@@ -245,6 +239,10 @@ class Core
     // @REFACTOR
     public function getInfoPaymentByOrder($order_id)
     {
+      
+      
+        error_log("Testeeee    getInfoPaymentByOrder");
+      
         $order = $this->_getOrder($order_id);
         $payment = $order->getPayment();
         $info_payments = [];
@@ -467,7 +465,6 @@ class Core
 
         /* INIT PREFERENCE */
         $preference = array();
-
 
         // Check if notification URL contains localhost
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');

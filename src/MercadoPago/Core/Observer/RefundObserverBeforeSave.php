@@ -13,8 +13,6 @@ class RefundObserverBeforeSave
     implements ObserverInterface
 {
 
-    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
-
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */

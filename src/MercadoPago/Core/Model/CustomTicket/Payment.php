@@ -142,12 +142,8 @@ class Payment
         $this->getInfoInstance()->setAdditionalInformation($payment);
         
         $this->setOrderSubtotals($payment);
-        return true;
-//         $this->getInfoInstance()->setAdditionalInformation('activation_uri', $response['response']['transaction_details']['external_resource_url']);
 
-//         if(isset($response['response']['status'])){
-//           $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
-//         }
+        return true;
         
       }else{
 

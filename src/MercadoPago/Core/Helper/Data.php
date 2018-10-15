@@ -20,14 +20,6 @@ class Data
     const XML_PATH_MERCADOPAGO_TICKET_ACTIVE = 'payment/mercadopago_customticket/active';
 
     /**
-     *path to access token config
-     */
-    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
-    /**
-     *path to public config
-     */
-    const XML_PATH_PUBLIC_KEY = 'payment/mercadopago_custom/public_key';
-    /**
      *path to mercadopago custom active config
      */
     const XML_PATH_MERCADOPAGO_CUSTOM_ACTIVE = 'payment/mercadopago_custom/active';
@@ -475,19 +467,6 @@ class Data
     {
         return $this->scopeConfig->getValue(self::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
-
-    public function getPublicKey()
-    {
-        return $this->scopeConfig->getValue(self::XML_PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-    }
-
-    /**
-     * @return boolean
-     */
-//     public function isAvailableCalculator()
-//     {
-//         return $this->scopeConfig->getValue(self::XML_PATH_CALCULATOR_AVAILABLE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-//     }
 
     /**
      * @return mixed
