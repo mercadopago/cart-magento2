@@ -382,21 +382,21 @@ class Payment
         $infoInstance->setAdditionalInformation($payment);
         
         // @REFACTOR
-        if(isset($payment['id'])){
-          $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
-        }
-        if(isset($payment['payer']['identification']['type'])){
-          $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
-        }
-        if(isset($payment['payer']['identification']['number'])){
-          $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
-        }
-        if(isset($response['response']['status'])){
-          $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
-        }
-        if(isset($response['response']['status_detail'])){
-          $this->getInfoInstance()->setAdditionalInformation('status_detail', $response['response']['status_detail']);
-        }
+        //         if(isset($payment['id'])){
+        //           $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
+        //         }
+        //         if(isset($payment['payer']['identification']['type'])){
+        //           $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
+        //         }
+        //         if(isset($payment['payer']['identification']['number'])){
+        //           $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
+        //         }
+        //         if(isset($response['response']['status'])){
+        //           $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
+        //         }
+        //         if(isset($response['response']['status_detail'])){
+        //           $this->getInfoInstance()->setAdditionalInformation('status_detail', $response['response']['status_detail']);
+        //         }
 
         return true;
       }else{

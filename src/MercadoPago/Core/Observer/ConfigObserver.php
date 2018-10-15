@@ -204,8 +204,6 @@ class ConfigObserver
         $this->_scopeCode
       );
 
-      error_log("set user info: " . $sponsorIdConfig);
-
       $this->coreHelper->log("Sponsor_id: " . $sponsorIdConfig, self::LOG_NAME);
 
       $sponsorId = "";
@@ -228,8 +226,6 @@ class ConfigObserver
       $mp = $this->coreHelper->getApiInstance($accessToken);
       $user = $mp->get("/users/me");
       $this->coreHelper->log("API Users response", self::LOG_NAME, $user);
-
-      error_log("Teste:" . json_encode($user));
 
       if($user['status'] == 200){
 

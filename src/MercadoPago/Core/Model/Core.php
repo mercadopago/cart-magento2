@@ -242,6 +242,7 @@ class Core
      *
      * @return array
      */
+    // @REFACTOR
     public function getInfoPaymentByOrder($order_id)
     {
         $order = $this->_getOrder($order_id);
@@ -261,7 +262,7 @@ class Core
             ["field" => "payment_id_detail", "title" => "Mercado Pago Payment Id: %1"],
             ["field" => "id", "title" => "Collection Id: %1"],
         ];
-
+      
         foreach ($fields as $field) {
             if ($payment->getAdditionalInformation($field['field']) != "") {
                 $text = __($field['title'], $payment->getAdditionalInformation($field['field']));
@@ -572,14 +573,12 @@ class Core
         return $response;
     }
   
-  /**
-     * Return response of api to a preference
+    /**
+     * Get message error by response API
      *
-     * @param $preference
+     * @param $response
      *
-     * @return array
-     * @throws \MercadoPago\Core\Model\Api\V1\Exception
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return string
      */
     public function getMessageError($response)
     {

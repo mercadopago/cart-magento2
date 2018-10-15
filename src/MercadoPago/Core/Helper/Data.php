@@ -211,10 +211,7 @@ class Data
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getApiInstance($access_or_client_id = null, $client_secret = null) { 
-      error_log("Teste access: " . $access_or_client_id);
-      error_log("Teste secret: " . $client_secret);
-//       echo json_encode(debug_backtrace());
-//       exit;
+      
       if(is_null($access_or_client_id) && is_null($client_secret)){
         throw new \Magento\Framework\Exception\LocalizedException(__('Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN'));     
       }
@@ -593,10 +590,10 @@ class Data
             ];
             if ($methodCode == \MercadoPago\Core\Model\Custom\Payment::CODE) {
                 $analyticsData['public_key'] = $this->scopeConfig->getValue('payment/mercadopago_custom/public_key', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            } elseif ($methodCode == \MercadoPago\Core\Model\Standard\Payment::CODE) {
-                $analyticsData['analytics_key'] = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                $analyticsData['checkout_type'] = 'basic';
-                $analyticsData['payment_type'] = isset($additionalInfo['payment_type_id']) ? $order->getPayment()->getData('additional_information')['payment_type_id'] : 'credit_card';
+//             } elseif ($methodCode == \MercadoPago\Core\Model\Standard\Payment::CODE) {
+//                 $analyticsData['analytics_key'] = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+//                 $analyticsData['checkout_type'] = 'basic';
+//                 $analyticsData['payment_type'] = isset($additionalInfo['payment_type_id']) ? $order->getPayment()->getData('additional_information')['payment_type_id'] : 'credit_card';
             } else {
                 $analyticsData['analytics_key'] = $this->getClientIdFromAccessToken($this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
                 $analyticsData['payment_type'] = 'ticket';

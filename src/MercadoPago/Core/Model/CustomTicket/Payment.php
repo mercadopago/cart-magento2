@@ -137,17 +137,18 @@ class Payment
 
       if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
 
-        $this->getInfoInstance()->setAdditionalInformation($response['response']);
-
-        $this->getInfoInstance()->setAdditionalInformation('activation_uri', $response['response']['transaction_details']['external_resource_url']);
-
-        if(isset($response['response']['status'])){
-          $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
-        }
-
-        $this->setOrderSubtotals($response['response']);
+        $payment = $response['response'];
+        
+        $this->getInfoInstance()->setAdditionalInformation($payment);
+        
+        $this->setOrderSubtotals($payment);
         return true;
+//         $this->getInfoInstance()->setAdditionalInformation('activation_uri', $response['response']['transaction_details']['external_resource_url']);
 
+//         if(isset($response['response']['status'])){
+//           $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
+//         }
+        
       }else{
 
         $messageErrorToClient = $this->_coreModel->getMessageError($response);

@@ -25,7 +25,14 @@ class ConfigData
 
 
   //advanced configuration
-  const PATH_ADVANCED_LOG  = 'payment/mercadopago_advanced/logs';
-  const PATH_ADVANCED_CATEGORY  = 'payment/mercadopago_advanced/category_id';
+  const PATH_ADVANCED_LOG                 = 'payment/mercadopago_advanced/logs';
+  const PATH_ADVANCED_CATEGORY            = 'payment/mercadopago_advanced/category_id';
+  const PATH_ADVANCED_SUCCESS_PAGE        = 'payment/mercadopago_advanced/use_successpage_mp';
+  const PATH_ADVANCED_FINANCING_COST      = 'payment/mercadopago_advanced/financing_cost';
+  const PATH_ADVANCED_CONSIDER_DISCOUNT   = 'payment/mercadopago_advanced/consider_discount';
+  const PATH_ADVANCED_EMAIL_CREATE        = 'payment/mercadopago_advanced/email_order_create';
+  const PATH_ADVANCED_EMAIL_UPDATE        = 'payment/mercadopago_advanced/email_order_update';
+  
+  
 
 }
