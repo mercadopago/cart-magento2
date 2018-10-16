@@ -113,7 +113,6 @@ class AbstractSuccess
      */
     public function getInfoPayment()
     {
-      error_log("aqui");
         $order_id = $this->_checkoutSession->getLastRealOrderId();
         $info_payments = $this->_coreFactory->create()->getInfoPaymentByOrder($order_id);
 

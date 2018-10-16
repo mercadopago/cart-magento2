@@ -22,7 +22,10 @@ class ConfigData
   const PATH_CUSTOM_TICKET_COUPON   = 'payment/mercadopago_customticket/coupon_mercadopago';
   const PATH_CUSTOM_TICKET_BANNER   = 'payment/mercadopago_customticket/banner_checkout';
   const PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS   = 'payment/custom_checkout_ticket/excluded_payment_methods';
-
+  
+  //order configuration
+  const PATH_ORDER_REFUND_AVAILABLE                = 'payment/mercadopago_order_management/refund_available';
+  const PATH_ORDER_CANCEL_AVAILABLE            = 'payment/mercadopago_order_management/cancel_payment';
 
   //advanced configuration
   const PATH_ADVANCED_LOG                 = 'payment/mercadopago_advanced/logs';

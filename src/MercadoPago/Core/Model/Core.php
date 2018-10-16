@@ -238,11 +238,7 @@ class Core
      */
     // @REFACTOR
     public function getInfoPaymentByOrder($order_id)
-    {
-      
-      
-        error_log("Testeeee    getInfoPaymentByOrder");
-      
+    { 
         $order = $this->_getOrder($order_id);
         $payment = $order->getPayment();
         $info_payments = [];
