@@ -39,10 +39,9 @@ class Info extends \Magento\Payment\Block\Info
     {
       $transport = parent::_prepareSpecificInformation($transport);
       $data = [];
-      $orderId = $this->getRequest()->getParam('order_id');
-      $order = $this->_orderFactory->create()->load($orderId);
-      $payment = $order->getPayment();
-      $paymentResponse = $payment->getAdditionalInformation();
+      
+      $info = $this->getInfo();
+      $paymentResponse = $info->getAdditionalInformation();
 
       if(isset($paymentResponse['id'])){ 
         $title = __('Payment id (Mercado Pago)');

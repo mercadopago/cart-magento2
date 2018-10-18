@@ -69,12 +69,6 @@ class OrderCancelPlugin
         return;
       }
 
-      //Get Data
-      $dataOrder = $this->order->getData();
-
-      //Get status Order
-      $orderStatus = isset($dataOrder['status']) ? $dataOrder['status'] : null;
-
       //Get payment info
       $additionalInformation = $this->order->getPayment()->getAdditionalInformation();
 

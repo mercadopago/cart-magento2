@@ -359,6 +359,7 @@ class Data
      * @param $payment
      *
      * @return mixed
+     * @refactor
      */
     public function setPayerInfo(&$payment)
     {
