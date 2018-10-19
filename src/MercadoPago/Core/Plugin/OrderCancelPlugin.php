@@ -70,9 +70,9 @@ class OrderCancelPlugin
       }
 
       //Get payment info
-      $additionalInformation = $this->order->getPayment()->getAdditionalInformation();
+      $paymentResponse = $this->order->getPayment()->getAdditionalInformation("paymentResponse");
 
-      if(!isset($additionalInformation['id'])){
+      if(!isset($paymentResponse['id'])){
         $this->throwCancelationException(__("Cancellation can not be executed because the payment id was not found."));
         return;
       }
@@ -85,7 +85,7 @@ class OrderCancelPlugin
       }
 
       //Get Payment Id
-      $paymentID = $additionalInformation['id'];
+      $paymentID = $paymentResponse['id'];
 
       //Get Sdk Instance
       $mp = $this->dataHelper->getApiInstance($accessToken);

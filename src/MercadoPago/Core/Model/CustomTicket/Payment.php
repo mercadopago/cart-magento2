@@ -139,7 +139,7 @@ class Payment
 
         $payment = $response['response'];
         
-        $this->getInfoInstance()->setAdditionalInformation($payment);
+        $this->getInfoInstance()->setAdditionalInformation("paymentResponse", $payment);
         
         $this->setOrderSubtotals($payment);
 

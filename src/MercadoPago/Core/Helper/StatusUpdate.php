@@ -79,8 +79,6 @@ class StatusUpdate
 
     public function updateStatusOrder($paymentResponse){
 
-      //$payment = $this->coreHelper->setPayerInfo($payment);
-      
       $order = $this->_coreHelper->_getOrder($paymentResponse['external_reference']);
       
       if(!$order->getId()){
@@ -90,12 +88,6 @@ class StatusUpdate
           "data" => $payment['external_reference']
         );
       }
-      
-      $payment = $order->getPayment();
-      $teste = $payment->getAdditionalInformation();
-
-      error_log("teste: " . json_encode($teste));
-      
       
       //get message by status
       $message = $this->getMessage($paymentResponse);
@@ -227,6 +219,8 @@ class StatusUpdate
         $orderCommentSender->send($order, $notify = '1' , str_replace("<br/>", "", $message));
       }
     }
+    
+    return;
   }
   
   
@@ -346,10 +340,10 @@ class StatusUpdate
     }
   
   
-  public function updatePaymentResponse($order, $paymentResponse){
-    $payment = $order->getPayment();
-    $payment->setAdditionalInformation($paymentResponse);
-  }
+    public function updatePaymentResponse($order, $paymentResponse){
+      $payment = $order->getPayment();
+      $payment->setAdditionalInformation("paymentResponse", $paymentResponse);
+    }
   
     // @refactor refund
   

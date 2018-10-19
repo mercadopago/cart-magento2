@@ -5,7 +5,7 @@
 $order = $this->getOrder();
 $total = $this->getTotal();
 $payment = $this->getPayment();
-$paymentResponse = $payment->getAdditionalInformation();
+$paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 $payment_method = $this->getPaymentMethod();
 ?>
 

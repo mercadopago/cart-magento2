@@ -41,7 +41,7 @@ class Info extends \Magento\Payment\Block\Info
       $data = [];
       
       $info = $this->getInfo();
-      $paymentResponse = $info->getAdditionalInformation();
+      $paymentResponse = $info->getAdditionalInformation("paymentResponse");
 
       if(isset($paymentResponse['id'])){ 
         $title = __('Payment id (Mercado Pago)');

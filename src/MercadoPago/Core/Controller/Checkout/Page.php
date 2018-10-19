@@ -122,7 +122,7 @@ class Page
 
         $order = $this->_getOrder();
         $payment = $order->getPayment();
-        $paymentResponse = $payment->getAdditionalInformation();
+        $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 
           $status = null;
 

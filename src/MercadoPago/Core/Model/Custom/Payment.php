@@ -379,7 +379,7 @@ class Payment
 
         $payment = $response['response'];
 
-        $infoInstance->setAdditionalInformation($payment);
+        $infoInstance->setAdditionalInformation("paymentResponse", $payment);
         
         return true;
         

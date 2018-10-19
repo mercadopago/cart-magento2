@@ -10,7 +10,7 @@ $payment = $this->getPayment();
 $successMsg = 'Your order %1 has been successfully generated.';
 $link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>';
 
-$paymentResponse = $payment->getAdditionalInformation();
+$paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 ?>
 
 <div id="box-mercadopago">
