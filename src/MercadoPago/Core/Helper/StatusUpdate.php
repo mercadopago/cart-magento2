@@ -91,11 +91,17 @@ class StatusUpdate
         );
       }
       
+      $payment = $order->getPayment();
+      $teste = $payment->getAdditionalInformation();
+
+      error_log("teste: " . json_encode($teste));
+      
+      
       //get message by status
       $message = $this->getMessage($paymentResponse);
       
       //check status already updated
-      $statusAlreadyUpdated = false; // $this->checkStatusAlreadyUpdated($paymentResponse, $order);
+      $statusAlreadyUpdated = $this->checkStatusAlreadyUpdated($paymentResponse, $order);
       
       //get new status (status MP <> status magento) according to the configuration
       $newOrderStatus = $this->getStatusOrder($paymentResponse, $order->canCreditmemo());
@@ -124,6 +130,9 @@ class StatusUpdate
         $responseInvoice  = $this->createInvoice($order, $message);        
       }
 
+      //Update payment response in order
+      $this->updatePaymentResponse($order, $paymentResponse);
+      
       //Save chances 
       $order->save();
       
@@ -336,6 +345,11 @@ class StatusUpdate
       return array_pop($collectionItems)->getState();
     }
   
+  
+  public function updatePaymentResponse($order, $paymentResponse){
+    $payment = $order->getPayment();
+    $payment->setAdditionalInformation($paymentResponse);
+  }
   
     // @refactor refund
   

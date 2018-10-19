@@ -84,9 +84,12 @@ class Custom
 
       return;
     } catch (\Exception $e) {
-      $this->setResponseHttp(\MercadoPago\Core\Helper\Response::HTTP_INTERNAL_ERROR, "Mercado Pago - There was a serious error processing the notification. Could not handle the error.", array(
-        "exception_error" => $e->getMessage()
-      ));
+      $this->setResponseHttp(
+        \MercadoPago\Core\Helper\Response::HTTP_INTERNAL_ERROR, 
+        "Mercado Pago - There was a serious error processing the notification. Could not handle the error.", array(
+          "exception_error" => $e->getMessage()
+        )
+      );
     }
   }
   
