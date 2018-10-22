@@ -50,10 +50,10 @@ class RefundObserverBeforeSave
         \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
     )
     {
-        $this->_session = $session;
-        $this->_messageManager = $context->getMessageManager();
-        $this->_dataHelper = $dataHelper;
-        $this->_scopeConfig = $scopeConfig;
+        $this->session = $session;
+        $this->messageManager = $context->getMessageManager();
+        $this->dataHelper = $dataHelper;
+        $this->scopeConfig = $scopeConfig;
 
     }
 
@@ -71,17 +71,71 @@ class RefundObserverBeforeSave
      */
     protected function creditMemoRefundBeforeSave($order, $creditMemo)
     {
+      // Does not repeat the return of payment, if it is done through the Mercado Pago
+      if ($order->getExternalRequest()) {
+        return;
+      }
 
-        $paymentMethod = $order->getPayment()->getMethodInstance()->getCode();
-        if (!($paymentMethod == 'mercadopago_standard' || $paymentMethod == 'mercadopago_custom')) {
+      $paymentMethod = $order->getPayment()->getMethodInstance()->getCode();
+      if (!($paymentMethod == 'mercadopago_custom' || $paymentMethod == 'mercadopago_customticket')) {
+        return;
+      }
+      
+      $refundAvailable = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_REFUND_AVAILABLE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
-            return;
+      if(!$refundAvailable){
+        $this->dataHelper->log("RefundObserverBeforeSave::creditMemoRefundBeforeSave - Refund not enabled", 'mercadopago-custom.log');
+        return;
+      }
+      
+      //Get payment info
+      $paymentResponse = $this->order->getPayment()->getAdditionalInformation("paymentResponse");
+      if(!isset($paymentResponse['id'])){
+        $this->messageManager->addErrorMessage(__("Refund can not be executed because the payment id was not found."));
+        return;
+      }
+
+      $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+      if(empty($accessToken)){
+        $this->messageManager->addErrorMessage(__("Refund can not be performed because ACCESS_TOKEN has not been configured."));
+        return;
+      }
+
+      //Get Payment Id
+      $paymentID = $paymentResponse['id'];
+
+      //Get Sdk Instance
+      $mp = $this->dataHelper->getApiInstance($accessToken);
+
+      //Get Payment detail
+      $response = $mp->get("/v1/payments/$paymentID?access_token=$accessToken");
+
+      if ($response['status'] == 200) {
+
+        if($response['response']['status'] == 'approved'){
+          
+          $data = ["status" => 'cancelled'];
+          $response = $mp->put("/v1/payments/$paymentID?access_token=$accessToken", $data);
+
+          if ($response['status'] == 200) {
+            $this->dataHelper->log("RefundObserverBeforeSave::creditMemoRefundBeforeSave - Payment refund", 'mercadopago-custom.log', $response);
+            $this->messageManager->addSuccessMessage("Mercado Pago - " . __('Payment refunded.'));
+          } else {
+            $this->throwCancelationException(__("Could not refund the payment because of an error returned by the API Mercado Pago."), $response);
+            $this->messageManager->addErrorMessage($response['status'] . ' ' . $response['response']['message']);
+          }
+
+        }else{
+          $this->throwCancelationException(__("The payment has not been canceled, you can only cancel payments with status pending or in_process. The payment status is ") . $response['response']['status'] . ".");
         }
 
-        if ($order->getExternalRequest()) {
-            return; // si la peticion de crear un credit memo viene de mercado pago, no hace falta mandar el request nuevamente
-        }
+      }else{
+        $this->throwCancelationException(__("An error occurred while getting the status of the payment in the API Mercado Pago."), $response);
+      }
 
+      return;
+      
         $orderStatus = $order->getData('status');
         $orderPaymentStatus = $order->getPayment()->getData('additional_information')['status'];
         $payment = $order->getPayment();

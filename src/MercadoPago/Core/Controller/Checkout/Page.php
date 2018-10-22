@@ -113,11 +113,6 @@ class Page
      */
     public function execute()
     {
-      
-      //       error_log("Execute Page ::::First");
-      //                     $response =  $this->_statusHelper->updateStatusOrder($paymentResponse);
-      //         error_log("TeSSSSSSTE: " . json_encode($response));
-
       if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_SUCCESS_PAGE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
 
         $order = $this->_getOrder();

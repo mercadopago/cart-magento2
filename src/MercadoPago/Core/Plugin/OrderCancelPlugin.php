@@ -53,6 +53,7 @@ class OrderCancelPlugin
      */
     protected function salesOrderBeforeCancel()
     {
+      // Does not repeat the return of payment, if it is done through the Mercado Pago
       if ($this->order->getExternalRequest()) {
         return;
       }

@@ -45,47 +45,47 @@ class Info extends \Magento\Payment\Block\Info
 
       if(isset($paymentResponse['id'])){ 
         $title = __('Payment id (Mercado Pago)');
-        $data[$title->getText()] = $paymentResponse['id'];
+        $data[$title->__toString()] = $paymentResponse['id'];
       }
 
       if(isset($paymentResponse['card']) && isset($paymentResponse['card']['first_six_digits']) && isset($paymentResponse['card']['last_four_digits'])){
         $title = __('Card Number');
-        $data[$title->getText()] = $paymentResponse['card']['first_six_digits'] . "xxxxxx".$paymentResponse['card']['last_four_digits'];
+        $data[$title->__toString()] = $paymentResponse['card']['first_six_digits'] . "xxxxxx".$paymentResponse['card']['last_four_digits'];
       }
 
       if(isset($paymentResponse['card']) && isset($paymentResponse['card']['expiration_month']) && isset($paymentResponse['card']['expiration_year'])){
         $title = __('Expiration Date');
-        $data[$title->getText()] = $paymentResponse['card']['expiration_month'] . "/". $paymentResponse['card']['expiration_year'];          
+        $data[$title->__toString()] = $paymentResponse['card']['expiration_month'] . "/". $paymentResponse['card']['expiration_year'];          
       }
 
       if(isset($paymentResponse['card']) && isset($paymentResponse['card']['cardholder']) && isset($paymentResponse['card']['cardholder']['name'])){ 
         $title = __('Card Holder Name');
-        $data[$title->getText()] = $paymentResponse['card']['cardholder']['name'];       
+        $data[$title->__toString()] = $paymentResponse['card']['cardholder']['name'];       
       }
 
       if(isset($paymentResponse['payment_method_id'])){ 
         $title = __('Payment Method');
-        $data[$title->getText()] = ucfirst($paymentResponse['payment_method_id']);      
+        $data[$title->__toString()] = ucfirst($paymentResponse['payment_method_id']);      
       }
 
       if(isset($paymentResponse['installments'])){ 
         $title = __('Installments');
-        $data[$title->getText()] = $paymentResponse['installments'];
+        $data[$title->__toString()] = $paymentResponse['installments'];
       }
 
       if(isset($paymentResponse['statement_descriptor'])){
         $title = __('Statement Descriptor');
-        $data[$title->getText()] = $paymentResponse['statement_descriptor'];    
+        $data[$title->__toString()] = $paymentResponse['statement_descriptor'];    
       }
 
       if(isset($paymentResponse['status'])){ 
         $title = __('Payment Status');
-        $data[$title->getText()] = ucfirst($paymentResponse['status']);  
+        $data[$title->__toString()] = ucfirst($paymentResponse['status']);  
       }
 
       if(isset($paymentResponse['id'])){
         $title = __('Payment Status Detail');
-        $data[$title->getText()] = ucfirst($paymentResponse['status_detail']);   
+        $data[$title->__toString()] = ucfirst($paymentResponse['status_detail']);   
       }
       
       // LINK TO TICKET disable
