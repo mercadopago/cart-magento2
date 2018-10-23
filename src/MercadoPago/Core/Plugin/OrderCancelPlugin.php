@@ -92,7 +92,8 @@ class OrderCancelPlugin
       $mp = $this->dataHelper->getApiInstance($accessToken);
 
       //Get Payment detail
-      $response = $mp->get("/v1/payments/$paymentID?access_token=$accessToken");
+      $urlGet = "/v1/payments/$paymentID?access_token=$accessToken";
+      $response = $mp->get($urlGet);
 
       if ($response['status'] == 200) {
 

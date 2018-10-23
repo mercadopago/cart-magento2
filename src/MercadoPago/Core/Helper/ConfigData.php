@@ -13,12 +13,14 @@ class ConfigData
   const PATH_SPONSOR_ID                       = 'payment/mercadopago/sponsor_id';
 
   //custom method credit and debit card
+  const PATH_CUSTOM_ACTIVE                    = 'payment/mercadopago_custom/active';
   const PATH_CUSTOM_BINARY_MODE               = 'payment/mercadopago_custom/binary_mode';
   const PATH_CUSTOM_STATEMENT_DESCRIPTOR      = 'payment/mercadopago_custom/statement_descriptor';
   const PATH_CUSTOM_BANNER                    = 'payment/mercadopago_custom/banner_checkout';
   const PATH_CUSTOM_COUPON                    = 'payment/mercadopago_custom/coupon_mercadopago';
 
   //custom method ticket
+  const PATH_CUSTOM_TICKET_ACTIVE             = 'payment/mercadopago_customticket/active';
   const PATH_CUSTOM_TICKET_COUPON             = 'payment/mercadopago_customticket/coupon_mercadopago';
   const PATH_CUSTOM_TICKET_BANNER             = 'payment/mercadopago_customticket/banner_checkout';
   const PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS   = 'payment/mercadopago_customticket/excluded_payment_methods';
