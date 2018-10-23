@@ -26,16 +26,6 @@ class Data
 
 
     /**
-     *path to client id config
-     */
-    const XML_PATH_CLIENT_ID = 'payment/mercadopago_standard/client_id';
-    /**
-     *path to client secret config
-     */
-    const XML_PATH_CLIENT_SECRET = 'payment/mercadopago_standard/client_secret';
-
-
-    /**
      *path to mercadopago country config
      */
     const XML_PATH_COUNTRY = 'payment/mercadopago/country';

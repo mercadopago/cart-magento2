@@ -83,7 +83,7 @@ class Info extends \Magento\Payment\Block\Info
         $data[$title->__toString()] = ucfirst($paymentResponse['status']);  
       }
 
-      if(isset($paymentResponse['id'])){
+      if(isset($paymentResponse['status_detail'])){
         $title = __('Payment Status Detail');
         $data[$title->__toString()] = ucfirst($paymentResponse['status_detail']);   
       }

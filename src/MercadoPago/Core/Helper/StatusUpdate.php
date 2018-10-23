@@ -102,6 +102,13 @@ class StatusUpdate
       $currentOrderStatus = $order->getState();
       
       if($statusAlreadyUpdated){        
+        
+        //Update payment response in order
+        $this->updatePaymentResponse($order, $paymentResponse);
+
+        //Save chances 
+        $order->save();
+
         return array(
           "httpStatus" => \MercadoPago\Core\Helper\Response::HTTP_OK,
           "message" => "Mercado Pago - Status has already been updated.",
@@ -172,7 +179,7 @@ class StatusUpdate
   protected function setStatusAndComment($order, $newStatusOrder, $message)
   {
     if ($order->getState() !== \Magento\Sales\Model\Order::STATE_COMPLETE) {
-      if($newStatusOrder == 'canceled'){
+      if($newStatusOrder == 'canceled' && $order->getState() != 'canceled'){
         //cancel order
         $order->cancel();
       }else{
