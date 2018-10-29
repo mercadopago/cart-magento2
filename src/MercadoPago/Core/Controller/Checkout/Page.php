@@ -113,39 +113,39 @@ class Page
      */
     public function execute()
     {
-      if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_SUCCESS_PAGE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
+      if (!$this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_SUCCESS_PAGE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
 
         $order = $this->_getOrder();
         $payment = $order->getPayment();
         $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 
-          $status = null;
+        $status = null;
 
-          //checkout Custom Credit Card
-          if (isset($paymentResponse['status'])) {
-            $status = $paymentResponse['status'];
-            //$detail = $infoPayment['status_detail']['value'];
-          }
-
-          //checkout redirect
-          if ($status == 'approved' || $status == 'pending'){
-            $this->_redirect('checkout/onepage/success');
-          } else {
-            $this->_redirect('checkout/onepage/failure/');
-          }
-
-        } else {          
-          //set data for mp analytics
-          $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
-
-          $checkoutTypeHandle = $this->getCheckoutHandle();
-          $this->_view->loadLayout(['default', $checkoutTypeHandle]);
-          $this->_eventManager->dispatch(
-            'checkout_onepage_controller_success_action',
-            ['order_ids' => [$this->_getOrder()->getId()]]
-          );
-          $this->_view->renderLayout();
+        //checkout Custom Credit Card
+        if (isset($paymentResponse['status'])) {
+          $status = $paymentResponse['status'];
+          //$detail = $infoPayment['status_detail']['value'];
         }
+
+        //checkout redirect
+        if ($status == 'approved' || $status == 'pending'){
+          $this->_redirect('checkout/onepage/success');
+        } else {
+          $this->_redirect('checkout/onepage/failure/');
+        }
+
+      } else {          
+        //set data for mp analytics
+        $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
+
+        $checkoutTypeHandle = $this->getCheckoutHandle();
+        $this->_view->loadLayout(['default', $checkoutTypeHandle]);
+        $this->_eventManager->dispatch(
+          'checkout_onepage_controller_success_action',
+          ['order_ids' => [$this->_getOrder()->getId()]]
+        );
+        $this->_view->renderLayout();
+      }
     }
 
     /**

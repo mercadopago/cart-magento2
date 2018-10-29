@@ -710,30 +710,29 @@ class Core
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function validCoupon($id)
+    public function validCoupon($coupon_id)
     {
-        if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        }
 
-        $transaction_amount = $this->getAmount();
-        $payer_email = $this->getEmailCustomer();
-        $coupon_code = $id;
+      $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+      
+      $transaction_amount = $this->getAmount();
+      $payer_email = $this->getEmailCustomer();
+      $coupon_code = $coupon_id;
 
-        $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
+      $mp = $this->_coreHelper->getApiInstance($accessToken);
 
-        $details_discount = $mp->check_discount_campaigns($transaction_amount, $payer_email, $coupon_code);
+      $details_discount = $mp->check_discount_campaigns($transaction_amount, $payer_email, $coupon_code);
 
-        //add value on return api discount
-        $details_discount['response']['transaction_amount'] = $transaction_amount;
-        $details_discount['response']['params'] = array(
-            "transaction_amount" => $transaction_amount,
-            "payer_email"        => $payer_email,
-            "coupon_code"        => $coupon_code
-        );
+      //add value on return api discount
+      $details_discount['response']['transaction_amount'] = $transaction_amount;
+      $details_discount['response']['params'] = array(
+        "transaction_amount" => $transaction_amount,
+        "payer_email"        => $payer_email,
+        "coupon_code"        => $coupon_code
+      );
 
 
-        return $details_discount;
+      return $details_discount;
     }
 
 

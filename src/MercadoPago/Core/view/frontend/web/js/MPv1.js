@@ -355,20 +355,22 @@
     */
   
     MPv1.getIssuersPaymentMethod = function (payment_method_id){
-      var amount = MPv1.getAmount();
-  
-      //flow: MLM mercadopagocard & amex
-      if(payment_method_id == 'mercadopagocard' || (MPv1.site_id == "MLM" && payment_method_id == 'amex')){
-        Mercadopago.getInstallments({
-          "payment_method_id": payment_method_id,
-          "amount": amount
-        }, MPv1.setInstallmentInfo);
+      if(payment_method_id != -1){
+        var amount = MPv1.getAmount();
+
+        //flow: MLM mercadopagocard & amex
+        if(payment_method_id == 'mercadopagocard' || (MPv1.site_id == "MLM" && payment_method_id == 'amex')){
+          Mercadopago.getInstallments({
+            "payment_method_id": payment_method_id,
+            "amount": amount
+          }, MPv1.setInstallmentInfo);
+        }
+
+        Mercadopago.getIssuers(payment_method_id, MPv1.showCardIssuers);
+        MPv1.addListenerEvent(document.querySelector(MPv1.selectors.issuer), 'change', MPv1.setInstallmentsByIssuerId);
       }
-  
-      Mercadopago.getIssuers(payment_method_id, MPv1.showCardIssuers);
-      MPv1.addListenerEvent(document.querySelector(MPv1.selectors.issuer), 'change', MPv1.setInstallmentsByIssuerId);
     }
-  
+
   
     MPv1.showCardIssuers = function (status, issuers) {
   
@@ -400,8 +402,8 @@
     MPv1.setInstallmentsByIssuerId = function (status, response) {
       var issuerId = document.querySelector(MPv1.selectors.issuer).value;
       var amount = MPv1.getAmount();
-  
-      if (issuerId === '-1') {
+
+      if (issuerId == -1 || issuerId == "") {
         return;
       }
   
@@ -492,6 +494,10 @@
       var type_checkout = cardSelector[cardSelector.options.selectedIndex].getAttribute("type_checkout");
       var amount = MPv1.getAmount();
   
+      if(MPv1.site_id == "MLM"){
+        MPv1.setInstallmentsByIssuerId();
+      }
+      
       if(MPv1.customer_and_card.default){
   
         if (cardSelector &&

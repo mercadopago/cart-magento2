@@ -47,23 +47,15 @@
                 'nativeAction': getSaveOrderUrl()
             }, 'validation':[]}">
 
-           
-
-            <!-- <img src="<?php echo $this->getSkinUrl('mercadopago/images/loading.gif'); ?>" alt="loading"/> -->
-
             <!-- START MPV1 -->
 
             <div class="mp-box-inputs mp-line" id="mercadopago-form-coupon">
                     <label for="couponCodeLabel"><!-- ko i18n: 'Discount Coupon'--><!-- /ko --></label>
-                    <div class="mp-box-inputs mp-col-65">
+                    <div class="mp-box-inputs mp-col-70">
                       <input type="text" id="couponCode" name="mercadopago_custom[coupon_code]" autocomplete="off" maxlength="24" />
                     </div>
           
-                    <div class="mp-box-inputs mp-col-10">
-                      <div id="mp-separete-date"></div>
-                    </div>
-          
-                    <div class="mp-box-inputs mp-col-25">
+                    <div class="mp-box-inputs mp-col-30">
                         <input type="button" class="button" id="applyCouponCard" data-bind="attr: {value: $t('Apply')}">
                     </div>
           

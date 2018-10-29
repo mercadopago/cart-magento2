@@ -292,8 +292,9 @@ class Api {
     public function check_discount_campaigns($transaction_amount, $payer_email, $coupon_code) {
         
         $access_token = $this->get_access_token();
-
-        $discount_info = \MercadoPago\Core\Lib\RestClient::get("/discount_campaigns?access_token=$access_token&transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code");
+      $url = "/discount_campaigns?access_token=$access_token&transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code";
+        error_log("check discount " . $url);
+        $discount_info = \MercadoPago\Core\Lib\RestClient::get( $url );
         
         return $discount_info;
     }

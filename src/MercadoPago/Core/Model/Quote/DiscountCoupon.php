@@ -15,17 +15,28 @@ class DiscountCoupon
      */
     protected $_registry;
 
+    protected $scopeConfig;
+  
+    protected $checkoutSession;
+  
     /**
      * DiscountCoupon constructor.
      *
      * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
-        \Magento\Framework\Registry $registry
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     )
     {
-        $this->setCode('discount_coupon');
-        $this->_registry = $registry;
+      $this->setCode('discount_coupon');
+//       $this->_registry = $registry;
+      $this->scopeConfig = $scopeConfig;
+      $this->checkoutSession = $checkoutSession;
+
+//       $amount = $this->_registry->registry('mercadopago_discount_amount');
+
+//       error_log("__construct amount: " . $amount);
     }
 
     /**
@@ -38,10 +49,20 @@ class DiscountCoupon
      */
     protected function _getDiscountCondition($address, $shippingAssignment)
     {
-        $items = $shippingAssignment->getItems();
-        $updateFlag = ($this->_registry->registry('mercadopago_discount_amount') !== null);
 
-        return ($address->getAddressType() == \Magento\Customer\Helper\Address::TYPE_SHIPPING && count($items) && $updateFlag);
+      $condition = true;
+      
+      $showDiscountAvailable = $this->scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CONSIDER_DISCOUNT, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+      
+      if($showDiscountAvailable === false){
+        $condition = false;
+      }
+
+      if($address->getAddressType() != \Magento\Customer\Helper\Address::TYPE_SHIPPING){
+        $condition = false;
+      }
+      
+      return $condition;
     }
 
     /**
@@ -51,9 +72,8 @@ class DiscountCoupon
      */
     protected function _getDiscountAmount()
     {
-        $amount = $this->_registry->registry('mercadopago_discount_amount');
-
-        return $amount * -1;
+      $amount = $this->checkoutSession->getData("mercadopago_discount_amount");
+      return $amount * -1;
     }
 
     /**
@@ -72,23 +92,31 @@ class DiscountCoupon
         \Magento\Quote\Model\Quote\Address\Total $total
     )
     {
-        $address = $shippingAssignment->getShipping()->getAddress();
+      $address = $shippingAssignment->getShipping()->getAddress();
+      
+      $balance = 0;
 
-        if ($this->_getDiscountCondition($address, $shippingAssignment)) {
-            parent::collect($quote, $shippingAssignment, $total);
+      if ($this->_getDiscountCondition($address, $shippingAssignment)) {
 
-            $balance = $this->_getDiscountAmount();
-            $address->setDiscountCouponAmount($balance);
-            $address->setBaseDiscountCouponAmount($balance);
+        parent::collect($quote, $shippingAssignment, $total);
+        $balance = $this->_getDiscountAmount();
 
-            $total->setDiscountCouponDescription($this->getCode());
-            $total->setDiscountCouponAmount($balance);
-            $total->setBaseDiscountCouponAmount($balance);
-        }
-        $total->addTotalAmount($this->getCode(), $address->getDiscountCouponAmount());
-        $total->addBaseTotalAmount($this->getCode(), $address->getBaseDiscountCouponAmount());
+      }
+  
+      //sets
+      $address->setDiscountCouponAmount($balance);
+      $address->setBaseDiscountCouponAmount($balance);
 
-        return $this;
+      //sets totals
+      $total->setDiscountCouponDescription($this->getCode());
+      $total->setDiscountCouponAmount($balance);
+      $total->setBaseDiscountCouponAmount($balance);
+
+
+      $total->addTotalAmount($this->getCode(), $address->getDiscountCouponAmount());
+      $total->addBaseTotalAmount($this->getCode(), $address->getBaseDiscountCouponAmount());
+
+      return $this;
     }
 
     /**
@@ -99,15 +127,23 @@ class DiscountCoupon
      */
     public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
     {
-        $result = null;
+
+      $showDiscountAvailable = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CONSIDER_DISCOUNT, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+      $result = null;
+      
+      if($showDiscountAvailable){
+        
         $amount = $total->getDiscountCouponAmount();
 
         $result = [
-            'code'  => $this->getCode(),
-            'title' => __('Discount Mercado Pago'),
-            'value' => $amount
+          'code'  => $this->getCode(),
+          'title' => __('Coupon discount of the Mercado Pago'),
+          'value' => $amount
         ];
 
-        return $result;
+      }
+      
+      return $result;
+        
     }
 }

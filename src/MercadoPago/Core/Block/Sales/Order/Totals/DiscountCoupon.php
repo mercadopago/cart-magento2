@@ -33,18 +33,22 @@ class DiscountCoupon
      */
     public function initTotals()
     {
-        if ((float)$this->getSource()->getDiscountCouponAmount() == 0
-            || !$this->_scopeConfig->isSetFlag('payment/mercadopago/consider_discount',\Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
-            return $this;
-        }
-        $total = new \Magento\Framework\DataObject([
-            'code'  => 'discount_coupon',
-            'field' => 'discount_coupon_amount',
-            'value' => $this->getSource()->getDiscountCouponAmount(),
-            'label' => __('Discount Mercado Pago'),
-        ]);
-        $this->getParentBlock()->addTotalBefore($total, 'shipping');
-
+      
+      //this flow is a order page
+      //if exist value in discount display in order     
+      if ((float) $this->getSource()->getDiscountCouponAmount() == 0) {
         return $this;
+      }
+      
+      $total = new \Magento\Framework\DataObject([
+        'code'  => 'discount_coupon',
+        'field' => 'discount_coupon_amount',
+        'value' => $this->getSource()->getDiscountCouponAmount(),
+        'label' => __('Coupon discount of the Mercado Pago'),
+      ]);
+      
+      $this->getParentBlock()->addTotalBefore($total, 'shipping');
+      
+      return $this;
     }
 }
