@@ -85,7 +85,7 @@ class StatusUpdate
         return array(
           "httpStatus" => \MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND,
           "message" => "Mercado Pago - The order was not found in Magento. You will not be able to follow the process without this information.",
-          "data" => $payment['external_reference']
+          "data" => $paymentResponse['external_reference']
         );
       }
       

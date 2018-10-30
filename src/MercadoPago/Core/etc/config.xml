@@ -43,7 +43,7 @@
         <email_order_create>1</email_order_create>
         <email_order_update>pending,approved,in_process,in_mediation,rejected,cancelled,refunded,charged_back</email_order_update>
         <logs>1</logs>
-        <model>MercadoPago\Core\Model\Custom\Payment</model>
+        <model>MercadoPago\Core\Model\Core</model>
       </mercadopago>
     </payment>
   </default>

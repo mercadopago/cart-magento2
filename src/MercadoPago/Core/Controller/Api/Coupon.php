@@ -111,12 +111,12 @@ class Coupon
         $responseBuyer = $responseApi;
         $couponAmount = $responseApi['response']['coupon_amount'];
         $transactionAmount = $responseApi['response']['params']['transaction_amount'];
-        $amountWithDiscount = ($transactionAmount - $couponAmount);
+        $amountWithDiscount = (float) ($transactionAmount - $couponAmount);
 
         $html = "";
-        $html .= __('You will save <b>%1 %2</b> with discount from %3.', $currencySymbol, $couponAmount, $responseApi['response']['name']) . "<br/>";
-        $html .= __('Total of your purchase: <b>%1 %2</b>', $currencySymbol , $transactionAmount) . "<br/>";
-        $html .= __('Total of your purchase with discount: <b>%1 %2*</b>', $currencySymbol, $amountWithDiscount) . "<br/>";
+        $html .= __('You will save <b>%1 %2</b> with discount from %3.', $currencySymbol, number_format($couponAmount, 2), $responseApi['response']['name']) . "<br/>";
+        $html .= __('Total of your purchase: <b>%1 %2</b>', $currencySymbol , number_format($transactionAmount, 2)) . "<br/>";
+        $html .= __('Total of your purchase with discount: <b>%1 %2*</b>', $currencySymbol, number_format($amountWithDiscount, 2)) . "<br/>";
         $html .= __('* Uppon payment approval.') . "<br/>";
         $html .= "<a href='https://api.mercadolibre.com/campaigns/" . $responseApi['response']['id'] . "/terms_and_conditions?format_type=html' target='_blank'>" . __('Terms and Conditions of Use') . "</a>";
 
@@ -143,9 +143,8 @@ class Coupon
           $responseBuyer["response"]["message"] = __($responseApi['response']['message']);
         }
       }
-      
-      $this->coreHelper->log("Coupon::execute - Response to buyer - Check", 'mercadopago-custom.log', $responseBuyer);
 
+      $this->coreHelper->log("Coupon::execute - Response to buyer - Check", 'mercadopago-custom.log', $responseBuyer);
 
       $this->getResponse()->setHeader('Content-type', 'application/json');
       $this->getResponse()->setBody(json_encode($responseBuyer));
@@ -162,6 +161,7 @@ class Coupon
 
       $this->getResponse()->setHeader('Content-type', 'application/json');
       $this->getResponse()->setBody(json_encode($responseBuyer));
+      return;
     }
   }
 }

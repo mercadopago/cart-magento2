@@ -17,7 +17,7 @@ class Response
   const HTTP_CREATED            = 201;
   const HTTP_MULTI_STATUS       = 207;
 
-  const HTTP_BAD_REQUEST        = 500; // changed the status because the Mercado Pago only renotify when it is 500 - old status:400;
+  const HTTP_BAD_REQUEST        = 400;
   const HTTP_UNAUTHORIZED       = 500; // changed the status because the Mercado Pago only renotify when it is 500 - old status:401;
   const HTTP_FORBIDDEN          = 500; // changed the status because the Mercado Pago only renotify when it is 500 - old status:403;
   const HTTP_NOT_FOUND          = 500; // changed the status because the Mercado Pago only renotify when it is 500 - old status:404;
@@ -120,8 +120,8 @@ class Response
     "4098" => "Payer identification number required.",
     
     // 'default' errors 
-    "NOT_IDENTIFIED" => "An error occurred when creating the payment.",
-    "TOKEN_EMPTY" => "Verify the form data or wait until the validation of the payment data",
+    "NOT_IDENTIFIED" => "An error occurred when creating the payment. Please refresh the page and try again.",
+    "TOKEN_EMPTY" => "Verify the form data or wait until the validation of the payment data.",
     "INTERNAL_ERROR_MODULE" => "There was an internal error when creating the payment."
     
   );

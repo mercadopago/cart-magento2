@@ -15,9 +15,6 @@ class AddMpSubtotalsToOrderObserver implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
-      
-        error_log("AddMpSubtotalsToOrderObserver::execute");
-      
         $order = $observer->getOrder();
         $quote = $observer->getQuote();
 

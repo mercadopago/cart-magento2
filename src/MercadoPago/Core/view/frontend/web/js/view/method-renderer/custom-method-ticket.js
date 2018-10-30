@@ -148,8 +148,8 @@ define(
       },
 
       getBannerUrl: function () {
-        if (configPayment != undefined) {
-          return configPayment['bannerUrl'];
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['bannerUrl'];
         }
         return '';
       },

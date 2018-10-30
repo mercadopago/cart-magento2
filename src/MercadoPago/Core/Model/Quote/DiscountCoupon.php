@@ -30,13 +30,8 @@ class DiscountCoupon
     )
     {
       $this->setCode('discount_coupon');
-//       $this->_registry = $registry;
       $this->scopeConfig = $scopeConfig;
       $this->checkoutSession = $checkoutSession;
-
-//       $amount = $this->_registry->registry('mercadopago_discount_amount');
-
-//       error_log("__construct amount: " . $amount);
     }
 
     /**

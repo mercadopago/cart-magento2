@@ -570,6 +570,6 @@
 
 
 /* Ticket */
-#co-mercadopago-form-ticket .field-error, div.mage-error[generated] {
+#co-mercadopago-form-ticket .field-error{
   margin-top: -10px;
 }

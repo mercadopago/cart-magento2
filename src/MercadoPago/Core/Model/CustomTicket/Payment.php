@@ -149,7 +149,12 @@ class Payment
 
         $messageErrorToClient = $this->_coreModel->getMessageError($response);
 
-        $this->_helperData->log("CustomPaymentTicket::initialize - The API returned an error while creating the payment, more details: " . json_encode($response));
+        $arrayLog = array(
+          "response" => $response,
+          "message" => $messageErrorToClient
+        );
+
+        $this->_helperData->log("CustomPaymentTicket::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
 
         throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
 

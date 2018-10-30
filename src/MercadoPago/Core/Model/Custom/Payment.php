@@ -314,6 +314,9 @@ class Payment
      */
     public function initialize($paymentAction, $stateObject)
     {
+//       throw new ValidatorException("HEREEEEEE......");
+//       throw new \Exception("teste");
+      
       if ($this->getInfoInstance()->getAdditionalInformation('token') == "") {
         $this->_helperData->log("CustomPayment::initialize - Token for payment creation was not generated, therefore it is not possible to continue the transaction");
         throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['TOKEN_EMPTY']));
@@ -387,8 +390,13 @@ class Payment
 
         $messageErrorToClient = $this->_coreModel->getMessageError($response);
 
-        $this->_helperData->log("CustomPayment::initialize - The API returned an error while creating the payment, more details: " . json_encode($response));
+        $arrayLog = array(
+          "response" => $response,
+          "message" => $messageErrorToClient
+        );
 
+        $this->_helperData->log("CustomPayment::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
+        
         throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
 
         return $this;
