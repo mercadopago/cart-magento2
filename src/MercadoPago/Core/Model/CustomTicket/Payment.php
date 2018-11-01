@@ -140,8 +140,6 @@ class Payment
         $payment = $response['response'];
         
         $this->getInfoInstance()->setAdditionalInformation("paymentResponse", $payment);
-        
-        $this->setOrderSubtotals($payment);
 
         return true;
         

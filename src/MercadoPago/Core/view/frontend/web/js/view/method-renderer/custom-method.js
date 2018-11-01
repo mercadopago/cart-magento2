@@ -49,6 +49,7 @@ define(
 
                 //add actions coupon
                 MPv1 = self.actionsCouponDiscount(MPv1); 
+                self.initializeInstallmentsAndIssuer(); 
 
                 //change url loading
                 MPv1.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
@@ -62,9 +63,9 @@ define(
                 if(mercadopago_coupon){
                   MPv1.removeCouponDiscount();
                 }
+                
                 //get action change payment method
                 quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
-
 
               }
 
@@ -318,6 +319,26 @@ define(
            * Customize MPV1
            *
            */
+          
+          initializeInstallmentsAndIssuer: function(){
+
+            var issuer = document.querySelector(MPv1.selectors.issuer);
+            var optIssuer = document.createElement('option');
+            optIssuer.value = "-1";
+            optIssuer.innerHTML = $t('Select the Issuer');
+
+            issuer.innerHTML = "";
+            issuer.appendChild(optIssuer);
+
+            var installment = document.querySelector(MPv1.selectors.installments);
+            var optInstallment = document.createElement('option');
+            optInstallment.value = "-1";
+            optInstallment.innerHTML = $t('Select the Installment');
+
+            installment.innerHTML = "";
+            installment.appendChild(optInstallment);
+            
+          },
           
           actionsCouponDiscount: function(MPv1){
             

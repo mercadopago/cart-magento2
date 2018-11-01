@@ -22,13 +22,6 @@
       <comment>The successful page of the Mercado Pago module is prepared to show messages for each Payment status, this page is also prepared to show the payment button with ticket. If you use the default page of Magento, you will have to customize it to show the button for payment of the Ticket.</comment>
     </field>
 
-    <field id="financing_cost" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInStore="0" showInWebsite="1">
-      <label>Show Financing Cost</label>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/mercadopago/financing_cost</config_path>
-      <comment>Enabling this option will show the amount of financing cost (installment rate) in the order details</comment>
-    </field>
-
     <field id="consider_discount" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInStore="0" showInWebsite="1">
       <label>Show Discount Coupon</label>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

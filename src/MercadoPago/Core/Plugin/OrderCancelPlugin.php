@@ -112,7 +112,13 @@ class OrderCancelPlugin
         }
 
       }else{
-        $this->throwCancelationException(__("The payment has not been canceled, you can only cancel payments with status pending or in_process. The payment status is ") . $response['response']['status'] . ".");
+        
+        if($response['response']['status'] == 'rejected'){
+          $this->dataHelper->log("OrderCancelPlugin::salesOrderBeforeCancel - Payment was not canceled because the status is rejected.", 'mercadopago-custom.log', $response);
+          $this->messageManager->addSuccessMessage("Mercado Pago - " . __('Payment was not canceled because the status is rejected.'));
+        }else{
+          $this->throwCancelationException(__("The payment has not been canceled, you can only cancel payments with status pending or in_process. The payment status is ") . $response['response']['status'] . ".");          
+        }
       }
 
     }else{

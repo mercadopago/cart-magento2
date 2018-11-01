@@ -28,13 +28,13 @@ class ConfigObserver
             "MPE" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
         ],
         "mercadopago_customticket" => [
-            "MLA" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
-            "MLB" => "http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/2014/230x60.png",
-            "MCO" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
-            "MLM" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
-            "MLC" => "https://secure.mlstatic.com/developers/site/cloud/banners/cl/468x60.gif",
-            "MLV" => "https://imgmp.mlstatic.com/org-img/banners/ve/medios/468X60.jpg",
-            "MPE" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
+            "MLA" => "",
+            "MLB" => "",
+            "MCO" => "",
+            "MLM" => "",
+            "MLC" => "",
+            "MLV" => "",
+            "MPE" => ""
         ]
     ];
 

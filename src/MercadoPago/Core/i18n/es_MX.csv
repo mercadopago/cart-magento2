@@ -55,8 +55,6 @@
 "Category of your store","Categoría de tu tienda"
 "Use Mercado Pago Success Page","Utilizar página de resultado de pago de Mercado Pago"
 "The successful page of the Mercado Pago module is prepared to show messages for each Payment status, this page is also prepared to show the payment button with ticket. If you use the default page of Magento, you will have to customize it to show the button for payment of the Ticket.","La página de sucesso de pago de Mercado Pago está preparada para mostrar mensajes para cada estado de pago, esta página también esta preparada para mostrar el botón de pago para medios offline. Si utilizas la página de Magento, deberás personalizar para mostrar el botón de pago de los medios de pago offline."
-"Show Financing Cost","Mostrar costo financiero"
-"Enabling this option will show the amount of financing cost (installment rate) in the order details","Si habilitas esta opción se mostrará el costo financiero en el detalle de la orden"
 "Show Discount Coupon","Mostrar valor del cupón de descuento"
 "Enabling this option will show the discount coupon amount in the order details","Si habilitas esta opción se mostrará el monto del cupón de descuento en el detalle de la orden"
 "Email Options","Opciones de email"
@@ -94,6 +92,8 @@
 "Other Cards","Pagar con otras tarjetas"
 "Other Card","Otras tarjetas"
 "ended in","finalizado en"
+"Select the Issuer","Seleccione el medio de pago"
+"Select the Installment","Seleccione el banco"
 
 "Parameter cardNumber can not be null/empty","Ingresa una numero de tarjeta válido"
 "Invalid Card Number","Ingresa una numero de tarjeta válido"
@@ -285,6 +285,7 @@
 "=============== Cancellation FLOW =================================","================================================"
 
 "Payment canceled.", "Pago Cancelado."
+"Payment was not canceled because the status is rejected.","El pago no fue cancelado, ya que está rechazado."
 "Cancellation can not be executed because the payment id was not found.", "No se pudo ejecutar la cancelación, porque no se encontró el ID de pago."
 "Cancellation can not be performed because ACCESS_TOKEN has not been configured.", "No se pudo ejecutar la cancelación, porque no se ha configurado el ACCESS_TOKEN."
 "Could not cancel the payment because of an error returned by the API Mercado Pago.", "No se pudo ejecutar la cancelación, debido a un error devolvido por la API de Mercado Pago."
@@ -331,7 +332,9 @@
 "Payment Status: rejected", "Estado del Pago: rechazado"
 
 
+"=====================BACK END ===========================","================================================"
 
+"The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.", "El ACCESS_TOKEN no se ha configurado, sin esta credencial el módulo no funcionará correctamente."
 
 "================================================","================================================"
 
@@ -343,13 +346,13 @@
 "We could not process your payment.","No pudimos procesar tu pago."
 
 "You must authorize to %1 the payment of $ %2 to Mercado Pago.","Debes llamar y autorizar ante %1 el pago de $ %2 a Mercado Pago"
-"Call %1 to activate your card.<br/>The phone is on the back of your card.","Llama a %1 para que active tu tarjeta.<br/>El teléfono está al dorso de tu tarjeta."
+"Call %1 to activate your card.<br/>The phone is on the back of your card.","Llama a %1 para que active tu tarjeta. El teléfono está al dorso de tu tarjeta."
 "We could not process your payment.","No pudimos procesar tu pago."
-"You already made a payment by that value.<br/>If you need to repay, use another card or other payment method.","Ya hiciste un pago por ese valor.<br/>Si necesitas volver a pagar usa otra tarjeta u otro medio de pago."
-"Your payment was rejected.<br/>Choose another payment method, we recommend cash methods.","Tu pago fue rechazado.<br/>Elige otro de los medios de pago, te recomendamos con medios de pago en efectivo."
+"You already made a payment by that value.<br/>If you need to repay, use another card or other payment method.","Ya hiciste un pago por ese valor. Si necesitas volver a pagar usa otra tarjeta u otro medio de pago."
+"Your payment was rejected.<br/>Choose another payment method, we recommend cash methods.","Tu pago fue rechazado. Elige otro de los medios de pago, te recomendamos con medios de pago en efectivo."
 "Your %1 do not have sufficient funds.","Tu %1 no tiene fondos suficientes."
 "%1 does not process payments in %2 installments.","%1 no procesa pagos en %2 cuotas."
-"You have got to the limit of allowed attempts.<br/>Choose another card or another payment method.","Llegaste al límite de intentos permitidos.<br/>Elige otra tarjeta u otro medio de pago."
+"You have got to the limit of allowed attempts.<br/>Choose another card or another payment method.","Llegaste al límite de intentos permitidos. Elige otra tarjeta u otro medio de pago."
 "%1 did not process the payment.","%1 no procesó el pago."
 
 "You can not make payments to users in other countries.","No puedes realizar pagos a usuarios de otros países."
@@ -498,5 +501,3 @@
 
 "Finance Cost","Costo financiero"
 "Financing Cost","Costo financiero"
-
-"Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN", "Argumentos no válidos. Verifique CLIENT_ID y CLIENT SECRET o ACCESS_TOKEN"

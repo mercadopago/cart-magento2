@@ -467,7 +467,7 @@ class Core
         if ( isset( $notification_url ) && ! strrpos( $notification_url, 'localhost' ) ) {	
             $preference['notification_url'] = $notification_url;	
         }
-
+      
         $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
 
         $preference['transaction_amount'] = (float) $this->getAmount();
@@ -598,25 +598,6 @@ class Core
     }
 
     /**
-     * Return info of payment returned by MP api
-     *
-     * @param $payment_id
-     *
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function getPayment($payment_id)
-    {
-        if (!$this->_clientId || !$this->_clientSecret) {
-            $this->_clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            $this->_clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        }
-        $mp = $this->_coreHelper->getApiInstance($this->_clientId, $this->_clientSecret);
-      
-        return $mp->get("/v1/payments/" . $payment_id);
-    }
-
-    /**
      *  Return info of payment returned by MP api
      *
      * @param $payment_id
@@ -633,25 +614,6 @@ class Core
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
         return $mp->get("/v1/payments/" . $payment_id);
-    }
-
-    /**
-     * Return info of order returned by MP api
-     *
-     * @param $merchant_order_id
-     *
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function getMerchantOrder($merchant_order_id)
-    {
-        if (!$this->_clientId || !$this->_clientSecret) {
-            $this->_clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            $this->_clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        }
-        $mp = $this->_coreHelper->getApiInstance($this->_clientId, $this->_clientSecret);
-
-        return $mp->get("/merchant_orders/" . $merchant_order_id);
     }
 
     /**

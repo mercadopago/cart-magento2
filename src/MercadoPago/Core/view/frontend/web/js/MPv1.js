@@ -491,6 +491,11 @@
     MPv1.cardsHandler = function () {
   
       var cardSelector = document.querySelector(MPv1.selectors.paymentMethodSelector);
+      
+      if(cardSelector.options.selectedIndex < 0){
+        return;
+      }
+      
       var type_checkout = cardSelector[cardSelector.options.selectedIndex].getAttribute("type_checkout");
       var amount = MPv1.getAmount();
   
