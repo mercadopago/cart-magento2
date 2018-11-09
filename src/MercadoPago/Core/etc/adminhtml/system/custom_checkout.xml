@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+  <group id="custom_checkout" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+    <label>Custom Checkout - Credit and Debit Card</label>
+
+    <field id="active" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Enabled</label>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/mercadopago_custom/active</config_path>
+      <comment>It is a requirement that you have a SSL certificate, and the payment form to be provided under an HTTPS page. During the sandbox mode tests, you can operate over HTTP, but for homologation you'll need to acquire the certificate in case you don't have it.</comment>
+    </field>
+    <field id="title" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label>Payment Title</label>
+      <config_path>payment/mercadopago_custom/title</config_path>
+    </field>
+    <field id="statement_descriptor" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label>Statement Descriptor</label>
+      <config_path>payment/mercadopago_custom/statement_descriptor</config_path>
+      <comment>Text that will identify the payment on the credit card invoice, this functionality is limited to some countries.</comment>
+    </field>
+    <field id="binary_mode" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Binary Mode</label>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/mercadopago_custom/binary_mode</config_path>
+      <comment>This functionality will mark the payment to approve or reject at the time it is created, there will be no intermediate status pending.</comment>
+    </field>
+    <field id="banner_checkout" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Banner Checkout</label>
+      <config_path>payment/mercadopago_custom/banner_checkout</config_path>
+      <comment>By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.</comment>
+    </field>
+    <field id="sort_order" translate="label comment" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label>Checkout Position</label>
+      <frontend_class>validate-number</frontend_class>
+      <config_path>payment/mercadopago_custom/sort_order</config_path>
+      <comment>This setting will be the position in which the payment method will be available to the buyer.</comment>
+    </field>
+    <field id="coupon_mercadopago" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Discount Coupons (Mercado Pago)</label>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/mercadopago_custom/coupon_mercadopago</config_path>
+      <comment>When enabling the option will appear a discount field for the buyer to use a discount coupon of the Mercado Pago on the payment form.</comment>
+    </field>
+  </group>
+</include>

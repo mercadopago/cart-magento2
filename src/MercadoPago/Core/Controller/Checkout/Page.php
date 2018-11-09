@@ -50,6 +50,8 @@ class Page
      */
     protected $_catalogSession;
 
+  
+  
     /**
      * Page constructor.
      *
@@ -73,7 +75,8 @@ class Page
         \MercadoPago\Core\Helper\Data $helperData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \MercadoPago\Core\Model\Core $core,
-        \Magento\Catalog\Model\Session $catalogSession
+        \Magento\Catalog\Model\Session $catalogSession,
+        \MercadoPago\Core\Helper\StatusUpdate $statusHelper
     )
     {
 
@@ -85,6 +88,8 @@ class Page
         $this->_scopeConfig = $scopeConfig;
         $this->_core = $core;
         $this->_catalogSession = $catalogSession;
+      
+              $this->_statusHelper = $statusHelper;
 
         parent::__construct(
             $context
@@ -108,38 +113,39 @@ class Page
      */
     public function execute()
     {
-        if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
+      if (!$this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_SUCCESS_PAGE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
 
-            $order = $this->_getOrder();
-            $infoPayment = $this->_core->getInfoPaymentByOrder($order->getIncrementId());
-            $status = null;
+        $order = $this->_getOrder();
+        $payment = $order->getPayment();
+        $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 
-            //checkout Custom Credit Card
-            if (!empty($infoPayment['status']['value'])) {
-                $status = $infoPayment['status']['value'];
-                //$detail = $infoPayment['status_detail']['value'];
-            }
+        $status = null;
 
-            //checkout redirect
-            if ($status == 'approved' || $status == 'pending'){
-                $this->_redirect('checkout/onepage/success');
-            } else {
-                $this->_redirect('checkout/onepage/failure/');
-            }
-
-        } else {
-            //set data for mp analytics
-            $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
-
-            $checkoutTypeHandle = $this->getCheckoutHandle();
-            $this->_view->loadLayout(['default', $checkoutTypeHandle]);
-            $this->_eventManager->dispatch(
-                'checkout_onepage_controller_success_action',
-                ['order_ids' => [$this->_getOrder()->getId()]]
-            );
-            $this->_view->renderLayout();
+        //checkout Custom Credit Card
+        if (isset($paymentResponse['status'])) {
+          $status = $paymentResponse['status'];
+          //$detail = $infoPayment['status_detail']['value'];
         }
 
+        //checkout redirect
+        if ($status == 'approved' || $status == 'pending'){
+          $this->_redirect('checkout/onepage/success');
+        } else {
+          $this->_redirect('checkout/onepage/failure/');
+        }
+
+      } else {          
+        //set data for mp analytics
+        $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
+
+        $checkoutTypeHandle = $this->getCheckoutHandle();
+        $this->_view->loadLayout(['default', $checkoutTypeHandle]);
+        $this->_eventManager->dispatch(
+          'checkout_onepage_controller_success_action',
+          ['order_ids' => [$this->_getOrder()->getId()]]
+        );
+        $this->_view->renderLayout();
+      }
     }
 
     /**

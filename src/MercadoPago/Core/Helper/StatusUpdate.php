@@ -10,14 +10,6 @@ namespace MercadoPago\Core\Helper;
 class StatusUpdate
     extends \Magento\Payment\Helper\Data
 {
-
-    protected $_finalStatus = ['rejected', 'cancelled', 'refunded', 'charge_back'];
-    protected $_notFinalStatus = ['authorized', 'process', 'in_mediation'];
-
-    /**
-     * @var bool flag indicates when status was updated by notifications.
-     */
-    protected $_statusUpdatedFlag = false;
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
@@ -85,229 +77,312 @@ class StatusUpdate
         $this->_orderSender = $orderSender;
     }
 
-    /**
-     * @return bool return updated flag
-     */
-    public function isStatusUpdated()
-    {
-        return $this->_statusUpdatedFlag;
+    public function updateStatusOrder($paymentResponse){
+
+      $order = $this->_coreHelper->_getOrder($paymentResponse['external_reference']);
+      
+      if(!$order->getId()){
+        return array(
+          "httpStatus" => \MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND,
+          "message" => "Mercado Pago - The order was not found in Magento. You will not be able to follow the process without this information.",
+          "data" => $paymentResponse['external_reference']
+        );
+      }
+      
+      //get message by status
+      $message = $this->getMessage($paymentResponse);
+      
+      //check status already updated
+      $statusAlreadyUpdated = $this->checkStatusAlreadyUpdated($paymentResponse, $order);
+      
+      //get new status (status MP <> status magento) according to the configuration
+      $newOrderStatus = $this->getStatusOrder($paymentResponse, $order->canCreditmemo());
+      
+      //get actual status
+      $currentOrderStatus = $order->getState();
+      
+      if($statusAlreadyUpdated){        
+        
+        //Update payment response in order
+        $this->updatePaymentResponse($order, $paymentResponse);
+
+        //Save chances 
+        $order->save();
+
+        return array(
+          "httpStatus" => \MercadoPago\Core\Helper\Response::HTTP_OK,
+          "message" => "Mercado Pago - Status has already been updated.",
+          "data" => array(
+            "message" => $message,
+            "order_id" => $order->getIncrementId(),
+            "current_order_status" => $currentOrderStatus,
+            "new_order_status" => $newOrderStatus
+          )
+        );
+      }
+      
+      $responseStatus   = $this->setStatusAndComment($order, $newOrderStatus, $message);
+      $responseEmail    = $this->sendEmailCreateOrUpdate($order, $message);
+      $responseInvoice  = false;
+      
+      if($paymentResponse['status'] == 'approved'){
+        $responseInvoice  = $this->createInvoice($order, $message);  
+        $responseCustomerAndCards = $this->addCardInCustomer($paymentResponse);
+      }
+
+      //Update payment response in order
+      $this->updatePaymentResponse($order, $paymentResponse);
+      
+      //Save chances 
+      $order->save();
+      
+      return array(
+        "httpStatus" => \MercadoPago\Core\Helper\Response::HTTP_OK,
+        "message" => "Mercado Pago - Status successfully updated.",
+        "data" => array(
+          "message" => $message,
+          "order_id" => $order->getIncrementId(),
+          "new_order_status" => $newOrderStatus,
+          "old_order_status" => $currentOrderStatus,
+          "created_invoice" => $responseInvoice
+        )
+      );
     }
 
-    /**
-     * @return mixed
-     */
-    public function getOrderStatusRefunded()
+    public function checkStatusAlreadyUpdated($paymentResponse, $order)
     {
-        return $this->scopeConfig->getValue('payment/mercadopago/order_status_refunded');
+      //set default status
+      $orderUpdated = false;
+       
+      //get status configured in module
+      $statusToUpdate = $this->getStatusOrder($paymentResponse, false);
+      
+      //get list comments
+      $commentsObject = $order->getStatusHistoryCollection(true);
+
+      //check if the status has been updated in some time
+      foreach ($commentsObject as $commentObj) {
+        if($commentObj->getStatus() == $statusToUpdate){
+           $orderUpdated = true;
+        }
+      }
+      
+      return $orderUpdated;
+    }
+  
+  
+  /**
+     * @param $order        \Magento\Sales\Model\Order
+     * @param $newStatusOrder
+     * @param $message
+     */
+  
+  protected function setStatusAndComment($order, $newStatusOrder, $message)
+  {
+    if ($order->getState() !== \Magento\Sales\Model\Order::STATE_COMPLETE) {
+      if($newStatusOrder == 'canceled' && $order->getState() != 'canceled'){
+        //cancel order
+        $order->cancel();
+      }else{
+        //change status order
+        $order->setState($this->_getAssignedState($newStatusOrder));
+      }
+
+      //add comment to history
+      $order->addStatusToHistory($newStatusOrder, $message, true);
     }
 
-    /**
-     * Set flag status updated
-     *
-     * @param $notificationData
-     */
-    public function setStatusUpdated($notificationData, $order)
-    {
-        $status = $notificationData['status'];
-        $statusDetail = $notificationData['status_detail'];
+    return;
+  }
+  
+  
+  protected function sendEmailCreateOrUpdate($order, $message){
+    
+    //get scope config
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $scopeConfig = $objectManager->create('\Magento\Framework\App\Config\ScopeConfigInterface');
+    $emailOrderCreate = $scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_EMAIL_CREATE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    
+    //set variable email sent
+    $emailAlreadySent = false;
 
-        if (!is_null($order->getPayment()) && $order->getPayment()->getAdditionalInformation('second_card_token')) {
-            $this->_statusUpdatedFlag = false;
-            return;
+    //ckeck is active send email when create order
+    if($emailOrderCreate){
+
+      if (!$order->getEmailSent()){
+        $this->_orderSender->send($order, true, $message);
+        $emailAlreadySent = true;
+      }
+    }
+
+    //if the email has not been sent check sent in status
+    if($emailAlreadySent === false){
+      // search the list of statuses that can send email
+      $statusEmail = $scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_EMAIL_UPDATE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+      $statusEmailList = explode(",", $statusEmail);
+
+      //check if the status is on the authorized list
+      if(in_array($status, $statusEmailList)){    
+        $orderCommentSender = $objectManager->create('Magento\Sales\Model\Order\Email\Sender\OrderCommentSender');
+        $orderCommentSender->send($order, $notify = '1' , str_replace("<br/>", "", $message));
+      }
+    }
+    
+    return;
+  }
+  
+  
+  protected function createInvoice($order, $message)
+  {
+    if (!$order->hasInvoices()) {
+      
+      $invoice = $order->prepareInvoice();
+      $invoice->register();
+      $invoice->pay();
+      $invoice->addComment(str_replace("<br/>", "", $message), false, true);
+      
+      $transaction = $this->_transactionFactory->create();
+      $transaction->addObject($invoice);
+      $transaction->addObject($invoice->getOrder());
+      $transaction->save();
+     
+
+      $this->_invoiceSender->send($invoice, true, $message);
+      return true;
+    }
+    
+    return false;
+  }
+  
+  public function addCardInCustomer($paymentResponse){
+    
+    if(isset($paymentResponse['metadata']) && 
+       isset($paymentResponse['metadata']['customer_id']) && 
+       isset($paymentResponse['metadata']['token']) && 
+       isset($paymentResponse['payment_method_id']) && 
+       isset($paymentResponse['issuer_id']) ){
+      
+      $customer_id = $paymentResponse['metadata']['customer_id'];
+      $token = $paymentResponse['metadata']['token'];
+      $payment_method_id = $paymentResponse['payment_method_id'];
+      $issuer_id = (int) $paymentResponse['issuer_id'];
+
+
+      $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+      $request =  array(
+        "token" => $token,
+        "issuer_id" => $issuer_id,
+        "payment_method_id" => $payment_method_id
+      );
+
+      $card = \MercadoPago\Core\Lib\RestClient::post("/v1/customers/" . $customer_id . "/cards?access_token=" . $accessToken, $request);
+      
+      return $card;
+    }
+  }
+
+    /**
+       * Return order status mapping based on current configuration
+       *
+       * @param $status
+       *
+       * @return mixed
+       */
+    public function getStatusOrder($paymentResponse, $isCanCreditMemo)
+    {
+
+      $status = $paymentResponse['status'];
+      $statusDetail = $paymentResponse['status_detail'];
+
+      switch ($status) {
+        case 'approved': {
+          $status = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_APPROVED, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+          if ($statusDetail == 'partially_refunded' && $isCanCreditMemo) {
+            $status = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_PARTIALLY_REFUNDED, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+          }
+          break;
+        }
+        case 'in_process': {
+          $status = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_IN_PROCESS, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+          break;
         }
 
-        //get the posible status update order
-        $statusToUpdate = $this->getStatusOrder($status, $statusDetail, false);
-        $order = $this->_coreHelper->_getOrder($notificationData["external_reference"]);
-        $commentsObject = $order->getStatusHistoryCollection(true);
-
-        //check if the status has been updated in some time
-        foreach ($commentsObject as $commentObj) {
-            if($commentObj->getStatus() == $statusToUpdate){
-                $this->_statusUpdatedFlag = true;
-            }
+        case 'pending': {
+          $status = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_PENDING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+          break;
         }
-    }
+        case 'rejected': {
+          $status = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_REJECTED, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+          break;
+        }
+        case 'cancelled': {
+          $status = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_CANCELLED, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+          break;
+        }
+        case 'chargeback': {
+          $status = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_CHARGEBACK, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+          break;
+        }
+        case 'in_mediation': {
+          $status = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_IN_MEDIATION, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+          break;
+        }
+        case 'refunded': {
+          $status = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_REFUNDED, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+          break;
+        }
+        default: {
+          $status = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_PENDING, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        }
+      }
 
-    protected function _getMulticardLastValue($value)
-    {
-        $statuses = explode('|', $value);
-
-        return str_replace(' ', '', array_pop($statuses));
+      return $status;
     }
 
     /**
-     * Return order status mapping based on current configuration
-     *
-     * @param $status
-     *
-     * @return mixed
-     */
-    public function getStatusOrder($status, $statusDetail, $isCanCreditMemo)
+       * Return raw message for payment detail
+       *
+       * @param $status
+       * @param $payment
+       *
+       * @return \Magento\Framework\Phrase|string
+       */
+    public function getMessage($paymentResponse)
     {
-        switch ($status) {
-            case 'approved': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_approved', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                if ($statusDetail == 'partially_refunded' && $isCanCreditMemo) {
-                    $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_partially_refunded', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                }
-                break;
-            }
-            case 'refunded': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_refunded', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                break;
-            }
-            case 'in_mediation': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_in_mediation', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                break;
-            }
-            case 'cancelled': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_cancelled', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                break;
-            }
-            case 'rejected': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_rejected', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                break;
-            }
-            case 'chargeback': {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_chargeback', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                break;
-            }
-            default: {
-                $status = $this->scopeConfig->getValue('payment/mercadopago/order_status_in_process', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            }
-        }
+      $rawMessage = __($this->_messageInterface->getMessage($paymentResponse['status']));
+      $rawMessage .= __('<br/> Payment id: %1', $paymentResponse['id']);
+      $rawMessage .= __('<br/> Status: %1', $paymentResponse['status']);
+      $rawMessage .= __('<br/> Status Detail: %1', $paymentResponse['status_detail']);
 
-        return $status;
+      return $rawMessage;
     }
 
     /**
-     * Get the assigned state of an order status
-     *
-     * @param string $status
-     */
+       * Get the assigned state of an order status
+       *
+       * @param string $status
+       */
     public function _getAssignedState($status)
     {
-        $collection = $this->_statusFactory
-            ->joinStates()
-            ->addFieldToFilter('main_table.status', $status);
+      $collection = $this->_statusFactory
+        ->joinStates()
+        ->addFieldToFilter('main_table.status', $status);
 
-        $collectionItems = $collection->getItems();
+      $collectionItems = $collection->getItems();
 
-        return array_pop($collectionItems)->getState();
+      return array_pop($collectionItems)->getState();
     }
-
-    /**
-     * Return raw message for payment detail
-     *
-     * @param $status
-     * @param $payment
-     *
-     * @return \Magento\Framework\Phrase|string
-     */
-    public function getMessage($status, $payment)
-    {
-        $rawMessage = __($this->_messageInterface->getMessage($status));
-        $rawMessage .= __('<br/> Payment id: %1', $payment['id']);
-        $rawMessage .= __('<br/> Status: %1', $payment['status']);
-        $rawMessage .= __('<br/> Status Detail: %1', $payment['status_detail']);
-
-        return $rawMessage;
+  
+  
+    public function updatePaymentResponse($order, $paymentResponse){
+      $payment = $order->getPayment();
+      $payment->setAdditionalInformation("paymentResponse", $paymentResponse);
     }
-
-    /**
-     * Returns status that must be set to order, if a not final status exists
-     * then the last of this statuses is returned. Else the last of final statuses
-     * is returned
-     *
-     * @param $dataStatus
-     * @param $merchantOrder
-     *
-     * @return string
-     */
-    public function getStatusFinal($dataStatus, $merchantOrder)
-    {
-        //if (isset($merchantOrder['paid_amount']) && $merchantOrder['total_amount'] == $merchantOrder['paid_amount']) {
-        //  return 'approved';
-        //}
-        if ($merchantOrder['total_amount'] == $merchantOrder['paid_amount']) {
-            return 'approved';
-        }
-        $payments = $merchantOrder['payments'];
-        $statuses = explode('|', $dataStatus);
-        foreach ($statuses as $status) {
-            $status = str_replace(' ', '', $status);
-            if (in_array($status, $this->_notFinalStatus)) {
-                $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $this->_notFinalStatus);
-
-                return $payments[$lastPaymentIndex]['status'];
-            }
-        }
-
-        $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $this->_finalStatus);
-
-        return $payments[$lastPaymentIndex]['status'];
-    }
-
-    //--------------------- BEGIN todo modularizar
-
-    //public function getDataPayments($merchantOrderData)
-    //{
-    //    $data = array();
-    //    foreach ($merchantOrderData['payments'] as $payment) {
-    //        $data = $this->_getFormattedPaymentData($payment['id'], $data);
-    //    }
-    //
-    //    return $data;
-    //}
-    //
-    //protected function _getFormattedPaymentData($paymentId, $data = [])
-    //{
-    //    $response = $this->_core->getPayment($paymentId);
-    //    if ($response['status'] == 400 || $response['status'] == 401) {
-    //        return [];
-    //    }
-    //    $payment = $response['response']['collection'];
-    //
-    //    return $this->formatArrayPayment($data, $payment, self::LOG_FILE);
-    //}
-
-    //--------------------- END to modularizar
-
-    /**
-     * @param $payments
-     * @param $status
-     *
-     * @return int
-     */
-    protected function _getLastPaymentIndex($payments, $status)
-    {
-        $dates = [];
-        foreach ($payments as $key => $payment) {
-            if (in_array($payment['status'], $status)) {
-                $dates[] = ['key' => $key, 'value' => $payment['last_modified']];
-            }
-        }
-        usort($dates, ['MercadoPago\Core\Controller\Notifications\Standard', "_dateCompare"]);
-        if ($dates) {
-            $lastModified = array_pop($dates);
-
-            return $lastModified['key'];
-        }
-
-        return 0;
-    }
-
-    /**
-     * @param $merchantOrder
-     *
-     * @return array
-     */
-    public function getShipmentsArray($merchantOrder)
-    {
-        return (isset($merchantOrder['shipments'][0])) ? $merchantOrder['shipments'][0] : [];
-    }
-
+  
+    // @refactor refund
+  
     /**
      * @param $payment \Magento\Sales\Model\Order\Payment
      */
@@ -359,305 +434,4 @@ class StatusUpdate
             $order->getResource()->save($order);
         }
     }
-
-    /**
-     * Collect data from notification content to update order info
-     *
-     * @param $data
-     * @param $payment
-     *
-     * @return mixed
-     */
-    public function formatArrayPayment($data, $payment, $logName)
-    {
-      $this->_dataHelper->log("Format Array", $logName);
-
-      $fields = [
-        "status",
-        "status_detail",
-        "id",
-        "payment_method_id",
-        "transaction_amount",
-        "coupon_amount",
-        "installments",
-        "amount_refunded"
-      ];
-
-      foreach ($fields as $field) {
-        if (isset($payment[$field])) {
-          if (isset($data[$field])) {
-            $data[$field] .= " | " . $payment[$field];
-          } else {
-            $data[$field] = $payment[$field];
-          }
-        }
-      }
-
-      if (isset($payment['refunds'])) {
-        foreach ($payment['refunds'] as $refund) {
-          if (isset($data['refunds'])) {
-            $data['refunds'] .= " | " . $refund['id'];
-          } else {
-            $data['refunds'] = $refund['id'];
-          }
-        }
-      }
-
-      $data = $this->_updateAtributesData($data, $payment);
-      
-      $data['external_reference'] = $payment['external_reference'];
-      $data['order_id'] = $payment['external_reference'];
-      $data['payer_first_name'] = $payment['payer']['first_name'];
-      $data['payer_last_name'] = $payment['payer']['last_name'];
-      $data['payer_email'] = $payment['payer']['email'];
-      $data['total_paid_amount'] = $payment['transaction_details']['total_paid_amount'];
-      $data['shipping_cost'] = isset($payment['shipping_amount']) ? $payment['shipping_amount'] : "0"; 
-
-      if (isset($data['payer_identification_type'])) {
-        $data['payer_identification_type'] .= " | " . $payment['payer']['identification']['type'];
-      } else {
-        if (isset($payment['payer']) && isset($payment['payer']['identification']) && isset($payment['payer']['identification']['type'])) {
-          $data['payer_identification_type'] = $payment['payer']['identification']['type'];
-        }
-      }
-      
-      if (isset($data['payer_identification_number'])) {
-        $data['payer_identification_number'] .= " | " . $payment['payer']['identification']['number'];
-      } else {
-        if (isset($payment['payer']) && isset($payment['payer']['identification']) && isset($payment['payer']['identification']['number'])) {
-          $data['payer_identification_number'] = $payment['payer']['identification']['number'];
-        }
-      }
-
-      return $data;
-    }
-
-    protected function _updateAtributesData($data, $payment)
-    {
-        if (isset($payment['card']) && isset($payment['card']["last_four_digits"])) {
-            if (isset($data["trunc_card"])) {
-                $data["trunc_card"] .= " | " . "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
-            } else {
-                $data["trunc_card"] = "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
-            }
-        }
-
-        if (isset($payment['card']) && isset($payment['card']['cardholder']) && isset($payment['card']['cardholder']['name'])) {
-            if (isset($data["cardholder_name"])) {
-                $data["cardholder_name"] .= " | " . $payment['card']["cardholder"]["name"];
-            } else {
-                $data["cardholder_name"] = $payment['card']["cardholder"]["name"];
-            }
-        }
-
-        if (isset($payment['statement_descriptor'])) {
-            $data['statement_descriptor'] = $payment['statement_descriptor'];
-        }
-
-        if (isset($payment['order']) && isset($payment['order']['type']) && $payment['order']['type'] == "mercadopago") {
-            $data['merchant_order_id'] = $payment['order']['id'] ;
-        }
-
-        return $data;
-    }
-
-    /**
-     * Updates order status ond creates invoice
-     *
-     * @param      $payment
-     * @param null $stateObject
-     *
-     * @return array
-     */
-    public function setStatusOrder($payment)
-    {
-        $order = $this->_coreHelper->_getOrder($payment["external_reference"]);
-
-        $statusDetail = $payment['status_detail'];
-        $status = $payment['status'];
-
-        if (isset($payment['status_final'])) {
-            $status = $payment['status_final'];
-        }
-
-        $message = $this->getMessage($status, $payment);
-        if ($this->isStatusUpdated()) {
-            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
-        }
-
-        //if state is not complete updates according to setting
-        $this->_updateStatus($order, $status, $message, $statusDetail);
-
-        $statusSave = $order->save();
-        $this->_dataHelper->log("Update order", 'mercadopago.log', $statusSave->getData());
-        $this->_dataHelper->log($message, 'mercadopago.log');
-
-        try {
-            $infoPayments = $order->getPayment()->getAdditionalInformation();
-            if ($this->_getMulticardLastValue($status) == 'approved') {
-                $this->_handleTwoCards($payment, $infoPayments);
-
-                $this->_dataHelper->setOrderSubtotals($payment, $order);
-                $this->_createInvoice($order, $message);
-
-                //Associate card to customer
-                if (isset($payment['metadata']) && isset($payment['metadata']['token'])) {
-                    $order->getPayment()->getMethodInstance()->customerAndCards($payment['metadata']['token'], $payment);
-                }
-
-            } elseif ($status == 'refunded' || $status == 'cancelled') {
-                $order->setExternalRequest(true);
-                $order->cancel();
-            }
-
-            return ['text' => $message, 'code' => \MercadoPago\Core\Helper\Response::HTTP_OK];
-        } catch (\Exception $e) {
-            $this->_dataHelper->log("erro in set order status: " . $e, 'mercadopago.log');
-
-            return ['text' => $e, 'code' => \MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST];
-        }
-    }
-
-    protected function _handleTwoCards(&$payment, $infoPayments)
-    {
-        if (isset($infoPayments['second_card_token']) && !empty($infoPayments['second_card_token'])) {
-            $payment['total_paid_amount'] = $infoPayments['total_paid_amount'];
-            $payment['transaction_amount'] = $infoPayments['transaction_amount'];
-            $payment['status'] = $infoPayments['status'];
-        }
-    }
-
-    protected function _createInvoice($order, $message)
-    {
-        if (!$order->hasInvoices()) {
-            $invoice = $order->prepareInvoice();
-            $invoice->register();
-            $invoice->pay();
-            $this->_transactionFactory->create()
-                ->addObject($invoice)
-                ->addObject($invoice->getOrder())
-                ->save();
-
-            $this->_invoiceSender->send($invoice, true, $message);
-        }
-    }
-
-    /**
-     * @param $order        \Magento\Sales\Model\Order
-     * @param $statusHelper \MercadoPago\Core\Helper\StatusUpdate
-     * @param $status
-     * @param $message
-     * @param $statusDetail
-     */
-    protected function _updateStatus($order, $status, $message, $statusDetail)
-    {
-        if ($order->getState() !== \Magento\Sales\Model\Order::STATE_COMPLETE) {
-            $statusOrder = $this->getStatusOrder($status, $statusDetail, $order->canCreditmemo());
-            $emailAlreadySent = false;
-            //get scope config
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            $scopeConfig = $objectManager->create('\Magento\Framework\App\Config\ScopeConfigInterface');
-            $emailOrderCreate = $scopeConfig->getValue('payment/mercadopago/email_order_create', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-
-            if($statusOrder == 'canceled'){
-                $order->cancel();
-            }else{
-                $order->setState($this->_getAssignedState($statusOrder));
-            }
-
-            //add comment to history
-            $order->addStatusToHistory($statusOrder, $message, true);
-
-            //ckeck is active send email when create order
-            if($emailOrderCreate){
-                if (!$order->getEmailSent()){
-                    $this->_orderSender->send($order, true, $message);
-                    $emailAlreadySent = true;
-                }
-            }
-
-            //if the email has not been sent check sent in status
-            if($emailAlreadySent === false){
-                // search the list of statuses that can send email
-                $statusEmail = $scopeConfig->getValue('payment/mercadopago/email_order_update', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                $statusEmailList = explode(",", $statusEmail);
-    
-                //check if the status is on the authorized list
-                if(in_array($status, $statusEmailList)){    
-                    $orderCommentSender = $objectManager->create('Magento\Sales\Model\Order\Email\Sender\OrderCommentSender');
-                    $orderCommentSender->send($order, $notify = '1' , str_replace("<br/>", "", $message));
-                }
-            }
-        }
-    }
-    /**
-     * Set order and payment info
-     *
-     * @param $data
-     */
-    public function updateOrder($data, $order = null)
-    {
-        $this->_dataHelper->log("Update Order", 'mercadopago-notification.log');
-        if (!$this->isStatusUpdated()) {
-            try {
-                if (!$order) {
-                    $order = $this->_coreHelper->_getOrder($data["external_reference"]);
-                }
-
-                //update payment info
-                $paymentOrder = $order->getPayment();
-                $paymentAdditionalInfo = $paymentOrder->getAdditionalInformation();
-
-                $additionalFields = [
-                    'status',
-                    'status_detail',
-                    'id',
-                    'transaction_amount',
-                    'cardholderName',
-                    'installments',
-                    'statement_descriptor',
-                    'trunc_card',
-                    'payer_identification_type',
-                    'payer_identification_number'
-
-                ];
-
-
-                foreach ($additionalFields as $field) {
-                    if (isset($data[$field]) && empty($paymentAdditionalInfo['second_card_token'])) {
-                        $paymentOrder->setAdditionalInformation($field, $data[$field]);
-                    }
-                }
-
-                if (isset($data['id'])) {
-                    $paymentOrder->setAdditionalInformation('payment_id_detail', $data['id']);
-                }
-
-                if (isset($data['payer_identification_type']) & isset($data['payer_identification_number'])) {
-                    $paymentOrder->setAdditionalInformation($data['payer_identification_type'], $data['payer_identification_number']);
-                }
-
-                if (isset($data['payment_method_id'])) {
-                    $paymentOrder->setAdditionalInformation('payment_method', $data['payment_method_id']);
-                }
-
-                if (isset($data['merchant_order_id'])) {
-                    $paymentOrder->setAdditionalInformation('merchant_order_id', $data['merchant_order_id']);
-                }
-
-                $paymentStatus = $paymentOrder->save();
-                $this->_dataHelper->log("Update Payment", 'mercadopago.log', $paymentStatus->getData());
-
-                $statusSave = $order->save();
-                $this->_dataHelper->log("Update order", 'mercadopago.log', $statusSave->getData());
-            } catch (\Exception $e) {
-                $this->_dataHelper->log("erro in update order status: " . $e, 'mercadopago.log');
-                $this->getResponse()->setBody($e);
-
-                //if notification proccess returns error, mercadopago will resend the notification.
-                $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST);
-            }
-        }
-    }
-
 }

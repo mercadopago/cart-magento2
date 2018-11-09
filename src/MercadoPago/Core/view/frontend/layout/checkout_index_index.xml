@@ -54,7 +54,7 @@
                                                             <item name="sortOrder" xsi:type="string">50</item>
                                                             <item name="config" xsi:type="array">
                                                                 <item name="template" xsi:type="string">MercadoPago_Core/checkout/cart/totals/discount_coupon</item>
-                                                                <item name="title" xsi:type="string" translate="true">Discount Mercado Pago</item>
+                                                                <item name="title" xsi:type="string" translate="true">Coupon discount of the Mercado Pago</item>
                                                             </item>
                                                         </item>
 

@@ -18,12 +18,6 @@ class Core
     protected $_code = 'mercadopago';
 
     /**
-     * Define path of access token config
-     */
-    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
-    const XML_PATH_PUBLIC_KEY = 'payment/mercadopago_custom/public_key';
-
-    /**
      * {@inheritdoc}
      */
     protected $_isGateway = true;
@@ -242,8 +236,9 @@ class Core
      *
      * @return array
      */
+    // @REFACTOR
     public function getInfoPaymentByOrder($order_id)
-    {
+    { 
         $order = $this->_getOrder($order_id);
         $payment = $order->getPayment();
         $info_payments = [];
@@ -261,7 +256,7 @@ class Core
             ["field" => "payment_id_detail", "title" => "Mercado Pago Payment Id: %1"],
             ["field" => "id", "title" => "Collection Id: %1"],
         ];
-
+      
         foreach ($fields as $field) {
             if ($payment->getAdditionalInformation($field['field']) != "") {
                 $text = __($field['title'], $payment->getAdditionalInformation($field['field']));
@@ -398,7 +393,7 @@ class Core
                 "title"       => $product->getName(),
                 "description" => $product->getName(),
                 "picture_url" => $image->getUrl(),
-                "category_id" => $this->_scopeConfig->getValue('payment/mercadopago/category_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                "category_id" => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CATEGORY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                 "quantity"    => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
                 "unit_price"  => (float)number_format($item->getPrice(), 2, '.', '')
             ];
@@ -467,13 +462,12 @@ class Core
         /* INIT PREFERENCE */
         $preference = array();
 
-
         // Check if notification URL contains localhost
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
         if ( isset( $notification_url ) && ! strrpos( $notification_url, 'localhost' ) ) {	
             $preference['notification_url'] = $notification_url;	
         }
-
+      
         $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
 
         $preference['transaction_amount'] = (float) $this->getAmount();
@@ -559,54 +553,48 @@ class Core
     {
         //get access_token
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
+      
         $this->_coreHelper->log("Access Token for Post", 'mercadopago-custom.log', $this->_accessToken);
 
         //set sdk php mercadopago
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
-        $response = $mp->post("/v1/payments", $preference);
-        
-        $this->_coreHelper->log("POST /v1/payments", 'mercadopago-custom.log', $response);
-
-        if ($response['status'] == 200 || $response['status'] == 201) {
-            return $response;
-        } else {
-            $e = "";
-            $exception = new \MercadoPago\Core\Model\Api\V1\Exception(new \Magento\Framework\Phrase($e), $this->_scopeConfig);
-            if (count($response['response']['cause']) > 0) {
-                foreach ($response['response']['cause'] as $error) {
-                    $e .= $exception->getUserMessage($error) . " ";
-                }
-            } else {
-                $e = $exception->getUserMessage();
-            }
-
-            $this->_coreHelper->log("erro post pago: " . $e, 'mercadopago-custom.log');
-            $this->_coreHelper->log("response post pago: ", 'mercadopago-custom.log', $response);
-
-            $exception->setPhrase(new \Magento\Framework\Phrase($e));
-            throw $exception;
-        }
-    }
-
-    /**
-     * Return info of payment returned by MP api
-     *
-     * @param $payment_id
-     *
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function getPayment($payment_id)
-    {
-        if (!$this->_clientId || !$this->_clientSecret) {
-            $this->_clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            $this->_clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        }
-        $mp = $this->_coreHelper->getApiInstance($this->_clientId, $this->_clientSecret);
       
-        return $mp->get("/v1/payments/" . $payment_id);
+        $response = $mp->post("/v1/payments", $preference);
+      
+        return $response;
+    }
+  
+    /**
+     * Get message error by response API
+     *
+     * @param $response
+     *
+     * @return string
+     */
+    public function getMessageError($response)
+    {
+      $errors = \MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS;
+
+      //set default error
+      $messageErrorToClient = $errors['NOT_IDENTIFIED'];
+
+      if( isset($response['response']) && 
+         isset($response['response']['cause']) &&
+         count($response['response']['cause']) > 0){
+
+        // get first error
+        $cause = $response['response']['cause'][0];
+
+        if(isset($errors[$cause['code']])){
+
+          //if exist get message error
+          $messageErrorToClient = $errors[$cause['code']];
+        }
+      }
+      
+      return $messageErrorToClient;
     }
 
     /**
@@ -620,30 +608,12 @@ class Core
     public function getPaymentV1($payment_id)
     {
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
+      
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
         return $mp->get("/v1/payments/" . $payment_id);
-    }
-
-    /**
-     * Return info of order returned by MP api
-     *
-     * @param $merchant_order_id
-     *
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function getMerchantOrder($merchant_order_id)
-    {
-        if (!$this->_clientId || !$this->_clientSecret) {
-            $this->_clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            $this->_clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        }
-        $mp = $this->_coreHelper->getApiInstance($this->_clientId, $this->_clientSecret);
-
-        return $mp->get("/merchant_orders/" . $merchant_order_id);
     }
 
     /**
@@ -653,7 +623,7 @@ class Core
     public function getPaymentMethods()
     {
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
@@ -670,7 +640,6 @@ class Core
     {
         $customer = $this->_customerSession->getCustomer();
         $email = $customer->getEmail();
-
         if (empty($email)) {
             $quote = $this->_getQuote();
             $email = $quote->getBillingAddress()->getEmail();
@@ -697,35 +666,39 @@ class Core
     /**
      * Check if an applied coupon is valid
      *
-     * @param $id
+     * @param $coupon_id
+     * @param $email
      *
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function validCoupon($id)
+    public function validCoupon($coupon_id, $email = null)
     {
-        if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        }
 
-        $transaction_amount = $this->getAmount();
-        $payer_email = $this->getEmailCustomer();
-        $coupon_code = $id;
+      $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+      
+      $transaction_amount = $this->getAmount();
+      $payer_email = $this->getEmailCustomer();
+      $coupon_code = $coupon_id;
+      
+      if($payer_email == ""){
+        $payer_email = $email;
+      }
 
-        $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
+      $mp = $this->_coreHelper->getApiInstance($accessToken);
 
-        $details_discount = $mp->check_discount_campaigns($transaction_amount, $payer_email, $coupon_code);
+      $details_discount = $mp->check_discount_campaigns($transaction_amount, $payer_email, $coupon_code);
 
-        //add value on return api discount
-        $details_discount['response']['transaction_amount'] = $transaction_amount;
-        $details_discount['response']['params'] = array(
-            "transaction_amount" => $transaction_amount,
-            "payer_email"        => $payer_email,
-            "coupon_code"        => $coupon_code
-        );
+      //add value on return api discount
+      $details_discount['response']['transaction_amount'] = $transaction_amount;
+      $details_discount['response']['params'] = array(
+        "transaction_amount" => $transaction_amount,
+        "payer_email"        => $payer_email,
+        "coupon_code"        => $coupon_code
+      );
 
 
-        return $details_discount;
+      return $details_discount;
     }
 
 

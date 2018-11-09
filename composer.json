@@ -8,7 +8,7 @@
     }
   ],
   "type": "magento2-component",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "license": [
     "OSL-3.0",
     "AFL-3.0"
@@ -34,12 +34,10 @@
   },
   "autoload": {
     "psr-4": {
-      "MercadoPago\\Core\\": "src/MercadoPago/Core",
-      "MercadoPago\\MercadoEnvios\\": "src/MercadoPago/MercadoEnvios"
+      "MercadoPago\\Core\\": "src/MercadoPago/Core"
     },
     "files": [
-      "src/MercadoPago/Core/registration.php",
-      "src/MercadoPago/MercadoEnvios/registration.php"
+      "src/MercadoPago/Core/registration.php"
     ]
   }
 }

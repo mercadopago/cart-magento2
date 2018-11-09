@@ -37,34 +37,34 @@ class Category
      */
     public function toOptionArray()
     {
-        $this->coreHelper->log("Get Categories... ", 'mercadopago');
+      try {
+        $this->coreHelper->log("GET /item_categories", 'mercadopago');
+        $response = \MercadoPago\Core\Lib\RestClient::get("/item_categories");
+      } catch (\Exception $e) {
+        $this->coreHelper->log("Category:: An error occurred at the time of obtaining the categories: " . $e);
+        return [];
+      }
 
-        try {
-            $response = \MercadoPago\Core\Lib\RestClient::get("/item_categories");
-        } catch (\Exception $e) {
-            return [];
+      $response = $response['response'];
+
+      $cat = array();
+      $count = 0;
+      foreach ($response as $v) {
+        //force category others first
+        if ($v['id'] == "others") {
+          $cat[0] = ['value' => $v['id'], 'label' => __($v['description'])];
+        } else {
+          $count++;
+          $cat[$count] = ['value' => $v['id'], 'label' => __($v['description'])];
         }
-        $this->coreHelper->log("API item_categories", 'mercadopago', $response);
 
-        $response = $response['response'];
+      };
 
-        $cat = array();
-        $count = 0;
-        foreach ($response as $v) {
-            //force category others first
-            if ($v['id'] == "others") {
-                $cat[0] = ['value' => $v['id'], 'label' => __($v['description'])];
-            } else {
-                $count++;
-                $cat[$count] = ['value' => $v['id'], 'label' => __($v['description'])];
-            }
+      //force order by key
+      ksort($cat);
 
-        };
-
-        //force order by key
-        ksort($cat);
-
-        return $cat;
+      $this->coreHelper->log("Category:: Displayed", 'mercadopago', $cat);
+      return $cat;
     }
 
 }

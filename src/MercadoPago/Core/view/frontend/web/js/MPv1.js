@@ -296,45 +296,45 @@
     };
   
     MPv1.setPaymentMethodInfo = function (status, response) {
-  
+
       if (status == 200) {
-  
+
         if(MPv1.site_id != "MLM"){
           //guessing
           document.querySelector(MPv1.selectors.paymentMethodId).value = response[0].id;
-  
+
           if(MPv1.customer_and_card.status){
             document.querySelector(MPv1.selectors.paymentMethodSelector).style.background = "url(" + response[0].secure_thumbnail + ") 95% 50% no-repeat #fff";
           }else{
             document.querySelector(MPv1.selectors.cardNumber).style.background = "url(" + response[0].secure_thumbnail + ") 98% 50% no-repeat #fff";
           }
-  
-        }
-  
-        // check if the security code (ex: Tarshop) is required
-        var cardConfiguration = response[0].settings;
-        var bin = MPv1.getBin();
-        var amount = MPv1.getAmount();
-  
-        Mercadopago.getInstallments({
-          "bin": bin,
-          "amount": amount
-        }, MPv1.setInstallmentInfo);
-  
-        // check if the issuer is necessary to pay
-        var issuerMandatory = false,
-        additionalInfo = response[0].additional_info_needed;
-  
-        for (var i = 0; i < additionalInfo.length; i++) {
-          if (additionalInfo[i] == "issuer_id") {
-            issuerMandatory = true;
+
+          // check if the security code (ex: Tarshop) is required
+          var cardConfiguration = response[0].settings;
+          var bin = MPv1.getBin();
+          var amount = MPv1.getAmount();
+
+          Mercadopago.getInstallments({
+            "bin": bin,
+            "amount": amount
+          }, MPv1.setInstallmentInfo);
+
+          // check if the issuer is necessary to pay
+          var issuerMandatory = false,
+              additionalInfo = response[0].additional_info_needed;
+
+          for (var i = 0; i < additionalInfo.length; i++) {
+            if (additionalInfo[i] == "issuer_id") {
+              issuerMandatory = true;
+            }
           }
-        };
-        if (issuerMandatory && MPv1.site_id != "MLM") {
-          var payment_method_id = response[0].id;
-          MPv1.getIssuersPaymentMethod(payment_method_id);
-        } else {
-          MPv1.hideIssuer();
+          
+          if (issuerMandatory) {
+            var payment_method_id = response[0].id;
+            MPv1.getIssuersPaymentMethod(payment_method_id);
+          } else {
+            MPv1.hideIssuer();
+          }
         }
       }
     }
@@ -355,20 +355,22 @@
     */
   
     MPv1.getIssuersPaymentMethod = function (payment_method_id){
-      var amount = MPv1.getAmount();
-  
-      //flow: MLM mercadopagocard & amex
-      if(payment_method_id == 'mercadopagocard' || (MPv1.site_id == "MLM" && payment_method_id == 'amex')){
-        Mercadopago.getInstallments({
-          "payment_method_id": payment_method_id,
-          "amount": amount
-        }, MPv1.setInstallmentInfo);
+      if(payment_method_id != -1){
+        var amount = MPv1.getAmount();
+
+        //flow: MLM mercadopagocard & amex
+        if(payment_method_id == 'mercadopagocard' || (MPv1.site_id == "MLM" && payment_method_id == 'amex')){
+          Mercadopago.getInstallments({
+            "payment_method_id": payment_method_id,
+            "amount": amount
+          }, MPv1.setInstallmentInfo);
+        }
+
+        Mercadopago.getIssuers(payment_method_id, MPv1.showCardIssuers);
+        MPv1.addListenerEvent(document.querySelector(MPv1.selectors.issuer), 'change', MPv1.setInstallmentsByIssuerId);
       }
-  
-      Mercadopago.getIssuers(payment_method_id, MPv1.showCardIssuers);
-      MPv1.addListenerEvent(document.querySelector(MPv1.selectors.issuer), 'change', MPv1.setInstallmentsByIssuerId);
     }
-  
+
   
     MPv1.showCardIssuers = function (status, issuers) {
   
@@ -400,8 +402,8 @@
     MPv1.setInstallmentsByIssuerId = function (status, response) {
       var issuerId = document.querySelector(MPv1.selectors.issuer).value;
       var amount = MPv1.getAmount();
-  
-      if (issuerId === '-1') {
+
+      if (issuerId == -1 || issuerId == "") {
         return;
       }
   
@@ -489,9 +491,18 @@
     MPv1.cardsHandler = function () {
   
       var cardSelector = document.querySelector(MPv1.selectors.paymentMethodSelector);
+      
+      if(cardSelector.options.selectedIndex < 0){
+        return;
+      }
+      
       var type_checkout = cardSelector[cardSelector.options.selectedIndex].getAttribute("type_checkout");
       var amount = MPv1.getAmount();
   
+      if(MPv1.site_id == "MLM"){
+        MPv1.setInstallmentsByIssuerId();
+      }
+      
       if(MPv1.customer_and_card.default){
   
         if (cardSelector &&
@@ -1009,8 +1020,12 @@
           document.querySelector(MPv1.selectors.formCustomerAndCard).removeAttribute('style');
   
           //removing not used fields for this country
-          MPv1.inputs_to_create_token.splice(MPv1.inputs_to_create_token.indexOf("docType"), 1);
-          MPv1.inputs_to_create_token.splice(MPv1.inputs_to_create_token.indexOf("docNumber"), 1);
+          if(MPv1.inputs_to_create_token.includes("docType")){
+            MPv1.inputs_to_create_token.splice(MPv1.inputs_to_create_token.indexOf("docType"), 1);
+          }
+          if(MPv1.inputs_to_create_token.includes("docNumber")){
+            MPv1.inputs_to_create_token.splice(MPv1.inputs_to_create_token.indexOf("docNumber"), 1);
+          }
   
           MPv1.addListenerEvent(document.querySelector(MPv1.selectors.paymentMethodSelector), 'change', MPv1.changePaymetMethodSelector);
   
