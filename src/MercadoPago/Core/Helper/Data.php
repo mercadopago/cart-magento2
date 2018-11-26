@@ -287,8 +287,8 @@ class Data
      */
     public function isValidClientCredentials($clientId, $clientSecret)
     {
-      $mp = $this->getApiInstance($clientId, $clientSecret);
       try {
+        $mp = $this->getApiInstance($clientId, $clientSecret);
         $mp->get_access_token();
       } catch (\Exception $e) {
         return false;
