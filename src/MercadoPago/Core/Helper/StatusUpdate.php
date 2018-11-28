@@ -197,7 +197,6 @@ class StatusUpdate
   
   
   protected function sendEmailCreateOrUpdate($order, $message){
-    
     //get scope config
     $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
     $scopeConfig = $objectManager->create('\Magento\Framework\App\Config\ScopeConfigInterface');
@@ -222,7 +221,7 @@ class StatusUpdate
       $statusEmailList = explode(",", $statusEmail);
 
       //check if the status is on the authorized list
-      if(in_array($status, $statusEmailList)){    
+      if(in_array($order->getStatus(), $statusEmailList)) {
         $orderCommentSender = $objectManager->create('Magento\Sales\Model\Order\Email\Sender\OrderCommentSender');
         $orderCommentSender->send($order, $notify = '1' , str_replace("<br/>", "", $message));
       }
