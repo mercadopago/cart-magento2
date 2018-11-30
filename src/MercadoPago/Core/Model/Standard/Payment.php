@@ -280,11 +280,21 @@ class Payment
             $shipping = $shippingAddress->getData();
 
             $arr['payer']['phone'] = [
-                "area_code" => "-",
-                "number"    => $shipping['telephone']
+              "area_code" => "-",
+              "number"    => $shipping['telephone']
             ];
 
-            $arr['shipments'] = $this->_getParamShipment($paramsShipment, $order, $shippingAddress);
+            $arr['shipments']  = array();
+            $arr['shipments']['receiver_address'] = $this->getReceiverAddress($shippingAddress);
+
+            $arr['items'][] = [
+              "title"       => "Shipment cost",
+              "description" => "Shipment cost",
+              "category_id" => $this->_scopeConfig->getValue('payment/mercadopago/category_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+              "quantity"    => 1,
+              "unit_price"  => (float)$order->getBaseShippingAmount()
+            ];
+
         }
 
         $billingAddress = $order->getBillingAddress()->getData();
