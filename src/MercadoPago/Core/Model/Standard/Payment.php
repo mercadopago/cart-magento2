@@ -349,6 +349,14 @@ class Payment
             $arr['sponsor_id'] = (int)$sponsor_id;
         }
 
+        //without decimal places in specific countrys
+        $siteId = strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+        if($siteId == 'MLC' || $siteId == 'MCO'){
+          foreach($arr['items'] as $key => $item){
+            $arr['items'][$key]['unit_price'] = (int) $item['unit_price'];
+          }
+        }
+
         return $arr;
     }
 
