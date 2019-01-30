@@ -389,9 +389,17 @@ class Core
     protected function getItemsInfo($order)
     {
         $dataItems = [];
+        $siteId = strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+      
         foreach ($order->getAllVisibleItems() as $item) {
             $product = $item->getProduct();
             $image = $this->_helperImage->init($product, 'image');
+
+            $unitPrice = (float) number_format($item->getPrice(), 2, '.', '');
+            //without decimal places in specific countrys
+            if($siteId == 'MLC' || $siteId == 'MCO'){
+              $unitPrice = (int) $unitPrice;
+            }
 
             $dataItems[] = [
                 "id"          => $item->getSku(),
@@ -400,18 +408,25 @@ class Core
                 "picture_url" => $image->getUrl(),
                 "category_id" => $this->_scopeConfig->getValue('payment/mercadopago/category_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                 "quantity"    => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
-                "unit_price"  => (float)number_format($item->getPrice(), 2, '.', '')
+                "unit_price"  => $unitPrice
             ];
         }
 
         /* verify discount and add it like an item */
         $discount = $this->getDiscount();
         if ($discount != 0) {
+          
+            $discount = (float)number_format($discount, 2, '.', '');
+            //without decimal places in specific countrys
+            if($siteId == 'MLC' || $siteId == 'MCO'){
+              $discount = (int) $discount;
+            }
+          
             $dataItems[] = array(
                 "title"       => "Discount by the Store",
                 "description" => "Discount by the Store",
                 "quantity"    => 1,
-                "unit_price"  => (float)number_format($discount, 2, '.', '')
+                "unit_price"  => $discount
             );
         }
 
@@ -463,7 +478,8 @@ class Core
 
         $billing_address = $quote->getBillingAddress()->getData();
         $customerInfo = $this->getCustomerInfo($customer, $order);
-
+        $siteId = strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+      
         /* INIT PREFERENCE */
         $preference = array();
 
@@ -474,9 +490,15 @@ class Core
             $preference['notification_url'] = $notification_url;	
         }
 
+        $transactionAmount = (float) $this->getAmount();;
+        //without decimal places in specific countrys
+        if($siteId == 'MLC' || $siteId == 'MCO'){
+          $transactionAmount = (int) $transactionAmount;
+        }
+      
         $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
 
-        $preference['transaction_amount'] = (float) $this->getAmount();
+        $preference['transaction_amount'] = $transactionAmount;
         
         $preference['external_reference'] = $order->getIncrementId();
         
