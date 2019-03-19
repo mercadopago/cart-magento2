@@ -94,7 +94,6 @@ class Page
         parent::__construct(
             $context
         );
-
     }
 
     /**
@@ -155,13 +154,13 @@ class Page
      */
     public function getCheckoutHandle()
     {
-        $handle = '';
-        $order = $this->_getOrder();
-        if (!empty($order->getId())) {
-            $handle = $order->getPayment()->getMethod();
-        }
-        $handle .= '_success';
+      $handle = '';
+      $order = $this->_getOrder();
+      if (!empty($order->getId())) {
+        $handle = $order->getPayment()->getMethod();
+      }
+      $handle .= '_success';
 
-        return $handle;
+      return $handle;
     }
 }

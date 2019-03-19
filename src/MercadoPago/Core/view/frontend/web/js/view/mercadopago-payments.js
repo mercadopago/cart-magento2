@@ -18,6 +18,12 @@ define(
                 component: 'MercadoPago_Core/js/view/method-renderer/custom-method-ticket'
             }
         );
+        rendererList.push(
+            {
+                type: 'mercadopago_custom_bank_transfer',
+                component: 'MercadoPago_Core/js/view/method-renderer/custom-method-bank-transfer'
+            }
+        );
         return Component.extend({});
     }
 );

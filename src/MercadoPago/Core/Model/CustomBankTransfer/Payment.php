@@ -1,11 +1,11 @@
 <?php
 
-namespace MercadoPago\Core\Model\CustomTicket;
+namespace MercadoPago\Core\Model\CustomBankTransfer;
 
 /**
  * Class Payment
  *
- * @package MercadoPago\Core\Model\CustomTicket
+ * @package MercadoPago\Core\Model\CustomBankTransfer
  */
 class Payment
     extends \MercadoPago\Core\Model\Custom\Payment
@@ -13,12 +13,12 @@ class Payment
     /**
      * Define payment method code
      */
-    const CODE = 'mercadopago_customticket';
+    const CODE = 'mercadopago_custom_bank_transfer';
 
     protected $_code = self::CODE;
 
-    protected $fields_febraban = array(
-        "firstName", "lastName", "docType","docNumber", "address", "addressNumber", "addressCity", "addressState", "addressZipcode"
+    protected $fields = array(
+        "payment_method_id", "identification_type", "identification_number", "financial_institution", "entity_type"
     );
 
   /**
@@ -43,17 +43,16 @@ class Payment
           $infoForm = $infoForm['additional_data'];
         }
       
-      $this->_helperData->log("CustomPaymentTicket::assignData - Ticket Data: ", self::LOG_NAME, $infoForm);
+        $this->_helperData->log("CustomPaymentTicket::assignData - Bank Transfer Data: ", self::LOG_NAME, $infoForm);
 
         $info = $this->getInfoInstance();
-        $info->setAdditionalInformation('payment_method', $infoForm['payment_method_ticket']);
         
         if (!empty($infoForm['coupon_code'])) {
             $info->setAdditionalInformation('coupon_code', $infoForm['coupon_code']);
         }
 
-        // Fields for new febraban rule
-        foreach ($this->fields_febraban as $key) {
+        // Fields for create payment
+        foreach ($this->fields as $key) {
             if (isset($infoForm[$key])) {
                 $info->setAdditionalInformation($key, $infoForm[$key]);
             }
@@ -88,41 +87,33 @@ class Payment
 
         $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
-        $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method");
+        $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method_id");
 
-        if ($payment->getAdditionalInformation("firstName") != "") {
-          $preference['payer']['first_name'] = $payment->getAdditionalInformation("firstName");
+        if ($payment->getAdditionalInformation("identification_type") != "") {
+          $preference['payer']['identification']['type'] = $payment->getAdditionalInformation("identification_type");
         }
-        if ($payment->getAdditionalInformation("lastName") != "") {
-          $preference['payer']['last_name'] = $payment->getAdditionalInformation("lastName");
+        if ($payment->getAdditionalInformation("identification_number") != "") {
+          $preference['payer']['identification']['number'] = $payment->getAdditionalInformation("identification_number");
         }
-        if ($payment->getAdditionalInformation("docType") != "") {
-          $preference['payer']['identification']['type'] = $payment->getAdditionalInformation("docType");
-          //remove last-name pessoa juridica
-          if($preference['payer']['identification']['type'] == "CNPJ"){
-            $preference['payer']['last_name'] = "";
-          }
+        if ($payment->getAdditionalInformation("entity_type") != "") {
+          $preference['payer']['entity_type'] = $payment->getAdditionalInformation("entity_type");
         }
-
-        if ($payment->getAdditionalInformation("docNumber") != "") {
-          $preference['payer']['identification']['number'] = $payment->getAdditionalInformation("docNumber");
+        if ($payment->getAdditionalInformation("financial_institution") != "") {
+          $preference['transaction_details']['financial_institution'] = $payment->getAdditionalInformation("financial_institution");
         }
-        if ($payment->getAdditionalInformation("address") != "") {
-          $preference['payer']['address']['street_name'] = $payment->getAdditionalInformation("address");
+        
+        //Get IP address
+        $ip = "";
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+          $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+          $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+          $ip = $_SERVER['REMOTE_ADDR'];
         }
-        if ($payment->getAdditionalInformation("addressNumber") != "") {
-          $preference['payer']['address']['street_number'] = $payment->getAdditionalInformation("addressNumber");
-        }
-        if ($payment->getAdditionalInformation("addressCity") != "") {
-          $preference['payer']['address']['city'] = $payment->getAdditionalInformation("addressCity");
-          $preference['payer']['address']['neighborhood'] = $payment->getAdditionalInformation("addressCity");
-        }
-        if ($payment->getAdditionalInformation("addressState") != "") {
-          $preference['payer']['address']['federal_unit'] = $payment->getAdditionalInformation("addressState");
-        }
-        if ($payment->getAdditionalInformation("addressZipcode") != "") {
-          $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation("addressZipcode");
-        }
+        $preference['additional_info']['ip_address'] = $ip;
+        
+        $preference['callback_url'] =  $this->_urlBuilder->getUrl('mercadopago/checkout/page?callback=' . $preference['payment_method_id'] );
 
         $this->_helperData->log("CustomPaymentTicket::initialize - Preference to POST", 'mercadopago-custom.log', $preference);
       } catch (\Exception $e) {
@@ -226,29 +217,50 @@ class Payment
      *
      * @return array
      */
-    public function getTicketsOptions()
+    public function getPaymentOptions()
     {
       
       $excludePaymentMethods = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
       $listExclude = explode(",", $excludePaymentMethods);
 
       $payment_methods = $this->_coreModel->getPaymentMethods();
-      $tickets = array();
+      $paymentOptions = array();
 
-      //percorre todos os payments methods
+      //each all payment methods
       foreach ($payment_methods['response'] as $pm) {
 
-        //filtra por tickets
-        if ($pm['payment_type_id'] == "ticket" || $pm['payment_type_id'] == "atm") {
+        //filter by bank transfer payment methods
+        if ($pm['payment_type_id'] == "bank_transfer") {
 
           //insert if not exist in list exclude payment method
           if(!in_array($pm['id'], $listExclude)){
-            $tickets[] = $pm;                  
+            $paymentOptions[] = $pm;
           }
         }
       }
 
-      return $tickets;
+      return $paymentOptions;
+    }
+  
+  
+     /**
+     * Return identification types available
+     *
+     * @return array
+     */
+    public function getIdentifcationTypes()
+    {
+      
+      $identificationTypes = $this->_coreModel->getIdentificationTypes();
+      
+      if(isset($identificationTypes['status']) && $identificationTypes['status'] == 200 && isset($identificationTypes['response'])){
+        $identificationTypes = $identificationTypes['response'];
+      }else{
+        $identificationTypes = array();
+        $this->_helperData->log("CustomPayment::getIdentifcationTypes - API did not return identification types in the way it was expected. Response API: " . json_encode($identificationTypes));
+      }
+
+      return $identificationTypes;
     }
 
     function setOrderSubtotals($data) {

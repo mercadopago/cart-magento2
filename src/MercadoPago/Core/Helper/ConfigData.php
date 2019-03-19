@@ -24,6 +24,12 @@ class ConfigData
   const PATH_CUSTOM_TICKET_COUPON             = 'payment/mercadopago_customticket/coupon_mercadopago';
   const PATH_CUSTOM_TICKET_BANNER             = 'payment/mercadopago_customticket/banner_checkout';
   const PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS   = 'payment/mercadopago_customticket/excluded_payment_methods';
+  
+  //custom method bank transfer
+  const PATH_CUSTOM_BANK_TRANSFER_ACTIVE         = 'payment/mercadopago_custom_bank_transfer/active';
+  const PATH_CUSTOM_BANK_TRANSFER_BANNER         = 'payment/mercadopago_custom_bank_transfer/banner_checkout';
+  const PATH_CUSTOM_BANK_TRANSFER_REDIRECT_PAYER = 'payment/mercadopago_custom_bank_transfer/redirect_payer';
+  
 
   //order configuration
   const PATH_ORDER_APPROVED                   = 'payment/mercadopago/order_status_approved';

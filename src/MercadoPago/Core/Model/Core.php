@@ -632,6 +632,23 @@ class Core
 
         return $payment_methods;
     }
+  
+    /**
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getIdentificationTypes()
+    {
+        if (!$this->_accessToken) {
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        }
+
+        $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
+
+        $identificationTypes = $mp->get("/v1/identification_types");
+
+        return $identificationTypes;
+    }
 
     /**
      * @return mixed|string
