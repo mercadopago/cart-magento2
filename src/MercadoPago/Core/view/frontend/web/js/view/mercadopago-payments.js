@@ -5,7 +5,13 @@ define(
     ],
     function (Component, rendererList) {
         'use strict';
-        
+
+        rendererList.push(
+            {
+                type: 'mercadopago_basic',
+                component: 'MercadoPago_Core/js/view/method-renderer/basic-method'
+            }
+        );
         rendererList.push(
             {
                 type: 'mercadopago_custom',

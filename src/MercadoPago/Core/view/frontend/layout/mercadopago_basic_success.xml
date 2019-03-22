@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="MercadoPago_Core::css/style-success.css"/>
+    </head>
+    <body>
+        <referenceContainer name="page.messages">
+            <block class="Magento\Framework\View\Element\Messages" name="messages" as="messages"/>
+        </referenceContainer>
+        <referenceContainer name="content">
+            <block class="MercadoPago\Core\Block\Basic\Success" name="mercadopago_basic_success" cacheable="false"/>
+        </referenceContainer>
+        <referenceContainer name="after.body.start">
+            <block class="MercadoPago\Core\Block\Analytics\AfterCheckout" name="mp_analytics" as="mp_analytics" template="mp_analytics.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

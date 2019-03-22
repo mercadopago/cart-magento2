@@ -24,6 +24,18 @@
         <coupon_mercadopago>0</coupon_mercadopago>
         <cctypes>AE,VI,MC,DI,JCB</cctypes>
       </mercadopago_customticket>
+      <mercadopago_basic>
+        <active>1</active>
+        <model>MercadoPago\Core\Model\Basic\Payment</model>
+        <title translate="label">Basic Checkout - Mercado Pago</title>
+        <order_status>pending</order_status>
+        <banner_checkout>http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg</banner_checkout>
+        <type_checkout>redirect</type_checkout>
+        <sandbox_mode>1</sandbox_mode>
+        <sort_order>-3</sort_order>
+        <payment_action>authorize</payment_action>
+        <coupon_mercadopago>0</coupon_mercadopago>
+      </mercadopago_basic>
       <mercadopago>
         <order_status_approved>processing</order_status_approved>
         <order_status_in_process>pending</order_status_in_process>

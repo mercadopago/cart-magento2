@@ -441,4 +441,5 @@ class Data
         }
         return $analyticsData;
     }
+
 }

@@ -1,9 +1,8 @@
 /**
- * Copyright © 2015 Magento. All rights reserved.
- * See COPYING.txt for license details.
+ *
+ * @type {{map: {"*": {MPanalytics: string, MPcustom: string, MPv1Ticket: string, MPv1: string}}}}
  */
-
-var config = {
+let config = {
     map: {
         '*': {
             MPcustom: 'https://secure.mlstatic.com/sdk/javascript/v1/mercadopago.js',

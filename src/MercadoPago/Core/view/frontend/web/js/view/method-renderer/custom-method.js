@@ -276,8 +276,7 @@ define(
                             function () {
                                 self.isPlaceOrderActionAllowed(true);
                             }
-                        ).done(
-                        function () {
+                        ).done(function () {
                             self.afterPlaceOrder();
 
                             if (self.redirectAfterPlaceOrder) {

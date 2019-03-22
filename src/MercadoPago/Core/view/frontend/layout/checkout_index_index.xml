@@ -23,7 +23,7 @@
                                                                 <item name="mercadopago-payments" xsi:type="array">
                                                                     <item name="component" xsi:type="string">MercadoPago_Core/js/view/mercadopago-payments</item>
                                                                     <item name="methods" xsi:type="array">
-                                                                        <item name="mercadopago_standard" xsi:type="array">
+                                                                        <item name="mercadopago_basic" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
                                                                         <item name="mercadopago_custom" xsi:type="array">
