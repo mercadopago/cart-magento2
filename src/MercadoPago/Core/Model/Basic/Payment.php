@@ -31,6 +31,8 @@ class Payment extends AbstractMethod
 {
     const CODE = 'mercadopago_basic';
     const ACTION_URL = 'mercadopago/basic/pay';
+    const FAILURE_URL = 'mercadopago/basic/failure';
+
 
     /**
      *  Self fields
@@ -159,6 +161,7 @@ class Payment extends AbstractMethod
     public function makePreference()
     {
         $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
+        $orderIncrementId = '000000009';
         $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
         $payment = $order->getPayment();
         $customer = $this->_customerSession->getCustomer();
@@ -243,7 +246,7 @@ class Payment extends AbstractMethod
         $arr['back_urls']['failure'] = $successPage ? $this->_urlBuilder->getUrl('mercadopago/standard/failure') : $this->_urlBuilder->getUrl('checkout/onepage/failure');
         $arr['notification_url'] = $this->_urlBuilder->getUrl("mercadopago/notifications/standard");
         $arr['payment_methods']['excluded_payment_methods'] = $this->getExcludedPaymentsMethods();
-        $arr['payment_methods']['installments'] = $installments;
+        $arr['payment_methods']['installments'] = (int)$installments;
 
         if ($auto_return == 1) {
             $arr['auto_return'] = "approved";

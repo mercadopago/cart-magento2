@@ -6,9 +6,8 @@ use MercadoPago\Core\Model\Core;
 
 
 /**
- * Class Success
- *
- * @package MercadoPago\Core\Controller\Success
+ * Class Page
+ * @package MercadoPago\Core\Controller\Checkout
  */
 class Page
     extends \Magento\Framework\App\Action\Action
