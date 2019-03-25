@@ -7,8 +7,7 @@ namespace MercadoPago\Core\Controller\Notifications;
  *
  * @package MercadoPago\Core\Controller\Notifications
  */
-class Custom
-    extends \Magento\Framework\App\Action\Action
+class Custom extends AbstractNotification
 
 {
     /**
