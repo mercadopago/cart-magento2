@@ -30,9 +30,10 @@ use MercadoPago\Core\Helper\Data as dataHelper;
 class Payment extends AbstractMethod
 {
     const CODE = 'mercadopago_basic';
+
     const ACTION_URL = 'mercadopago/basic/pay';
     const FAILURE_URL = 'mercadopago/basic/failure';
-
+    const NOTIFICATION_URL = 'mercadopago/notifications/basic';
 
     /**
      *  Self fields
@@ -161,7 +162,7 @@ class Payment extends AbstractMethod
     public function makePreference()
     {
         $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
-        $orderIncrementId = '000000009';
+
         $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
         $payment = $order->getPayment();
         $customer = $this->_customerSession->getCustomer();
@@ -243,8 +244,8 @@ class Payment extends AbstractMethod
         $successUrl = $successPage ? 'mercadopago/checkout/page' : 'checkout/onepage/success';
         $arr['back_urls']['success'] = $this->_urlBuilder->getUrl($successUrl);
         $arr['back_urls']['pending'] = $this->_urlBuilder->getUrl($successUrl);
-        $arr['back_urls']['failure'] = $successPage ? $this->_urlBuilder->getUrl('mercadopago/standard/failure') : $this->_urlBuilder->getUrl('checkout/onepage/failure');
-        $arr['notification_url'] = $this->_urlBuilder->getUrl("mercadopago/notifications/standard");
+        $arr['back_urls']['failure'] = $successPage ? $this->_urlBuilder->getUrl(self::FAILURE_URL) : $this->_urlBuilder->getUrl('checkout/onepage/failure');
+        $arr['notification_url'] = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL);
         $arr['payment_methods']['excluded_payment_methods'] = $this->getExcludedPaymentsMethods();
         $arr['payment_methods']['installments'] = (int)$installments;
 

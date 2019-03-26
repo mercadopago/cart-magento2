@@ -6,6 +6,7 @@ use Magento\Catalog\Controller\Product\View\ViewInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use MercadoPago\Core\Helper\ConfigData;
 
 class Failure extends Action implements ViewInterface
@@ -16,13 +17,20 @@ class Failure extends Action implements ViewInterface
     protected $_context;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    protected $_scopeConfig;
+
+    /**
      * Failure constructor.
      * @param Context $context
+     * @param ScopeConfigInterface $scopeConfig
      */
-    public function __construct(Context $context)
+    public function __construct(Context $context, ScopeConfigInterface $scopeConfig)
     {
-        parent::__construct($context);
         $this->_context = $context;
+        $this->_scopeConfig = $scopeConfig;
+        parent::__construct($context);
     }
 
     /**
@@ -31,7 +39,7 @@ class Failure extends Action implements ViewInterface
     public function execute()
     {
         $redirect = $this->_context->getRedirect();
-        $redirect->setUrl($this->_url->getUrl(ConfigData::PATH_BASIC_URL_FAILURE));
+        $redirect->setUrl($this->_url->getUrl($this->_scopeConfig->getValue(ConfigData::PATH_BASIC_URL_FAILURE)));
         return $redirect;
     }
 }

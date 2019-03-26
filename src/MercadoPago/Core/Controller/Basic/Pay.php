@@ -46,7 +46,7 @@ class Pay extends Action implements ViewInterface
         if ($array_assign['status'] != 400) {
             $resultRedirect->setUrl($array_assign['init_point']);
         } else {
-            $resultRedirect->setUrl($this->_url->getUrl(ConfigData::PATH_BASIC_URL_FAILURE));
+            $resultRedirect->setUrl($this->_url->getUrl($this->_scopeConfig->getValue(ConfigData::PATH_BASIC_URL_FAILURE)));
         }
         return $resultRedirect;
     }

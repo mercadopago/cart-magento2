@@ -27,7 +27,7 @@
     </field>
     <field id="type_checkout" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
       <label>Type Checkout</label>
-      <source_model>MercadoPago\Core\Model\System\Config\Source\TypeCheckout</source_model>
+      <source_model>MercadoPago\Core\Model\System\Config\Source\TypeBasicCheckout</source_model>
       <config_path>payment/mercadopago_basic/type_checkout</config_path>
     </field>
     <field id="excluded_payment_methods" translate="label comment" type="multiselect" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
