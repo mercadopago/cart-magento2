@@ -162,7 +162,6 @@ class Payment extends AbstractMethod
     public function makePreference()
     {
         $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
-
         $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
         $payment = $order->getPayment();
         $customer = $this->_customerSession->getCustomer();

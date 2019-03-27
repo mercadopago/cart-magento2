@@ -395,3 +395,4 @@ Cannot operate between users from different countries.", "Não é possível oper
 "Coupon amount is invalid. Please check the form data and retry.", "Valor do cupom é válido. Por favor verifique os dados do formulário e tente novamente."
 "Doesn't find a campaign to amount given", "Não Encontrado um coicida campanha para o montante da ordem"
 "Amount discount is invalid", "Valor do desconto é inválido"
+"We could not process your payment in this moment. Please retry later", "Não foi possível processar seu pagamento. Por favor tente mais tarde"
