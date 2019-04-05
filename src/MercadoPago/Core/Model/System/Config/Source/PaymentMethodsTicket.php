@@ -71,7 +71,7 @@ class PaymentMethodsTicket
       $response = $response['response'];
 
       foreach ($response as $pm) {
-        if(isset($pm['payment_type_id']) && $pm['payment_type_id'] == "ticket" || $pm['payment_type_id'] == "atm"){
+        if(isset($pm['payment_type_id']) && ($pm['payment_type_id'] == "ticket" || $pm['payment_type_id'] == "atm")){
           $methods[] = [
             'value' => $pm['id'],
             'label' => __($pm['name'])
