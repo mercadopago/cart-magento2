@@ -486,7 +486,7 @@ class Core
         $preference['additional_info']['payer']['last_name'] = $customerInfo['last_name'];
 
         $preference['additional_info']['payer']['address'] = array(
-            "zip_code"      => $billing_address['postcode'],
+            "zip_code"      => empty($billing_address['postcode']) ? "" : $billing_address['postcode'],
             "street_name"   => $billing_address['street'] . " - " . $billing_address['city'] . " - " . $billing_address['country_id'],
             "street_number" => ''
         );
@@ -498,7 +498,7 @@ class Core
             $shipping = $order->getShippingAddress()->getData();
 
             $preference['additional_info']['shipments']['receiver_address'] = array(
-                "zip_code"      => $shipping['postcode'],
+                "zip_code"      => empty($shipping['postcode']) ? "" : $shipping['postcode'],
                 "street_name"   => $shipping['street'] . " - " . $shipping['city'] . " - " . $shipping['country_id'],
                 "street_number" => '',
                 "floor"         => "-",
