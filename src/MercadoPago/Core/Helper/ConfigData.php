@@ -53,6 +53,7 @@ class ConfigData
     const PATH_ORDER_REFUND_AVAILABLE = 'payment/mercadopago/refund_available';
     const PATH_ORDER_CANCEL_AVAILABLE = 'payment/mercadopago/cancel_payment';
 
+
     //advanced configuration
     const PATH_ADVANCED_LOG = 'payment/mercadopago/logs';
     const PATH_ADVANCED_COUNTRY = 'payment/mercadopago/country';

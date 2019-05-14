@@ -21,7 +21,6 @@ use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data as dataHelper;
-
 use MercadoPago\Core\Model\Preference\Basic;
 
 /**
@@ -113,6 +112,7 @@ class Payment extends AbstractMethod
             $resourceCollection,
             $data
         );
+
         $this->_helperData = $helperData;
         $this->_helperImage = $helperImage;
         $this->_checkoutSession = $checkoutSession;

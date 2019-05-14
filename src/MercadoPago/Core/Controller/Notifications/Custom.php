@@ -1,145 +1,98 @@
 <?php
+
 namespace MercadoPago\Core\Controller\Notifications;
 
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use MercadoPago\Core\Helper\Data;
+use MercadoPago\Core\Helper\Response;
+use MercadoPago\Core\Helper\StatusUpdate;
+use MercadoPago\Core\Model\Core;
+use MercadoPago\Core\Model\Notifications\Notifications;
 
 /**
  * Class Custom
  *
  * @package MercadoPago\Core\Controller\Notifications
  */
-class Custom
-  extends \Magento\Framework\App\Action\Action
-
+class Custom extends Action
 {
-  /**
-     * @var \MercadoPago\Core\Helper\
+    const LOG_NAME = 'custom_notification';
+
+    protected $coreHelper;
+    protected $coreModel;
+    protected $_order;
+    protected $_statusHelper;
+    protected $_notifications;
+
+    /**
+     * Custom constructor.
+     * @param Context $context
+     * @param Data $coreHelper
+     * @param Core $coreModel
+     * @param StatusUpdate $statusHelper
      */
-  protected $coreHelper;
+    public function __construct(Context $context, Data $coreHelper, Core $coreModel, StatusUpdate $statusHelper, Notifications $notifications)
+    {
+        $this->coreHelper = $coreHelper;
+        $this->coreModel = $coreModel;
+        $this->_statusHelper = $statusHelper;
+        $this->_notifications = $notifications;
+        parent::__construct($context);
+    }
 
-  /**
-     * @var \MercadoPago\Core\Model\Core
+    /**
+     * Controller Action
      */
-  protected $coreModel;
-  protected $_order;
-  protected $_statusHelper;
-  protected $_requestData;
+    public function execute()
+    {
+        try {
+            $request = $this->getRequest();
 
-  /**
-     * Log file name
-     */
-  const LOG_NAME = 'custom_notification';
+            $requestValues = $this->_notifications->validateRequest($request);
+            $topicClass = $this->_notifications->getTopicClass($request);
 
+            if ($requestValues['topic'] != 'payment') {
+                $message = "Mercado Pago - Invalid Notification Parameters, Invalid Type.";
+                $this->setResponseHttp(Response::HTTP_BAD_REQUEST, $message, $request->getParams());
+            }
+            $response = $this->coreModel->getPaymentV1($requestValues['id']);
+            if (empty($response) || ($response['status'] != 200 && $response['status'] != 201)) {
+                $message = "Mercado Pago - Payment not found, Mercado Pago API did not return the expected information.";
+                $this->setResponseHttp(Response::HTTP_NOT_FOUND, $message, $response);
+                return;
+            }
 
-  /**
-     * Standard constructor.
-     *
-     * @param \Magento\Framework\App\Action\Context           $context
-     * @param \MercadoPago\Core\Helper\Data                   $coreHelper
-     * @param \MercadoPago\Core\Model\Core                    $coreModel
-     */
-  public function __construct(
-    \Magento\Framework\App\Action\Context $context,
-    \MercadoPago\Core\Helper\Data $coreHelper,
-    \MercadoPago\Core\Model\Core $coreModel,
-    \MercadoPago\Core\Helper\StatusUpdate $statusHelper
-  )
-  {
-    $this->coreHelper = $coreHelper;
-    $this->coreModel = $coreModel;
-    $this->_statusHelper = $statusHelper;
-    parent::__construct($context);
-  }
-
-  /**
-   * Controller Action
-   */
-  public function execute()
-  {
-    try {
-
-      $this->_requestData = $this->getRequest();
-
-      $this->coreHelper->log(
-        "NotificationsCustom::execute - Custom Received notification", 
-        self::LOG_NAME, 
-        $this->_requestData->getParams()
-      );
-
-      $dataId = $this->_requestData->getParam('data_id');
-      $type = $this->_requestData->getParam('type');
-
-      if (!empty($dataId) && $type == 'payment') {
-        $response = $this->coreModel->getPaymentV1($dataId);
-
-        if ($response['status'] == 200 || $response['status'] == 201) {
-
-          $payment = $response['response'];
-          $response =  $this->_statusHelper->updateStatusOrder($payment);
-
-          //set response result update status
-          $this->setResponseHttp(
-            $response['httpStatus'], 
-            $response['message'], 
-            $response['data']
-          );
-
-        }else{
-          $this->setResponseHttp(
-            \MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND, 
-            "Mercado Pago - Payment not found, Mercado Pago API did not return the expected information.", 
-            $response
-          );
+            $payment = $response['response'];
+            $response = $topicClass->updateStatusOrderByPayment($payment);
+            $this->setResponseHttp($response['httpStatus'], $response['message'], $response['data']);
+            return;
+        } catch (\Exception $e) {
+            $message = "Mercado Pago - There was a serious error processing the notification. Could not handle the error.";
+            $this->setResponseHttp(Response::HTTP_INTERNAL_ERROR, $message, ["exception_error" => $e->getMessage()]);
         }
-      } else {
-        $this->setResponseHttp(
-          \MercadoPago\Core\Helper\Response::HTTP_BAD_REQUEST, 
-          "Mercado Pago - Invalid Notification Parameters, data.id and type are expected.", 
-          $this->_requestData->getParams()
-        );
-      }
-
-      return;
-    } catch (\Exception $e) {
-      $this->setResponseHttp(
-        \MercadoPago\Core\Helper\Response::HTTP_INTERNAL_ERROR, 
-        "Mercado Pago - There was a serious error processing the notification. Could not handle the error.", array(
-          "exception_error" => $e->getMessage()
-        )
-      );
     }
-  }
 
-  protected function setResponseHttp($httpStatus, $response, $data = array()){
+    /**
+     * @param $httpStatus
+     * @param $message
+     * @param array $data
+     */
+    protected function setResponseHttp($httpStatus, $message, $data = [])
+    {
+        $response = [
+            "status" => $httpStatus,
+            "message" => $message,
+            "data" => $data
+        ];
 
-    $response = array(
-      "status" => $httpStatus,
-      "message" => $response,
-      "data" => $data
-    );
+        $this->coreHelper->log("NotificationsCustom::setResponseHttp - Response: " . json_encode($response), self::LOG_NAME);
 
-    $this->coreHelper->log("NotificationsCustom::setResponseHttp - Response: " . json_encode($response), self::LOG_NAME);
+        $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
+        $this->getResponse()->setBody(json_encode($response));
+        $this->getResponse()->setHttpResponseCode($httpStatus);
 
-    $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
-    $this->getResponse()->setBody(json_encode($response));
-    $this->getResponse()->setHttpResponseCode($httpStatus);
-
-    return;
-  }
-
-  protected function _orderExists()
-  {
-    if ($this->_order->getId()) {
-      return true;
+        return;
     }
-    $this->coreHelper->log(
-      \MercadoPago\Core\Helper\Response::INFO_EXTERNAL_REFERENCE_NOT_FOUND,
-      self::LOG_NAME, 
-      $this->_requestData->getParams()
-    );
-    $this->getResponse()->getBody(\MercadoPago\Core\Helper\Response::INFO_EXTERNAL_REFERENCE_NOT_FOUND);
-    $this->getResponse()->setHttpResponseCode(\MercadoPago\Core\Helper\Response::HTTP_NOT_FOUND);
-    $this->coreHelper->log("Http code", self::LOG_NAME, $this->getResponse()->getHttpResponseCode());
 
-    return false;
-  }
 }

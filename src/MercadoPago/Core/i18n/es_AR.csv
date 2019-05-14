@@ -391,3 +391,4 @@
 "Amount discount is invalid", "El monto de descuento no es válido"
 "We could not process your payment in this moment. Please retry later", "No se pudo procesar su pago. Por favor inténtelo más tarde"
 "Processing error in the payment gateway. Please contact the administrator.", "Error de procesamiento en la pasarela de pago. Por favor, póngase en contacto con el administrador."
+"Error on process of payment data. Please contact the administrator.", "Error al procesar los datos de pago."
