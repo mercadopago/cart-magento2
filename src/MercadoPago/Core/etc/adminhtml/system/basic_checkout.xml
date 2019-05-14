@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-  <group id="basic_checkout" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+  <group id="basic_checkout" translate="label" type="text" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
     <label>Basic Checkout</label>
     <field id="active" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
       <label>Enabled</label>
@@ -20,6 +20,14 @@
       <label>Max Installments</label>
       <config_path>payment/mercadopago_basic/max_installments</config_path>
     </field>
+    <field id="statement_desc" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Statement Descriptor</label>
+      <config_path>payment/mercadopago_basic/statement_desc</config_path>
+    </field>
+    <field id="exp_time_pref" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Expiration Time Preference</label>
+      <config_path>payment/mercadopago_basic/exp_time_pref</config_path>
+    </field>
     <field id="auto_return" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
       <label>Auto Return</label>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -32,7 +40,7 @@
     </field>
     <field id="excluded_payment_methods" translate="label comment" type="multiselect" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
       <label>Exclude Payment Methods</label>
-      <source_model>MercadoPago\Core\Model\System\Config\Source\PaymentMethodsTicket</source_model>
+      <source_model>MercadoPago\Core\Model\System\Config\Source\PaymentMethods\PaymentMethodsBasic</source_model>
       <config_path>payment/mercadopago_basic/excluded_payment_methods</config_path>
       <comment>Select the payment methods you do NOT want to accept.</comment>
     </field>

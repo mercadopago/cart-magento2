@@ -19,7 +19,7 @@
     </field>
     <field id="excluded_payment_methods" translate="label comment" type="multiselect" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
       <label>Exclude Payment Methods</label>
-      <source_model>MercadoPago\Core\Model\System\Config\Source\PaymentMethodsTicket</source_model>
+      <source_model>MercadoPago\Core\Model\System\Config\Source\PaymentMethods\PaymentMethodsTicket</source_model>
       <config_path>payment/mercadopago_customticket/excluded_payment_methods</config_path>
       <comment>Select the payment methods you do NOT want to accept.</comment>
     </field>

@@ -390,3 +390,4 @@
 "Doesn't find a campaign to amount given", "No se ha encontrado una campaña que coicida con el monto de la orden"
 "Amount discount is invalid", "El monto de descuento no es válido"
 "We could not process your payment in this moment. Please retry later", "No se pudo procesar su pago. Por favor inténtelo más tarde"
+"Error to process in payment gateway. Please contact the administrator.", "Error al procesar en la gateway de pago. Por favor, póngase en contacto con el administrador."

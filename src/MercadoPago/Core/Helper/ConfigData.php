@@ -36,7 +36,8 @@ class ConfigData
     const PATH_BASIC_BANNER = 'payment/mercadopago_basic/banner_checkout';
     const PATH_BASIC_TYPE_CHECKOUT = 'payment/mercadopago_basic/type_checkout';
     const PATH_BASIC_COUPON = 'payment/mercadopago_basic/coupon_mercadopago';
-//country
+    const PATH_BASIC_STATEMENT_DESCRIPTION = 'payment/mercadopago_basic/statement_desc';
+    const PATH_BASIC_EXPIRATION_TIME_PREFERENCE = 'payment/mercadopago_basic/exp_time_pref';
     const PATH_BASIC_ORDER_STATUS = 'payment/mercadopago_basic/order_status';
 
     //order configuration
@@ -49,7 +50,6 @@ class ConfigData
     const PATH_ORDER_IN_MEDIATION = 'payment/mercadopago/order_status_in_mediation';
     const PATH_ORDER_REFUNDED = 'payment/mercadopago/order_status_refunded';
     const PATH_ORDER_PARTIALLY_REFUNDED = 'payment/mercadopago/order_status_partially_refunded';
-
     const PATH_ORDER_REFUND_AVAILABLE = 'payment/mercadopago/refund_available';
     const PATH_ORDER_CANCEL_AVAILABLE = 'payment/mercadopago/cancel_payment';
 
