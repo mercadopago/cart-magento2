@@ -274,6 +274,7 @@ class ConfigObserver
       $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, $siteId);
       
       $this->country = $siteId;
+      $this->coreHelper->log("Site_id saved", self::LOG_NAME, $siteId);
       $this->coreHelper->log("Sponsor saved", self::LOG_NAME, $sponsorId);
     }
 
