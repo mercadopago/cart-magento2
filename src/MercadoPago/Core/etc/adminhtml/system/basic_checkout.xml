@@ -23,10 +23,12 @@
     <field id="statement_desc" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
       <label>Statement Descriptor</label>
       <config_path>payment/mercadopago_basic/statement_desc</config_path>
+      <comment>Name for ticket</comment>
     </field>
     <field id="exp_time_pref" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
       <label>Expiration Time Preference</label>
       <config_path>payment/mercadopago_basic/exp_time_pref</config_path>
+      <comment>Time in days to expiration preference.</comment>
     </field>
     <field id="auto_return" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
       <label>Auto Return</label>
@@ -56,9 +58,9 @@
       <config_path>payment/mercadopago_custom/binary_mode</config_path>
       <comment>This functionality will mark the payment to approve or reject at the time it is created, there will be no intermediate status pending.</comment>
     </field>
-    <field id="sandbox_mode" translate="label comment" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="sandbox_mode" translate="label comment" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
       <label>Sandbox Mode</label>
-      <frontend_class>validate-number</frontend_class>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/mercadopago_basic/sandbox_mode</config_path>
     </field>
     <field id="coupon_mercadopago" translate="label comment" type="select" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0">

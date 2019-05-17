@@ -6,17 +6,11 @@ use Magento\Framework\Event\ObserverInterface;
 
 /**
  * Class RefundObserverAfterSave
- *
  * @package MercadoPago\Core\Observer
  */
 class RefundObserverAfterSave
     implements ObserverInterface
 {
-    /**
-     * @var \MercadoPago\Core\Helper\StatusUpdate
-     */
-    protected $_statusHelper;
-
     protected $_dataHelper;
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -32,13 +26,10 @@ class RefundObserverAfterSave
      */
     public function __construct(
         \MercadoPago\Core\Helper\Data                       $dataHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig,
-        \MercadoPago\Core\Helper\StatusUpdate               $statusHelper
-    )
+        \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig)
     {
         $this->_dataHelper = $dataHelper;
         $this->_scopeConfig = $scopeConfig;
-        $this->_statusHelper = $statusHelper;
     }
 
     /**

@@ -21,7 +21,7 @@ use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data as dataHelper;
-use MercadoPago\Core\Model\Api\Exception;
+use Exception;
 
 class Basic extends AbstractMethod
 {
@@ -43,7 +43,6 @@ class Basic extends AbstractMethod
         Image $helperImage,
         UrlInterface $urlBuilder,
         ScopeConfigInterface $scopeConfig,
-
         customerSession $customerSession,
         Context $context,
         Registry $registry,
@@ -82,12 +81,9 @@ class Basic extends AbstractMethod
      */
     protected function getOrderInfo()
     {
-        $message = new Phrase('Error on create preference Basic Checkout - Exception on getOrderInfo');
-        throw new Exception($message, $this->_scopeConfig);
-        //$order = $this->_orderFactory->create()->loadByIncrementId($this->_checkoutSession->getLastRealOrderId());
-        $order = $this->_orderFactory->create()->loadByIncrementId('000000036');
+        $order = $this->_orderFactory->create()->loadByIncrementId($this->_checkoutSession->getLastRealOrderId());
         if (empty($order->getId())) {
-            throw new Exception('Error on create preference Basic Checkout - Exception on getOrderInfo');
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on getOrderInfo'));
         }
         return $order;
     }
@@ -100,8 +96,7 @@ class Basic extends AbstractMethod
     {
         $customer = $this->_customerSession->getCustomer();
         if (empty($customer)) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on getCustomerInfo');
-            throw new Exception($message, $this->_scopeConfig);
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on getCustomerInfo'));
         }
         return $customer;
     }
@@ -126,9 +121,8 @@ class Basic extends AbstractMethod
                 'exclude_payment_methods' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE)
             ];
 
-        if ($config) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on getConfig');
-            throw new Exception($message, $this->_scopeConfig);
+        if (!$config) {
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on getConfig'));
         }
 
         return $config;
@@ -181,9 +175,8 @@ class Basic extends AbstractMethod
             $this->_helperData->log("Difference add items: " . $diff_price, 'mercadopago-basic.log');
         }
 
-        if ($items) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on getItems');
-            throw new Exception($message, $this->_scopeConfig);
+        if (!$items) {
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on getItems'));
         }
 
         $result = ['items' => $items, 'difference' => $difference];
@@ -209,10 +202,10 @@ class Basic extends AbstractMethod
                 ];
         }
 
-        if (!empty($arr)) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on calculateDiscountAmount');
-            throw new Exception($message, $this->_scopeConfig);
+        if (empty($arr)) {
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on calculateDiscountAmount'));
         }
+
     }
 
     /**
@@ -232,10 +225,11 @@ class Basic extends AbstractMethod
                     "unit_price" => (float)$order->getBaseTaxAmount()
                 ];
         }
-        if (!empty($arr)) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on calculateBaseTaxAmount');
-            throw new Exception($message, $this->_scopeConfig);
+
+        if (empty($arr)) {
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on calculateBaseTaxAmount'));
         }
+
     }
 
     /**
@@ -251,8 +245,7 @@ class Basic extends AbstractMethod
         }
 
         if (empty($total)) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on getTotalItems');
-            throw new Exception($message, $this->_scopeConfig);
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on getTotalItems'));
         }
 
         return $total;
@@ -274,8 +267,7 @@ class Basic extends AbstractMethod
             ];
 
         if (!is_array($receiverAddress)) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on getReceiverAddress');
-            throw new Exception($message, $this->_scopeConfig);
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on getReceiverAddress'));
         }
         return $receiverAddress;
     }
@@ -297,8 +289,7 @@ class Basic extends AbstractMethod
         }
 
         if (!is_array($excludedMethods)) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on getExcludedPaymentsMethods');
-            throw new Exception($message, $this->_scopeConfig);
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on getExcludedPaymentsMethods'));
         }
 
         return $excludedMethods;
@@ -333,8 +324,7 @@ class Basic extends AbstractMethod
             ];
 
         if (!is_array($result)) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on getPayerInfo');
-            throw new Exception($message, $this->_scopeConfig);
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on getPayerInfo'));
         }
 
         return $result;
@@ -354,8 +344,7 @@ class Basic extends AbstractMethod
         $result['failure'] = $config['success_page'] ? $this->_urlBuilder->getUrl(self::FAILURE_URL) : $this->_urlBuilder->getUrl('checkout/onepage/failure');
 
         if (!is_array($result)) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on getBackUrls');
-            throw new Exception($message, $this->_scopeConfig);
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on getBackUrls'));
         }
         return $result;
     }
@@ -390,8 +379,7 @@ class Basic extends AbstractMethod
         $this->_helperData->log("create preference result", 'mercadopago-basic.log', $response);
 
         if (!is_array($arr)) {
-            $message = new Phrase('Error on create preference Basic Checkout - Exception on createPreference');
-            throw new Exception($message, $this->_scopeConfig);
+            throw new Exception(__('Error on create preference Basic Checkout - Exception on createPreference'));
         }
 
         return $response;
@@ -448,6 +436,8 @@ class Basic extends AbstractMethod
             $arr['back_urls']['pending'] = $backUrls['pending'];
             $arr['back_urls']['failure'] = $backUrls['failure'];
 
+            //var_dump($arr['back_urls']); die();
+
             $arr['notification_url'] = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL);
             $arr['payment_methods']['excluded_payment_methods'] = $this->getExcludedPaymentsMethods($config);
             $arr['payment_methods']['installments'] = (int)$config['installments'];
@@ -471,10 +461,9 @@ class Basic extends AbstractMethod
 
             if (!empty($config['expiration_time_preference'])) {
                 $arr['expires'] = true;
-                $arr['expiration_date_to'] = date('Y-m-d\THfalse;
-
-            if (!empty($config[\'expiration_time_preference\']:i:s.000O', strtotime('+' . $config['expiration_time_preference'] . ' hours'));
+                $arr['expiration_date_to'] = date('Y-m-d\TH:i:s.000O',strtotime('+' . $config['expiration_time_preference'] . ' hours'));
             }
+
 
             if (!empty($config['statement_descriptor'])) {
                 $arr['statement_descriptor'] = $config['statement_descriptor'];

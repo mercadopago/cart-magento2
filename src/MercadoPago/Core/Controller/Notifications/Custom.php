@@ -6,7 +6,6 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Response;
-use MercadoPago\Core\Helper\StatusUpdate;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
 
@@ -22,7 +21,6 @@ class Custom extends Action
     protected $coreHelper;
     protected $coreModel;
     protected $_order;
-    protected $_statusHelper;
     protected $_notifications;
 
     /**
@@ -30,13 +28,11 @@ class Custom extends Action
      * @param Context $context
      * @param Data $coreHelper
      * @param Core $coreModel
-     * @param StatusUpdate $statusHelper
      */
-    public function __construct(Context $context, Data $coreHelper, Core $coreModel, StatusUpdate $statusHelper, Notifications $notifications)
+    public function __construct(Context $context, Data $coreHelper, Core $coreModel, Notifications $notifications)
     {
         $this->coreHelper = $coreHelper;
         $this->coreModel = $coreModel;
-        $this->_statusHelper = $statusHelper;
         $this->_notifications = $notifications;
         parent::__construct($context);
     }

@@ -8,7 +8,6 @@ use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\OrderFactory;
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Response;
-use MercadoPago\Core\Helper\StatusUpdate;
 use MercadoPago\Core\Model\Basic\Payment;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
@@ -23,7 +22,6 @@ class Basic extends Action
     protected $_finalStatus = ['rejected', 'cancelled', 'refunded', 'charge_back'];
     protected $_notFinalStatus = ['authorized', 'process', 'in_mediation'];
     protected $_orderFactory;
-    protected $_statusHelper;
     protected $_notifications;
 
     /**
@@ -31,7 +29,6 @@ class Basic extends Action
      * @param Context $context
      * @param Payment $paymentFactory
      * @param Data $coreHelper
-     * @param StatusUpdate $statusHelper
      * @param Core $coreModel
      * @param OrderFactory $orderFactory
      * @param Notifications $notifications
@@ -40,7 +37,6 @@ class Basic extends Action
         Context $context,
         Payment $paymentFactory,
         Data $coreHelper,
-        StatusUpdate $statusHelper,
         Core $coreModel,
         OrderFactory $orderFactory,
         Notifications $notifications
@@ -49,7 +45,6 @@ class Basic extends Action
         $this->coreHelper = $coreHelper;
         $this->coreModel = $coreModel;
         $this->_orderFactory = $orderFactory;
-        $this->_statusHelper = $statusHelper;
         $this->_notifications = $notifications;
         parent::__construct($context);
     }
@@ -65,7 +60,7 @@ class Basic extends Action
             $topicClass = $this->_notifications->getTopicClass($request);
             $data = $this->_notifications->getPaymentInformation($topicClass, $requestValues);
             if (empty($data)) {
-                throw new Exception(__('Error in function getPaymentInformation'), 400);
+                throw new Exception(__('Error, MerchantOrder or Payment not found in MP'), 400);
             }
 
             $merchantOrder = $data['merchantOrder'];

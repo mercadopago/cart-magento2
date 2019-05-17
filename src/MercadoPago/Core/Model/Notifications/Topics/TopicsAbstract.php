@@ -9,6 +9,7 @@ use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\Order\Payment\TransactionFactory;
+use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\ResourceModel\Status\Collection as StatusFactory;
 use Magento\Store\Model\ScopeInterface;
@@ -16,6 +17,7 @@ use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Helper\Response;
+use Magento\Framework\DB\Transaction;
 
 abstract class TopicsAbstract
 {
@@ -30,6 +32,8 @@ abstract class TopicsAbstract
     protected $_orderCommentSender;
     protected $_transactionFactory;
     protected $_invoiceSender;
+    protected $_invoiceService;
+    protected $_transaction;
 
     /**
      * TopicsAbstract constructor.
@@ -43,6 +47,8 @@ abstract class TopicsAbstract
      * @param OrderCommentSender $orderCommentSender
      * @param TransactionFactory $transactionFactory
      * @param InvoiceSender $invoiceSender
+     * @param InvoiceService $invoiceService
+     * @param Transaction $transaction
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -54,7 +60,9 @@ abstract class TopicsAbstract
         OrderSender $orderSender,
         OrderCommentSender $orderCommentSender,
         TransactionFactory $transactionFactory,
-        InvoiceSender $invoiceSender
+        InvoiceSender $invoiceSender,
+        InvoiceService $invoiceService,
+        Transaction $transaction
     ) {
         $this->_dataHelper = $dataHelper;
         $this->_scopeConfig = $scopeConfig;
@@ -66,6 +74,8 @@ abstract class TopicsAbstract
         $this->_orderCommentSender = $orderCommentSender;
         $this->_transactionFactory = $transactionFactory;
         $this->_invoiceSender = $invoiceSender;
+        $this->_invoiceService = $invoiceService;
+        $this->_transaction = $transaction;
     }
 
     /**
@@ -237,7 +247,7 @@ abstract class TopicsAbstract
     {
         $this->setStatusUpdated($order, $data);
         if ($this->_statusUpdatedFlag) {
-            return true;
+            return $order;
         }
         $this->updatePaymentInfo($order, $data);
         return $order->save();
@@ -303,10 +313,10 @@ abstract class TopicsAbstract
             $this->_statusUpdatedFlag = false;
             return;
         }
+
         $payment = $data['payments'][$data['statusFinal']['key']];
         $status = $this->getConfigStatus($payment, false);
         $commentsObject = $order->getStatusHistoryCollection(true);
-
         foreach ($commentsObject as $commentObj) {
             if ($commentObj->getStatus() == $status) {
                 $this->_statusUpdatedFlag = true;
@@ -325,18 +335,22 @@ abstract class TopicsAbstract
     {
         $payment = $data['payments'][$data['statusFinal']['key']];
         $message = $this->getMessage($payment);
+
         if ($this->_statusUpdatedFlag) {
             return ['text' => $message, 'code' => Response::HTTP_OK];
         }
+        var_dump(2); exit();
         $this->updateStatus($order, $payment, $message);
-
+        var_dump(3); exit();
         try {
             $infoPayments = $order->getPayment()->getAdditionalInformation();
+            var_dump(4); exit();
             if ($this->_getMulticardLastValue($payment['status']) == 'approved') {
                 $this->_handleTwoCards($payment, $infoPayments);
-
+                var_dump(5); exit();
                 $this->_dataHelper->setOrderSubtotals($payment, $order);
                 $this->_createInvoice($order, $message);
+                var_dump(6); exit();
 
                 if (isset($payment['metadata']) && isset($payment['metadata']['token'])) {
                     $order->getPayment()->getMethodInstance()->customerAndCards($payment['metadata']['token'], $payment);
@@ -348,7 +362,7 @@ abstract class TopicsAbstract
 
             return ['text' => $message, 'code' => Response::HTTP_OK];
         } catch (\Exception $e) {
-            $this->_dataHelper->log("erro in set order status: " . $e, 'mercadopago-basic.log');
+            $this->_dataHelper->log("Error in setOrderStatus: " . $e, 'mercadopago-basic.log');
             return ['text' => $e, 'code' => Response::HTTP_BAD_REQUEST];
         }
     }
@@ -427,16 +441,17 @@ abstract class TopicsAbstract
      */
     public function _createInvoice($order, $message)
     {
-        if (!$order->hasInvoices()) {
-            $invoice = $order->prepareInvoice();
+        if($order->canInvoice()) {
+            $invoice = $this->_invoiceService->prepareInvoice($order);
             $invoice->register();
-            $invoice->pay();
-            $this->_transactionFactory->create()
-                ->addObject($invoice)
-                ->addObject($invoice->getOrder())
-                ->save();
+            $invoice->save();
+            $transactionSave = $this->_transaction->addObject($invoice)->addObject($invoice->getOrder());
+            $transactionSave->save();
 
-            $this->_invoiceSender->send($invoice, true, $message);
+            $this->_invoiceSender->send($invoice);
+            $order->addStatusHistoryComment(__($message, $invoice->getId()))
+                ->setIsCustomerNotified(true)
+                ->save();
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace MercadoPago\Core\Model\Basic;
 
+use Exception;
 use Magento\Catalog\Helper\Image;
 use Magento\Checkout\Model\Session;
 use Magento\Customer\Model\Session as customerSession;
@@ -129,37 +130,43 @@ class Payment extends AbstractMethod
      */
     public function postPago()
     {
-        $response = $this->_basic->makePreference();
-        if ($response['status'] == 200 || $response['status'] == 201) {
-            $payment = $response['response'];
-            if ($this->_scopeConfig->getValue(ConfigData::PATH_BASIC_SANDBOX_MODE, ScopeInterface::SCOPE_STORE)) {
-                $init_point = $payment['sandbox_init_point'];
+        try{
+            $response = $this->_basic->makePreference();
+            if ($response['status'] == 200 || $response['status'] == 201) {
+                $payment = $response['response'];
+                if ($this->_scopeConfig->getValue(ConfigData::PATH_BASIC_SANDBOX_MODE, ScopeInterface::SCOPE_STORE)) {
+                    $init_point = $payment['sandbox_init_point'];
+                } else {
+                    $init_point = $payment['init_point'];
+                }
+                $array_assign = [
+                    "init_point" => $init_point,
+                    "type_checkout" => $this->getConfigData('type_checkout'),
+                    "iframe_width" => $this->getConfigData('iframe_width'),
+                    "iframe_height" => $this->getConfigData('iframe_height'),
+                    "banner_checkout" => $this->getConfigData('banner_checkout'),
+                    "status" => 201
+                ];
+                $this->_helperData->log("Array preference ok", 'mercadopago-basic.log');
             } else {
-                $init_point = $payment['init_point'];
-            }
-            $array_assign = [
-                "init_point" => $init_point,
-                "type_checkout" => $this->getConfigData('type_checkout'),
-                "iframe_width" => $this->getConfigData('iframe_width'),
-                "iframe_height" => $this->getConfigData('iframe_height'),
-                "banner_checkout" => $this->getConfigData('banner_checkout'),
-                "status" => 201
-            ];
-            $this->_helperData->log("Array preference ok", 'mercadopago-basic.log');
-        } else {
-            $message = "Processing error in the payment gateway. Please contact the administrator.";
-            if ($response['status'] == 500) {
-                $message = "Error on process of payment data. Please contact the administrator.";
-            }
+                $message = "Processing error in the payment gateway. Please contact the administrator.";
+                if ($response['status'] == 500) {
+                    $message = "Error on process of payment data. Please contact the administrator.";
+                }
 
-            $array_assign = [
-                "message" => __($message),
-                "json" => json_encode($response),
-                "status" => 400
-            ];
-            $this->_helperData->log($response['message'], 'mercadopago-basic.log');
+                $array_assign = [
+                    "message" => __($message),
+                    "json" => json_encode($response),
+                    "status" => 400
+                ];
+                $this->_helperData->log($message, 'mercadopago-basic.log');
+            }
+            return $array_assign;
+        }catch (Exception $e){
+            $this->_helperData->log('Fatal Error: Model Basic Payment PostPago:'. $e->getMessage(), 'mercadopago-basic.log');
+            return [];
         }
-        return $array_assign;
+
     }
 
     /**

@@ -129,7 +129,6 @@ class MerchantOrder extends TopicsAbstract
         array_map([$class, 'payAmount'], $payments, array_keys($payments));
 
         if ($merchantOrder['total_amount'] <= $this->_payAmount) {
-            array_map([$class, 'payAmount'], $payments);
             return ['key' => $this->_payIndex, 'status' => 'approved', 'final' => true];
         }
 
@@ -138,7 +137,6 @@ class MerchantOrder extends TopicsAbstract
         foreach ($payments as $payment) {
             if (in_array($payment['status'], $notFinalStatus)) {
                 $lastPaymentIndex = $this->_getLastPaymentIndex($paymentsOrder, $notFinalStatus);
-
                 return ['key' => $this->_payIndex, 'status' => $payments[$lastPaymentIndex]['status'], 'final' => false];
             }
         }
