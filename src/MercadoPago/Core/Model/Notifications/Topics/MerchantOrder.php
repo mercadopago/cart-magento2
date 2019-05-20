@@ -15,6 +15,8 @@ use MercadoPago\Core\Helper\Data as mpHelper;
 use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
+use Magento\Framework\DB\Transaction;
+use Magento\Sales\Model\Service\InvoiceService;
 
 class MerchantOrder extends TopicsAbstract
 {
@@ -40,6 +42,8 @@ class MerchantOrder extends TopicsAbstract
      * @param OrderCommentSender $orderCommentSender
      * @param TransactionFactory $transactionFactory
      * @param InvoiceSender $invoiceSender
+     * @param InvoiceService $invoiceService
+     * @param Transaction $transaction
      */
     public function __construct(
         mpHelper $mpHelper,
@@ -52,14 +56,16 @@ class MerchantOrder extends TopicsAbstract
         OrderSender $orderSender,
         OrderCommentSender $orderCommentSender,
         TransactionFactory $transactionFactory,
-        InvoiceSender $invoiceSender
+        InvoiceSender $invoiceSender,
+        InvoiceService $invoiceService,
+        Transaction $transaction
 
     ) {
         $this->_mpHelper = $mpHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_coreModel = $coreModel;
 
-        parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender);
+        parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService, $transaction);
     }
 
     /**

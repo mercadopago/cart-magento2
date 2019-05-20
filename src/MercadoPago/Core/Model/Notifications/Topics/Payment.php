@@ -18,6 +18,8 @@ use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Lib\RestClient;
 use MercadoPago\Core\Model\Core;
+use Magento\Framework\DB\Transaction;
+use Magento\Sales\Model\Service\InvoiceService;
 
 class Payment extends TopicsAbstract
 {
@@ -41,6 +43,8 @@ class Payment extends TopicsAbstract
      * @param OrderCommentSender $orderCommentSender
      * @param TransactionFactory $transactionFactory
      * @param InvoiceSender $invoiceSender
+     * @param InvoiceService $invoiceService
+     * @param Transaction $transaction
      */
     public function __construct(
         mpHelper $mpHelper,
@@ -53,14 +57,16 @@ class Payment extends TopicsAbstract
         OrderSender $orderSender,
         OrderCommentSender $orderCommentSender,
         TransactionFactory $transactionFactory,
-        InvoiceSender $invoiceSender
+        InvoiceSender $invoiceSender,
+        InvoiceService $invoiceService,
+        Transaction $transaction
 
     ) {
         $this->_mpHelper = $mpHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_coreModel = $coreModel;
 
-        parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender);
+        parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService, $transaction);
     }
 
     public function updateOrder($order, $data)

@@ -9,7 +9,6 @@ use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\Order\Payment\TransactionFactory;
-use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\ResourceModel\Status\Collection as StatusFactory;
 use Magento\Store\Model\ScopeInterface;
@@ -18,6 +17,8 @@ use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Helper\Response;
 use Magento\Framework\DB\Transaction;
+use Magento\Sales\Model\Service\InvoiceService;
+use mysql_xdevapi\Exception;
 
 abstract class TopicsAbstract
 {
@@ -63,7 +64,8 @@ abstract class TopicsAbstract
         InvoiceSender $invoiceSender,
         InvoiceService $invoiceService,
         Transaction $transaction
-    ) {
+    )
+    {
         $this->_dataHelper = $dataHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_orderFactory = $orderFactory;
@@ -98,6 +100,19 @@ abstract class TopicsAbstract
         $rawMessage .= __('<br/> Status: %1', $paymentResponse['status']);
         $rawMessage .= __('<br/> Status Detail: %1', $paymentResponse['status_detail']);
 
+        return $rawMessage;
+    }
+
+    /**
+     * @param $order
+     * @param $invoice
+     * @return string
+     */
+    public function getMessageInvoice($order, $invoice)
+    {
+        $rawMessage = __('<br/> Order id: %1', $order->getIncrementId());
+        $rawMessage .= __('<br/> Invoice ID: %1', $invoice->getId());
+        $rawMessage .= __('<br/> Total Invoiced: %1', $invoice->getGrandTotal());
         return $rawMessage;
     }
 
@@ -325,7 +340,6 @@ abstract class TopicsAbstract
     }
 
 
-
     /**
      * @param $order
      * @param $data
@@ -339,19 +353,15 @@ abstract class TopicsAbstract
         if ($this->_statusUpdatedFlag) {
             return ['text' => $message, 'code' => Response::HTTP_OK];
         }
-        var_dump(2); exit();
+
         $this->updateStatus($order, $payment, $message);
-        var_dump(3); exit();
+
         try {
             $infoPayments = $order->getPayment()->getAdditionalInformation();
-            var_dump(4); exit();
             if ($this->_getMulticardLastValue($payment['status']) == 'approved') {
                 $this->_handleTwoCards($payment, $infoPayments);
-                var_dump(5); exit();
                 $this->_dataHelper->setOrderSubtotals($payment, $order);
-                $this->_createInvoice($order, $message);
-                var_dump(6); exit();
-
+                $this->_createInvoice($order);
                 if (isset($payment['metadata']) && isset($payment['metadata']['token'])) {
                     $order->getPayment()->getMethodInstance()->customerAndCards($payment['metadata']['token'], $payment);
                 }
@@ -399,7 +409,7 @@ abstract class TopicsAbstract
                 $statusEmail = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_UPDATE, ScopeInterface::SCOPE_STORE);
                 $statusEmailList = explode(",", $statusEmail);
                 if (in_array($payment['status'], $statusEmailList)) {
-                    $this->_orderCommentSender->send($order, $notify = '1', str_replace("<br/>", "", $message));
+                    $this->_orderSender->send($order, $notify = '1', str_replace("<br/>", "", $message));
                 }
             }
         }
@@ -409,7 +419,6 @@ abstract class TopicsAbstract
 
         return $order->save();
     }
-
 
 
     /**
@@ -439,16 +448,18 @@ abstract class TopicsAbstract
      * @param $order
      * @param $message
      */
-    public function _createInvoice($order, $message)
+    public function _createInvoice($order)
     {
-        if($order->canInvoice()) {
+        if (!$order->hasInvoices()) {
             $invoice = $this->_invoiceService->prepareInvoice($order);
             $invoice->register();
             $invoice->save();
+
             $transactionSave = $this->_transaction->addObject($invoice)->addObject($invoice->getOrder());
             $transactionSave->save();
 
             $this->_invoiceSender->send($invoice);
+            $message = $this->getMessageInvoice($order, $invoice);
             $order->addStatusHistoryComment(__($message, $invoice->getId()))
                 ->setIsCustomerNotified(true)
                 ->save();

@@ -65,6 +65,7 @@ class Basic extends Action
 
             $merchantOrder = $data['merchantOrder'];
             $order = $this->_orderFactory->create()->loadByIncrementId($merchantOrder["external_reference"]);
+
             if (empty($order) || empty($order->getId()) || $order->getStatus() == 'canceled') {
                 throw new Exception(__('Error Order Not Found in Magento: ') . $merchantOrder["external_reference"], 400);
             }

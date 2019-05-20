@@ -266,6 +266,7 @@ class Data
             $order->setShippingAmount($shippingCost);
         }
 
+        $order->setTotalPaid($paidAmount);
         $order->save();
     }
 
