@@ -296,6 +296,10 @@
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
+
+[class^=form-col-] label em {
+  color: red;
+}
 /*
 *
 *
@@ -494,6 +498,8 @@
   -moz-appearance: menulist-button;
   -ms-appearance: menulist-button;
   appearance: menulist-button;
+
+  background: no-repeat rgb(255, 255, 255);
 }
 
 .mensagem-febraban{
@@ -536,28 +542,21 @@
   width: 100%;
 }
 
-
-
 .title-razao-social, .title-cnpj{
   display: none;
 }
-
-
 
 
 /* Bank transfer */
 #mercadopago-bank-transfer{
   width: 100%;
   max-width: 375px;
-  padding-left: 10px;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  margin-bottom: 20px;
-  float: left;
 }
 
 
+#mercadopago-bank-transfer .field-error, #mercadopago-bank-transfer div.mage-error[generated] {
+    margin-top: -5px;
+}
 
 
 /* Ticket */

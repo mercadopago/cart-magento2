@@ -19,11 +19,17 @@ class ConfigData
     const PATH_CUSTOM_BANNER = 'payment/mercadopago_custom/banner_checkout';
     const PATH_CUSTOM_COUPON = 'payment/mercadopago_custom/coupon_mercadopago';
 
-    //custom method ticket
-    const PATH_CUSTOM_TICKET_ACTIVE = 'payment/mercadopago_customticket/active';
-    const PATH_CUSTOM_TICKET_COUPON = 'payment/mercadopago_customticket/coupon_mercadopago';
-    const PATH_CUSTOM_TICKET_BANNER = 'payment/mercadopago_customticket/banner_checkout';
-    const PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS = 'payment/mercadopago_customticket/excluded_payment_methods';
+  //custom method ticket
+  const PATH_CUSTOM_TICKET_ACTIVE             = 'payment/mercadopago_customticket/active';
+  const PATH_CUSTOM_TICKET_COUPON             = 'payment/mercadopago_customticket/coupon_mercadopago';
+  const PATH_CUSTOM_TICKET_BANNER             = 'payment/mercadopago_customticket/banner_checkout';
+  const PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS   = 'payment/mercadopago_customticket/excluded_payment_methods';
+
+  //custom method bank transfer
+  const PATH_CUSTOM_BANK_TRANSFER_ACTIVE         = 'payment/mercadopago_custom_bank_transfer/active';
+  const PATH_CUSTOM_BANK_TRANSFER_BANNER         = 'payment/mercadopago_custom_bank_transfer/banner_checkout';
+  const PATH_CUSTOM_BANK_TRANSFER_REDIRECT_PAYER = 'payment/mercadopago_custom_bank_transfer/redirect_payer';
+
 
     //basic method
     const PATH_BASIC_ACTIVE = 'payment/mercadopago_basic/active';

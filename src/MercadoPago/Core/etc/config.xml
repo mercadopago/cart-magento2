@@ -24,6 +24,16 @@
         <coupon_mercadopago>0</coupon_mercadopago>
         <cctypes>AE,VI,MC,DI,JCB</cctypes>
       </mercadopago_customticket>
+      <mercadopago_custom_bank_transfer>
+        <active>0</active>
+        <model>MercadoPago\Core\Model\CustomBankTransfer\Payment</model>
+        <title translate="label">Bank Transfer - Mercado Pago</title>
+        <allowspecific>0</allowspecific>
+        <sort_order>-2</sort_order>
+        <payment_action>authorize</payment_action>
+        <cctypes>AE,VI,MC,DI,JCB</cctypes>
+        <redirect_payer>1</redirect_payer>
+      </mercadopago_custom_bank_transfer>
       <mercadopago_basic>
         <active>1</active>
         <model>MercadoPago\Core\Model\Basic\Payment</model>

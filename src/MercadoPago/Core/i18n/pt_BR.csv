@@ -49,6 +49,14 @@
 "This setting will be the position in which the payment method will be available to the buyer.","Essa configuração é a posição na qual o método de pagamento estará disponível para o comprador."
 "By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.","Por padrão, o módulo do Mercado Pago irá configurar um banner com os métodos disponíveis de acordo com o seu país, se você quiser personalizá-lo, basta alterar o URL da imagem."
 
+"==================== v3.1.0 CUSTOM CHECKOUT BANK TRANSFER PAGE =====================","================================================"
+"Custom Checkout - Bank Transfer","Custom Checkout - Transferência Bancária"
+"Enabled","Habilitado"
+"Payment Title","Titulo do Método de Pagamento"
+"Checkout Position","Posição do método de pagamento no checkout"
+"Redirect Payer","Redirecionar Comprador"
+"By enabling this option the buyer will be automatically redirected to the payment page of the bank, it will not go through an intermediate page of your store.","Ao habilitar essa opção o comprador será redirecionado automaticamente para a pagina de pagamento do banco, ele não irá passar por uma pagina intermedia da sua loja."
+
 "==================== ADVANCED CONFIGURATION PAGE =====================","================================================"
 "Advanced","Avançado"
 "Store Settings","Configurações da Loja"
@@ -138,6 +146,15 @@
 "State required","Obrigatório informar o Estado"
 "Zipcode required","Obrigatório informar o CEP"
 
+"==================== v3.1.0 PAYMENT BANK TRANSFER FORM =====================","================================================"
+
+"Identification Type","Tipo de Documento"
+"Identification Number","Número do Documento"
+"Financial Institutions","Banco"
+"Type of Person","Tipo de Pessoa"
+"Natural", "Pessoa física"
+"Jurídica", "Pessoa jurídica"
+
 "==================== DISCOUNT FLOW =====================","================================================"
 
 "You will save <b>%1 %2</b> with discount from %3.","Você ira economizar <b>%1 %2</b> com desconto de %3."
@@ -187,6 +204,10 @@
 "Statement Descriptor: %1","Identificação na Fatura do Cartão: %1"
 "Payment Status: %1","Status do Pagamento: %1"
 "Payment Status Detail: %1","Status detalhado do Pagamento: %1"
+
+"========= v3.1.0 =========","========= v3.1.0 ========="
+"Pay","Pagar"
+"The payment will be credited in less than 1 hour.","O pagamento será creditado em menos de 1 hora."
 
 "==================== ORDER PAGE =====================","================================================"
 

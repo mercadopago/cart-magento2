@@ -24,6 +24,11 @@ class AbstractSuccess
      * @var \Magento\Checkout\Model\Session
      */
     protected $_checkoutSession;
+  
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $_scopeConfig;
 
 
     /**
@@ -31,6 +36,7 @@ class AbstractSuccess
      * @param \MercadoPago\Core\Model\CoreFactory              $coreFactory
      * @param \Magento\Sales\Model\OrderFactory                $orderFactory
      * @param \Magento\Checkout\Model\Session                  $checkoutSession
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface   $scopeConfig
      * @param array                                            $data
      */
     public function __construct(
@@ -38,12 +44,14 @@ class AbstractSuccess
         \MercadoPago\Core\Model\CoreFactory $coreFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         array $data = []
     )
     {
         $this->_coreFactory = $coreFactory;
         $this->_orderFactory = $orderFactory;
         $this->_checkoutSession = $checkoutSession;
+        $this->_scopeConfig = $scopeConfig;
         parent::__construct(
             $context,
             $data

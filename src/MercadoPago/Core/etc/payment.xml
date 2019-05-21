@@ -14,6 +14,9 @@
         <method name="mercadopago_customticket">
             <allow_multiple_address>1</allow_multiple_address>
         </method>
+        <method name="mercadopago_custom_bank_transfer">
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
         <method name="mercadopago_basic">
             <allow_multiple_address>1</allow_multiple_address>
         </method>
