@@ -64,7 +64,7 @@ class PaymentMethodsTicket
         return [];
       }
 
-      if (isset($response['error'])) {
+      if (isset($response['error']) || (isset($response['status']) && ($response['status'] != '200' && $response['status'] != '201'))) {
         return $methods;
       }
 

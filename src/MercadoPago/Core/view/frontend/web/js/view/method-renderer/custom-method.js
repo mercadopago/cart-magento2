@@ -145,10 +145,7 @@ define(
             },
 
             getInitialGrandTotal: function () {
-                var initialTotal = quote.totals().base_subtotal
-                    + quote.totals().base_shipping_incl_tax
-                    + quote.totals().base_tax_amount
-                    + quote.totals().base_discount_amount;
+                var initialTotal = quote.totals().base_grand_total;
                 return initialTotal;
             },
 
