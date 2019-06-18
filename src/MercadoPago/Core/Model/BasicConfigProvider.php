@@ -79,7 +79,7 @@ class BasicConfigProvider implements ConfigProviderInterface
                         'type_checkout' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_TYPE_CHECKOUT, ScopeInterface::SCOPE_STORE),
                         'logEnabled' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_LOG, ScopeInterface::SCOPE_STORE),
                         'coupon_mercadopago' => $this->_scopeConfig->isSetFlag(ConfigData::PATH_BASIC_COUPON, ScopeInterface::SCOPE_STORE),
-                        'sandbox_mode' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_SANDBOX_MODE, ScopeInterface::SCOPE_STORE),
+                        'sandbox_mode' => $this->_scopeConfig->isSetFlag(ConfigData::PATH_BASIC_SANDBOX_MODE, ScopeInterface::SCOPE_STORE),
                         'max_installments' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_MAX_INSTALLMENTS, ScopeInterface::SCOPE_STORE),
                         'auto_return' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_AUTO_RETURN, ScopeInterface::SCOPE_STORE),
                         'exclude_payments' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE),

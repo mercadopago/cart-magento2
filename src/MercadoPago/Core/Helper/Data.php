@@ -100,6 +100,7 @@ class Data
 
     )
     {
+      
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
         $this->_mpLogger = $logger;

@@ -8,7 +8,6 @@ use Magento\Sales\Model\Order\CreditmemoFactory;
 use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
-use Magento\Sales\Model\Order\Payment\TransactionFactory;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\ResourceModel\Status\Collection as StatusFactory;
 use Magento\Store\Model\ScopeInterface;
@@ -18,7 +17,7 @@ use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Lib\RestClient;
 use MercadoPago\Core\Model\Core;
-use Magento\Framework\DB\Transaction;
+use Magento\Framework\DB\TransactionFactory;
 use Magento\Sales\Model\Service\InvoiceService;
 
 class Payment extends TopicsAbstract
@@ -44,7 +43,6 @@ class Payment extends TopicsAbstract
      * @param TransactionFactory $transactionFactory
      * @param InvoiceSender $invoiceSender
      * @param InvoiceService $invoiceService
-     * @param Transaction $transaction
      */
     public function __construct(
         mpHelper $mpHelper,
@@ -58,22 +56,14 @@ class Payment extends TopicsAbstract
         OrderCommentSender $orderCommentSender,
         TransactionFactory $transactionFactory,
         InvoiceSender $invoiceSender,
-        InvoiceService $invoiceService,
-        Transaction $transaction
+        InvoiceService $invoiceService
 
     ) {
         $this->_mpHelper = $mpHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_coreModel = $coreModel;
 
-        parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService, $transaction);
-    }
-
-    public function updateOrder($order, $data)
-    {
-        $this->_dataHelper->log("Payment - Update Order", 'mercadopago.log');
-        $order = parent::updateOrder($order, $data);
-        $this->_dataHelper->log("Payment - Update Order", 'mercadopago.log', $order->getData());
+        parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService);
     }
 
     /**
@@ -84,6 +74,7 @@ class Payment extends TopicsAbstract
     public function updateStatusOrderByPayment($payment)
     {
         $order = parent::getOrderByIncrementId($payment['external_reference']);
+      
         if (!$order->getId()) {
             $message = "Mercado Pago - The order was not found in Magento. You will not be able to follow the process without this information.";
             return [ "httpStatus" => Response::HTTP_NOT_FOUND, "message" => $message, "data" => $payment['external_reference']];
@@ -112,6 +103,7 @@ class Payment extends TopicsAbstract
         }
 
         $order = self::setStatusAndComment($order, $newOrderStatus, $message);
+
         $this->sendEmailCreateOrUpdate($order, $message);
         $responseInvoice = false;
         if ($payment['status'] == 'approved') {
@@ -198,7 +190,6 @@ class Payment extends TopicsAbstract
             $transaction->addObject($invoice);
             $transaction->addObject($invoice->getOrder());
             $transaction->save();
-
             $this->_invoiceSender->send($invoice, true, $message);
             return true;
         }

@@ -9,9 +9,7 @@ use Magento\Customer\Model\Session as customerSession;
 use Magento\Framework\Api\AttributeValueFactory;
 use Magento\Framework\Api\ExtensionAttributesFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Model\Context;
-use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
 use Magento\Framework\UrlInterface;
 use Magento\Payment\Helper\Data;
@@ -61,6 +59,7 @@ class Payment extends AbstractMethod
     protected $_canFetchTransactionInfo = true;
     protected $_canReviewPayment = true;
     protected $_infoBlockType = 'MercadoPago\Core\Block\Info';
+    protected $_isInitializeNeeded = true;
 
     /**
      * Payment constructor.
@@ -77,8 +76,6 @@ class Payment extends AbstractMethod
      * @param Data $paymentData
      * @param ScopeConfigInterface $scopeConfig
      * @param Logger $logger
-     * @param AbstractResource|null $resource
-     * @param AbstractDb|null $resourceCollection
      * @param Basic $basic
      * @param array $data
      */
@@ -96,8 +93,6 @@ class Payment extends AbstractMethod
         Data $paymentData,
         ScopeConfigInterface $scopeConfig,
         Logger $logger,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
         Basic $basic,
         array $data = []
     ) {
@@ -109,8 +104,8 @@ class Payment extends AbstractMethod
             $paymentData,
             $scopeConfig,
             $logger,
-            $resource,
-            $resourceCollection,
+            null,
+            null,
             $data
         );
 

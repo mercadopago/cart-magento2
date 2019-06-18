@@ -60,28 +60,30 @@ class Basic extends Action
             $topicClass = $this->_notifications->getTopicClass($request);
             $data = $this->_notifications->getPaymentInformation($topicClass, $requestValues);
             if (empty($data)) {
-                throw new Exception(__('Error, MerchantOrder or Payment not found in MP'), 400);
+                throw new Exception(__('Error Merchant Order notification is expected'), 400);
             }
 
             $merchantOrder = $data['merchantOrder'];
             $order = $this->_orderFactory->create()->loadByIncrementId($merchantOrder["external_reference"]);
 
-            if (empty($order) || empty($order->getId()) || $order->getStatus() == 'canceled') {
+            if (empty($order) || empty($order->getId())){
                 throw new Exception(__('Error Order Not Found in Magento: ') . $merchantOrder["external_reference"], 400);
+            }
+          
+            if($order->getStatus() == 'canceled') {
+              throw new Exception(__('Order already canceled: ') . $merchantOrder["external_reference"], 400);
             }
 
             $data['statusFinal'] = $topicClass->getStatusFinal($data['payments'], $merchantOrder);
+          
             if (!$topicClass->validateRefunded($order, $data)) {
                 throw new Exception(__('Error Order Refund'), 400);
             }
-
-            $topicClass->updateOrder($order, $data);
-            if (!$data['statusFinal']['final']) {
-                $this->setResponseHttp(Response::HTTP_OK, 'Status not final', $request->getParams());
-                return;
-            }
-            $statusResponse = $topicClass->changeStatusOrder($order, $data);
+          
+            $statusResponse = $topicClass->updateOrder($order, $data);
+            
             $this->setResponseHttp($statusResponse['code'], $statusResponse['text'], $request->getParams());
+          
         } catch (\Exception $e) {
             $this->setResponseHttp($e->getCode(), $e->getMessage(), $request->getParams());
         }

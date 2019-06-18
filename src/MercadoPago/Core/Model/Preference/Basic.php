@@ -8,9 +8,7 @@ use Magento\Customer\Model\Session as customerSession;
 use Magento\Framework\Api\AttributeValueFactory;
 use Magento\Framework\Api\ExtensionAttributesFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Model\Context;
-use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Phrase;
 use Magento\Framework\Registry;
 use Magento\Framework\UrlInterface;
@@ -50,8 +48,6 @@ class Basic extends AbstractMethod
         AttributeValueFactory $customAttributeFactory,
         Data $paymentData,
         Logger $logger,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         parent::__construct(
@@ -62,8 +58,8 @@ class Basic extends AbstractMethod
             $paymentData,
             $scopeConfig,
             $logger,
-            $resource,
-            $resourceCollection,
+            null,
+            null,
             $data
         );
         $this->_orderFactory = $orderFactory;
