@@ -85,8 +85,8 @@ class Payment extends TopicsAbstract
         $newOrderStatus = parent::getConfigStatus($payment, $order->canCreditmemo());
         $currentOrderStatus = $order->getState();
         if ($statusAlreadyUpdated) {
-            $payment = $order->getPayment();
-            $payment->setAdditionalInformation("paymentResponse", json_encode($payment));
+            $orderPayment = $order->getPayment();
+            $orderPayment->setAdditionalInformation("paymentResponse", $payment);
             $order->save();
 
             $messageHttp = "Mercado Pago - Status has already been updated.";

@@ -62,8 +62,12 @@ class Basic extends Action
             if (empty($data)) {
                 throw new Exception(__('Error Merchant Order notification is expected'), 400);
             }
-
             $merchantOrder = $data['merchantOrder'];
+
+            if(is_null ($merchantOrder)){
+              throw new Exception(__('Merchant Order not found or is an notification invalid type.'), 400);
+            }
+          
             $order = $this->_orderFactory->create()->loadByIncrementId($merchantOrder["external_reference"]);
 
             if (empty($order) || empty($order->getId())){

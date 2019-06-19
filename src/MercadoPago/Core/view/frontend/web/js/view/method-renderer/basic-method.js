@@ -25,7 +25,6 @@ define(
                 return this.paymentReady();
             },
 
-
             /**
              *
              */
@@ -96,6 +95,67 @@ define(
                 }
                 return '';
             },
+
+
+          /**
+             *
+             * Basic Checkout
+             */
+          
+          getRedirectImage: function (){
+            return configPayment['redirect_image'];
+          },
+          
+          getInfoBanner: function ($pm) {
+            if (configPayment !== undefined) {
+              return configPayment['banner_info'][$pm];
+            }
+            return 0;
+          },
+
+          getInfoBannerInstallments: function () {
+            if (configPayment !== undefined) {
+              return configPayment['banner_info']['installments'];
+            }
+            return 0;
+          },
+
+          getInfoBannerPaymentMethods: function ($pmFilter){
+            var listPm = []
+
+            if (configPayment !== undefined) {
+              var paymetMethods = configPayment['banner_info']['checkout_methods'];
+              if (paymetMethods){
+
+                for(var x = 0; x < paymetMethods.length; x++){
+                  var pmSelected = paymetMethods[x];
+                  var insertList = false;
+
+                  if($pmFilter == 'credit'){
+                    if(pmSelected.payment_type_id == 'credit_card'){
+                      insertList = true
+                    }
+                  }else if($pmFilter == 'debit'){
+                    if(pmSelected.payment_type_id == 'debit_card' || pmSelected.payment_type_id == 'prepaid_card'){
+                      insertList = true
+                    }
+                  }else{
+                    if(pmSelected.payment_type_id != 'credit_card' && pmSelected.payment_type_id != 'debit_card' && pmSelected.payment_type_id != 'prepaid_card'){
+                      insertList = true
+                    }
+                  }
+
+                  if(insertList){
+                    listPm.push({
+                      src: pmSelected.secure_thumbnail,
+                      name: pmSelected.name
+                    });
+                  }
+                }
+              }
+              return listPm;
+            }
+          },
 
         });
     }
