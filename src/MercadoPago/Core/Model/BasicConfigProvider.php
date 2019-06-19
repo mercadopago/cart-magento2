@@ -133,8 +133,6 @@ class BasicConfigProvider implements ConfigProviderInterface
             }
           }
         }
-        
-        error_log("TESTE AQUI");
 
         $parameters = array(
           "debit" => $debit,

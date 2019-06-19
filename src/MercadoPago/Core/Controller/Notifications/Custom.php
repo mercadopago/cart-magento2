@@ -47,8 +47,6 @@ class Custom extends Action
 
             $requestValues = $this->_notifications->validateRequest($request);
             $topicClass = $this->_notifications->getTopicClass($request);
-
-           error_log("TESTEEEEEEE => " . json_encode($requestValues));
           
             if ($requestValues['topic'] != 'payment') {
                 $message = "Mercado Pago - Invalid Notification Parameters, Invalid Type.";
@@ -60,8 +58,6 @@ class Custom extends Action
                 $this->setResponseHttp(Response::HTTP_NOT_FOUND, $message, $response);
                 return;
             }
-
-            error_log("TESTEEEEEEE => " . json_encode($topicClass));
           
             $payment = $response['response'];
             $response = $topicClass->updateStatusOrderByPayment($payment);
