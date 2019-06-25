@@ -219,6 +219,7 @@ class MerchantOrder extends TopicsAbstract
         $payment = $data['payments'][$data['statusFinal']['key']];
         $orderPayment = $order->getPayment();
         $orderPayment->setAdditionalInformation("paymentResponse", $payment);
+        $orderPayment->save();
       
         if ($this->checkStatusAlreadyUpdated($order, $data)) {
           $message = "[Already updated] " . $this->getMessage($payment);

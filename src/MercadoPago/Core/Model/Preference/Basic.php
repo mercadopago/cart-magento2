@@ -351,13 +351,16 @@ class Basic extends AbstractMethod
      */
     protected function getSponsorId($config)
     {
-        $this->_helperData->log("Sponsor_id", 'mercadopago-basic.log', $config['sponsor_id']);
-        if (!empty($sponsor_id)) {
-            $this->_helperData->log("Sponsor_id identificado", 'mercadopago-standard.log', $sponsor_id);
-            return (int)$sponsor_id;
-        }
+      
+      $sponsor_id = $config['sponsor_id'];
 
-        return  null;
+      $this->_helperData->log("Sponsor_id", 'mercadopago-basic.log', $sponsor_id);
+      if (!empty($sponsor_id)) {
+        $this->_helperData->log("Sponsor_id identificado", 'mercadopago-basic.log', $sponsor_id);
+        return (int)$sponsor_id;
+      }
+
+      return  null;
     }
 
     /**
@@ -442,14 +445,14 @@ class Basic extends AbstractMethod
                 $arr['auto_return'] = "approved";
             }
 
-            if ($sponsorId = $this->getSponsorId($config)) {
-                $arr['sponsor_id'] = "approved";
+            if (!is_null($this->getSponsorId($config))) {
+                $arr['sponsor_id'] = $this->getSponsorId($config);
             }
 
             $siteId = strtoupper($config['country']);
             if ($siteId == 'MLC' || $siteId == 'MCO') {
                 foreach ($arr['items'] as $key => $item) {
-                    $arr['items'][$key]['unit_price'] = (int)$item['unit_price'];
+                    $arr['items'][$key]['unit_price'] = (int) $item['unit_price'];
                 }
             }
 
