@@ -47,8 +47,7 @@ class Basic extends AbstractMethod
         ExtensionAttributesFactory $extensionFactory,
         AttributeValueFactory $customAttributeFactory,
         Data $paymentData,
-        Logger $logger,
-        array $data = []
+        Logger $logger
     ) {
         parent::__construct(
             $context,
@@ -60,7 +59,7 @@ class Basic extends AbstractMethod
             $logger,
             null,
             null,
-            $data
+            []
         );
         $this->_orderFactory = $orderFactory;
         $this->_checkoutSession = $checkoutSession;
