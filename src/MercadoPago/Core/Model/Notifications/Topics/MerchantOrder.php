@@ -8,15 +8,15 @@ use Magento\Sales\Model\Order\CreditmemoFactory;
 use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
-use Magento\Sales\Model\Order\Payment\TransactionFactory;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\ResourceModel\Status\Collection as StatusFactory;
 use MercadoPago\Core\Helper\Data as mpHelper;
 use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
-use Magento\Framework\DB\Transaction;
+use Magento\Framework\DB\TransactionFactory;
 use Magento\Sales\Model\Service\InvoiceService;
+use MercadoPago\Core\Helper\Response;
 
 class MerchantOrder extends TopicsAbstract
 {
@@ -43,7 +43,6 @@ class MerchantOrder extends TopicsAbstract
      * @param TransactionFactory $transactionFactory
      * @param InvoiceSender $invoiceSender
      * @param InvoiceService $invoiceService
-     * @param Transaction $transaction
      */
     public function __construct(
         mpHelper $mpHelper,
@@ -57,15 +56,14 @@ class MerchantOrder extends TopicsAbstract
         OrderCommentSender $orderCommentSender,
         TransactionFactory $transactionFactory,
         InvoiceSender $invoiceSender,
-        InvoiceService $invoiceService,
-        Transaction $transaction
+        InvoiceService $invoiceService
 
     ) {
         $this->_mpHelper = $mpHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_coreModel = $coreModel;
 
-        parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService, $transaction);
+        parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService);
     }
 
     /**
@@ -130,27 +128,60 @@ class MerchantOrder extends TopicsAbstract
      */
     public function getStatusFinal($payments, $merchantOrder)
     {
-        $this->_payAmount = 0;
-        $class = 'MercadoPago\Core\Model\Notifications\Topics\MerchantOrder';
-        array_map([$class, 'payAmount'], $payments, array_keys($payments));
-
-        if ($merchantOrder['total_amount'] <= $this->_payAmount) {
-            return ['key' => $this->_payIndex, 'status' => 'approved', 'final' => true];
+ 
+      if(isset($merchantOrder['payments']) && count($merchantOrder['payments']) == 1){
+        return ['key' => "0", 'status' => $merchantOrder['payments'][0]['status'], 'final' => false];
+      }
+      
+      $totalApproved = 0;
+      $totalPending = 0;
+      $payments = $merchantOrder['payments'];
+      $totalOrder = $merchantOrder['total_amount'];
+      foreach($payments as $payment){
+        $status = $payment['status'];
+        
+        if($status == 'approved'){
+          $totalApproved += $payment['transaction_amount'];
+        }elseif ($status == 'in_process' || $status == 'pending' || $status == 'authorized') {
+          $totalPending += $payment['transaction_amount'];
         }
+      }
+      
+      $arrayLog =  array(
+        "totalApproved" => $totalApproved,
+        "totalOrder" => $totalOrder,
+        "totalPending" => $totalPending
+      );
 
-        $notFinalStatus = ['authorized', 'process', 'in_mediation'];
-        $paymentsOrder = $merchantOrder['payments'];
-        foreach ($payments as $payment) {
-            if (in_array($payment['status'], $notFinalStatus)) {
-                $lastPaymentIndex = $this->_getLastPaymentIndex($paymentsOrder, $notFinalStatus);
-                return ['key' => $this->_payIndex, 'status' => $payments[$lastPaymentIndex]['status'], 'final' => false];
-            }
-        }
+      $response = [];
+      //validate order state
+      if ($totalApproved >= $totalOrder) {
+        $statusList = ['approved'];
+        $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
 
-        $finalStatus = ['rejected', 'cancelled', 'refunded', 'charge_back'];
-        $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $finalStatus);
 
-        return ['key' => $this->_payIndex, 'status' => $payments[$lastPaymentIndex]['status'], 'final' => true];
+        $response = ['key' => $lastPaymentIndex, 'status' => 'approved', 'final' => true];
+        $this->_dataHelper->log("Order Setted Approved: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
+
+      }
+      elseif ($totalPending >= $totalOrder) {
+        // return last status inserted 
+        $statusList = ['pending', 'in_process'];
+        $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
+
+        $response = ['key' => $lastPaymentIndex, 'status' => 'pending', 'final' => false];
+        $this->_dataHelper->log("Order Setted Pending: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
+      }else {
+        // return last status inserted 
+        $statusList = ['cancelled', 'refunded', 'charge_back', 'in_mediation', 'rejected'];
+        $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
+        $statusReturned = $payments[$lastPaymentIndex]['status'];
+
+        $response = ['key' => $lastPaymentIndex, 'status' => $payments[$lastPaymentIndex]['status'], 'final' => true];
+        $this->_dataHelper->log("Order Setted Other Status: " . $statusReturned, 'mercadopago-basic.log', $response);
+      }
+      
+      return $response;
     }
 
     /**
@@ -160,20 +191,21 @@ class MerchantOrder extends TopicsAbstract
      */
     protected function _getLastPaymentIndex($payments, $status)
     {
-        $class = 'MercadoPago\Core\Model\Notifications\Topics\MerchantOrder';
-        $dates = [];
-        foreach ($payments as $key => $payment) {
-            if (in_array($payment['status'], $status)) {
-                $dates[] = ['key' => $key, 'value' => $payment['date_last_updated']];
-            }
+      $class = 'MercadoPago\Core\Model\Notifications\Topics\MerchantOrder';
+      $dates = [];
+      foreach ($payments as $key => $payment) {
+        
+        if (in_array($payment['status'], $status)) {
+          $dates[] = ['key' => $key, 'value' => $payment['last_modified']];
         }
-        usort($dates, [$class, "_dateCompare"]);
-        if ($dates) {
-            $lastModified = array_pop($dates);
-            return $lastModified['key'];
-        }
+      }
+      usort($dates, [$class, "_dateCompare"]);
+      if ($dates) {
+        $lastModified = array_pop($dates);
+        return $lastModified['key'];
+      }
 
-        return 0;
+      return 0;
     }
 
     /**
@@ -184,9 +216,26 @@ class MerchantOrder extends TopicsAbstract
      */
     public function updateOrder($order, $data)
     {
-        $this->_dataHelper->log("Merchant Order - Update Order", 'mercadopago-basic.log');
-        $order = parent::updateOrder($order, $data);
-        $this->_dataHelper->log("Merchant Order - Update Order", 'mercadopago-basic.log', $order->getData());
+        $payment = $data['payments'][$data['statusFinal']['key']];
+        $orderPayment = $order->getPayment();
+        $orderPayment->setAdditionalInformation("paymentResponse", $payment);
+        $orderPayment->save();
+      
+        if ($this->checkStatusAlreadyUpdated($order, $data)) {
+          $message = "[Already updated] " . $this->getMessage($payment);
+          $this->_dataHelper->log($message, 'mercadopago-basic.log');
+          return ['text' => $message, 'code' => Response::HTTP_OK];;
+        }
+
+        $this->updatePaymentInfo($order, $data);
+        $statusResponse = $this->changeStatusOrder($order, $data);
+        return $statusResponse;
+    }
+  
+    public function checkStatusAlreadyUpdated($order, $data)
+    {
+      $paymentResponse = $data['payments'][$data['statusFinal']['key']];
+      return parent::checkStatusAlreadyUpdated($paymentResponse, $order);
     }
 
     /**

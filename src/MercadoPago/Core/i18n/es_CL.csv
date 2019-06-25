@@ -50,12 +50,21 @@
 "By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.","Por defecto el módulo de Mercado Pago configurará un banner con los métodos disponibles de acuerdo a su país, si desea personalizarlo basta cambiar la url de la imagen."
 
 "==================== v3.1.0 CUSTOM CHECKOUT BANK TRANSFER PAGE =====================","================================================"
-"Custom Checkout - Bank Transfer","Custom Checkout - Transferencia Bancaria (Webpay)"
+"Custom Checkout - Bank Transfer","Custom Checkout - Transferencia Bancaria"
 "Enabled","Habilitado"
 "Payment Title","Título del metodo de pago"
 "Checkout Position","Posición del metodo de pago"
 "Redirect Payer","Redirigir Comprador"
 "By enabling this option the buyer will be automatically redirected to the payment page of the bank, it will not go through an intermediate page of your store.","Al habilitar esta opción el comprador será redirigido automáticamente a la página de pago del banco, no pasará por una página intermedia de su tienda."
+
+"==================== v3.2.0 Basic Checkout PAGE =====================","================================================"
+"Basic Checkout","Checkout Básico - Redireccionado"
+"Auto Return","Redireccionamiento automático"
+"Redirect buyer automatically to your store when payment is approved.","Redirecciona automáticamente el comprador a su tienda cuando se aprueba el pago."
+"Max Installments","Número máximo de cuotas aceptadas"
+"Maximum number of installments accept the payment flow.","Número máximo de cuotas aceptadas en el flujo de pago."
+"Expiration Time Preference","Tiempo de expiración del link del checkout"
+"Time in days to expiration preference.","Cantidad de días para expirar el link del checkout."
 
 "==================== ADVANCED CONFIGURATION PAGE =====================","================================================"
 "Advanced","Avanzado"
@@ -150,6 +159,16 @@
 "Natural", "Natural"
 "Jurídica", "Jurídica"
 
+"==================== 3.2.0 - Basic Checkout Checkout FLOW =====================","================================================"
+
+"Quiero pagar con Mercado Pago sin costo Adicional.", "Quiero pagar con Mercado Pago sin costo Adicional."
+"Usa el medio de pago que prefieras","Usa el medio de pago que prefieras"
+"Tarjetas de crédito","Tarjetas de crédito"
+"Hasta","Hasta"
+"cuotas","cuotas"
+"Tarjetas de débito","Tarjetas de débito"
+"Pagos en efectivo","Pagos en efectivo"
+"Te llevamos a nuestro sitio para completar el pago","Te llevamos a nuestro sitio para completar el pago"
 
 "==================== DISCOUNT FLOW =====================","================================================"
 
@@ -414,4 +433,5 @@
 "Doesn't find a campaign to amount given", "No se ha encontrado una campaña que coicida con el monto de la orden"
 "Amount discount is invalid", "El monto de descuento no es válido"
 "We could not process your payment in this moment. Please retry later", "No se pudo procesar su pago. Por favor inténtelo más tarde"
-"Error to process in payment gateway. Please contact the administrator.", "Error al procesar en la gateway de pago. Por favor, póngase en contacto con el administrador."
+"Processing error in the payment gateway. Please contact the administrator.", "Error de procesamiento en la pasarela de pago. Por favor, póngase en contacto con el administrador."
+"Error on process of payment data. Please contact the administrator.", "Error al procesar los datos de pago."

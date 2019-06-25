@@ -8,9 +8,7 @@ use Magento\Customer\Model\Session as customerSession;
 use Magento\Framework\Api\AttributeValueFactory;
 use Magento\Framework\Api\ExtensionAttributesFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Model\Context;
-use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Phrase;
 use Magento\Framework\Registry;
 use Magento\Framework\UrlInterface;
@@ -50,8 +48,6 @@ class Basic extends AbstractMethod
         AttributeValueFactory $customAttributeFactory,
         Data $paymentData,
         Logger $logger,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         parent::__construct(
@@ -62,8 +58,8 @@ class Basic extends AbstractMethod
             $paymentData,
             $scopeConfig,
             $logger,
-            $resource,
-            $resourceCollection,
+            null,
+            null,
             $data
         );
         $this->_orderFactory = $orderFactory;
@@ -355,13 +351,16 @@ class Basic extends AbstractMethod
      */
     protected function getSponsorId($config)
     {
-        $this->_helperData->log("Sponsor_id", 'mercadopago-basic.log', $config['sponsor_id']);
-        if (!empty($sponsor_id)) {
-            $this->_helperData->log("Sponsor_id identificado", 'mercadopago-standard.log', $sponsor_id);
-            return (int)$sponsor_id;
-        }
+      
+      $sponsor_id = $config['sponsor_id'];
 
-        return  null;
+      $this->_helperData->log("Sponsor_id", 'mercadopago-basic.log', $sponsor_id);
+      if (!empty($sponsor_id)) {
+        $this->_helperData->log("Sponsor_id identificado", 'mercadopago-basic.log', $sponsor_id);
+        return (int)$sponsor_id;
+      }
+
+      return  null;
     }
 
     /**
@@ -446,14 +445,14 @@ class Basic extends AbstractMethod
                 $arr['auto_return'] = "approved";
             }
 
-            if ($sponsorId = $this->getSponsorId($config)) {
-                $arr['sponsor_id'] = "approved";
+            if (!is_null($this->getSponsorId($config))) {
+                $arr['sponsor_id'] = $this->getSponsorId($config);
             }
 
             $siteId = strtoupper($config['country']);
             if ($siteId == 'MLC' || $siteId == 'MCO') {
                 foreach ($arr['items'] as $key => $item) {
-                    $arr['items'][$key]['unit_price'] = (int)$item['unit_price'];
+                    $arr['items'][$key]['unit_price'] = (int) $item['unit_price'];
                 }
             }
 

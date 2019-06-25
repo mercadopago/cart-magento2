@@ -37,17 +37,13 @@
       <mercadopago_basic>
         <active>1</active>
         <model>MercadoPago\Core\Model\Basic\Payment</model>
-        <title translate="label">Basic Checkout - Mercado Pago</title>
+        <title translate="label">Quiero pagar con Mercado Pago sin costo Adicional.</title>
         <order_status>pending</order_status>
         <max_installments>12</max_installments>
         <auto_return>1</auto_return>
-        <banner_checkout>http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg</banner_checkout>
-        <type_checkout>redirect</type_checkout>
-        <sandbox_mode>1</sandbox_mode>
         <binary_mode>0</binary_mode>
         <sort_order>-3</sort_order>
         <payment_action>authorize</payment_action>
-        <coupon_mercadopago>0</coupon_mercadopago>
       </mercadopago_basic>
       <mercadopago>
         <order_status_approved>processing</order_status_approved>

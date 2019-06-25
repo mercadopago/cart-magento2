@@ -57,6 +57,15 @@
 "Redirect Payer","Redirecionar Comprador"
 "By enabling this option the buyer will be automatically redirected to the payment page of the bank, it will not go through an intermediate page of your store.","Ao habilitar essa opção o comprador será redirecionado automaticamente para a pagina de pagamento do banco, ele não irá passar por uma pagina intermedia da sua loja."
 
+"==================== v3.2.0 Basic Checkout PAGE =====================","================================================"
+"Basic Checkout","Checkout Básico - Redirecionado"
+"Auto Return","Redirecionamento Automático"
+"Redirect buyer automatically to your store when payment is approved.","Redireciona o comprador automaticamente para a sua loja quando o pagamento é aprovado."
+"Max Installments","Numero máximo de parcelas aceitas"
+"Maximum number of installments accept the payment flow.","Numero máximo de parcelas aceitas no fluxo de pagamento."
+"Expiration Time Preference","Tempo de Expiração do link do checkout"
+"Time in days to expiration preference.","Quantidade de dias para expirar o link do checkout."
+
 "==================== ADVANCED CONFIGURATION PAGE =====================","================================================"
 "Advanced","Avançado"
 "Store Settings","Configurações da Loja"
@@ -155,6 +164,17 @@
 "Natural", "Pessoa física"
 "Jurídica", "Pessoa jurídica"
 
+"==================== 3.2.0 - Basic Checkout Checkout FLOW =====================","================================================"
+
+"Quiero pagar con Mercado Pago sin costo Adicional.", "Quero pagar com Mercado Pago sem custo adicional."
+"Usa el medio de pago que prefieras","Use os meios de pagamento que você preferir"
+"Tarjetas de crédito","Cartões de Crédito"
+"Hasta","Em até"
+"cuotas","x"
+"Tarjetas de débito","Cartões de Débito"
+"Pagos en efectivo","Outros métodos de pagamento"
+"Te llevamos a nuestro sitio para completar el pago","Você será redirecionado para o site do Mercado Pago para concluir o pagamento"
+
 "==================== DISCOUNT FLOW =====================","================================================"
 
 "You will save <b>%1 %2</b> with discount from %3.","Você ira economizar <b>%1 %2</b> com desconto de %3."
@@ -176,7 +196,6 @@
 "Amount exceeded limit campaign", "A campanha já excedeu o limite de desconto."
 "Exceeded number of coupons", "A campanha já ultrapassou o limite do cupom de desconto."
 "payer_email should be an email", "Seu e-mail não pôde ser identificado, faça login na loja e tente novamente."
-
 
 "==================== SUCCESS PAGE =====================","================================================"
 

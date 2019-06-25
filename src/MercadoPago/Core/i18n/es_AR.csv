@@ -57,6 +57,15 @@
 "Redirect Payer","Redirigir Comprador"
 "By enabling this option the buyer will be automatically redirected to the payment page of the bank, it will not go through an intermediate page of your store.","Al habilitar esta opción el comprador será redirigido automáticamente a la página de pago del banco, no pasará por una página intermedia de su tienda."
 
+"==================== v3.2.0 Basic Checkout PAGE =====================","================================================"
+"Basic Checkout","Checkout Básico - Redireccionado"
+"Auto Return","Redireccionamiento automático"
+"Redirect buyer automatically to your store when payment is approved.","Redirecciona automáticamente el comprador a su tienda cuando se aprueba el pago."
+"Max Installments","Número máximo de cuotas aceptadas"
+"Maximum number of installments accept the payment flow.","Número máximo de cuotas aceptadas en el flujo de pago."
+"Expiration Time Preference","Tiempo de expiración del link del checkout"
+"Time in days to expiration preference.","Cantidad de días para expirar el link del checkout."
+
 "==================== ADVANCED CONFIGURATION PAGE =====================","================================================"
 "Advanced","Avanzado"
 "Store Settings","Configuración de tienda"
@@ -150,6 +159,16 @@
 "Natural", "Natural"
 "Jurídica", "Jurídica"
 
+"==================== 3.2.0 - Basic Checkout Checkout FLOW =====================","================================================"
+
+"Quiero pagar con Mercado Pago sin costo Adicional.", "Quiero pagar con Mercado Pago sin costo Adicional."
+"Usa el medio de pago que prefieras","Usa el medio de pago que prefieras"
+"Tarjetas de crédito","Tarjetas de crédito"
+"Hasta","Hasta"
+"cuotas","cuotas"
+"Tarjetas de débito","Tarjetas de débito"
+"Pagos en efectivo","Pagos en efectivo"
+"Te llevamos a nuestro sitio para completar el pago","Te llevamos a nuestro sitio para completar el pago"
 
 "==================== DISCOUNT FLOW =====================","================================================"
 

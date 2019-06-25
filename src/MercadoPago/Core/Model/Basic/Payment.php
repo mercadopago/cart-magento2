@@ -59,6 +59,7 @@ class Payment extends AbstractMethod
     protected $_canFetchTransactionInfo = true;
     protected $_canReviewPayment = true;
     protected $_infoBlockType = 'MercadoPago\Core\Block\Info';
+    protected $_isInitializeNeeded = true;
 
     /**
      * Payment constructor.
@@ -128,17 +129,11 @@ class Payment extends AbstractMethod
             $response = $this->_basic->makePreference();
             if ($response['status'] == 200 || $response['status'] == 201) {
                 $payment = $response['response'];
-                if ($this->_scopeConfig->getValue(ConfigData::PATH_BASIC_SANDBOX_MODE, ScopeInterface::SCOPE_STORE)) {
-                    $init_point = $payment['sandbox_init_point'];
-                } else {
-                    $init_point = $payment['init_point'];
-                }
+
+                $init_point = $payment['init_point'];
+              
                 $array_assign = [
                     "init_point" => $init_point,
-                    "type_checkout" => $this->getConfigData('type_checkout'),
-                    "iframe_width" => $this->getConfigData('iframe_width'),
-                    "iframe_height" => $this->getConfigData('iframe_height'),
-                    "banner_checkout" => $this->getConfigData('banner_checkout'),
                     "status" => 201
                 ];
                 $this->_helperData->log("Array preference ok", 'mercadopago-basic.log');
@@ -179,14 +174,6 @@ class Payment extends AbstractMethod
         }
         $paramsShipment['receiver_address'] = $this->getReceiverAddress($shippingAddress);
         return $paramsShipment;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getBannerCheckoutUrl()
-    {
-        return $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_BANNER, ScopeInterface::SCOPE_STORE);
     }
 
     /**
