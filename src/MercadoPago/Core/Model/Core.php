@@ -710,7 +710,7 @@ class Core
             $quote = $this->_getQuote();
         }
 
-        $total = $quote->getBaseSubtotalWithDiscount() + $quote->getShippingAddress()->getShippingAmount() + $quote->getShippingAddress()->getBaseTaxAmount();
+        $total = $quote->getBaseGrandTotal();
 
         return (float) $total;
 
