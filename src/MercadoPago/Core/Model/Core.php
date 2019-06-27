@@ -667,9 +667,9 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         if (!$quote) {
             $quote = $this->_getQuote();
         }
-
-        $total = $quote->getBaseSubtotalWithDiscount() + $quote->getShippingAddress()->getShippingAmount() + $quote->getShippingAddress()->getBaseTaxAmount();
-
+      
+        $total =  $quote->getBaseGrandTotal();
+      
         return (float) $total;
     }
 
