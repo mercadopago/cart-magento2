@@ -6,7 +6,7 @@ namespace MercadoPago\Core\Helper\Message;
  * @package MercadoPago\Core\Helper
  */
 class StatusDetailMessage
-    extends \MercadoPago\Core\Helper\Message\AbstractMessage
+    extends AbstractMessage
 {
     /**
      * Map error messages

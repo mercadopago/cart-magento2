@@ -9,19 +9,12 @@ namespace MercadoPago\Core\Model;
  *
  * @package MercadoPago\Core\Model
  */
-class Core
-    extends \Magento\Payment\Model\Method\AbstractMethod
+class Core extends \Magento\Payment\Model\Method\AbstractMethod
 {
     /**
      * @var string
      */
     protected $_code = 'mercadopago';
-
-    /**
-     * Define path of access token config
-     */
-    const XML_PATH_ACCESS_TOKEN = 'payment/mercadopago_custom/access_token';
-    const XML_PATH_PUBLIC_KEY = 'payment/mercadopago_custom/public_key';
 
     /**
      * {@inheritdoc}
@@ -194,8 +187,7 @@ class Core
         \Magento\Framework\UrlInterface $urlBuilder,
         \Magento\Catalog\Helper\Image $helperImage,
         \Magento\Checkout\Model\Session $checkoutSession
-    )
-    {
+    ) {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
         $this->_storeManager = $storeManager;
         $this->_coreHelper = $coreHelper;
@@ -242,6 +234,7 @@ class Core
      *
      * @return array
      */
+    // @REFACTOR
     public function getInfoPaymentByOrder($order_id)
     {
         $order = $this->_getOrder($order_id);
@@ -265,18 +258,18 @@ class Core
         foreach ($fields as $field) {
             if ($payment->getAdditionalInformation($field['field']) != "") {
                 $text = __($field['title'], $payment->getAdditionalInformation($field['field']));
-                $info_payments[$field['field']] = array(
+                $info_payments[$field['field']] = [
                     "text"  => $text,
                     "value" => $payment->getAdditionalInformation($field['field'])
-                );
+                ];
             }
         }
 
         if ($payment->getAdditionalInformation('payer_identification_type') != "") {
             $text = __($payment->getAdditionalInformation('payer_identification_type'));
-            $info_payments[$payment->getAdditionalInformation('payer_identification_type')] = array(
-                "text"  => $text. ': ' . $payment->getAdditionalInformation('payer_identification_number')
-            );
+            $info_payments[$payment->getAdditionalInformation('payer_identification_type')] = [
+                "text"  => $text . ': ' . $payment->getAdditionalInformation('payer_identification_number')
+            ];
         }
 
         return $info_payments;
@@ -295,7 +288,6 @@ class Core
         $status_verif = true;
         $status_final = "";
         foreach ($array_status as $status) {
-
             if ($status_final == "") {
                 $status_final = $status;
             } else {
@@ -328,10 +320,10 @@ class Core
         $status = $this->validStatusTwoPayments($status);
         $status_detail = $this->validStatusTwoPayments($status_detail);
 
-        $message = array(
+        $message = [
             "title"   => "",
             "message" => ""
-        );
+        ];
 
         $rawMessage = $this->_statusMessage->getMessage($status);
         $message['title'] = __($rawMessage['title']);
@@ -376,7 +368,7 @@ class Core
             $last_name = $order->getBillingAddress()->getLastname();
         }
 
-        return array('email' => $email, 'first_name' => $first_name, 'last_name' => $last_name);
+        return ['email' => $email, 'first_name' => $first_name, 'last_name' => $last_name];
     }
 
     /**
@@ -389,49 +381,33 @@ class Core
     protected function getItemsInfo($order)
     {
         $dataItems = [];
-        $siteId = strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
-      
         foreach ($order->getAllVisibleItems() as $item) {
             $product = $item->getProduct();
             $image = $this->_helperImage->init($product, 'image');
-
-            $unitPrice = (float) number_format($item->getPrice(), 2, '.', '');
-            //without decimal places in specific countrys
-            if($siteId == 'MLC' || $siteId == 'MCO'){
-              $unitPrice = (int) $unitPrice;
-            }
 
             $dataItems[] = [
                 "id"          => $item->getSku(),
                 "title"       => $product->getName(),
                 "description" => $product->getName(),
                 "picture_url" => $image->getUrl(),
-                "category_id" => $this->_scopeConfig->getValue('payment/mercadopago/category_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                "category_id" => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CATEGORY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                 "quantity"    => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
-                "unit_price"  => $unitPrice
+                "unit_price"  => (float)number_format($item->getPrice(), 2, '.', '')
             ];
         }
 
         /* verify discount and add it like an item */
         $discount = $this->getDiscount();
         if ($discount != 0) {
-          
-            $discount = (float)number_format($discount, 2, '.', '');
-            //without decimal places in specific countrys
-            if($siteId == 'MLC' || $siteId == 'MCO'){
-              $discount = (int) $discount;
-            }
-          
-            $dataItems[] = array(
+            $dataItems[] = [
                 "title"       => "Discount by the Store",
                 "description" => "Discount by the Store",
                 "quantity"    => 1,
-                "unit_price"  => $discount
-            );
+                "unit_price"  => (float)number_format($discount, 2, '.', '')
+            ];
         }
 
         return $dataItems;
-
     }
 
     /**
@@ -444,7 +420,7 @@ class Core
      */
     protected function getCouponInfo($coupon, $coupon_code)
     {
-        $infoCoupon = array();
+        $infoCoupon = [];
         $infoCoupon['coupon_amount'] = (float)$coupon['response']['coupon_amount'];
         $infoCoupon['coupon_code'] = $coupon_code;
         $infoCoupon['campaign_id'] = $coupon['response']['id'];
@@ -478,30 +454,22 @@ class Core
 
         $billing_address = $quote->getBillingAddress()->getData();
         $customerInfo = $this->getCustomerInfo($customer, $order);
-        $siteId = strtoupper($this->_scopeConfig->getValue('payment/mercadopago/country', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
-      
-        /* INIT PREFERENCE */
-        $preference = array();
 
+        /* INIT PREFERENCE */
+        $preference = [];
 
         // Check if notification URL contains localhost
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
-        if ( isset( $notification_url ) && ! strrpos( $notification_url, 'localhost' ) ) {	
-            $preference['notification_url'] = $notification_url;	
+        if (isset($notification_url) && ! strrpos($notification_url, 'localhost')) {
+            $preference['notification_url'] = $notification_url;
         }
 
-        $transactionAmount = (float) $this->getAmount();;
-        //without decimal places in specific countrys
-        if($siteId == 'MLC' || $siteId == 'MCO'){
-          $transactionAmount = (int) $transactionAmount;
-        }
-      
         $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
 
-        $preference['transaction_amount'] = $transactionAmount;
-        
+        $preference['transaction_amount'] = (float) $this->getAmount();
+
         $preference['external_reference'] = $order->getIncrementId();
-        
+
         $preference['payer']['email'] = $customerInfo['email'];
 
         if (!empty($paymentInfo['identification_type'])) {
@@ -513,31 +481,30 @@ class Core
         $preference['additional_info']['payer']['first_name'] = $customerInfo['first_name'];
         $preference['additional_info']['payer']['last_name'] = $customerInfo['last_name'];
 
-        $preference['additional_info']['payer']['address'] = array(
+        $preference['additional_info']['payer']['address'] = [
             "zip_code"      => $billing_address['postcode'],
             "street_name"   => $billing_address['street'] . " - " . $billing_address['city'] . " - " . $billing_address['country_id'],
             "street_number" => ''
-        );
+        ];
 
         $preference['additional_info']['payer']['registration_date'] = date('Y-m-d', $customer->getCreatedAtTimestamp()) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp());
 
         if ($order->canShip()) {
-
             $shipping = $order->getShippingAddress()->getData();
 
-            $preference['additional_info']['shipments']['receiver_address'] = array(
+            $preference['additional_info']['shipments']['receiver_address'] = [
                 "zip_code"      => $shipping['postcode'],
                 "street_name"   => $shipping['street'] . " - " . $shipping['city'] . " - " . $shipping['country_id'],
                 "street_number" => '',
                 "floor"         => "-",
                 "apartment"     => "-",
 
-            );
+            ];
 
-            $preference['additional_info']['payer']['phone'] = array(
+            $preference['additional_info']['payer']['phone'] = [
                 "area_code" => "0",
                 "number"    => $shipping['telephone']
-            );
+            ];
         }
 
         if (!empty($paymentInfo['coupon_code'])) {
@@ -551,7 +518,6 @@ class Core
             $preference['coupon_amount'] = $couponInfo['coupon_amount'];
             $preference['coupon_code'] = $couponInfo['coupon_code'];
             $preference['campaign_id'] = $couponInfo['campaign_id'];
-
         }
 
         $this->_coreHelper->log("==> makeDefaultPreferencePaymentV1 -> preference", 'mercadopago-standard.log', $preference);
@@ -560,7 +526,7 @@ class Core
 
         $sponsorId = $this->_scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $this->_coreHelper->log("Sponsor_id", 'mercadopago-standard.log', $sponsorId);
-        if (!empty($sponsorId) && strpos( $customerInfo['email'], "@testuser.com" ) === false) {
+        if (!empty($sponsorId) && strpos($customerInfo['email'], "@testuser.com") === false) {
             $this->_coreHelper->log("Sponsor_id identificado", 'mercadopago-custom.log', $sponsorId);
             $preference['sponsor_id'] = (int)$sponsorId;
         }
@@ -581,54 +547,48 @@ class Core
     {
         //get access_token
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
+
         $this->_coreHelper->log("Access Token for Post", 'mercadopago-custom.log', $this->_accessToken);
 
         //set sdk php mercadopago
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
+
         $response = $mp->post("/v1/payments", $preference);
-        
-        $this->_coreHelper->log("POST /v1/payments", 'mercadopago-custom.log', $response);
 
-        if ($response['status'] == 200 || $response['status'] == 201) {
-            return $response;
-        } else {
-            $e = "";
-            $exception = new \MercadoPago\Core\Model\Api\V1\Exception(new \Magento\Framework\Phrase($e), $this->_scopeConfig);
-            if (count($response['response']['cause']) > 0) {
-                foreach ($response['response']['cause'] as $error) {
-                    $e .= $exception->getUserMessage($error) . " ";
-                }
-            } else {
-                $e = $exception->getUserMessage();
-            }
-
-            $this->_coreHelper->log("erro post pago: " . $e, 'mercadopago-custom.log');
-            $this->_coreHelper->log("response post pago: ", 'mercadopago-custom.log', $response);
-
-            $exception->setPhrase(new \Magento\Framework\Phrase($e));
-            throw $exception;
-        }
+        return $response;
     }
 
     /**
-     * Return info of payment returned by MP api
+     * Get message error by response API
      *
-     * @param $payment_id
+     * @param $response
      *
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return string
      */
-    public function getPayment($payment_id)
+    public function getMessageError($response)
     {
-        if (!$this->_clientId || !$this->_clientSecret) {
-            $this->_clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            $this->_clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $errors = \MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS;
+
+        //set default error
+        $messageErrorToClient = $errors['NOT_IDENTIFIED'];
+
+        if (isset($response['response']) &&
+         isset($response['response']['cause']) &&
+         count($response['response']['cause']) > 0) {
+
+        // get first error
+            $cause = $response['response']['cause'][0];
+
+            if (isset($errors[$cause['code']])) {
+
+          //if exist get message error
+                $messageErrorToClient = $errors[$cause['code']];
+            }
         }
-        $mp = $this->_coreHelper->getApiInstance($this->_clientId, $this->_clientSecret);
-      
-        return $mp->get("/v1/payments/" . $payment_id);
+
+        return $messageErrorToClient;
     }
 
     /**
@@ -642,30 +602,12 @@ class Core
     public function getPaymentV1($payment_id)
     {
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
+
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
         return $mp->get("/v1/payments/" . $payment_id);
-    }
-
-    /**
-     * Return info of order returned by MP api
-     *
-     * @param $merchant_order_id
-     *
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function getMerchantOrder($merchant_order_id)
-    {
-        if (!$this->_clientId || !$this->_clientSecret) {
-            $this->_clientId = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            $this->_clientSecret = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        }
-        $mp = $this->_coreHelper->getApiInstance($this->_clientId, $this->_clientSecret);
-
-        return $mp->get("/merchant_orders/" . $merchant_order_id);
     }
 
     /**
@@ -675,7 +617,7 @@ class Core
     public function getPaymentMethods()
     {
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
@@ -683,6 +625,23 @@ class Core
         $payment_methods = $mp->get("/v1/payment_methods");
 
         return $payment_methods;
+    }
+  
+    /**
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getIdentificationTypes()
+    {
+        if (!$this->_accessToken) {
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        }
+
+        $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
+
+        $identificationTypes = $mp->get("/v1/identification_types");
+
+        return $identificationTypes;
     }
 
     /**
@@ -692,7 +651,6 @@ class Core
     {
         $customer = $this->_customerSession->getCustomer();
         $email = $customer->getEmail();
-
         if (empty($email)) {
             $quote = $this->_getQuote();
             $email = $quote->getBillingAddress()->getEmail();
@@ -709,46 +667,75 @@ class Core
         if (!$quote) {
             $quote = $this->_getQuote();
         }
-
-        $total = $quote->getBaseGrandTotal();
-
+      
+        $total =  $quote->getBaseGrandTotal();
+      
         return (float) $total;
-
     }
 
     /**
      * Check if an applied coupon is valid
      *
-     * @param $id
+     * @param $coupon_id
+     * @param $email
      *
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function validCoupon($id)
+    public function validCoupon($coupon_id, $email = null)
     {
-        if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(self::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        }
+        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         $transaction_amount = $this->getAmount();
         $payer_email = $this->getEmailCustomer();
-        $coupon_code = $id;
+        $coupon_code = $coupon_id;
 
-        $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
+        if ($payer_email == "") {
+            $payer_email = $email;
+        }
+
+        $mp = $this->_coreHelper->getApiInstance($accessToken);
 
         $details_discount = $mp->check_discount_campaigns($transaction_amount, $payer_email, $coupon_code);
 
         //add value on return api discount
         $details_discount['response']['transaction_amount'] = $transaction_amount;
-        $details_discount['response']['params'] = array(
-            "transaction_amount" => $transaction_amount,
-            "payer_email"        => $payer_email,
-            "coupon_code"        => $coupon_code
-        );
-
+        $details_discount['response']['params'] = [
+        "transaction_amount" => $transaction_amount,
+        "payer_email"        => $payer_email,
+        "coupon_code"        => $coupon_code
+      ];
 
         return $details_discount;
     }
 
+    /**
+     * Return info of order returned by MP api
+     *
+     * @param $merchant_order_id
+     *
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getMerchantOrder($merchant_order_id)
+    {
+        if (!$this->_accessToken) {
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        }
+        $this->_coreHelper->log("Access Token for Post", 'mercadopago-basic.log', $this->_accessToken);
+        $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
+        return $mp->get("/merchant_orders/" . $merchant_order_id);
+    }
+
+    public function getPayment($payment_id)
+    {
+        if (!$this->_accessToken) {
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        }
+        $this->_coreHelper->log("Access Token for Post", 'mercadopago-basic.log', $this->_accessToken);
+        $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
+
+        return $mp->get("/v1/payments/" . $payment_id);
+    }
 }

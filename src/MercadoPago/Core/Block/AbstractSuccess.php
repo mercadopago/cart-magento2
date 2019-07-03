@@ -24,6 +24,11 @@ class AbstractSuccess
      * @var \Magento\Checkout\Model\Session
      */
     protected $_checkoutSession;
+  
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $_scopeConfig;
 
 
     /**
@@ -31,6 +36,7 @@ class AbstractSuccess
      * @param \MercadoPago\Core\Model\CoreFactory              $coreFactory
      * @param \Magento\Sales\Model\OrderFactory                $orderFactory
      * @param \Magento\Checkout\Model\Session                  $checkoutSession
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface   $scopeConfig
      * @param array                                            $data
      */
     public function __construct(
@@ -38,12 +44,14 @@ class AbstractSuccess
         \MercadoPago\Core\Model\CoreFactory $coreFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         array $data = []
     )
     {
         $this->_coreFactory = $coreFactory;
         $this->_orderFactory = $orderFactory;
         $this->_checkoutSession = $checkoutSession;
+        $this->_scopeConfig = $scopeConfig;
         parent::__construct(
             $context,
             $data
@@ -122,17 +130,19 @@ class AbstractSuccess
     /**
      * Return a message to show in success page
      *
-     * @param string  $status
-     * @param string  $status_detail
-     * @param string  $payment_method
-     * @param float   $amount
-     * @param integer $installment
+     * @param object  $payment
      *
      * @return string
      */
-    public function getMessageByStatus($status, $status_detail, $payment_method, $amount, $installment)
+    public function getMessageByStatus($payment)
     {
-        return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $amount, $installment);
+      $status = $payment['status'] != "" ? $payment['status'] : '';
+      $status_detail = $payment['status_detail'] != "" ? $payment['status_detail'] : '';
+      $payment_method = $payment['payment_method_id'] != "" ? $payment['payment_method_id'] : '';
+      $amount = $payment['transaction_amount'] != "" ? $payment['transaction_amount'] : '';
+      $installments = $payment['installments'] != "" ? $payment['installments'] : '';
+
+      return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $installments, $amount);
     }
 
     /**

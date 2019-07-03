@@ -6,84 +6,83 @@ namespace MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset;
 class Payment
     extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
-
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+  
+    /**
+     *
+     * @var \Magento\Config\Model\ResourceModel\Config
+     */
+    protected $configResource;
+  
+    /**
+     *
+     * @var \Magento\Backend\Block\Store\Switcher 
+     */
+    protected $switcher;
+  
     /**
      * @param \Magento\Backend\Block\Context      $context
      * @param \Magento\Backend\Model\Auth\Session $authSession
      * @param \Magento\Framework\View\Helper\Js   $jsHelper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface   $scopeConfig
+     * @param \Magento\Config\Model\ResourceModel\Config           $configResource
+     * @param \Magento\Backend\Block\Store\Switcher                $switcher
      * @param array                               $data
      */
     public function __construct(
         \Magento\Backend\Block\Context $context,
         \Magento\Backend\Model\Auth\Session $authSession,
         \Magento\Framework\View\Helper\Js $jsHelper,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Config\Model\ResourceModel\Config $configResource,
+        \Magento\Backend\Block\Store\Switcher $switcher,
         array $data = []
     )
     {
         parent::__construct($context, $authSession, $jsHelper, $data);
+        $this->scopeConfig = $scopeConfig;
+        $this->configResource = $configResource;
+        $this->switcher = $switcher;
     }
 
     /**
-     * Add custom css class
-     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
      */
-    protected function _getFrontendClass($element)
-    {
-        return parent::_getFrontendClass($element) . ' with-button';
+    public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element){
+      //get id element
+      $id = $element->getId();
+      
+      //check is bank transfer
+      if(strpos($id, 'custom_checkout_bank_transfer') !== false){
+        
+        //get country (Site id for Mercado Pago)
+        $siteId = strtoupper($this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+         
+        //hide payment method if not Chile or Colombia
+        if($siteId != "MLC" && $siteId != "MCO"){
+          
+          //get is active 
+          $statusPaymentMethod = $this->scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+          //check is active for disable
+          if($statusPaymentMethod){
+            $path = \MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE;
+            $value = 0;
+
+            if ($this->switcher->getWebsiteId() == 0) {
+              $this->configResource->saveConfig($path, $value, 'default', 0);
+            } else {
+              $this->configResource->saveConfig($path, $value, 'websites', $this->switcher->getWebsiteId());
+            }
+          }
+          return "";
+        }
+      }
+      
+      return parent::render($element);
     }
-
-    /**
-     * Return header title part of html for payment solution
-     *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
-     *
-     * @return string
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     */
-    protected function _getHeaderTitleHtml($element)
-    {
-        $html = '<div class="config-heading meli" ><div class="heading"><strong id="meli-logo">' . $element->getLegend();
-        $html .= '</strong></div>';
-
-        $html .= '<div class="button-container meli-cards"><button type="button"'
-            . ' class="meli-payment-btn action-configure button'
-            . '" id="' . $element->getHtmlId()
-            . '-head" onclick="Fieldset.toggleCollapse(\'' . $element->getHtmlId() . '\', \''
-            . $this->getUrl('*/*/state') . '\'); return false;"><span class="state-closed">'
-            . __('Configure') . '</span><span class="state-opened">'
-            . __('Close') . '</span></button></div></div>';
-
-        return $html;
-    }
-
-
-    /**
-     * Return header comment part of html for payment solution
-     *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
-     *
-     * @return string
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    protected function _getHeaderCommentHtml($element)
-    {
-        return '';
-    }
-
-    /**
-     * Get collapsed state on-load
-     *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
-     *
-     * @return false
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    protected function _isCollapseState($element)
-    {
-        return false;
-    }
-
 }

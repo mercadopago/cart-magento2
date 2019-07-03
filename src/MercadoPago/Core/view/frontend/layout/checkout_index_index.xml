@@ -23,13 +23,16 @@
                                                                 <item name="mercadopago-payments" xsi:type="array">
                                                                     <item name="component" xsi:type="string">MercadoPago_Core/js/view/mercadopago-payments</item>
                                                                     <item name="methods" xsi:type="array">
-                                                                        <item name="mercadopago_standard" xsi:type="array">
+                                                                        <item name="mercadopago_basic" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
                                                                         <item name="mercadopago_custom" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
                                                                         <item name="mercadopago_customticket" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
+                                                                        </item>
+                                                                        <item name="mercadopago_custom_bank_transfer" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
                                                                     </item>
@@ -54,7 +57,7 @@
                                                             <item name="sortOrder" xsi:type="string">50</item>
                                                             <item name="config" xsi:type="array">
                                                                 <item name="template" xsi:type="string">MercadoPago_Core/checkout/cart/totals/discount_coupon</item>
-                                                                <item name="title" xsi:type="string" translate="true">Discount Mercado Pago</item>
+                                                                <item name="title" xsi:type="string" translate="true">Coupon discount of the Mercado Pago</item>
                                                             </item>
                                                         </item>
 

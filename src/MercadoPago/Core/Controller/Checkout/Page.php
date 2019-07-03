@@ -2,13 +2,22 @@
 
 namespace MercadoPago\Core\Controller\Checkout;
 
+use Exception;
+use Psr\Log\LoggerInterface;
+use Magento\Framework\App\Action\Context;
+use Magento\Checkout\Model\Session;
+use Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Catalog\Model\Session as CatalogSession;
 use MercadoPago\Core\Model\Core;
-
+use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Data;
+use Magento\Store\Model\ScopeInterface;
 
 /**
- * Class Success
- *
- * @package MercadoPago\Core\Controller\Success
+ * Class Page
+ * @package MercadoPago\Core\Controller\Checkout
  */
 class Page
     extends \Magento\Framework\App\Action\Action
@@ -43,6 +52,9 @@ class Page
      */
     protected $_helperData;
 
+    /**
+     * @var Core
+     */
     protected $_core;
 
     /**
@@ -51,32 +63,36 @@ class Page
     protected $_catalogSession;
 
     /**
+     * @var
+     */
+    protected $_configData;
+
+
+    /**
      * Page constructor.
-     *
-     * @param Core                                                $core
-     * @param \Magento\Framework\App\Action\Context               $context
-     * @param \Magento\Checkout\Model\Session                     $checkoutSession
-     * @param \Magento\Sales\Model\OrderFactory                   $orderFactory
-     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
-     * @param \Psr\Log\LoggerInterface                            $logger
-     * @param \MercadoPago\Core\Helper\Data                       $helperData
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
-     * @param \MercadoPago\Core\Model\Core                        $core
+     * @param Context $context
+     * @param Session $checkoutSession
+     * @param OrderFactory $orderFactory
+     * @param OrderSender $orderSender
+     * @param LoggerInterface $logger
+     * @param Data $helperData
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Core $core
+     * @param CatalogSession $catalogSession
      */
 
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
-        \Psr\Log\LoggerInterface $logger,
-        \MercadoPago\Core\Helper\Data $helperData,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \MercadoPago\Core\Model\Core $core,
-        \Magento\Catalog\Model\Session $catalogSession
+        Context $context,
+        Session $checkoutSession,
+        OrderFactory $orderFactory,
+        OrderSender $orderSender,
+        LoggerInterface $logger,
+        Data $helperData,
+        ScopeConfigInterface $scopeConfig,
+        Core $core,
+        CatalogSession $catalogSession
     )
     {
-
         $this->_checkoutSession = $checkoutSession;
         $this->_orderFactory = $orderFactory;
         $this->_orderSender = $orderSender;
@@ -86,14 +102,12 @@ class Page
         $this->_core = $core;
         $this->_catalogSession = $catalogSession;
 
-        parent::__construct(
-            $context
-        );
+        parent::__construct($context);
 
     }
 
     /**
-     * @return \Magento\Sales\Model\Order
+     * @return mixed
      */
     protected function _getOrder()
     {
@@ -108,38 +122,37 @@ class Page
      */
     public function execute()
     {
-        if (!$this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_USE_SUCCESSPAGE_MP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)){
+        try{
+            if (!$this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SUCCESS_PAGE, ScopeInterface::SCOPE_STORE)){
+                $order = $this->_getOrder();
+                $payment = $order->getPayment();
+                $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
+                $status = null;
 
-            $order = $this->_getOrder();
-            $infoPayment = $this->_core->getInfoPaymentByOrder($order->getIncrementId());
-            $status = null;
+                //checkout Custom Credit Card
+                if (isset($paymentResponse['status'])) {
+                    $status = $paymentResponse['status'];
+                    //$detail = $infoPayment['status_detail']['value'];
+                }
 
-            //checkout Custom Credit Card
-            if (!empty($infoPayment['status']['value'])) {
-                $status = $infoPayment['status']['value'];
-                //$detail = $infoPayment['status_detail']['value'];
-            }
+                //checkout redirect
+                if ($status == 'approved' || $status == 'pending'){
+                    $this->_redirect('checkout/onepage/success');
+                } else {
+                    $this->_redirect('checkout/onepage/failure/');
+                }
 
-            //checkout redirect
-            if ($status == 'approved' || $status == 'pending'){
-                $this->_redirect('checkout/onepage/success');
             } else {
-                $this->_redirect('checkout/onepage/failure/');
+                //set data for mp analytics
+                $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
+                $checkoutTypeHandle = $this->getCheckoutHandle();
+                $this->_view->loadLayout(['default', $checkoutTypeHandle]);
+                $this->_eventManager->dispatch('checkout_onepage_controller_success_action',['order_ids' => [$this->_getOrder()->getId()]]);
+                $this->_view->renderLayout();
             }
-
-        } else {
-            //set data for mp analytics
-            $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
-
-            $checkoutTypeHandle = $this->getCheckoutHandle();
-            $this->_view->loadLayout(['default', $checkoutTypeHandle]);
-            $this->_eventManager->dispatch(
-                'checkout_onepage_controller_success_action',
-                ['order_ids' => [$this->_getOrder()->getId()]]
-            );
-            $this->_view->renderLayout();
+        }catch (Exception $e){
+            $this->_helperData->log('Error: ' . $e->getMessage(), 'mercadopago.log');
         }
-
     }
 
     /**

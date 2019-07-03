@@ -243,6 +243,7 @@ class Payment
         $this->_orderFactory = $orderFactory;
         $this->_urlBuilder = $urlBuilder;
         $this->_request = $request;
+        $this->_scopeConfig = $scopeConfig;
 
     }
 
@@ -254,84 +255,7 @@ class Payment
         return '';
     }
 
-    /**
-     * Creates payment
-     *
-     * @param string $paymentAction
-     * @param object $stateObject
-     *
-     * @return bool
-     * @throws \Exception
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function initialize($paymentAction, $stateObject)
-    {
-
-        if ($this->getInfoInstance()->getAdditionalInformation('token') == "") {
-            throw new \Exception(__('Verify the form data or wait until the validation of the payment data'));
-        }
-        try {
-
-            $infoInstance = $this->getInfoInstance();
-
-            $response = $this->preparePostPayment();
-
-            if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
-                $payment = $response['response'];
-
-                if(isset($payment['id'])){
-                    $infoInstance->setAdditionalInformation('payment_id_detail', $payment['id']);
-                }
-
-                if(isset($payment['payer']['identification']['type'])){
-                    $infoInstance->setAdditionalInformation('payer_identification_type', $payment['payer']['identification']['type']);
-                }
-                if(isset($payment['payer']['identification']['number'])){
-                    $infoInstance->setAdditionalInformation('payer_identification_number', $payment['payer']['identification']['number']);
-                }
-
-                if(isset($response['response']['status'])){
-                    $this->getInfoInstance()->setAdditionalInformation('status', $response['response']['status']);
-                }
-
-                if(isset($response['response']['status_detail'])){
-                    $this->getInfoInstance()->setAdditionalInformation('status_detail', $response['response']['status_detail']);
-                }
-                
-                return true;
-            }else{
-
-                if(isset($response['response']) && isset($response['response']['message'])){
-                    throw new \Magento\Framework\Exception\LocalizedException(__($response['response']['message']));
-                }else{
-                    throw new \Magento\Framework\Exception\LocalizedException(__('An error occurred when creating the payment.'));
-                }
-                
-                return $this;
-            }
-
-        } catch (\Exception $e) {
-            $this->_helperData->log("Serious error when creating payment: " . $e->getMessage(), self::LOG_NAME);
-
-            throw new \Magento\Framework\Exception\LocalizedException(__('There was an internal error when creating the payment.'));
-
-            return $this;
-        }
-    }
-
-    /**
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function validate()
-    {
-        \Magento\Payment\Model\Method\AbstractMethod::validate();
-
-        return $this;
-    }
-
-    /**
+   /**
      * Assign corresponding data
      *
      * @param \Magento\Framework\DataObject|mixed $data
@@ -341,8 +265,6 @@ class Payment
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
-        $this->_helperData->log("assigData", self::LOG_NAME);
-
         // route /checkout/onepage/savePayment
         if (!($data instanceof \Magento\Framework\DataObject)) {
             $data = new \Magento\Framework\DataObject($data);
@@ -354,7 +276,7 @@ class Payment
           $infoForm = $infoForm['additional_data'];
         }
         
-        $this->_helperData->log("assigData: ". json_encode($infoForm), self::LOG_NAME);
+        $this->_helperData->log("CustomPayment::assignData - ". json_encode($infoForm), self::LOG_NAME);
 
         //$infoForm = $infoForm['mercadopago_custom'];
         if (isset($infoForm['one_click_pay']) && $infoForm['one_click_pay'] == 1) {
@@ -362,11 +284,8 @@ class Payment
         }
 
         if (empty($infoForm['token'])) {
-            $e = "";
-            $exception = new \MercadoPago\Core\Model\Api\V1\Exception(new \Magento\Framework\Phrase($e), $this->_scopeConfig);
-            $e = $exception->getUserMessage();
-            $exception->setPhrase(new \Magento\Framework\Phrase($e));
-            throw $exception;
+          $this->_helperData->log("CustomPayment::assignData - Token for payment creation was not generated, therefore it is not possible to continue the transaction");
+          throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['TOKEN_EMPTY']));
         }
 
         $this->_helperData->log("info form", self::LOG_NAME, $infoForm);
@@ -381,19 +300,33 @@ class Payment
 
         return $this;
     }
-
+  
     /**
-     * Fill preference with patment data
+     * Creates payment
      *
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \MercadoPago\Core\Model\Api\V1\Exception
+     * @param string $paymentAction
+     * @param object $stateObject
+     *
+     * @return bool
+     * @throws \Exception
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function preparePostPayment($usingSecondCardInfo = null)
+    public function initialize($paymentAction, $stateObject)
     {
-
-        $this->_helperData->log("Credit Card -> init prepare post payment", self::LOG_NAME);
-
+//       throw new ValidatorException("HEREEEEEE......");
+//       throw new \Exception("teste");
+      
+      if ($this->getInfoInstance()->getAdditionalInformation('token') == "") {
+        $this->_helperData->log("CustomPayment::initialize - Token for payment creation was not generated, therefore it is not possible to continue the transaction");
+        throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['TOKEN_EMPTY']));
+        return $this;
+      }
+      
+      try {
+        $this->_helperData->log("CustomPayment::initialize - Credit Card: init prepare post payment", self::LOG_NAME);
+        
+        $infoInstance = $this->getInfoInstance();
         $quote = $this->_getQuote();
         $order = $this->getInfoInstance()->getOrder();
         $payment = $order->getPayment();
@@ -401,11 +334,10 @@ class Payment
 
         $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($paymentInfo, $quote, $order);
         $preference['installments'] = (int) $payment->getAdditionalInformation("installments");
-        
         $paymentMethod = $payment->getAdditionalInformation("payment_method_id");
         if($paymentMethod == ""){
-            // MLM: does not have payment method guessing
-            $paymentMethod = $payment->getAdditionalInformation("payment_method_selector");
+          // MLM: does not have payment method guessing
+          $paymentMethod = $payment->getAdditionalInformation("payment_method_selector");
         }
 
         $preference['payment_method_id'] = $paymentMethod;
@@ -413,41 +345,74 @@ class Payment
         $preference['metadata']['token'] = $payment->getAdditionalInformation("token");
 
         if($payment->getAdditionalInformation("issuer_id") != "" && $payment->getAdditionalInformation("issuer_id") > -1){
-            $preference['issuer_id'] = (int)$payment->getAdditionalInformation("issuer_id");
+          $preference['issuer_id'] = (int)$payment->getAdditionalInformation("issuer_id");
         }
-        
-        $this->_helperData->log("Credit Card ----> here", self::LOG_NAME, $preference);
 
         if(isset($preference['payer']) && isset($preference['payer']['email'])){
-            
-            $this->_accessToken = $this->_scopeConfig->getValue('payment/mercadopago_custom/access_token', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
-            $mp = $this->_helperData->getApiInstance($this->_accessToken);
-            $customer = $mp->get_or_create_customer($preference['payer']['email']);
+          $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+          $mp = $this->_helperData->getApiInstance($this->_accessToken);
+          $customer = $mp->get_or_create_customer($preference['payer']['email']);
 
-            if($payment->getAdditionalInformation("one_click_pay") == 'true'){
-                $preference['payer']['id'] = $customer['id'];
-            }
+          if($payment->getAdditionalInformation("one_click_pay") == 'true' && isset($customer['id'])){
+            $preference['payer']['id'] = $customer['id'];
+          }
 
-            //add customer in metadata
-            if(isset($customer['status']) && ($customer['status'] == 200 || $customer['status'] == 201)){
-                $preference['metadata']['customer_id'] = $customer['id'];
-            }
+          //add customer in metadata
+          if(isset($customer['id'])){
+            $preference['metadata']['customer_id'] = $customer['id'];
+          }
         }
 
-        $this->_helperData->log("Credit Card -> Preferences ---->", self::LOG_NAME, $preference);
+        $preference['binary_mode'] = $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BINARY_MODE);
+        $preference['statement_descriptor'] = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_STATEMENT_DESCRIPTOR);
 
-        $preference['binary_mode'] = $this->_scopeConfig->isSetFlag('payment/mercadopago_custom/binary_mode');
-        $preference['statement_descriptor'] = $this->_scopeConfig->getValue('payment/mercadopago_custom/statement_descriptor');
+        $this->_helperData->log("CustomPayment::initialize - Credit Card: Preference to POST /v1/payments", self::LOG_NAME, $preference);
+      } catch (\Exception $e) {
+        $this->_helperData->log("CustomPayment::initialize - There was an error retrieving the information to create the payment, more details: " . $e->getMessage());
+        throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
+        return $this;
+      }
+      
+      // POST /v1/payments 
+      $response = $this->_coreModel->postPaymentV1($preference);
+      $this->_helperData->log("POST /v1/payments RESPONSE", self::LOG_NAME, $response);
 
-        $this->_helperData->log("Credit Card -> PREFERENCE to POST /v1/payments", self::LOG_NAME, $preference);
+      if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
 
-        /* POST /v1/payments */
-        $response = $this->_coreModel->postPaymentV1($preference);
+        $payment = $response['response'];
 
-        return $response;
+        $infoInstance->setAdditionalInformation("paymentResponse", $payment);
+        
+        return true;
+        
+      }else{
+
+        $messageErrorToClient = $this->_coreModel->getMessageError($response);
+
+        $arrayLog = array(
+          "response" => $response,
+          "message" => $messageErrorToClient
+        );
+
+        $this->_helperData->log("CustomPayment::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
+        
+        throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
+
+        return $this;
+      }
     }
 
+    /**
+     * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function validate()
+    {
+        \Magento\Payment\Model\Method\AbstractMethod::validate();
+
+        return $this;
+    }
 
     /**
      * Retrieves quote
@@ -492,25 +457,40 @@ class Payment
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
-        $parent = parent::isAvailable($quote);
-        if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        }
-        if (!$this->_publicKey) {
-            $this->_publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        }
-        $custom = (!empty($this->_publicKey) && !empty($this->_accessToken));
-        if (!$parent || !$custom) {
-            return false;
-        }
+      
+      $parent = parent::isAvailable($quote);     
+      $status = true;
 
-        $debugMode = $this->_scopeConfig->getValue('payment/mercadopago/debug_mode', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        $secure = $this->_request->isSecure();
-        if (!$secure && !$debugMode) {
-            return false;
-        }
+      if(!$parent){
+        $this->_helperData->log("CustomPayment::isAvailable - Module not available due to magento rules.");
+        $status = false;
+      }
 
-        return $this->_helperData->isValidAccessToken($this->_accessToken);
+      $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+      if(empty($accessToken)){
+        $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token has not been configured.");
+        $status = false;
+      }
+      
+      $public_key = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+      if(empty($public_key)){
+        $this->_helperData->log("CustomPayment::isAvailable - Module not available because public_key has not been configured.");
+        $status = false;
+      }
+
+      if(!$this->_helperData->isValidAccessToken($accessToken)){
+        $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token is not valid.");
+        $status = false;
+      }
+      
+      $secure = $this->_request->isSecure();
+      if(strpos($accessToken, 'APP_USR') === TRUE && $secure === FALSE){
+        $this->_helperData->log("CustomPayment::isAvailable - Module not available because it has production credentials in non HTTPS environment.");
+        $status = false;
+      }
+
+      
+      return $status;
     }
 
     /**
@@ -552,9 +532,11 @@ class Payment
      * @return array|bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function checkAndcreateCard($customer, $token, $payment)
+    public function checkAndcreateCard($customer, $token, $payment) 
     {
-        $accessToken = $this->getConfigData('access_token');
+      
+        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
         $mp = $this->_helperData->getApiInstance($accessToken);
 
         foreach ($customer['cards'] as $card) {
@@ -603,7 +585,7 @@ class Payment
         }
         //get access_token
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\Data::XML_PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
         $mp = $this->_helperData->getApiInstance($this->_accessToken);

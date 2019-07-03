@@ -20,7 +20,7 @@ class StatusMessage
 
         "in_process" => [
             'title'   => 'We are processing the payment.',
-            'message' => 'In less than 2 business days we will tell you by e-mail if it is accredited or if we need more information.'
+            'message' => 'In less than an hour we will send you by e-mail the result.'
         ],
 
         "authorized" => [
@@ -30,7 +30,7 @@ class StatusMessage
 
         "pending" => [
             'title'   => 'We are processing the payment.',
-            'message' => 'In less than an hour we will send you by e-mail the result.'
+            'message' => ''
         ],
 
         "rejected" => [

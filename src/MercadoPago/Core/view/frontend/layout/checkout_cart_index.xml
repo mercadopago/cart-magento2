@@ -24,7 +24,7 @@
                                     <item name="sortOrder" xsi:type="string">20</item>
                                     <item name="config" xsi:type="array">
                                         <item name="template" xsi:type="string">MercadoPago_Core/checkout/cart/totals/discount_coupon</item>
-                                        <item name="title" xsi:type="string" translate="true">Discount Mercado Pago</item>
+                                        <item name="title" xsi:type="string" translate="true">Coupon discount of the Mercado Pago</item>
                                     </item>
                                 </item>
 
@@ -43,17 +43,5 @@
                 </argument>
             </arguments>
         </referenceBlock>
-
-        <referenceContainer name="checkout.cart.methods">
-            <block class="MercadoPago\Core\Block\Calculator\CalculatorLink"
-                   name="checkout.cart.calculator"
-                   template="MercadoPago_Core::calculator/calculatorLink.phtml"
-                   after="checkout.cart.methods.onepage.bottom">
-                    <block class="MercadoPago\Core\Block\Calculator\CalculatorForm"
-                           name="mercadopago.calculator.form"
-                           template="MercadoPago_Core::calculator/calculatorForm.phtml" />
-            </block>
-        </referenceContainer>
-
     </body>
 </page>

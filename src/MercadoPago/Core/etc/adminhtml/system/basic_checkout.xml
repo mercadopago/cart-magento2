@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+  <group id="basic_checkout" translate="label" type="text" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
+    <label>Basic Checkout</label>
+    <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Enabled</label>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/mercadopago_basic/active</config_path>
+    </field>
+    <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label>Payment Title</label>
+      <config_path>payment/mercadopago_basic/title</config_path>
+    </field>
+    <field id="auto_return" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Auto Return</label>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/mercadopago_basic/auto_return</config_path>
+      <comment>Redirect buyer automatically to your store when payment is approved.</comment>
+    </field>
+    <field id="excluded_payment_methods" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Exclude Payment Methods</label>
+      <source_model>MercadoPago\Core\Model\System\Config\Source\PaymentMethods\PaymentMethodsBasic</source_model>
+      <config_path>payment/mercadopago_basic/excluded_payment_methods</config_path>
+      <comment>Select the payment methods you do NOT want to accept.</comment>
+    </field>
+    <field id="max_installments" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Max Installments</label>
+      <config_path>payment/mercadopago_basic/max_installments</config_path>
+      <comment>Maximum number of installments accept the payment flow.</comment>
+    </field>
+    <field id="statement_desc" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Statement Descriptor</label>
+      <config_path>payment/mercadopago_basic/statement_desc</config_path>
+      <comment>Text that will identify the payment on the credit card invoice, this functionality is limited to some countries.</comment>
+    </field>
+    <field id="binary_mode" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Binary Mode</label>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/mercadopago_custom/binary_mode</config_path>
+      <comment>This functionality will mark the payment to approve or reject at the time it is created, there will be no intermediate status pending.</comment>
+    </field>
+    <field id="exp_time_pref" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+      <label>Expiration Time Preference</label>
+      <config_path>payment/mercadopago_basic/exp_time_pref</config_path>
+      <comment>Time in days to expiration preference.</comment>
+    </field>
+    <field id="sort_order" translate="label comment" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label>Checkout Position</label>
+      <frontend_class>validate-number</frontend_class>
+      <config_path>payment/mercadopago_basic/sort_order</config_path>
+      <comment>This setting will be the position in which the payment method will be available to the buyer.</comment>
+    </field>
+
+  </group>
+</include>
