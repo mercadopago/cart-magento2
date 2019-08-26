@@ -787,22 +787,23 @@
       * Show errors
       *
       */
-  
-      MPv1.showErrors = function(response){
-        var $form = MPv1.getForm();
-  
-        for(var x = 0; x < response.cause.length; x++){
-          var error = response.cause[x];
-          var $span = $form.querySelector('#mp-error-' + error.code);
-          var $input = $form.querySelector($span.getAttribute("data-main"));
-  
-          $span.style.display = 'inline-block';
-          $input.classList.add("mp-error-input");
-  
-        }
-  
-        return;
+
+  MPv1.showErrors = function (response) {
+    var $form = MPv1.getForm();
+
+    for (var x = 0; x < response.cause.length; x++) {
+      var error = response.cause[x];
+      var $span = $form.querySelector('#mp-error-' + error.code);
+      if ($span) {
+        var $input = $form.querySelector($span.getAttribute("data-main"));
+
+        $span.style.display = 'inline-block';
+        $input.classList.add("mp-error-input");
       }
+    }
+
+    return;
+  }
   
       MPv1.hideErrors = function(){
   
