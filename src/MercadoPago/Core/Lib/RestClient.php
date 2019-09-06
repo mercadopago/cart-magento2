@@ -16,6 +16,11 @@ class RestClient {
      *Product Id 
      */
     const PRODUCT_ID = "BC32CANTRPP001U8NHO0";
+    
+    /**
+     *Plataform Id 
+     */
+    const PLATAFORM_ID = "Magento2";
 
     /**
      * @param       $uri
@@ -43,6 +48,9 @@ class RestClient {
         //set x_product_id
         if($method == 'POST'){
           $header_opt[] = "x-product-id: " . self::PRODUCT_ID;
+          $header_opt[] = 'x-platform-id:' . self::PLATAFORM_ID;
+          $header_opt[] = 'x-integrator-id:' . self::$sponsor_id;              
+
         }
       
         if (count($extra_params) > 0) {
@@ -52,7 +60,8 @@ class RestClient {
         curl_setopt($connect, CURLOPT_HTTPHEADER, $header_opt);
 
         return $connect;
-    }
+    }   
+  
 
     /**
      * @param $connect
@@ -235,8 +244,12 @@ class RestClient {
     static $url_store = "";
     static $email_admin = "";
     static $country_initial = "";
+    static $sponsor_id = "";    
     static $check_loop = 0;
 
+    public static function setSponsorID($sponsor_id){
+        self::$sponsor_id = $sponsor_id; 
+    }
     public static function setModuleVersion($module_version){
         self::$module_version = $module_version; 
     }
@@ -257,7 +270,7 @@ class RestClient {
         $data = array(
             "code" => $code,
             "errors" => $errors, 
-            "module" => "Magento2",
+            "module" => self::PLATAFORM_ID,
             "module_version" => self::$module_version,
             "url_store" => self::$url_store,
             "email_admin" => self::$email_admin,
