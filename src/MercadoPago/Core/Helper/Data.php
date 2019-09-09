@@ -155,6 +155,7 @@ class Data
       \MercadoPago\Core\Lib\RestClient::setUrlStore($this->getUrlStore());
       \MercadoPago\Core\Lib\RestClient::setEmailAdmin($this->scopeConfig->getValue('trans_email/ident_sales/email', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
       \MercadoPago\Core\Lib\RestClient::setCountryInitial($this->getCountryInitial());
+      \MercadoPago\Core\Lib\RestClient::setSponsorID($this->scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
 
       //$api->set_so((string)$this->_moduleContext->getVersion()); //TODO tracking
 

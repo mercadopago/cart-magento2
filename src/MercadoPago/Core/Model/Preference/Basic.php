@@ -19,6 +19,7 @@ use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data as dataHelper;
+use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 use Exception;
 
 class Basic extends AbstractMethod
@@ -33,6 +34,9 @@ class Basic extends AbstractMethod
     protected $_helperImage;
     protected $_urlBuilder;
     protected $_scopeConfig;
+    protected $_coreHelper;
+    protected $_version;
+    protected $_productMetadata;
 
     public function __construct(
         OrderFactory $orderFactory,
@@ -47,7 +51,9 @@ class Basic extends AbstractMethod
         ExtensionAttributesFactory $extensionFactory,
         AttributeValueFactory $customAttributeFactory,
         Data $paymentData,
-        Logger $logger
+        Logger $logger,
+        Version $version,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata 
     ) {
         parent::__construct(
             $context,
@@ -68,6 +74,8 @@ class Basic extends AbstractMethod
         $this->_helperImage = $helperImage;
         $this->_urlBuilder = $urlBuilder;
         $this->_scopeConfig = $scopeConfig;
+        $this->_version = $version;
+        $this->_productMetaData = $productMetadata;
     }
 
     /**
@@ -443,10 +451,8 @@ class Basic extends AbstractMethod
             if ($config['auto_return'] == 1) {
                 $arr['auto_return'] = "approved";
             }
-
-            if (!is_null($this->getSponsorId($config))) {
-                $arr['sponsor_id'] = $this->getSponsorId($config);
-            }
+            
+            $sponsor_id = $this->getSponsorId($config);
 
             $siteId = strtoupper($config['country']);
             if ($siteId == 'MLC' || $siteId == 'MCO') {
@@ -462,6 +468,21 @@ class Basic extends AbstractMethod
                 $arr['expiration_date_to'] = date('Y-m-d\TH:i:s.000O',strtotime('+' . $config['expiration_time_preference'] . ' hours'));
             }
 
+            $test_mode = true;
+            if (!empty($sponsor_id) && strpos(payerInfo['email'], "@testuser.com") === false) {
+                $arr['sponsor_id'] = (int)$sponsor_id;
+                $test_mode = false;
+            }
+
+            $arr['metadata'] = array(
+                "platform" => "Magento",
+                "platform_version" => $this->_productMetaData->getVersion(),
+                "module_version" => $this->_version->afterLoad(),
+                "site" => $siteId,
+                "checkout" => "smart",
+                "sponsor_id" => $sponsor_id,
+                "test_mode" => $test_mode
+            );            
 
             if (!empty($config['statement_descriptor'])) {
                 $arr['statement_descriptor'] = $config['statement_descriptor'];

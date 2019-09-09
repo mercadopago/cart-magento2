@@ -65,6 +65,8 @@ class CustomConfigProvider implements ConfigProviderInterface {
 
     protected $_coreHelper;
 
+    protected $_productMetadata;
+  
     /**
      * @param PaymentHelper $paymentHelper
      */
