@@ -14,7 +14,7 @@ use Magento\Framework\View\LayoutFactory;
 class Data
     extends \Magento\Payment\Helper\Data
 {
-  
+
     /**
      *api platform openplatform
      */
@@ -64,10 +64,12 @@ class Data
     protected $_composerInformation;
 
 
-     /**
+    /**
      * @var \Magento\Framework\Module\ResourceInterface $moduleResource
      */
     protected $_moduleResource;
+
+    protected $_paymentMethods;
 
     /**
      * Data constructor.
@@ -100,7 +102,7 @@ class Data
 
     )
     {
-      
+
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
         $this->_mpLogger = $logger;
@@ -109,6 +111,22 @@ class Data
         $this->_switcher = $switcher;
         $this->_composerInformation = $composerInformation;
         $this->_moduleResource = $moduleResource;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPaymentMethods()
+    {
+        if($this->_paymentMethods){
+            return $this->_paymentMethods;
+        }
+
+        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $response = \MercadoPago\Core\Lib\RestClient::get("/v1/payment_methods?access_token=" . $accessToken);
+
+        $this->_paymentMethods = $response;
+        return $response;
     }
 
     /**
@@ -141,25 +159,24 @@ class Data
      * @return \MercadoPago\Core\Lib\Api
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getApiInstance($accessToken = null) { 
-      
-      if(is_null($accessToken)){
-        throw new \Magento\Framework\Exception\LocalizedException(__('The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));     
-      }
+    public function getApiInstance($accessToken = null) {
 
-      $api = new \MercadoPago\Core\Lib\Api($accessToken);
-      $api->set_platform(self::PLATFORM_OPENPLATFORM);
+        if(is_null($accessToken)){
+            throw new \Magento\Framework\Exception\LocalizedException(__('The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
+        }
 
-      $api->set_type(self::TYPE);
-      \MercadoPago\Core\Lib\RestClient::setModuleVersion((string) $this->getModuleVersion());
-      \MercadoPago\Core\Lib\RestClient::setUrlStore($this->getUrlStore());
-      \MercadoPago\Core\Lib\RestClient::setEmailAdmin($this->scopeConfig->getValue('trans_email/ident_sales/email', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
-      \MercadoPago\Core\Lib\RestClient::setCountryInitial($this->getCountryInitial());
-      \MercadoPago\Core\Lib\RestClient::setSponsorID($this->scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+        $api = new \MercadoPago\Core\Lib\Api($accessToken);
+        $api->set_platform(self::PLATFORM_OPENPLATFORM);
 
-      //$api->set_so((string)$this->_moduleContext->getVersion()); //TODO tracking
+        $api->set_type(self::TYPE);
+        \MercadoPago\Core\Lib\RestClient::setModuleVersion((string) $this->getModuleVersion());
+        \MercadoPago\Core\Lib\RestClient::setUrlStore($this->getUrlStore());
+        \MercadoPago\Core\Lib\RestClient::setEmailAdmin($this->scopeConfig->getValue('trans_email/ident_sales/email', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+        \MercadoPago\Core\Lib\RestClient::setCountryInitial($this->getCountryInitial());
 
-      return $api;
+        //$api->set_so((string)$this->_moduleContext->getVersion()); //TODO tracking
+
+        return $api;
 
     }
 
@@ -174,12 +191,11 @@ class Data
     public function isValidAccessToken($accessToken)
     {
         if(empty($accessToken)){
-          return false;
+            return false;
         }
-      
-        $mp = $this->getApiInstance($accessToken);
+
         try {
-            $response = $mp->get("/v1/payment_methods");
+            $response = $this->getPaymentMethods();
             if ($response['status'] == 401 || $response['status'] == 400) {
                 return false;
             }
@@ -200,14 +216,14 @@ class Data
      */
     public function isValidClientCredentials($clientId, $clientSecret)
     {
-      $mp = $this->getApiInstance($clientId, $clientSecret);
-      try {
-        $mp->get_access_token();
-      } catch (\Exception $e) {
-        return false;
-      }
+        $mp = $this->getApiInstance($clientId, $clientSecret);
+        try {
+            $mp->get_access_token();
+        } catch (\Exception $e) {
+            return false;
+        }
 
-      return true;
+        return true;
     }
 
     /**
@@ -242,7 +258,7 @@ class Data
     {
         $couponAmount = $this->_getMultiCardValue($data, 'coupon_amount');
         $transactionAmount = $this->_getMultiCardValue($data, 'transaction_amount');
-        
+
         if (isset($data['total_paid_amount'])) {
             $paidAmount = $this->_getMultiCardValue($data, 'total_paid_amount');
         } else {
@@ -285,18 +301,18 @@ class Data
         $this->log("setPayerInfo", 'mercadopago-custom.log', $payment);
 
         if ($payment['payment_method_id']) {
-            $payment["payment_method"] = $payment['payment_method_id'];	
+            $payment["payment_method"] = $payment['payment_method_id'];
         }
 
-        if ($payment['installments']) {	
-            $payment["installments"] = $payment['installments'];	
-        }	
-        if ($payment['id']) {	
-            $payment["payment_id_detail"] = $payment['id'];	
-        }	
-        if (isset($payment['trunc_card'])) {	
-            $payment["trunc_card"] = $payment['trunc_card'];	
-        }else if(isset($payment['card']) && isset($payment['card']['last_four_digits'])) {	
+        if ($payment['installments']) {
+            $payment["installments"] = $payment['installments'];
+        }
+        if ($payment['id']) {
+            $payment["payment_id_detail"] = $payment['id'];
+        }
+        if (isset($payment['trunc_card'])) {
+            $payment["trunc_card"] = $payment['trunc_card'];
+        }else if(isset($payment['card']) && isset($payment['card']['last_four_digits'])) {
             $payment["trunc_card"] = "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
         }
 
@@ -354,24 +370,22 @@ class Data
     public function getMercadoPagoPaymentMethods($accessToken)
     {
         try {
-            $mp = $this->getApiInstance($accessToken);
-            
-            $response = $mp->get("/v1/payment_methods");
+            $response = $this->getPaymentMethods();
             if ($response['status'] == 401 || $response['status'] == 400) {
                 return false;
             }
         } catch (\Exception $e) {
             return false;
         }
-        
+
         return $response['response'];
     }
 
     public function getCountryInitial(){
         try {
-            
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); 
-            $store = $objectManager->get('Magento\Framework\Locale\Resolver'); 
+
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $store = $objectManager->get('Magento\Framework\Locale\Resolver');
             $locale = $store->getLocale();
             $locale = explode("_", $locale);
             $locale = $locale[1];
@@ -389,7 +403,7 @@ class Data
         try {
 
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); //instance of\Magento\Framework\App\ObjectManager
-            $storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface'); 
+            $storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
             $currentStore = $storeManager->getStore();
             $baseUrl = $currentStore->getBaseUrl();
             return $baseUrl;
