@@ -24,8 +24,8 @@ use Exception;
 
 class Basic extends AbstractMethod
 {
-    const FAILURE_URL = 'mercadopago/basic/failure';
-    const NOTIFICATION_URL = 'mercadopago/notifications/basic';
+    const FAILURE_URL = 'mercadopago/Basic/Failure';
+    const NOTIFICATION_URL = 'mercadopago/Notifications/Basic';
 
     protected $_orderFactory;
     protected $_checkoutSession;
