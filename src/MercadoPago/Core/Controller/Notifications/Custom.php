@@ -12,38 +12,12 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
 
-if(interface_exists('\Magento\Framework\App\CsrfAwareActionInterface')) {
-    abstract class CustomBase extends Action implements \Magento\Framework\App\CsrfAwareActionInterface{
-
-        /**
-         * @param RequestInterface $request
-         * @return InvalidRequestException|null
-         */
-        public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
-        {
-            return null;
-        }
-
-        /**
-         * @param RequestInterface $request
-         * @return bool|null
-         */
-        public function validateForCsrf(RequestInterface $request): ?bool
-        {
-            return true;
-        }
-
-    }
-}else{
-    abstract class CustomBase extends Action{}
-}
-
 /**
  * Class Custom
  *
  * @package MercadoPago\Core\Controller\Notifications
  */
-class Custom extends CustomBase
+class Custom extends NotificationBase
 {
     const LOG_NAME = 'custom_notification';
 
