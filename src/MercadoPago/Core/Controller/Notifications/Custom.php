@@ -8,8 +8,6 @@ use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
-use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\Request\InvalidRequestException;
 
 
 /**
