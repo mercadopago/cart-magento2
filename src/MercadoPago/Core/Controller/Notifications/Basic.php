@@ -11,8 +11,39 @@ use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Model\Basic\Payment;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
 
-class Basic extends Action
+if (interface_exists('\Magento\Framework\App\CsrfAwareActionInterface')) {
+    abstract class BasicBase extends Action implements \Magento\Framework\App\CsrfAwareActionInterface
+    {
+
+        /**
+         * @param RequestInterface $request
+         * @return InvalidRequestException|null
+         */
+        public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+        {
+            return null;
+        }
+
+        /**
+         * @param RequestInterface $request
+         * @return bool|null
+         */
+        public function validateForCsrf(RequestInterface $request): ?bool
+        {
+            return true;
+        }
+
+    }
+} else {
+    abstract class BasicBase extends Action
+    {
+    }
+}
+
+class Basic extends BasicBase
 {
     const LOG_NAME = 'basic_notification';
 
