@@ -12,7 +12,7 @@ use MercadoPago\Core\Model\Basic\Payment;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
 
-class Basic extends Action
+class Basic extends NotificationBase
 {
     const LOG_NAME = 'basic_notification';
 
