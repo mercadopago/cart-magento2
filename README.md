@@ -1,6 +1,7 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/694b7584dbdf471f2e13/maintainability)](https://codeclimate.com/github/mercadopago/cart-magento2/maintainability)
+<p align="center"><a href="https://www.mercadopago.com/"><img src="https://raw.githubusercontent.com/mercadopago/cart-woocommerce/master/assets/images/mplogo.png" height="80" width="auto" alt="MercadoPago">
+</a></p>
 
-![Mercado Pago](https://raw.githubusercontent.com/mercadopago/cart-magento2/master/README.img/logo_mp.png)
+The Mercado Pago plugin for Magento 2 allows you to expand the functionalities of your online store and offer a unique payment experience for your customers.
 
 ## Documentation in English
 
