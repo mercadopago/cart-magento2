@@ -435,7 +435,12 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     protected function getCouponInfo($coupon, $coupon_code)
     {
         $infoCoupon = [];
-        $infoCoupon['coupon_amount'] = (float)$coupon['response']['coupon_amount'];
+        $amount = (float)$coupon['response']['coupon_amount'];
+        $site_id = strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+        if($site_id == "MCO" || $site_id == "MLC"){
+            $amount = round($amount);
+        }
+        $infoCoupon['coupon_amount'] = $amount;
         $infoCoupon['coupon_code'] = $coupon_code;
         $infoCoupon['campaign_id'] = $coupon['response']['id'];
         if ($coupon['status'] == 200) {
