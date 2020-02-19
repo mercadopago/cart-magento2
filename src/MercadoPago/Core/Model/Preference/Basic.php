@@ -469,7 +469,7 @@ class Basic extends AbstractMethod
             }
 
             $test_mode = true;
-            if (!empty($sponsor_id) && strpos(payerInfo['email'], "@testuser.com") === false) {
+            if (!empty($sponsor_id) && strpos($payerInfo['email'], "@testuser.com") === false) {
                 $arr['sponsor_id'] = (int)$sponsor_id;
                 $test_mode = false;
             }
