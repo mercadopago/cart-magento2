@@ -20,7 +20,7 @@ class StatusOrderMessage
         "in_mediation" => 'Automatic notification of the Mercado Pago: The payment is in the process of Dispute, check the graphic account of the Mercado Pago for more information.',
         "cancelled"    => 'Automatic notification of the Mercado Pago: The payment was cancelled.',
         "rejected"     => 'Automatic notification of the Mercado Pago: The payment was rejected.',
-        "chargeback"   => 'Automatic notification of the Mercado Pago: One chargeback was initiated for this payment.',
+        "charged_back"   => 'Automatic notification of the Mercado Pago: One chargeback was initiated for this payment.',
     ];
 
     /**

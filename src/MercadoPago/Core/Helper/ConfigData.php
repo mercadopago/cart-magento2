@@ -48,7 +48,7 @@ class ConfigData
   const PATH_ORDER_PENDING = 'payment/mercadopago/order_status_pending';
   const PATH_ORDER_REJECTED = 'payment/mercadopago/order_status_rejected';
   const PATH_ORDER_CANCELLED = 'payment/mercadopago/order_status_cancelled';
-  const PATH_ORDER_CHARGEBACK = 'payment/mercadopago/order_status_chargeback';
+  const PATH_ORDER_CHARGED_BACK = 'payment/mercadopago/order_status_chargeback';
   const PATH_ORDER_IN_MEDIATION = 'payment/mercadopago/order_status_in_mediation';
   const PATH_ORDER_REFUNDED = 'payment/mercadopago/order_status_refunded';
   const PATH_ORDER_PARTIALLY_REFUNDED = 'payment/mercadopago/order_status_partially_refunded';
