@@ -14,6 +14,7 @@ use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
 use Magento\Store\Model\ScopeInterface;
+use MercadoPago\Core\Model\Notifications\Topics\Payment;
 
 /**
  * Class Page
@@ -67,6 +68,11 @@ class Page
      */
     protected $_configData;
 
+    /**
+     * @var
+     */
+    protected $_paymentNotification;
+
 
     /**
      * Page constructor.
@@ -79,6 +85,7 @@ class Page
      * @param ScopeConfigInterface $scopeConfig
      * @param Core $core
      * @param CatalogSession $catalogSession
+     * @param Payment $paymentNotification
      */
 
     public function __construct(
@@ -90,7 +97,8 @@ class Page
         Data $helperData,
         ScopeConfigInterface $scopeConfig,
         Core $core,
-        CatalogSession $catalogSession
+        CatalogSession $catalogSession,
+        Payment $paymentNotification
     )
     {
         $this->_checkoutSession = $checkoutSession;
@@ -101,9 +109,46 @@ class Page
         $this->_scopeConfig = $scopeConfig;
         $this->_core = $core;
         $this->_catalogSession = $catalogSession;
+        $this->_paymentNotification = $paymentNotification;
 
         parent::__construct($context);
+    }
 
+    /**
+     * Controller action
+     */
+    public function execute()
+    {
+        try {
+            if (!$this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SUCCESS_PAGE, ScopeInterface::SCOPE_STORE)) {
+                $order = $this->_getOrder();
+                $payment = $order->getPayment();
+                $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
+                $status = null;
+
+                //checkout Custom Credit Card
+                if (isset($paymentResponse['status'])) {
+                    $status = $paymentResponse['status'];
+                }
+                //checkout redirect
+                if ($status == 'approved' || $status == 'pending') {
+                    $this->approvedValidation($paymentResponse);
+                    $this->_redirect('checkout/onepage/success');
+                } else {
+                    $this->_redirect('checkout/onepage/failure/');
+                }
+
+            } else {
+                //set data for mp analytics
+                $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
+                $checkoutTypeHandle = $this->getCheckoutHandle();
+                $this->_view->loadLayout(['default', $checkoutTypeHandle]);
+                $this->dispatchSuccessActionObserver();
+                $this->_view->renderLayout();
+            }
+        } catch (Exception $e) {
+            $this->_helperData->log('Error: ' . $e->getMessage(), 'mercadopago.log');
+        }
     }
 
     /**
@@ -115,44 +160,6 @@ class Page
         $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
 
         return $order;
-    }
-
-    /**
-     * Controller action
-     */
-    public function execute()
-    {
-        try{
-            if (!$this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SUCCESS_PAGE, ScopeInterface::SCOPE_STORE)){
-                $order = $this->_getOrder();
-                $payment = $order->getPayment();
-                $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
-                $status = null;
-
-                //checkout Custom Credit Card
-                if (isset($paymentResponse['status'])) {
-                    $status = $paymentResponse['status'];
-                    //$detail = $infoPayment['status_detail']['value'];
-                }
-
-                //checkout redirect
-                if ($status == 'approved' || $status == 'pending'){
-                    $this->_redirect('checkout/onepage/success');
-                } else {
-                    $this->_redirect('checkout/onepage/failure/');
-                }
-
-            } else {
-                //set data for mp analytics
-                $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
-                $checkoutTypeHandle = $this->getCheckoutHandle();
-                $this->_view->loadLayout(['default', $checkoutTypeHandle]);
-                $this->_eventManager->dispatch('checkout_onepage_controller_success_action',['order_ids' => [$this->_getOrder()->getId()]]);
-                $this->_view->renderLayout();
-            }
-        }catch (Exception $e){
-            $this->_helperData->log('Error: ' . $e->getMessage(), 'mercadopago.log');
-        }
     }
 
     /**
@@ -170,5 +177,36 @@ class Page
         $handle .= '_success';
 
         return $handle;
+    }
+
+    /**
+     * @param $payment
+     * @throws Exception
+     */
+    public function approvedValidation($payment)
+    {
+        if ($payment['status'] == 'approved') {
+            if ($this->_scopeConfig->isSetFlag(ConfigData::PATH_CUSTOM_BINARY_MODE, ScopeInterface::SCOPE_STORE)) {
+                $paymentResponse = $this->_core->getPaymentV1($payment['id']);
+                if ($paymentResponse['status'] == 200) {
+                    $this->_paymentNotification->updateStatusOrderByPayment($paymentResponse['response']);
+                }
+            }
+            $this->dispatchSuccessActionObserver();
+        }
+    }
+
+    /**
+     * Dispatch checkout_onepage_controller_success_action
+     */
+    public function dispatchSuccessActionObserver()
+    {
+        $this->_eventManager->dispatch(
+            'checkout_onepage_controller_success_action',
+            [
+                'order_ids' => [$this->_getOrder()->getId()],
+                'order' => $this->_getOrder()
+            ]
+        );
     }
 }

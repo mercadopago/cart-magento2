@@ -41,6 +41,7 @@ class ConfigData
   const PATH_BASIC_STATEMENT_DESCRIPTION = 'payment/mercadopago_basic/statement_desc';
   const PATH_BASIC_EXPIRATION_TIME_PREFERENCE = 'payment/mercadopago_basic/exp_time_pref';
   const PATH_BASIC_ORDER_STATUS = 'payment/mercadopago_basic/order_status';
+  const PATH_BASIC_BINARY_MODE = 'payment/mercadopago_basic/binary_mode';
 
   //order configuration
   const PATH_ORDER_APPROVED = 'payment/mercadopago/order_status_approved';

@@ -13,6 +13,7 @@
         <banner_checkout>http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg</banner_checkout>
         <sort_order>-2</sort_order>
         <payment_action>authorize</payment_action>
+        <binary_mode>0</binary_mode>
       </mercadopago_custom>
       <mercadopago_customticket>
         <active>1</active>

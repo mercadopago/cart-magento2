@@ -118,7 +118,7 @@ class Basic extends AbstractMethod
                 'category_id' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_CATEGORY, ScopeInterface::SCOPE_STORE),
                 'country' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_COUNTRY, ScopeInterface::SCOPE_STORE),
                 'access_token' => $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE),
-                'binary_mode' => $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_BINARY_MODE, ScopeInterface::SCOPE_STORE),
+                'binary_mode' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_BINARY_MODE, ScopeInterface::SCOPE_STORE),
                 'expiration_time_preference' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXPIRATION_TIME_PREFERENCE, ScopeInterface::SCOPE_STORE),
                 'statement_descriptor' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_STATEMENT_DESCRIPTION, ScopeInterface::SCOPE_STORE),
                 'exclude_payment_methods' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE)
