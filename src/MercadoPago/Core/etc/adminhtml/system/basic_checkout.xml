@@ -36,7 +36,7 @@
     <field id="binary_mode" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
       <label>Binary Mode</label>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/mercadopago_custom/binary_mode</config_path>
+      <config_path>payment/mercadopago_basic/binary_mode</config_path>
       <comment>This functionality will mark the payment to approve or reject at the time it is created, there will be no intermediate status pending.</comment>
     </field>
     <field id="exp_time_pref" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
