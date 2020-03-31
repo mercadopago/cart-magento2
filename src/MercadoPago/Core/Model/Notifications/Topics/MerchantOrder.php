@@ -173,7 +173,7 @@ class MerchantOrder extends TopicsAbstract
         $this->_dataHelper->log("Order Setted Pending: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
       }else {
         // return last status inserted 
-        $statusList = ['cancelled', 'refunded', 'charge_back', 'in_mediation', 'rejected'];
+        $statusList = ['cancelled', 'refunded', 'charged_back', 'in_mediation', 'rejected'];
         $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
         $statusReturned = $payments[$lastPaymentIndex]['status'];
 

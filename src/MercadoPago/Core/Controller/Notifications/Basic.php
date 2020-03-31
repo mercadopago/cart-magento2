@@ -19,7 +19,7 @@ class Basic extends NotificationBase
     protected $_paymentFactory;
     protected $coreHelper;
     protected $coreModel;
-    protected $_finalStatus = ['rejected', 'cancelled', 'refunded', 'charge_back'];
+    protected $_finalStatus = ['rejected', 'cancelled', 'refunded', 'charged_back'];
     protected $_notFinalStatus = ['authorized', 'process', 'in_mediation'];
     protected $_orderFactory;
     protected $_notifications;
