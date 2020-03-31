@@ -15,7 +15,6 @@ define(
         'mage/translate',
         'Magento_Checkout/js/model/cart/totals-processor/default',
         'Magento_Checkout/js/model/cart/cache',
-
         'MPcustom',
         'MPanalytics',
         'MPv1'
