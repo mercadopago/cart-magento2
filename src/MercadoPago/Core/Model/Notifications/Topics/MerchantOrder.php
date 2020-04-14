@@ -93,6 +93,10 @@ class MerchantOrder extends TopicsAbstract
                 throw new Exception(__('MP API Payments Not Found'), 400);
             }
 
+            if($merchantOrder['status'] != 'closed'){
+                throw new Exception(__('Payments Not Finalized'), 400);
+            }
+
             $payments = [];
             foreach ($merchantOrder['payments'] as $payment) {
                 $response = $this->_coreModel->getPayment($payment['id']);
