@@ -35,4 +35,8 @@
     <type name="Magento\Framework\View\Asset\Minification">
         <plugin name="mercadopago_minification_plugin" type="MercadoPago\Core\Plugin\MinificationIsExcludedPlugin"/>
     </type>
+
+    <type name="Magento\Framework\App\Request\CsrfValidator">
+        <plugin name="csrf_validator_skip" type="MercadoPago\Core\Plugin\CsrfValidatorSkip" />
+    </type>
 </config>
