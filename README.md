@@ -1,42 +1,39 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/694b7584dbdf471f2e13/maintainability)](https://codeclimate.com/github/mercadopago/cart-magento2/maintainability)
+<p align="center"><a href="https://www.mercadopago.com/"><img src="https://raw.githubusercontent.com/mercadopago/cart-woocommerce/master/assets/images/mplogo.png" height="80" width="auto" alt="MercadoPago">
+</a></p>
 
-![Mercado Pago](https://raw.githubusercontent.com/mercadopago/cart-magento2/master/README.img/logo_mp.png)
+The Mercado Pago plugin for Magento 2 allows you to expand the functionalities of your online store and offer a unique payment experience for your customers.
 
 ## Documentation in English
 
-Mercado Pago integration Module for Magento
+For a better experience, you will be redirected to our site by clicking on the links below:
 
-* [Requirements](https://github.com/mercadopago/cart-magento2/wiki/Requirements)
-* [Features](https://github.com/mercadopago/cart-magento2/wiki/Features)
-* [Installation](https://github.com/mercadopago/cart-magento2/wiki/Installation)
-* [Checkout Custom - Configure Credit Card and Ticket](https://github.com/mercadopago/cart-magento2/wiki/Configure-Credit-Card-and-Ticket)
-* [Basic Checkout - Redirect](https://github.com/mercadopago/cart-magento2/wiki/Configure-Checkout-Redirect)
-* [Payment Notification status Settings](https://github.com/mercadopago/cart-magento2/wiki/Payment-Notification-status-settings)
-* [FAQ](https://github.com/mercadopago/cart-magento2/wiki/FAQ-English)
-* [Support](https://github.com/mercadopago/cart-magento2/wiki/Support)
+* [Requirements to integrate](https://www.mercadopago.com.br/developers/en/plugins_sdks/plugins/official/magento-two/#bookmark_requirements_to_integrate)
+* [Features](https://www.mercadopago.com.br/developers/en/plugins_sdks/plugins/official/magento-two/#bookmark_features)
+* [Installation](https://www.mercadopago.com.br/developers/en/plugins_sdks/plugins/official/magento-two/#bookmark_installation)
+* [Configure Checkout Custom](https://www.mercadopago.com.br/developers/en/plugins_sdks/plugins/official/magento-two/#bookmark_credit_card_and_ticket_configuration_(custom_checkout))
+* [Configure Mercado Pago Checkout](https://www.mercadopago.com.br/developers/en/plugins_sdks/plugins/official/magento-two/#bookmark_basic_checkout_configuration)
+* [Payment Notification Status Settings](https://www.mercadopago.com.br/developers/en/plugins_sdks/plugins/official/magento-two/#bookmark_payment_notification_status_settings)
 
 ## Documentación en Español
 
-Módulo de integración de Mercado Pago para Magento
+Para una mejor experiencia, será redirigido a nuestro sitio haciendo clic en los links a abajo:
 
-* [Requisitos](https://github.com/mercadopago/cart-magento2/wiki/Requisitos-en-Español)
-* [Funcionalidad](https://github.com/mercadopago/cart-magento2/wiki/Funcionalidad)
-* [Instalación](https://github.com/mercadopago/cart-magento2/wiki/Instalación)
-* [Checkout Personalizado - Configuración de la Tarjeta de crédito y Tickets](https://github.com/mercadopago/cart-magento2/wiki/Configuración-de-la-tarjeta-de-crédito-y-tickets)
-* [Checkout Básico - Configurar el Checkout Redirect](https://github.com/mercadopago/cart-magento2/wiki/Configurar-el-Checkout-Redirect)
-* [Configuración de estado de las notificaciones de Pago](https://github.com/mercadopago/cart-magento2/wiki/Configuración-de-estado-de-las-notificaciones-de-Pago)
-* [FAQ](https://github.com/mercadopago/cart-magento2/wiki/FAQ-Espanhol)
-* [Soporte técnico](https://github.com/mercadopago/cart-magento2/wiki/Soporte-técnico)
+* [Requisitos para integrar](https://www.mercadopago.com.ar/developers/es/plugins_sdks/plugins/official/magento-two/#bookmark_requirements_to_integrate)
+* [Instalación](https://www.mercadopago.com.ar/developers/es/plugins_sdks/plugins/official/magento-two/#bookmark_installation)
+* [Configurar Checkout Custom](https://www.mercadopago.com.ar/developers/es/plugins_sdks/plugins/official/magento-two/#bookmark_credit_card_and_ticket_configuration_(custom_checkout))
+* [Configurar Checkout de Mercado Pago](https://www.mercadopago.com.ar/developers/es/plugins_sdks/plugins/official/magento-two/#bookmark_basic_checkout_configuration)
+* [Configuración de estado de las notificaciones de Pago](https://www.mercadopago.com.ar/developers/es/plugins_sdks/plugins/official/magento-two/#bookmark_payment_notification_status_settings)
 
 ## Documentação em Português
 
-Modulo de integração do Mercado Pago para Magento
+Para uma melhor experiência, você será redirecionado para o nosso site, clicando nos links abaixo:
 
-* [Requisitos](https://github.com/mercadopago/cart-magento2/wiki/Requisitos)
-* [Funcionalidades](https://github.com/mercadopago/cart-magento2/wiki/Funcionalidades)
-* [Instalação](https://github.com/mercadopago/cart-magento2/wiki/Instala%C3%A7%C3%A3o)
-* [Checkout Transparente - Configurando Cartão de Crédito e Boleto](https://github.com/mercadopago/cart-magento2/wiki/Configura%C3%A7%C3%A3o-Checkout-Custom-(Cart%C3%A3o-de-Cr%C3%A9dito-e-Boleto))
-* [Checkout Básico - Configurando o Checkout Redirecionado](https://github.com/mercadopago/cart-magento2/wiki/Configurando-o-Checkout-Redirecionado)
-* [Configurações de status de Notificações de Pagamento](https://github.com/mercadopago/cart-magento2/wiki/Configurações-de-status-de-Notificações-de-Pagamento)
-* [FAQ](https://github.com/mercadopago/cart-magento2/wiki/FAQ-Portugues)
-* [Suporte](https://github.com/mercadopago/cart-magento2/wiki/Suporte)
+* [Requisitos para integrar](https://www.mercadopago.com.br/developers/pt/plugins_sdks/plugins/official/magento-two/#bookmark_requirements_to_integrate)
+* [Instalação](https://www.mercadopago.com.br/developers/pt/plugins_sdks/plugins/official/magento-two/#bookmark_installation)
+* [Configurar Checkout Custom](https://www.mercadopago.com.br/developers/pt/plugins_sdks/plugins/official/magento-two/#bookmark_credit_card_and_ticket_configuration_(custom_checkout))
+* [Configurar Checkout Mercado Pago](https://www.mercadopago.com.br/developers/pt/plugins_sdks/plugins/official/magento-two/#bookmark_basic_checkout_configuration)
+* [Configurações de status de Notificações de Pagamento](https://www.mercadopago.com.br/developers/pt/plugins_sdks/plugins/official/magento-two/#bookmark_payment_notification_status_settings)
+
+## Support
+
+Something's wrong? [Get in touch with our support](https://www.mercadopago.com.ar/developers/en/support)
