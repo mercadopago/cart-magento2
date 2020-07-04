@@ -13,6 +13,7 @@
         </policy>
         <policy id="img-src">
             <values>
+                <value id="mlstatic.com" type="host">*.mlstatic.com</value>
                 <value id="mercadopago.com" type="host">*.mercadopago.com</value>
                 <value id="mercadolibre.com" type="host">*.mercadolibre.com</value>
                 <value id="mercadolivre.com.br" type="host">*.mercadolivre.com.br</value>
