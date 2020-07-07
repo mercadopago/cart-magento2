@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="script-src">
+            <values>
+                <value id="mlstatic.com" type="host">*.mlstatic.com</value>
+            </values>
+        </policy>
+        <policy id="connect-src">
+            <values>
+                <value id="mercadopago.com" type="host">*.mercadopago.com</value>
+            </values>
+        </policy>
+        <policy id="img-src">
+            <values>
+                <value id="mlstatic.com" type="host">*.mlstatic.com</value>
+                <value id="mercadopago.com" type="host">*.mercadopago.com</value>
+                <value id="mercadolibre.com" type="host">*.mercadolibre.com</value>
+                <value id="mercadolivre.com.br" type="host">*.mercadolivre.com.br</value>
+                <value id="mercadolibre.com.mx" type="host">*.mercadolibre.com.mx</value>
+                <value id="mercadolibre.com.ar" type="host">*.mercadolibre.com.ar</value>
+            </values>
+        </policy>
+        <policy id="frame-src">
+            <values>
+                <value id="mercadolibre.com" type="host">*.mercadolibre.com</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>
