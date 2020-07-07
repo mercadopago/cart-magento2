@@ -15,7 +15,7 @@ class PaymentMethodsBasic extends PaymentMethodsAbstract implements \Magento\Fra
         $response = parent::toOptionArray();
         $methods[] = reset($response['methods']);
 
-        if (isset($response['success']) && $response['success']['status'] <= 201) {
+        if (isset($response['success'])) {
             foreach ($response['success'] as $pm) {
                 $methods[] = ['value' => $pm['id'],'label' => __($pm['name'])];
             }
