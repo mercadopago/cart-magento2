@@ -55,7 +55,7 @@ define(
              * @returns {*}
              */
             getLogoUrl: function () {
-                if (configPayment !== undefined) {
+                if (configPayment != null) {
                     return configPayment['logoUrl'];
                 }
                 return '';
@@ -66,7 +66,7 @@ define(
              * @returns {boolean}
              */
             existBanner: function () {
-                if (configPayment !== undefined) {
+                if (configPayment != null) {
                     if (configPayment['bannerUrl'] != null) {
                         return true;
                     }
@@ -79,7 +79,7 @@ define(
              * @returns {*}
              */
             getBannerUrl: function () {
-                if (configPayment !== undefined) {
+                if (configPayment != null) {
                     return configPayment['bannerUrl'];
                 }
                 return '';
@@ -90,7 +90,7 @@ define(
              * @returns {*}
              */
             getActionUrl: function () {
-                if (configPayment !== undefined) {
+                if (configPayment != null) {
                     return configPayment['actionUrl'];
                 }
                 return '';
@@ -101,20 +101,20 @@ define(
              *
              * Basic Checkout
              */
-          
+
           getRedirectImage: function (){
             return configPayment['redirect_image'];
           },
-          
+
           getInfoBanner: function ($pm) {
-            if (configPayment !== undefined) {
+            if (configPayment != null && configPayment['banner_info'] != null) {
               return configPayment['banner_info'][$pm];
             }
             return 0;
           },
 
           getInfoBannerInstallments: function () {
-            if (configPayment !== undefined) {
+            if (configPayment != null && configPayment['banner_info'] != null) {
               return configPayment['banner_info']['installments'];
             }
             return 0;
@@ -123,7 +123,7 @@ define(
           getInfoBannerPaymentMethods: function ($pmFilter){
             var listPm = []
 
-            if (configPayment !== undefined) {
+            if (configPayment != null && configPayment['banner_info'] != null) {
               var paymetMethods = configPayment['banner_info']['checkout_methods'];
               if (paymetMethods){
 
@@ -153,8 +153,9 @@ define(
                   }
                 }
               }
-              return listPm;
             }
+
+            return listPm;
           },
 
         });
