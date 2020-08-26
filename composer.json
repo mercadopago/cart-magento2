@@ -21,7 +21,9 @@
   ],
   "require": {
     "magento/magento-composer-installer": "*",
-    "magento/module-payment": "*"
+    "magento/module-payment": "*",
+    "magento/module-checkout": "*",
+    "magento/module-sales": "*"
   },
   "require-dev": {
     "magento/product-community-edition": "2.*",
