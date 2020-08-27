@@ -86,6 +86,16 @@ class Payment extends TopicsAbstract
         $currentOrderStatus = $order->getState();
         if ($statusAlreadyUpdated) {
             $orderPayment = $order->getPayment();
+            $orderPayment->setLastTransId($payment['id']);
+
+            if ($payment['card']) {
+                $orderPayment->setCcLast4($payment['card']['last_four_digits']);
+                $orderPayment->setCcExpMonth($payment['card']['expiration_month']);
+                $orderPayment->setCcExpYear($payment['card']['expiration_year']);
+                $orderPayment->setCcType($payment['payment_method_id']);
+                $orderPayment->setCcTransId($payment['id']);
+            }
+
             $orderPayment->setAdditionalInformation("paymentResponse", $payment);
             $order->save();
 
