@@ -84,22 +84,23 @@ class Payment extends TopicsAbstract
         $statusAlreadyUpdated = $this->checkStatusAlreadyUpdated($payment, $order);
         $newOrderStatus = parent::getConfigStatus($payment, $order->canCreditmemo());
         $currentOrderStatus = $order->getState();
+        $orderPayment = $order->getPayment();
+        $orderPayment->setLastTransId($payment['id']);
+
+        if ($payment['card']) {
+            $orderPayment->setCcLast4($payment['card']['last_four_digits']);
+            $orderPayment->setCcExpMonth($payment['card']['expiration_month']);
+            $orderPayment->setCcExpYear($payment['card']['expiration_year']);
+            $orderPayment->setCcType($payment['payment_method_id']);
+            $orderPayment->setCcTransId($payment['id']);
+        }
+        
+        $orderPayment->setAdditionalInformation("paymentResponse", $payment);
+
         if ($statusAlreadyUpdated) {
-            $orderPayment = $order->getPayment();
-            $orderPayment->setLastTransId($payment['id']);
-
-            if ($payment['card']) {
-                $orderPayment->setCcLast4($payment['card']['last_four_digits']);
-                $orderPayment->setCcExpMonth($payment['card']['expiration_month']);
-                $orderPayment->setCcExpYear($payment['card']['expiration_year']);
-                $orderPayment->setCcType($payment['payment_method_id']);
-                $orderPayment->setCcTransId($payment['id']);
-            }
-
-            $orderPayment->setAdditionalInformation("paymentResponse", $payment);
             $order->save();
-
             $messageHttp = "Mercado Pago - Status has already been updated.";
+
             return [
                 "httpStatus" => Response::HTTP_OK,
                 "message" => $messageHttp,
@@ -112,18 +113,18 @@ class Payment extends TopicsAbstract
             ];
         }
 
-        $order = self::setStatusAndComment($order, $newOrderStatus, $message);
-
+        $this->setStatusAndComment($order, $newOrderStatus, $message);
         $this->sendEmailCreateOrUpdate($order, $message);
         $responseInvoice = false;
+
         if ($payment['status'] == 'approved') {
             $responseInvoice = $this->createInvoice($order, $message);
             $this->addCardInCustomer($payment);
         }
-        $order->getPayment()->setAdditionalInformation("paymentResponse", $payment);
-        $order->save();
 
+        $order->save();
         $messageHttp = "Mercado Pago - Status successfully updated.";
+
         return [
             "httpStatus" => Response::HTTP_OK,
             "message" => $messageHttp,
