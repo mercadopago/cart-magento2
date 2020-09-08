@@ -257,8 +257,8 @@ abstract class TopicsAbstract
     public function updateOrder($order, $data)
     {
         if ($this->checkStatusAlreadyUpdated($order, $data)) {
-          $this->_dataHelper->log("Already updated", 'mercadopago-basic.log', $teste);
-          return $order;
+            $this->_dataHelper->log("Already updated", 'mercadopago-basic.log', $teste);
+            return $order;
         }
         $this->updatePaymentInfo($order, $data);
         return $order->save();
@@ -318,20 +318,20 @@ abstract class TopicsAbstract
      * @param $order
      * @param $data
      */
-  
-      public function checkStatusAlreadyUpdated($paymentResponse, $order)
-      {
+
+    public function checkStatusAlreadyUpdated($paymentResponse, $order)
+    {
         $orderUpdated = false;
         $statusToUpdate = $this->getConfigStatus($paymentResponse, false);
         $commentsObject = $order->getStatusHistoryCollection(true);
         foreach ($commentsObject as $commentObj) {
-          if ($commentObj->getStatus() == $statusToUpdate) {
-            $orderUpdated = true;
-          }
+            if ($commentObj->getStatus() == $statusToUpdate) {
+                $orderUpdated = true;
+            }
         }
 
         return $orderUpdated;
-      }
+    }
 
 
     /**
@@ -445,25 +445,25 @@ abstract class TopicsAbstract
     public function _createInvoice($order)
     {
         if (!$order->hasInvoices()) {
-          $invoice = $this->_invoiceService->prepareInvoice($order);
-          $invoice->register();
-          $invoice->pay();
-          $invoice->save();
+            $invoice = $this->_invoiceService->prepareInvoice($order);
+            $invoice->register();
+            $invoice->pay();
+            $invoice->save();
 
-          $transaction = $this->_transactionFactory->create();
-          $transaction->addObject($invoice);
-          $transaction->addObject($invoice->getOrder());
-          $transaction->save();
+            $transaction = $this->_transactionFactory->create();
+            $transaction->addObject($invoice);
+            $transaction->addObject($invoice->getOrder());
+            $transaction->save();
 
-          $this->_invoiceSender->send($invoice);
-          
+            $this->_invoiceSender->send($invoice);
+
 //           $message = $this->getMessageInvoice($order, $invoice);
 //           $order->addStatusHistoryComment(__($message, $invoice->getId()))
 //             ->setIsCustomerNotified(true)
 //             ->save();
-          return true;
+            return true;
         }
 
-      return false;
+        return false;
     }
 }

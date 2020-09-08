@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Model\System\Config\Source;
 
 /**
@@ -17,7 +18,7 @@ class ListPages
     public function toOptionArray()
     {
         $pages = [];
-        $pages[] = ['value' => "product.info.calculator",  'label' => __("Product Detail Page")];
+        $pages[] = ['value' => "product.info.calculator", 'label' => __("Product Detail Page")];
         $pages[] = ['value' => "checkout.cart.calculator", 'label' => __("Cart page")];
 
         //force order by key

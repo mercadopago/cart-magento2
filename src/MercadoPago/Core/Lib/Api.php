@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Lib;
 /**
  * MercadoPago Integration Library
@@ -7,9 +8,8 @@ namespace MercadoPago\Core\Lib;
  * @author hcasatti
  *
  */
-
-
-class Api {
+class Api
+{
 
     /**
      *
@@ -54,7 +54,8 @@ class Api {
     /**
      * \MercadoPago\Core\Lib\Api constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         $i = func_num_args();
 
         if ($i > 2 || $i < 1) {
@@ -76,7 +77,8 @@ class Api {
      *
      * @return bool
      */
-    public function sandbox_mode($enable = NULL) {
+    public function sandbox_mode($enable = NULL)
+    {
         if (!is_null($enable)) {
             $this->sandbox = $enable === TRUE;
         }
@@ -87,7 +89,8 @@ class Api {
     /**
      * Get Access Token for API use
      */
-    public function get_access_token() {
+    public function get_access_token()
+    {
         if (isset ($this->ll_access_token) && !is_null($this->ll_access_token)) {
             return $this->ll_access_token;
         }
@@ -114,7 +117,8 @@ class Api {
      * @param id
      * @return array(json)
      */
-    public function get_authorized_payment($id) {
+    public function get_authorized_payment($id)
+    {
         $access_token = $this->get_access_token();
 
         $authorized_payment_info = \MercadoPago\Core\Lib\RestClient::get("/authorized_payments/" . $id . "?access_token=" . $access_token);
@@ -126,7 +130,8 @@ class Api {
      * @param int $id
      * @return array(json)
      */
-    public function refund_payment($id) {
+    public function refund_payment($id)
+    {
         $access_token = $this->get_access_token();
 
         $response = \MercadoPago\Core\Lib\RestClient::post("/v1/payments/$id/refunds?access_token=$access_token", array());
@@ -138,7 +143,8 @@ class Api {
      * @param int $id
      * @return array(json)
      */
-    public function cancel_preapproval_payment($id) {
+    public function cancel_preapproval_payment($id)
+    {
         $access_token = $this->get_access_token();
 
         $cancel_status = array(
@@ -154,10 +160,11 @@ class Api {
      * @param array $preference
      * @return array(json)
      */
-    public function create_preference($preference) {
+    public function create_preference($preference)
+    {
         $access_token = $this->get_access_token();
 
-        $extra_params =  array('platform: ' . $this->_platform, 'so;', 'type: ' .  $this->_type);
+        $extra_params = array('platform: ' . $this->_platform, 'so;', 'type: ' . $this->_type);
         $preference_result = \MercadoPago\Core\Lib\RestClient::post("/checkout/preferences?access_token=" . $access_token, $preference, "application/json", $extra_params);
         return $preference_result;
     }
@@ -168,7 +175,8 @@ class Api {
      * @param array $preference
      * @return array(json)
      */
-    public function update_preference($id, $preference) {
+    public function update_preference($id, $preference)
+    {
         $access_token = $this->get_access_token();
 
         $preference_result = \MercadoPago\Core\Lib\RestClient::put("/checkout/preferences/{$id}?access_token=" . $access_token, $preference);
@@ -180,7 +188,8 @@ class Api {
      * @param string $id
      * @return array(json)
      */
-    public function get_preference($id) {
+    public function get_preference($id)
+    {
         $access_token = $this->get_access_token();
 
         $preference_result = \MercadoPago\Core\Lib\RestClient::get("/checkout/preferences/{$id}?access_token=" . $access_token);
@@ -192,7 +201,8 @@ class Api {
      * @param array $preapproval_payment
      * @return array(json)
      */
-    public function create_preapproval_payment($preapproval_payment) {
+    public function create_preapproval_payment($preapproval_payment)
+    {
         $access_token = $this->get_access_token();
 
         $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::post("/preapproval?access_token=" . $access_token, $preapproval_payment);
@@ -204,7 +214,8 @@ class Api {
      * @param string $id
      * @return array(json)
      */
-    public function get_preapproval_payment($id) {
+    public function get_preapproval_payment($id)
+    {
         $access_token = $this->get_access_token();
 
         $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::get("/preapproval/{$id}?access_token=" . $access_token);
@@ -213,11 +224,12 @@ class Api {
 
     /**
      * Update a preapproval payment
-     * @param string $preapproval_payment, $id
+     * @param string $preapproval_payment , $id
      * @return array(json)
      */
 
-    public function update_preapproval_payment($id, $preapproval_payment) {
+    public function update_preapproval_payment($id, $preapproval_payment)
+    {
         $access_token = $this->get_access_token();
 
         $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $preapproval_payment);
@@ -229,7 +241,8 @@ class Api {
      * @param array $preference
      * @return array(json)
      */
-    public function create_custon_payment($info) {
+    public function create_custon_payment($info)
+    {
         $access_token = $this->get_access_token();
 
         $preference_result = \MercadoPago\Core\Lib\RestClient::post("/checkout/custom/create_payment?access_token=" . $access_token, $info);
@@ -237,17 +250,19 @@ class Api {
     }
 
 
-    public function get_or_create_customer($payer_email){
+    public function get_or_create_customer($payer_email)
+    {
         $customer = $this->search_customer($payer_email);
-        if($customer['status'] == 200 && $customer['response']['paging']['total'] > 0){
+        if ($customer['status'] == 200 && $customer['response']['paging']['total'] > 0) {
             $customer = $customer['response']['results'][0];
-        }else{
+        } else {
             $customer = $this->create_customer($payer_email)['response'];
         }
         return $customer;
     }
 
-    public function create_customer($email) {
+    public function create_customer($email)
+    {
 
         $access_token = $this->get_access_token();
 
@@ -259,18 +274,22 @@ class Api {
 
         return $customer;
     }
-    public function search_customer($email) {
+
+    public function search_customer($email)
+    {
 
         $access_token = $this->get_access_token();
 
         $customer = \MercadoPago\Core\Lib\RestClient::get("/v1/customers/search?access_token=" . $access_token . "&email=" . $email);
         return $customer;
     }
-    public function create_card_in_customer($customer_id, $token, $payment_method_id = null, $issuer_id = null) {
-        
+
+    public function create_card_in_customer($customer_id, $token, $payment_method_id = null, $issuer_id = null)
+    {
+
         $access_token = $this->get_access_token();
 
-        $request =  array(
+        $request = array(
             "token" => $token,
             "issuer_id" => $issuer_id,
             "payment_method_id" => $payment_method_id
@@ -280,7 +299,9 @@ class Api {
 
         return $card;
     }
-    public function get_all_customer_cards($customer_id, $token) {
+
+    public function get_all_customer_cards($customer_id, $token)
+    {
 
         $access_token = $this->get_access_token();
 
@@ -289,13 +310,14 @@ class Api {
         return $cards;
     }
 
-    public function check_discount_campaigns($transaction_amount, $payer_email, $coupon_code) {
+    public function check_discount_campaigns($transaction_amount, $payer_email, $coupon_code)
+    {
 
-      $access_token = $this->get_access_token();
-      $url = "/discount_campaigns?access_token=$access_token&transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code";
-      $discount_info = \MercadoPago\Core\Lib\RestClient::get( $url );
+        $access_token = $this->get_access_token();
+        $url = "/discount_campaigns?access_token=$access_token&transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code";
+        $discount_info = \MercadoPago\Core\Lib\RestClient::get($url);
 
-      return $discount_info;
+        return $discount_info;
     }
 
     /* Generic resource call methods */
@@ -306,8 +328,9 @@ class Api {
      * @param params
      * @param authenticate = true
      */
-    public function get($uri, $params = null, $authenticate = true) {
-        $params = is_array ($params) ? $params : array();
+    public function get($uri, $params = null, $authenticate = true)
+    {
+        $params = is_array($params) ? $params : array();
 
         if ($authenticate !== false) {
             $access_token = $this->get_access_token();
@@ -330,8 +353,9 @@ class Api {
      * @param data
      * @param params
      */
-    public function post($uri, $data, $params = null) {
-        $params = is_array ($params) ? $params : array();
+    public function post($uri, $data, $params = null)
+    {
+        $params = is_array($params) ? $params : array();
 
         $access_token = $this->get_access_token();
         $params["access_token"] = $access_token;
@@ -341,7 +365,7 @@ class Api {
             $uri .= $this->build_query($params);
         }
 
-        $extra_params =  array('platform: ' . $this->_platform, 'so;', 'type: ' .  $this->_type);
+        $extra_params = array('platform: ' . $this->_platform, 'so;', 'type: ' . $this->_type);
         $result = \MercadoPago\Core\Lib\RestClient::post($uri, $data, "application/json", $extra_params);
         return $result;
     }
@@ -352,8 +376,9 @@ class Api {
      * @param data
      * @param params
      */
-    public function put($uri, $data, $params = null) {
-        $params = is_array ($params) ? $params : array();
+    public function put($uri, $data, $params = null)
+    {
+        $params = is_array($params) ? $params : array();
 
         $access_token = $this->get_access_token();
         $params["access_token"] = $access_token;
@@ -373,8 +398,9 @@ class Api {
      * @param data
      * @param params
      */
-    public function delete($uri, $params = null) {
-        $params = is_array ($params) ? $params : array();
+    public function delete($uri, $params = null)
+    {
+        $params = is_array($params) ? $params : array();
 
         $access_token = $this->get_access_token();
         $params["access_token"] = $access_token;
@@ -395,7 +421,8 @@ class Api {
      *
      * @return string
      */
-    private function build_query($params) {
+    private function build_query($params)
+    {
         if (function_exists("http_build_query")) {
             return http_build_query($params, "", "&");
         } else {

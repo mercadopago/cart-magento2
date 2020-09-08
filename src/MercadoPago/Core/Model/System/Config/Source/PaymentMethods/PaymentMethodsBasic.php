@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Model\System\Config\Source\PaymentMethods;
 
 /**
@@ -17,7 +18,7 @@ class PaymentMethodsBasic extends PaymentMethodsAbstract implements \Magento\Fra
 
         if (isset($response['success'])) {
             foreach ($response['success'] as $pm) {
-                $methods[] = ['value' => $pm['id'],'label' => __($pm['name'])];
+                $methods[] = ['value' => $pm['id'], 'label' => __($pm['name'])];
             }
         }
         $this->coreHelper->log("PaymentMethodsBasic:: Displayed", 'mercadopago', $methods);
