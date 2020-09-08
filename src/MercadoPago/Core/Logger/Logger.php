@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Logger;
 /**
  * MercadoPago custom logger allows name changing to differentiate log call origin

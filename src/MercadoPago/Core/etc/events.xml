@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?xml version="1.0"?><!--
 /**
  * Copyright © 2015 Magento. All rights reserved.
  * See COPYING.txt for license details.
@@ -7,7 +6,7 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="sales_model_service_quote_submit_before">
-        <observer name="mp_subtotals" instance="MercadoPago\Core\Observer\AddMpSubtotalsToOrderObserver" />
+        <observer name="mp_subtotals" instance="MercadoPago\Core\Observer\AddMpSubtotalsToOrderObserver"/>
     </event>
 
     <event name="sales_order_payment_refund">
@@ -15,6 +14,6 @@
     </event>
 
     <event name="email_order_set_template_vars_before">
-        <observer name="mercadopago_email_order_set_template_before" instance="MercadoPago\Core\Observer\OrderSendEmailBefore" />
+        <observer name="mercadopago_email_order_set_template_before" instance="MercadoPago\Core\Observer\OrderSendEmailBefore"/>
     </event>
 </config>

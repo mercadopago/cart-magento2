@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="MercadoPago\Core\Helper\Message\MessageInterface" type="MercadoPago\Core\Helper\Message\StatusOrderMessage" />
-    <preference for="Magento\Framework\Setup\ModuleContextInterface" type="Magento\Setup\Model\ModuleContext" />
-    <preference for="Magento\Quote\Api\CartRepositoryInterface" type="Magento\Quote\Model\QuoteRepository" />
-	<type name="MercadoPago\Core\Logger\Handler\System">
-    <arguments>
+    <preference for="MercadoPago\Core\Helper\Message\MessageInterface" type="MercadoPago\Core\Helper\Message\StatusOrderMessage"/>
+    <preference for="Magento\Framework\Setup\ModuleContextInterface" type="Magento\Setup\Model\ModuleContext"/>
+    <preference for="Magento\Quote\Api\CartRepositoryInterface" type="Magento\Quote\Model\QuoteRepository"/>
+    <type name="MercadoPago\Core\Logger\Handler\System">
+        <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
         </arguments>
-    </type>    
-	<type name="MercadoPago\Core\Logger\Handler">
+    </type>
+    <type name="MercadoPago\Core\Logger\Handler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
         </arguments>
@@ -17,7 +17,7 @@
     <type name="MercadoPago\Core\Logger\Logger">
         <arguments>
             <argument name="name" xsi:type="string">mercadopago</argument>
-            <argument name="handlers"  xsi:type="array">
+            <argument name="handlers" xsi:type="array">
                 <item name="system" xsi:type="object">MercadoPago\Core\Logger\Handler\System</item>
             </argument>
         </arguments>
@@ -25,8 +25,10 @@
     <type name="MercadoPago\Core\Model\Core">
         <arguments>
             <argument name="statusMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusMessage</argument>
-            <argument name="statusDetailMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusDetailMessage</argument>
-            <argument name="statusOrderMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusOrderMessage</argument>
+            <argument name="statusDetailMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusDetailMessage
+            </argument>
+            <argument name="statusOrderMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusOrderMessage
+            </argument>
         </arguments>
     </type>
     <type name="Magento\Sales\Model\Order">
@@ -37,6 +39,6 @@
     </type>
 
     <type name="Magento\Framework\App\Request\CsrfValidator">
-        <plugin name="csrf_validator_skip" type="MercadoPago\Core\Plugin\CsrfValidatorSkip" />
+        <plugin name="csrf_validator_skip" type="MercadoPago\Core\Plugin\CsrfValidatorSkip"/>
     </type>
 </config>

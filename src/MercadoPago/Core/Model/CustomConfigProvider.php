@@ -12,8 +12,9 @@ use Magento\Payment\Helper\Data as PaymentHelper;
  *
  * @package MercadoPago\Core\Model
  */
-class CustomConfigProvider implements ConfigProviderInterface {
-  
+class CustomConfigProvider implements ConfigProviderInterface
+{
+
     /**
      * @var \Magento\Payment\Model\MethodInterface
      */
@@ -66,7 +67,7 @@ class CustomConfigProvider implements ConfigProviderInterface {
     protected $_coreHelper;
 
     protected $_productMetadata;
-  
+
     /**
      * @param PaymentHelper $paymentHelper
      */
@@ -98,38 +99,39 @@ class CustomConfigProvider implements ConfigProviderInterface {
      *
      * @return array
      */
-    public function getConfig() {
-          
+    public function getConfig()
+    {
+
         if (!$this->methodInstance->isAvailable()) {
-                    
+
             return [];
         }
-      
-          $data = [
+
+        $data = [
             'payment' => [
-              $this->methodCode => [
-                'bannerUrl'        => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANNER, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                'country'          => strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
-                'public_key'       => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                'logEnabled'       => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                'discount_coupon'  => $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_COUPON, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                'grand_total'      => $this->_checkoutSession->getQuote()->getGrandTotal(),
-                'base_url'         => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
-                'success_url'      => $this->methodInstance->getConfigData('order_place_redirect_url'),
-                'route'            => $this->_request->getRouteName(),
-                'customer'         => $this->methodInstance->getCustomerAndCards(),
-                'loading_gif'      => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
-                'text-currency'    => __('$'),
-                'text-choice'      => __('Select'),
-                'default-issuer'   => __('Default issuer'),
-                'text-installment' => __('Enter the card number'),
-                'logoUrl'          => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
-                'platform_version' => $this->_productMetaData->getVersion(),
-                'module_version'   => $this->_coreHelper->getModuleVersion()
+                $this->methodCode => [
+                    'bannerUrl' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANNER, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                    'country' => strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
+                    'public_key' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                    'logEnabled' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                    'discount_coupon' => $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_COUPON, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                    'grand_total' => $this->_checkoutSession->getQuote()->getGrandTotal(),
+                    'base_url' => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
+                    'success_url' => $this->methodInstance->getConfigData('order_place_redirect_url'),
+                    'route' => $this->_request->getRouteName(),
+                    'customer' => $this->methodInstance->getCustomerAndCards(),
+                    'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
+                    'text-currency' => __('$'),
+                    'text-choice' => __('Select'),
+                    'default-issuer' => __('Default issuer'),
+                    'text-installment' => __('Enter the card number'),
+                    'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
+                    'platform_version' => $this->_productMetaData->getVersion(),
+                    'module_version' => $this->_coreHelper->getModuleVersion()
                 ],
             ],
         ];
-      
+
         return $data;
     }
 

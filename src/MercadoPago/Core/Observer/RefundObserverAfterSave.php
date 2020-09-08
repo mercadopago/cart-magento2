@@ -25,8 +25,8 @@ class RefundObserverAfterSave
      * @param \MercadoPago\Core\Helper\Data $dataHelper
      */
     public function __construct(
-        \MercadoPago\Core\Helper\Data                       $dataHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig)
+        \MercadoPago\Core\Helper\Data $dataHelper,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig)
     {
         $this->_dataHelper = $dataHelper;
         $this->_scopeConfig = $scopeConfig;

@@ -143,39 +143,39 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * @var \Magento\Catalog\Helper\Image
      */
     protected $_helperImage;
-  
+
     /**
      * @var \Magento\Framework\App\ProductMetadataInterface
      */
     protected $_productMetaData;
-  
+
     /**
      * @var \MercadoPago\Core\Block\Adminhtml\System\Config\Version
      */
-    protected $_version;  
+    protected $_version;
 
     /**
      * Core constructor.
      *
-     * @param \Magento\Store\Model\StoreManagerInterface            $storeManager
-     * @param \MercadoPago\Core\Helper\Data                         $coreHelper
-     * @param \Magento\Sales\Model\OrderFactory                     $orderFactory
-     * @param \MercadoPago\Core\Helper\Message\MessageInterface     $statusMessage
-     * @param \MercadoPago\Core\Helper\Message\MessageInterface     $statusDetailMessage
-     * @param \Magento\Framework\Model\Context                      $context
-     * @param \Magento\Framework\Registry                           $registry
-     * @param \Magento\Framework\Api\ExtensionAttributesFactory     $extensionFactory
-     * @param \Magento\Framework\Api\AttributeValueFactory          $customAttributeFactory
-     * @param \Magento\Payment\Model\Method\Logger                  $logger
-     * @param \Magento\Payment\Helper\Data                          $paymentData
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface    $scopeConfig
-     * @param \Magento\Framework\DB\TransactionFactory              $transactionFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \MercadoPago\Core\Helper\Data $coreHelper
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \MercadoPago\Core\Helper\Message\MessageInterface $statusMessage
+     * @param \MercadoPago\Core\Helper\Message\MessageInterface $statusDetailMessage
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
+     * @param \Magento\Payment\Model\Method\Logger $logger
+     * @param \Magento\Payment\Helper\Data $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\DB\TransactionFactory $transactionFactory
      * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender
-     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender   $orderSender
-     * @param \Magento\Customer\Model\Session                       $customerSession
-     * @param \Magento\Framework\UrlInterface                       $urlBuilder
-     * @param \Magento\Catalog\Helper\Image                         $helperImage
-     * @param \Magento\Checkout\Model\Session                       $checkoutSession
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magento\Framework\UrlInterface $urlBuilder
+     * @param \Magento\Catalog\Helper\Image $helperImage
+     * @param \Magento\Checkout\Model\Session $checkoutSession
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -197,9 +197,10 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Framework\UrlInterface $urlBuilder,
         \Magento\Catalog\Helper\Image $helperImage,
         \Magento\Checkout\Model\Session $checkoutSession,
-        \MercadoPago\Core\Block\Adminhtml\System\Config\Version $version,      
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata      
-    ) {
+        \MercadoPago\Core\Block\Adminhtml\System\Config\Version $version,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata
+    )
+    {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
         $this->_storeManager = $storeManager;
         $this->_coreHelper = $coreHelper;
@@ -273,7 +274,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             if ($payment->getAdditionalInformation($field['field']) != "") {
                 $text = __($field['title'], $payment->getAdditionalInformation($field['field']));
                 $info_payments[$field['field']] = [
-                    "text"  => $text,
+                    "text" => $text,
                     "value" => $payment->getAdditionalInformation($field['field'])
                 ];
             }
@@ -282,7 +283,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         if ($payment->getAdditionalInformation('payer_identification_type') != "") {
             $text = __($payment->getAdditionalInformation('payer_identification_type'));
             $info_payments[$payment->getAdditionalInformation('payer_identification_type')] = [
-                "text"  => $text . ': ' . $payment->getAdditionalInformation('payer_identification_number')
+                "text" => $text . ': ' . $payment->getAdditionalInformation('payer_identification_number')
             ];
         }
 
@@ -335,7 +336,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $status_detail = $this->validStatusTwoPayments($status_detail);
 
         $message = [
-            "title"   => "",
+            "title" => "",
             "message" => ""
         ];
 
@@ -400,13 +401,13 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $image = $this->_helperImage->init($product, 'image');
 
             $dataItems[] = [
-                "id"          => $item->getSku(),
-                "title"       => $product->getName(),
+                "id" => $item->getSku(),
+                "title" => $product->getName(),
                 "description" => $product->getName(),
                 "picture_url" => $image->getUrl(),
                 "category_id" => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CATEGORY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                "quantity"    => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
-                "unit_price"  => (float)number_format($item->getPrice(), 2, '.', '')
+                "quantity" => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
+                "unit_price" => (float)number_format($item->getPrice(), 2, '.', '')
             ];
         }
 
@@ -414,10 +415,10 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $discount = $this->getDiscount();
         if ($discount != 0) {
             $dataItems[] = [
-                "title"       => "Discount by the Store",
+                "title" => "Discount by the Store",
                 "description" => "Discount by the Store",
-                "quantity"    => 1,
-                "unit_price"  => (float)number_format($discount, 2, '.', '')
+                "quantity" => 1,
+                "unit_price" => (float)number_format($discount, 2, '.', '')
             ];
         }
 
@@ -437,7 +438,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $infoCoupon = [];
         $amount = (float)$coupon['response']['coupon_amount'];
         $site_id = strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
-        if($site_id == "MCO" || $site_id == "MLC"){
+        if ($site_id == "MCO" || $site_id == "MLC") {
             $amount = round($amount);
         }
         $infoCoupon['coupon_amount'] = $amount;
@@ -479,13 +480,13 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         // Check if notification URL contains localhost
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
-        if (isset($notification_url) && ! strrpos($notification_url, 'localhost')) {
+        if (isset($notification_url) && !strrpos($notification_url, 'localhost')) {
             $preference['notification_url'] = $notification_url;
         }
 
         $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
 
-        $preference['transaction_amount'] = (float) $this->getAmount();
+        $preference['transaction_amount'] = (float)$this->getAmount();
 
         $preference['external_reference'] = $order->getIncrementId();
 
@@ -501,8 +502,8 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $preference['additional_info']['payer']['last_name'] = $customerInfo['last_name'];
 
         $preference['additional_info']['payer']['address'] = [
-            "zip_code"      => $billing_address['postcode'],
-            "street_name"   => $billing_address['street'] . " - " . $billing_address['city'] . " - " . $billing_address['country_id'],
+            "zip_code" => $billing_address['postcode'],
+            "street_name" => $billing_address['street'] . " - " . $billing_address['city'] . " - " . $billing_address['country_id'],
             "street_number" => ''
         ];
 
@@ -512,17 +513,17 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $shipping = $order->getShippingAddress()->getData();
 
             $preference['additional_info']['shipments']['receiver_address'] = [
-                "zip_code"      => $shipping['postcode'],
-                "street_name"   => $shipping['street'] . " - " . $shipping['city'] . " - " . $shipping['country_id'],
+                "zip_code" => $shipping['postcode'],
+                "street_name" => $shipping['street'] . " - " . $shipping['city'] . " - " . $shipping['country_id'],
                 "street_number" => '',
-                "floor"         => "-",
-                "apartment"     => "-",
+                "floor" => "-",
+                "apartment" => "-",
 
             ];
 
             $preference['additional_info']['payer']['phone'] = [
                 "area_code" => "0",
-                "number"    => $shipping['telephone']
+                "number" => $shipping['telephone']
             ];
         }
 
@@ -545,13 +546,13 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         $sponsorId = $this->_scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $this->_coreHelper->log("Sponsor_id", 'mercadopago-standard.log', $sponsorId);
-        $test_mode = false; 
+        $test_mode = false;
         if (!empty($sponsorId) && strpos($customerInfo['email'], "@testuser.com") === false) {
             $this->_coreHelper->log("Sponsor_id identificado", 'mercadopago-custom.log', $sponsorId);
             $preference['sponsor_id'] = (int)$sponsorId;
             $test_mode = true;
         }
-      
+
         $preference['metadata'] = array(
             "platform" => "Magento",
             "platform_version" => $this->_productMetaData->getVersion(),
@@ -561,7 +562,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             "sponsor_id" => $sponsorId,
             "test_mode" => $test_mode
         );
-      
+
         return $preference;
     }
 
@@ -606,15 +607,15 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $messageErrorToClient = $errors['NOT_IDENTIFIED'];
 
         if (isset($response['response']) &&
-         isset($response['response']['cause']) &&
-         count($response['response']['cause']) > 0) {
+            isset($response['response']['cause']) &&
+            count($response['response']['cause']) > 0) {
 
-        // get first error
+            // get first error
             $cause = $response['response']['cause'][0];
 
             if (isset($errors[$cause['code']])) {
 
-          //if exist get message error
+                //if exist get message error
                 $messageErrorToClient = $errors[$cause['code']];
             }
         }
@@ -657,7 +658,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         return $payment_methods;
     }
-  
+
     /**
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -698,10 +699,10 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         if (!$quote) {
             $quote = $this->_getQuote();
         }
-      
-        $total =  $quote->getBaseGrandTotal();
-      
-        return (float) $total;
+
+        $total = $quote->getBaseGrandTotal();
+
+        return (float)$total;
     }
 
     /**
@@ -732,10 +733,10 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         //add value on return api discount
         $details_discount['response']['transaction_amount'] = $transaction_amount;
         $details_discount['response']['params'] = [
-        "transaction_amount" => $transaction_amount,
-        "payer_email"        => $payer_email,
-        "coupon_code"        => $coupon_code
-      ];
+            "transaction_amount" => $transaction_amount,
+            "payer_email" => $payer_email,
+            "coupon_code" => $coupon_code
+        ];
 
         return $details_discount;
     }

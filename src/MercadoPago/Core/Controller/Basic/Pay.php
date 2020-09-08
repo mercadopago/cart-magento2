@@ -59,7 +59,7 @@ class Pay extends Action implements ViewInterface
      * @param Data $coreHelper
      */
     public function __construct(Context $context, Payment $paymentFactory, ScopeConfigInterface $scopeConfig, ManagerInterface $messageManager, ResultFactory $resultFactory, UrlInterface $urlInterface,
-Data $coreHelper)
+                                Data $coreHelper)
     {
         $this->_paymentFactory = $paymentFactory;
         $this->_scopeConfig = $scopeConfig;
@@ -76,7 +76,7 @@ Data $coreHelper)
      */
     public function execute()
     {
-        try{
+        try {
             $array_assign = $this->_paymentFactory->postPago();
             $resultRedirect = $this->_resultFactory->create(ResultFactory::TYPE_REDIRECT);
             if ($array_assign['status'] != 400) {
@@ -86,8 +86,8 @@ Data $coreHelper)
                 $resultRedirect->setUrl($this->_url->getUrl($this->_scopeConfig->getValue(ConfigData::PATH_BASIC_URL_FAILURE)));
             }
             return $resultRedirect;
-        }catch (Exception $e){
-            $this->_coreHelper->log("ERROR CONTROLLER BASIC PAY: ". $e->getMessage(), self::LOG_NAME);
+        } catch (Exception $e) {
+            $this->_coreHelper->log("ERROR CONTROLLER BASIC PAY: " . $e->getMessage(), self::LOG_NAME);
         }
 
     }

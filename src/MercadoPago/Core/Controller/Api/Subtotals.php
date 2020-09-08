@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Controller\Api;
 
 
@@ -32,10 +33,10 @@ class Subtotals
     /**
      * Coupon constructor.
      *
-     * @param \Magento\Framework\App\Action\Context      $context
-     * @param \Magento\Checkout\Model\Session            $checkoutSession
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Checkout\Model\Session $checkoutSession
      * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
-     * @param \Magento\Framework\Registry                $registry
+     * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -47,7 +48,7 @@ class Subtotals
         parent::__construct($context);
         $this->_checkoutSession = $checkoutSession;
         $this->quoteRepository = $quoteRepository;
-        $this->_registry     = $registry;
+        $this->_registry = $registry;
     }
 
     /**

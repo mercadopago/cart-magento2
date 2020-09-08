@@ -40,7 +40,8 @@ class Basic extends NotificationBase
         Core $coreModel,
         OrderFactory $orderFactory,
         Notifications $notifications
-    ) {
+    )
+    {
         $this->_paymentFactory = $paymentFactory;
         $this->coreHelper = $coreHelper;
         $this->coreModel = $coreModel;
@@ -64,30 +65,30 @@ class Basic extends NotificationBase
             }
             $merchantOrder = $data['merchantOrder'];
 
-            if(is_null ($merchantOrder)){
-              throw new Exception(__('Merchant Order not found or is an notification invalid type.'), 400);
+            if (is_null($merchantOrder)) {
+                throw new Exception(__('Merchant Order not found or is an notification invalid type.'), 400);
             }
-          
+
             $order = $this->_orderFactory->create()->loadByIncrementId($merchantOrder["external_reference"]);
 
-            if (empty($order) || empty($order->getId())){
+            if (empty($order) || empty($order->getId())) {
                 throw new Exception(__('Error Order Not Found in Magento: ') . $merchantOrder["external_reference"], 400);
             }
-          
-            if($order->getStatus() == 'canceled') {
-              throw new Exception(__('Order already canceled: ') . $merchantOrder["external_reference"], 400);
+
+            if ($order->getStatus() == 'canceled') {
+                throw new Exception(__('Order already canceled: ') . $merchantOrder["external_reference"], 400);
             }
 
             $data['statusFinal'] = $topicClass->getStatusFinal($data['payments'], $merchantOrder);
-          
+
             if (!$topicClass->validateRefunded($order, $data)) {
                 throw new Exception(__('Error Order Refund'), 400);
             }
-          
+
             $statusResponse = $topicClass->updateOrder($order, $data);
-            
+
             $this->setResponseHttp($statusResponse['code'], $statusResponse['text'], $request->getParams());
-          
+
         } catch (\Exception $e) {
             $this->setResponseHttp($e->getCode(), $e->getMessage(), $request->getParams());
         }
@@ -114,7 +115,6 @@ class Basic extends NotificationBase
 
         return;
     }
-
 
 
 }

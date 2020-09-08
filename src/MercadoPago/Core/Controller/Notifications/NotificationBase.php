@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Controller\Notifications;
 
 use Magento\Framework\App\Action\Action;
