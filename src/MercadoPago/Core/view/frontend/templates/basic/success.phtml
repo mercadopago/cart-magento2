@@ -90,7 +90,7 @@ $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 </div>
 
 <div class="primary button-success">
-    <?php if ($paymentResponse['status'] == 'rejected'): ?>
+    <?php if (!empty($paymentResponse) && $paymentResponse['status'] == 'rejected'): ?>
         <a class="action primary continue"
            href="<?php echo $block->escapeUrl($block->getReOrderUrl()) ?>"><span><?php /* @escapeNotVerified */
                 echo __('Retry order') ?></span></a>
