@@ -3,7 +3,6 @@
 namespace MercadoPago\Core\Controller\Notifications;
 
 use Exception;
-use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\OrderFactory;
 use MercadoPago\Core\Helper\Data;
