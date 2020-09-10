@@ -127,7 +127,8 @@ class CustomConfigProvider implements ConfigProviderInterface
                     'text-installment' => __('Enter the card number'),
                     'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                     'platform_version' => $this->_productMetaData->getVersion(),
-                    'module_version' => $this->_coreHelper->getModuleVersion()
+                    'module_version' => $this->_coreHelper->getModuleVersion(),
+                    'mp_gateway_mode' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_GATEWAY_MODE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
                 ],
             ],
         ];
