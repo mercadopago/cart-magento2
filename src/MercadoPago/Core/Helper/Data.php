@@ -48,6 +48,11 @@ class Data
     protected $_mpLogger;
 
     /**
+     * @var \MercadoPago\Core\Helper\Cache
+     */
+    protected $_mpCache;
+
+    /**
      * @var \Magento\Sales\Model\ResourceModel\Status\Collection
      */
     protected $_statusFactory;
@@ -71,8 +76,8 @@ class Data
 
     /**
      * Data constructor.
-     *
      * @param Message\MessageInterface $messageInterface
+     * @param Cache $mpCache
      * @param \Magento\Framework\App\Helper\Context $context
      * @param LayoutFactory $layoutFactory
      * @param \Magento\Payment\Model\Method\Factory $paymentMethodFactory
@@ -81,10 +86,14 @@ class Data
      * @param \Magento\Framework\App\Config\Initial $initialConfig
      * @param \MercadoPago\Core\Logger\Logger $logger
      * @param \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Magento\Backend\Block\Store\Switcher $switcher
+     * @param \Magento\Framework\Composer\ComposerInformation $composerInformation
      * @param \Magento\Framework\Module\ResourceInterface $moduleResource
      */
     public function __construct(
-        \MercadoPago\Core\Helper\Message\MessageInterface $messageInterface,
+        Message\MessageInterface $messageInterface,
+        Cache $mpCache,
         \Magento\Framework\App\Helper\Context $context,
         LayoutFactory $layoutFactory,
         \Magento\Payment\Model\Method\Factory $paymentMethodFactory,
@@ -104,6 +113,7 @@ class Data
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
         $this->_mpLogger = $logger;
+        $this->_mpCache = $mpCache;
         $this->_statusFactory = $statusFactory;
         $this->_orderFactory = $orderFactory;
         $this->_switcher = $switcher;
@@ -136,8 +146,7 @@ class Data
     }
 
     /**
-     * Return MercadoPago Api instance given AccessToken or ClientId and Secret
-     *
+     * @param null $accessToken
      * @return \MercadoPago\Core\Lib\Api
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -165,29 +174,23 @@ class Data
     }
 
     /**
-     * AccessToken valid?
-     *
      * @param $accessToken
-     *
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function isValidAccessToken($accessToken)
     {
-        if (empty($accessToken)) {
-            return false;
+        $cacheKey = "is_valid_access_token" . $accessToken;
+
+        if ($this->_mpCache->getFromCache($cacheKey)) {
+            return true;
         }
 
         $mp = $this->getApiInstance($accessToken);
-        try {
-            $response = $mp->get("/v1/payment_methods");
-            if ($response['status'] == 401 || $response['status'] == 400) {
-                return false;
-            }
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
+        $isValid = $mp->is_valid_access_token();
+
+        $this->_mpCache->saveCache($cacheKey, $isValid);
+        return $isValid;
     }
 
     /**
