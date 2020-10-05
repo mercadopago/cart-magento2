@@ -320,6 +320,32 @@ class Api
         return $discount_info;
     }
 
+    /**
+     * @return bool
+     */
+    public function is_valid_access_token()
+    {
+        if (empty($this->ll_access_token)) {
+            return false;
+        }
+
+        try {
+            $response = $this->get("/v1/payment_methods");
+
+            if (empty($response)) {
+                return false;
+            }
+
+            if ((isset($response['status'])) && ($response['status'] == 401 || $response['status'] == 400)) {
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     /* Generic resource call methods */
 
     /**
