@@ -9,6 +9,7 @@ namespace MercadoPago\Core\Helper;
 class Cache
 {
     const PREFIX_KEY = 'MP_';
+    const IS_VALID_AT = 'IS_VALID_ACCESS_TOKEN';
 
     /**
      * @var \Magento\Framework\App\CacheInterface

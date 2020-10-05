@@ -180,7 +180,7 @@ class Data
      */
     public function isValidAccessToken($accessToken)
     {
-        $cacheKey = "is_valid_access_token" . $accessToken;
+        $cacheKey = Cache::IS_VALID_AT . $accessToken;
 
         if ($this->_mpCache->getFromCache($cacheKey)) {
             return true;
