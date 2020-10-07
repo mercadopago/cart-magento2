@@ -6,6 +6,7 @@
  * @license  http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  * @link     http://www.summasolutions.net/
  */
+
 namespace MercadoPago\Core\Setup;
 
 use Magento\Framework\Setup\InstallSchemaInterface;
@@ -34,17 +35,17 @@ class InstallSchema
         $quoteTable = $installer->getTable('quote');
 
         $columns = [
-            'finance_cost_amount'      => [
-                'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                'length'   => '12,4',
+            'finance_cost_amount' => [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length' => '12,4',
                 'nullable' => true,
-                'comment'  => 'Finance Cost Amount',
+                'comment' => 'Finance Cost Amount',
             ],
             'base_finance_cost_amount' => [
-                'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                'length'   => '12,4',
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length' => '12,4',
                 'nullable' => true,
-                'comment'  => 'Base Finance Cost Amount',
+                'comment' => 'Base Finance Cost Amount',
             ]
         ];
 

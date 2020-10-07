@@ -1,7 +1,7 @@
 <script type="text/javascript" src="https://secure.mlstatic.com/modules/javascript/analytics.js"></script>
 <script>
     var data = <?php echo json_encode($this->getPaymentData()) ?>;
-    if (data !== null ) {
+    if (data !== null) {
         var MA = ModuleAnalytics;
         if (data.public_key !== undefined) {
             MA.setPublicKey(data.public_key);

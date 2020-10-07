@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Model\System\Config\Source;
 
 /**
@@ -17,8 +18,8 @@ class ListStatus
     public function toOptionArray()
     {
         $status = [];
-        $status[] = ['value' => "do_not_send",  'label' => __("Do not send")];
-        $status[] = ['value' => "pending",  'label' => __("pending")];
+        $status[] = ['value' => "do_not_send", 'label' => __("Do not send")];
+        $status[] = ['value' => "pending", 'label' => __("pending")];
         $status[] = ['value' => "approved", 'label' => __("approved")];
         $status[] = ['value' => "authorized", 'label' => __("authorized")];
         $status[] = ['value' => "in_process", 'label' => __("in_process")];

@@ -53,8 +53,9 @@ class Basic extends AbstractMethod
         Data $paymentData,
         Logger $logger,
         Version $version,
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata 
-    ) {
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata
+    )
+    {
         parent::__construct(
             $context,
             $registry,
@@ -111,18 +112,18 @@ class Basic extends AbstractMethod
     protected function getConfig()
     {
         $config = [
-                'installments' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_MAX_INSTALLMENTS, ScopeInterface::SCOPE_STORE),
-                'auto_return' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_AUTO_RETURN, ScopeInterface::SCOPE_STORE),
-                'success_page' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_SUCCESS_PAGE, ScopeInterface::SCOPE_STORE),
-                'sponsor_id' => $this->_scopeConfig->getValue(ConfigData::PATH_SPONSOR_ID, ScopeInterface::SCOPE_STORE),
-                'category_id' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_CATEGORY, ScopeInterface::SCOPE_STORE),
-                'country' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_COUNTRY, ScopeInterface::SCOPE_STORE),
-                'access_token' => $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE),
-                'binary_mode' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_BINARY_MODE, ScopeInterface::SCOPE_STORE),
-                'expiration_time_preference' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXPIRATION_TIME_PREFERENCE, ScopeInterface::SCOPE_STORE),
-                'statement_descriptor' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_STATEMENT_DESCRIPTION, ScopeInterface::SCOPE_STORE),
-                'exclude_payment_methods' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE)
-            ];
+            'installments' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_MAX_INSTALLMENTS, ScopeInterface::SCOPE_STORE),
+            'auto_return' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_AUTO_RETURN, ScopeInterface::SCOPE_STORE),
+            'success_page' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_SUCCESS_PAGE, ScopeInterface::SCOPE_STORE),
+            'sponsor_id' => $this->_scopeConfig->getValue(ConfigData::PATH_SPONSOR_ID, ScopeInterface::SCOPE_STORE),
+            'category_id' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_CATEGORY, ScopeInterface::SCOPE_STORE),
+            'country' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_COUNTRY, ScopeInterface::SCOPE_STORE),
+            'access_token' => $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE),
+            'binary_mode' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_BINARY_MODE, ScopeInterface::SCOPE_STORE),
+            'expiration_time_preference' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXPIRATION_TIME_PREFERENCE, ScopeInterface::SCOPE_STORE),
+            'statement_descriptor' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_STATEMENT_DESCRIPTION, ScopeInterface::SCOPE_STORE),
+            'exclude_payment_methods' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE)
+        ];
 
         if (!$config) {
             throw new Exception(__('Error on create preference Basic Checkout - Exception on getConfig'));
@@ -145,14 +146,14 @@ class Basic extends AbstractMethod
             $product = $item->getProduct();
             $image = $this->_helperImage->init($product, 'image');
             $items[] = [
-                    "id" => $item->getSku(),
-                    "title" => $product->getName(),
-                    "description" => $product->getName(),
-                    "picture_url" => $image->getUrl(),
-                    "category_id" => $config['category_id'],
-                    "quantity" => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
-                    "unit_price" => (float)number_format($item->getPrice(), 2, '.', '')
-                ];
+                "id" => $item->getSku(),
+                "title" => $product->getName(),
+                "description" => $product->getName(),
+                "picture_url" => $image->getUrl(),
+                "category_id" => $config['category_id'],
+                "quantity" => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
+                "unit_price" => (float)number_format($item->getPrice(), 2, '.', '')
+            ];
         }
 
         $this->calculateDiscountAmount($items, $order, $config);
@@ -167,12 +168,12 @@ class Basic extends AbstractMethod
         if ($total_item > $order_amount || $total_item < $order_amount) {
             $diff_price = $order_amount - $total_item;
             $difference = [
-                    "title" => "Difference amount of the items with a total",
-                    "description" => "Difference amount of the items with a total",
-                    "category_id" => $config['category_id'],
-                    "quantity" => 1,
-                    "unit_price" => (float)$diff_price
-                ];
+                "title" => "Difference amount of the items with a total",
+                "description" => "Difference amount of the items with a total",
+                "category_id" => $config['category_id'],
+                "quantity" => 1,
+                "unit_price" => (float)$diff_price
+            ];
             $this->_helperData->log("Total items: " . $total_item, 'mercadopago-basic.log');
             $this->_helperData->log("Total order: " . $order_amount, 'mercadopago-basic.log');
             $this->_helperData->log("Difference add items: " . $diff_price, 'mercadopago-basic.log');
@@ -197,12 +198,12 @@ class Basic extends AbstractMethod
     {
         if ($order->getDiscountAmount() < 0) {
             $arr[] = [
-                    "title" => "Store discount coupon",
-                    "description" => "Store discount coupon",
-                    "category_id" => $config['category_id'],
-                    "quantity" => 1,
-                    "unit_price" => (float)$order->getDiscountAmount()
-                ];
+                "title" => "Store discount coupon",
+                "description" => "Store discount coupon",
+                "category_id" => $config['category_id'],
+                "quantity" => 1,
+                "unit_price" => (float)$order->getDiscountAmount()
+            ];
         }
 
         if (empty($arr)) {
@@ -221,12 +222,12 @@ class Basic extends AbstractMethod
     {
         if ($order->getBaseTaxAmount() > 0) {
             $arr[] = [
-                    "title" => "Store taxes",
-                    "description" => "Store taxes",
-                    "category_id" => $config['category_id'],
-                    "quantity" => 1,
-                    "unit_price" => (float)$order->getBaseTaxAmount()
-                ];
+                "title" => "Store taxes",
+                "description" => "Store taxes",
+                "category_id" => $config['category_id'],
+                "quantity" => 1,
+                "unit_price" => (float)$order->getBaseTaxAmount()
+            ];
         }
 
         if (empty($arr)) {
@@ -262,12 +263,12 @@ class Basic extends AbstractMethod
     protected function getReceiverAddress($shippingAddress)
     {
         $receiverAddress = [
-                "floor" => "-",
-                "zip_code" => $shippingAddress->getPostcode(),
-                "street_name" => $shippingAddress->getStreet()[0] . " - " . $shippingAddress->getCity() . " - " . $shippingAddress->getCountryId(),
-                "apartment" => "-",
-                "street_number" => ""
-            ];
+            "floor" => "-",
+            "zip_code" => $shippingAddress->getPostcode(),
+            "street_name" => $shippingAddress->getStreet()[0] . " - " . $shippingAddress->getCity() . " - " . $shippingAddress->getCountryId(),
+            "apartment" => "-",
+            "street_number" => ""
+        ];
 
         if (!is_array($receiverAddress)) {
             throw new Exception(__('Error on create preference Basic Checkout - Exception on getReceiverAddress'));
@@ -321,10 +322,10 @@ class Basic extends AbstractMethod
         }
 
         $result['address'] = [
-                "zip_code" => $billingAddress['postcode'],
-                "street_name" => $billingAddress['street'] . " - " . $billingAddress['city'] . " - " . $billingAddress['country_id'],
-                "street_number" => ""
-            ];
+            "zip_code" => $billingAddress['postcode'],
+            "street_name" => $billingAddress['street'] . " - " . $billingAddress['city'] . " - " . $billingAddress['country_id'],
+            "street_number" => ""
+        ];
 
         if (!is_array($result)) {
             throw new Exception(__('Error on create preference Basic Checkout - Exception on getPayerInfo'));
@@ -358,16 +359,16 @@ class Basic extends AbstractMethod
      */
     protected function getSponsorId($config)
     {
-      
-      $sponsor_id = $config['sponsor_id'];
 
-      $this->_helperData->log("Sponsor_id", 'mercadopago-basic.log', $sponsor_id);
-      if (!empty($sponsor_id)) {
-        $this->_helperData->log("Sponsor_id identificado", 'mercadopago-basic.log', $sponsor_id);
-        return (int)$sponsor_id;
-      }
+        $sponsor_id = $config['sponsor_id'];
 
-      return  null;
+        $this->_helperData->log("Sponsor_id", 'mercadopago-basic.log', $sponsor_id);
+        if (!empty($sponsor_id)) {
+            $this->_helperData->log("Sponsor_id identificado", 'mercadopago-basic.log', $sponsor_id);
+            return (int)$sponsor_id;
+        }
+
+        return null;
     }
 
     /**
@@ -451,13 +452,13 @@ class Basic extends AbstractMethod
             if ($config['auto_return'] == 1) {
                 $arr['auto_return'] = "approved";
             }
-            
+
             $sponsor_id = $this->getSponsorId($config);
 
             $siteId = strtoupper($config['country']);
             if ($siteId == 'MLC' || $siteId == 'MCO') {
                 foreach ($arr['items'] as $key => $item) {
-                    $arr['items'][$key]['unit_price'] = (int) $item['unit_price'];
+                    $arr['items'][$key]['unit_price'] = (int)$item['unit_price'];
                 }
             }
 
@@ -465,7 +466,7 @@ class Basic extends AbstractMethod
 
             if (!empty($config['expiration_time_preference'])) {
                 $arr['expires'] = true;
-                $arr['expiration_date_to'] = date('Y-m-d\TH:i:s.000O',strtotime('+' . $config['expiration_time_preference'] . ' hours'));
+                $arr['expiration_date_to'] = date('Y-m-d\TH:i:s.000O', strtotime('+' . $config['expiration_time_preference'] . ' hours'));
             }
 
             $test_mode = true;
@@ -482,7 +483,7 @@ class Basic extends AbstractMethod
                 "checkout" => "smart",
                 "sponsor_id" => $sponsor_id,
                 "test_mode" => $test_mode
-            );            
+            );
 
             if (!empty($config['statement_descriptor'])) {
                 $arr['statement_descriptor'] = $config['statement_descriptor'];

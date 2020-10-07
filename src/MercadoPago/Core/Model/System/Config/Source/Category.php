@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Model\System\Config\Source;
 
 /**
@@ -20,7 +21,7 @@ class Category
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \MercadoPago\Core\Helper\Data                      $coreHelper
+     * @param \MercadoPago\Core\Helper\Data $coreHelper
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -37,34 +38,35 @@ class Category
      */
     public function toOptionArray()
     {
-      try {
-        $this->coreHelper->log("GET /item_categories", 'mercadopago');
-        $response = \MercadoPago\Core\Lib\RestClient::get("/item_categories");
-      } catch (\Exception $e) {
-        $this->coreHelper->log("Category:: An error occurred at the time of obtaining the categories: " . $e);
-        return [];
-      }
-
-      $response = $response['response'];
-
-      $cat = array();
-      $count = 0;
-      foreach ($response as $v) {
-        //force category others first
-        if ($v['id'] == "others") {
-          $cat[0] = ['value' => $v['id'], 'label' => __($v['description'])];
-        } else {
-          $count++;
-          $cat[$count] = ['value' => $v['id'], 'label' => __($v['description'])];
+        try {
+            $access_token = $this->coreHelper->getAccessToken();
+            $this->coreHelper->log("GET /item_categories", 'mercadopago');
+            $response = \MercadoPago\Core\Lib\RestClient::get("/item_categories", null, ["Authorization: Bearer " . $access_token]);
+        } catch (\Exception $e) {
+            $this->coreHelper->log("Category:: An error occurred at the time of obtaining the categories: " . $e);
+            return [];
         }
 
-      };
+        $response = $response['response'];
 
-      //force order by key
-      ksort($cat);
+        $cat = array();
+        $count = 0;
+        foreach ($response as $v) {
+            //force category others first
+            if ($v['id'] == "others") {
+                $cat[0] = ['value' => $v['id'], 'label' => __($v['description'])];
+            } else {
+                $count++;
+                $cat[$count] = ['value' => $v['id'], 'label' => __($v['description'])];
+            }
 
-      $this->coreHelper->log("Category:: Displayed", 'mercadopago', $cat);
-      return $cat;
+        };
+
+        //force order by key
+        ksort($cat);
+
+        $this->coreHelper->log("Category:: Displayed", 'mercadopago', $cat);
+        return $cat;
     }
 
 }

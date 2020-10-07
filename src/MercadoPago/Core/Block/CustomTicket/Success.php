@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Block\CustomTicket;
 
 /**
@@ -6,7 +7,6 @@ namespace MercadoPago\Core\Block\CustomTicket;
  *
  * @package MercadoPago\Core\Block\CustomTicket
  */
-
 class Success
     extends \MercadoPago\Core\Block\AbstractSuccess
 {

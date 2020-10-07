@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Controller\Customticket;
 
 /**
@@ -23,8 +24,8 @@ class Success
      * Success constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Checkout\Model\Session       $checkoutSession
-     * @param \Magento\Sales\Model\OrderFactory     $orderFactory
+     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
