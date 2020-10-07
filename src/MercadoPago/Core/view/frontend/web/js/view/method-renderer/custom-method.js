@@ -48,6 +48,7 @@ define(
 
                     MPv1.text.choose = $t('Choose');
                     MPv1.text.other_bank = $t('Other Bank');
+                    MPv1.gateway_mode = window.checkoutConfig.payment[this.getCode()]['gateway_mode'];
 
                     //add actions coupon
                     MPv1 = self.actionsCouponDiscount(MPv1);
@@ -163,6 +164,12 @@ define(
                 }
                 return '';
             },
+            getMpGatewayMode: function () {
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    return window.checkoutConfig.payment[this.getCode()]['mp_gateway_mode'];   
+                }
+                return 0;
+            },
 
             /**
              * Get url to logo
@@ -191,7 +198,6 @@ define(
                         'doc_type': document.querySelector(MPv1.selectors.docType).value,
                         'doc_number': document.querySelector(MPv1.selectors.docNumber).value,
                         'installments': document.querySelector(MPv1.selectors.installments).value,
-
                         'total_amount': document.querySelector(MPv1.selectors.amount).value,
                         'amount': document.querySelector(MPv1.selectors.amount).value,
                         'site_id': this.getCountry(),
@@ -200,7 +206,8 @@ define(
                         'payment_method_selector': document.querySelector(MPv1.selectors.paymentMethodSelector).value,
                         'one_click_pay': document.querySelector(MPv1.selectors.CustomerAndCard).value,
                         'issuer_id': document.querySelector(MPv1.selectors.issuer).value,
-                        'coupon_code': document.querySelector(MPv1.selectors.couponCode).value
+                        'coupon_code': document.querySelector(MPv1.selectors.couponCode).value,
+                        'gateway_mode': document.querySelector(MPv1.selectors.MpGatewayMode).value,
                     }
                 };
 

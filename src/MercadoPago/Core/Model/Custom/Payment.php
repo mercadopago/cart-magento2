@@ -299,6 +299,11 @@ class Payment
         $info->setAdditionalInformation('payment_method', $infoForm['payment_method_id']);
         $info->setAdditionalInformation('cardholderName', $infoForm['card_holder_name']);
 
+        error_log('set additional '.$infoForm['gateway_mode']);
+        if (isset($infoForm['gateway_mode'])) {
+            $info->setAdditionalInformation('gateway_mode', $infoForm['gateway_mode']);
+        }
+
         return $this;
     }
 
@@ -315,7 +320,6 @@ class Payment
      */
     public function initialize($paymentAction, $stateObject)
     {
-
         if ($this->getInfoInstance()->getAdditionalInformation('token') == "") {
             $this->_helperData->log("CustomPayment::initialize - Token for payment creation was not generated, therefore it is not possible to continue the transaction");
             throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['TOKEN_EMPTY']));
@@ -361,6 +365,10 @@ class Payment
                 if (isset($customer['id'])) {
                     $preference['metadata']['customer_id'] = $customer['id'];
                 }
+            }
+
+            if ($payment->getAdditionalInformation("gateway_mode")) {
+                $preference['processing_mode'] = 'gateway';
             }
 
             $preference['binary_mode'] = $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BINARY_MODE);
