@@ -463,41 +463,40 @@ class Payment
      * @return bool
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
-    {
+    {     
+      $parent = parent::isAvailable($quote);     
+      $status = true;
 
-        $parent = parent::isAvailable($quote);
-        $status = true;
+      if(!$parent){
+        $this->_helperData->log("CustomPayment::isAvailable - Module not available due to magento rules.");
+        $status = false;
+      }
 
-        if (!$parent) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available due to magento rules.");
-            $status = false;
-        }
+      $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+      if(empty($accessToken)){
+        $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token has not been configured.");
+        $status = false;
+      }
+      
+      $public_key = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+      if(empty($public_key)){
+        $this->_helperData->log("CustomPayment::isAvailable - Module not available because public_key has not been configured.");
+        $status = false;
+      }
 
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        if (empty($accessToken)) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token has not been configured.");
-            $status = false;
-        }
+      if(!$this->_helperData->isValidAccessToken($accessToken)){
+        $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token is not valid.");
+        $status = false;
+      }
+      
+      $secure = $this->_request->isSecure();
+      if($secure === FALSE){
+        $this->_helperData->log("CustomPayment::isAvailable - Module not available because it has production credentials in non HTTPS environment.");
+        $status = false;
+      }
 
-        $public_key = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        if (empty($public_key)) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because public_key has not been configured.");
-            $status = false;
-        }
-
-        if (!$this->_helperData->isValidAccessToken($accessToken)) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token is not valid.");
-            $status = false;
-        }
-
-        $secure = $this->_request->isSecure();
-        if (strpos($accessToken, 'APP_USR') === TRUE && $secure === FALSE) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because it has production credentials in non HTTPS environment.");
-            $status = false;
-        }
-
-
-        return $status;
+      
+      return $status;
     }
 
     /**
