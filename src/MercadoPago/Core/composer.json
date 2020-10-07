@@ -1,18 +1,18 @@
 {
-  "name": "mercadopago/module-core",
-  "description": "Mercado Pago payment method module",
-  "type": "magento2-module",
-  "version": "3.4.1",
-  "license": [
-    "OSL-3.0",
-    "AFL-3.0"
-  ],
-  "autoload": {
-    "files": [
-      "registration.php"
+    "name": "mercadopago/module-core",
+    "description": "Mercado Pago payment method module",
+    "type": "magento2-module",
+    "version": "3.4.1",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
     ],
-    "psr-4": {
-      "MercadoPago\\Core\\": ""
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "MercadoPago\\Core\\": ""
+        }
     }
-  }
 }

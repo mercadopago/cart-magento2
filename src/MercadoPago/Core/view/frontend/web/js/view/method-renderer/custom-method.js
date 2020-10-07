@@ -166,7 +166,7 @@ define(
             },
             getMpGatewayMode: function () {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-                    return window.checkoutConfig.payment[this.getCode()]['mp_gateway_mode'];   
+                    return window.checkoutConfig.payment[this.getCode()]['mp_gateway_mode'];
                 }
                 return 0;
             },

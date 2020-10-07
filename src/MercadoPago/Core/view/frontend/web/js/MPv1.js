@@ -378,17 +378,17 @@
             var list_aggregator = [];
             var list_gateway = [];
 
-            issuers.forEach(function(issuer) {
-                if(issuer.processing_mode == 'gateway') {
+            issuers.forEach(function (issuer) {
+                if (issuer.processing_mode == 'gateway') {
                     list_gateway.push(issuer);
-                }else{
+                } else {
                     list_aggregator.push(issuer);
                 }
             });
 
-            if(MPv1.gateway_mode) {
+            if (MPv1.gateway_mode) {
                 issuers = list_gateway;
-            }else{
+            } else {
                 issuers = list_aggregator;
             }
             /** END Gateway Mode **/
@@ -468,16 +468,16 @@
             var html_option = '<option value="-1">' + MPv1.text.choose + '...</option>';
             payerCosts = response[0].payer_costs;
 
-            if(gateway_mode) {
-                for(var x in response) {
+            if (gateway_mode) {
+                for (var x in response) {
                     var installments = response[x];
-                    if(installments.processing_mode == 'gateway') {
+                    if (installments.processing_mode == 'gateway') {
                         payerCosts = installments.payer_costs
                         document.querySelector(MPv1.selectors.gateway_mode).value = installments.merchant_account_id;
                     }
                 }
             }
-            
+
             // fragment.appendChild(option);
             for (var i = 0; i < payerCosts.length; i++) {
 

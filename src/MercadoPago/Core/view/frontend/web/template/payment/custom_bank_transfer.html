@@ -56,16 +56,17 @@
                             <!-- ko foreach: {data: getLengthPaymentMethods(), as: 'payment_method'} -->
                             <li class="mercadopago-ticket-option">
                                 <input
-                                        type="radio"
-                                        class="optionsTicketMp"
-                                        name="mercadopago_custom_bank_transfer[payment_method_id]"
-                                        data-bind="'attr':{
+                                    type="radio"
+                                    class="optionsTicketMp"
+                                    name="mercadopago_custom_bank_transfer[payment_method_id]"
+                                    data-bind="'attr':{
                                   value: payment_method.id,
                                   'data-validate': JSON.stringify({required:true})
                                   }">
 
                                 <label class="mercadopago-ticket-label">
-                                    <img data-bind="'attr':{src: payment_method.secure_thumbnail, alt: payment_method.name}">
+                                    <img
+                                        data-bind="'attr':{src: payment_method.secure_thumbnail, alt: payment_method.name}">
                                     <label class="mercadopago-ticket-label"
                                            data-bind="text: payment_method.name"></label>
                                 </label>

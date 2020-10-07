@@ -76,7 +76,8 @@
                             data-checkout='cardId'>
                         <optgroup data-bind='attr: {label: $t("Your Card")}, foreach: getCardListCustomerCards()'
                                   id="payment-methods-for-customer-and-cards">
-                            <option data-bind="text: text,  attr: { first_six_digits: first_six_digits, last_four_digits: last_four_digits, security_code_length: security_code_length, type_checkout: type_checkout, payment_method_id: payment_method_id, value: id}"></option>
+                            <option
+                                data-bind="text: text,  attr: { first_six_digits: first_six_digits, last_four_digits: last_four_digits, security_code_length: security_code_length, type_checkout: type_checkout, payment_method_id: payment_method_id, value: id}"></option>
                         </optgroup>
 
                         <optgroup id="payment-methods-list-other-cards" data-bind="attr: {label: $t('Other Cards')}">
@@ -271,7 +272,7 @@
                 <input type="text" id="cardTruncated" name="mercadopago_custom[cardTruncated]"/>
                 <input type="text" id="CustomerAndCard" name="mercadopago_custom[CustomerAndCard]"/>
                 <input type="text" id="MpGatewayMode" name="mercadopago_custom[MpGatewayMode]"
-                        data-bind="attr: {value: getMpGatewayMode()}"/>
+                       data-bind="attr: {value: getMpGatewayMode()}"/>
             </div>
 
             <!-- END MPV1-->
