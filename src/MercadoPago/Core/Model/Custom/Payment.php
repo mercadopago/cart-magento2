@@ -315,8 +315,6 @@ class Payment
      */
     public function initialize($paymentAction, $stateObject)
     {
-//       throw new ValidatorException("HEREEEEEE......");
-//       throw new \Exception("teste");
 
         if ($this->getInfoInstance()->getAdditionalInformation('token') == "") {
             $this->_helperData->log("CustomPayment::initialize - Token for payment creation was not generated, therefore it is not possible to continue the transaction");

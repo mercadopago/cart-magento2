@@ -128,8 +128,7 @@ class Payment extends AbstractMethod
     {
         try {
             $response = $this->_basic->makePreference();
-            error_log(json_encode($response));
-            error_log(print_r($response, true));
+
             if ($response['status'] == 200 || $response['status'] == 201) {
                 $payment = $response['response'];
 

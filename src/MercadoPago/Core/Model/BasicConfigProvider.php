@@ -110,7 +110,7 @@ class BasicConfigProvider implements ConfigProviderInterface
         $excludePaymentMethods = explode(",", $excludePaymentMethods);
 
         try {
-            $paymentMethods = RestClient::get("/v1/payment_methods?access_token=" . $accessToken);
+            $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
 
             //validate active payments methods
             $debit = 0;

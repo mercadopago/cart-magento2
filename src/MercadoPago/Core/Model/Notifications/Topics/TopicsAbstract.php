@@ -257,7 +257,7 @@ abstract class TopicsAbstract
     public function updateOrder($order, $data)
     {
         if ($this->checkStatusAlreadyUpdated($order, $data)) {
-            $this->_dataHelper->log("Already updated", 'mercadopago-basic.log', $teste);
+            $this->_dataHelper->log("Already updated", 'mercadopago-basic.log');
             return $order;
         }
         $this->updatePaymentInfo($order, $data);

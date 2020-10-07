@@ -116,7 +116,7 @@ class RefundObserverBeforeSave
         $mp = $this->dataHelper->getApiInstance($accessToken);
 
         //Get Payment detail
-        $response = $mp->get("/v1/payments/$paymentID?access_token=$accessToken");
+        $response = $mp->get("/v1/payments/" . $paymentID);
 
         if ($response['status'] == 200) {
 
@@ -127,13 +127,13 @@ class RefundObserverBeforeSave
 
                 if ($amountRefund == $response['response']['transaction_amount']) {
                     //total refund
-                    $responseRefund = $mp->post("/v1/payments/$paymentID/refunds?access_token=$accessToken", null);
+                    $responseRefund = $mp->post("/v1/payments/$paymentID/refunds", null);
                 } else {
                     //partial refund
                     $params = array(
                         "amount" => $amountRefund,
                     );
-                    $responseRefund = $mp->post("/v1/payments/$paymentID/refunds?access_token=$accessToken", $params);
+                    $responseRefund = $mp->post("/v1/payments/$paymentID/refunds", $params);
                 }
 
                 if (!is_null($responseRefund) || $responseRefund['status'] == 200 || $responseRefund['status'] == 201) {
