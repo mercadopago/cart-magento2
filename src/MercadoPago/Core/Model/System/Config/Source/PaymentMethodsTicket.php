@@ -56,10 +56,10 @@ class PaymentMethodsTicket
             return $methods;
         }
 
-        $this->coreHelper->log("GET /v1/payment_methods?access_token=" . $accessToken, 'mercadopago');
+        $this->coreHelper->log("GET /v1/payment_methods", 'mercadopago');
 
         try {
-            $response = \MercadoPago\Core\Lib\RestClient::get("/v1/payment_methods?access_token=" . $accessToken);
+            $response = \MercadoPago\Core\Lib\RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
         } catch (\Exception $e) {
             $this->coreHelper->log("PaymentMethodsTicket:: An error occurred at the time of obtaining the ticket payment methods: " . $e);
             return [];

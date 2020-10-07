@@ -220,7 +220,7 @@ class Payment extends TopicsAbstract
                 "issuer_id" => $issuer_id,
                 "payment_method_id" => $payment_method_id
             ];
-            $card = RestClient::post("/v1/customers/" . $customer_id . "/cards?access_token=" . $accessToken, $request);
+            $card = RestClient::post("/v1/customers/" . $customer_id . "/cards", $request, null, ["Authorization: Bearer " . $accessToken]);
             return $card;
         }
     }

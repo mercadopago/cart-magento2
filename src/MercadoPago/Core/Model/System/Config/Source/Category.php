@@ -39,8 +39,9 @@ class Category
     public function toOptionArray()
     {
         try {
+            $access_token = $this->coreHelper->getAccessToken();
             $this->coreHelper->log("GET /item_categories", 'mercadopago');
-            $response = \MercadoPago\Core\Lib\RestClient::get("/item_categories");
+            $response = \MercadoPago\Core\Lib\RestClient::get("/item_categories", null, ["Authorization: Bearer " . $access_token]);
         } catch (\Exception $e) {
             $this->coreHelper->log("Category:: An error occurred at the time of obtaining the categories: " . $e);
             return [];

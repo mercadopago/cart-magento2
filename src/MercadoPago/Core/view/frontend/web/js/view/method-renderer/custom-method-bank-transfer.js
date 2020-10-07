@@ -58,7 +58,7 @@ define(
             },
 
             getFinancialInstitutions: function () {
-                // We need to customize this feature to get the information according to the payment method selected. 
+                // We need to customize this feature to get the information according to the payment method selected.
                 // Since we only have one payment method of this type, we only get the first element
 
                 var options = this.getPaymentMethods();

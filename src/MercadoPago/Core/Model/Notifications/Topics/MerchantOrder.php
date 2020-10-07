@@ -228,7 +228,7 @@ class MerchantOrder extends TopicsAbstract
         if ($this->checkStatusAlreadyUpdated($order, $data)) {
             $message = "[Already updated] " . $this->getMessage($payment);
             $this->_dataHelper->log($message, 'mercadopago-basic.log');
-            return ['text' => $message, 'code' => Response::HTTP_OK];;
+            return ['text' => $message, 'code' => Response::HTTP_OK];
         }
 
         $this->updatePaymentInfo($order, $data);

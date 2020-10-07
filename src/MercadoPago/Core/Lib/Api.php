@@ -121,7 +121,7 @@ class Api
     {
         $access_token = $this->get_access_token();
 
-        $authorized_payment_info = \MercadoPago\Core\Lib\RestClient::get("/authorized_payments/" . $id . "?access_token=" . $access_token);
+        $authorized_payment_info = \MercadoPago\Core\Lib\RestClient::get("/authorized_payments/" . $id, null, ["Authorization: Bearer " . $access_token]);
         return $authorized_payment_info;
     }
 
@@ -134,7 +134,7 @@ class Api
     {
         $access_token = $this->get_access_token();
 
-        $response = \MercadoPago\Core\Lib\RestClient::post("/v1/payments/$id/refunds?access_token=$access_token", array());
+        $response = \MercadoPago\Core\Lib\RestClient::post("/v1/payments/$id/refunds", array(), null, ["Authorization: Bearer " . $access_token]);
         return $response;
     }
 
@@ -151,7 +151,7 @@ class Api
             "status" => "cancelled"
         );
 
-        $response = \MercadoPago\Core\Lib\RestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $cancel_status);
+        $response = \MercadoPago\Core\Lib\RestClient::put("/preapproval/" . $id, $cancel_status, null, ["Authorization: Bearer " . $access_token]);
         return $response;
     }
 
@@ -164,8 +164,11 @@ class Api
     {
         $access_token = $this->get_access_token();
 
-        $extra_params = array('platform: ' . $this->_platform, 'so;', 'type: ' . $this->_type);
-        $preference_result = \MercadoPago\Core\Lib\RestClient::post("/checkout/preferences?access_token=" . $access_token, $preference, "application/json", $extra_params);
+        $extra_params = array(
+            'platform: ' . $this->_platform, 'so;',
+            'type: ' . $this->_type,
+            'Authorization: Bearer ' . $access_token);
+        $preference_result = \MercadoPago\Core\Lib\RestClient::post("/checkout/preferences", $preference, "application/json", $extra_params);
         return $preference_result;
     }
 
@@ -179,7 +182,7 @@ class Api
     {
         $access_token = $this->get_access_token();
 
-        $preference_result = \MercadoPago\Core\Lib\RestClient::put("/checkout/preferences/{$id}?access_token=" . $access_token, $preference);
+        $preference_result = \MercadoPago\Core\Lib\RestClient::put("/checkout/preferences/{$id}", $preference, null, ["Authorization: Bearer " . $access_token]);
         return $preference_result;
     }
 
@@ -192,7 +195,7 @@ class Api
     {
         $access_token = $this->get_access_token();
 
-        $preference_result = \MercadoPago\Core\Lib\RestClient::get("/checkout/preferences/{$id}?access_token=" . $access_token);
+        $preference_result = \MercadoPago\Core\Lib\RestClient::get("/checkout/preferences/{$id}", null, ["Authorization: Bearer " . $access_token]);
         return $preference_result;
     }
 
@@ -205,7 +208,7 @@ class Api
     {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::post("/preapproval?access_token=" . $access_token, $preapproval_payment);
+        $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::post("/preapproval", $preapproval_payment, null, ["Authorization: Bearer " . $access_token]);
         return $preapproval_payment_result;
     }
 
@@ -218,7 +221,7 @@ class Api
     {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::get("/preapproval/{$id}?access_token=" . $access_token);
+        $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::get("/preapproval/{$id}", null, ["Authorization: Bearer " . $access_token]);
         return $preapproval_payment_result;
     }
 
@@ -232,7 +235,7 @@ class Api
     {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::put("/preapproval/" . $id . "?access_token=" . $access_token, $preapproval_payment);
+        $preapproval_payment_result = \MercadoPago\Core\Lib\RestClient::put("/preapproval/" . $id, $preapproval_payment, null, ["Authorization: Bearer " . $access_token]);
         return $preapproval_payment_result;
     }
 
@@ -245,7 +248,7 @@ class Api
     {
         $access_token = $this->get_access_token();
 
-        $preference_result = \MercadoPago\Core\Lib\RestClient::post("/checkout/custom/create_payment?access_token=" . $access_token, $info);
+        $preference_result = \MercadoPago\Core\Lib\RestClient::post("/checkout/custom/create_payment", $info, null, ["Authorization: Bearer " . $access_token]);
         return $preference_result;
     }
 
@@ -270,7 +273,7 @@ class Api
             "email" => $email
         );
 
-        $customer = \MercadoPago\Core\Lib\RestClient::post("/v1/customers?access_token=" . $access_token, $request);
+        $customer = \MercadoPago\Core\Lib\RestClient::post("/v1/customers", $request, null, ["Authorization: Bearer " . $access_token]);
 
         return $customer;
     }
@@ -280,7 +283,7 @@ class Api
 
         $access_token = $this->get_access_token();
 
-        $customer = \MercadoPago\Core\Lib\RestClient::get("/v1/customers/search?access_token=" . $access_token . "&email=" . $email);
+        $customer = \MercadoPago\Core\Lib\RestClient::get("/v1/customers/search?email=" . $email, null, ["Authorization: Bearer " . $access_token]);
         return $customer;
     }
 
@@ -295,7 +298,7 @@ class Api
             "payment_method_id" => $payment_method_id
         );
 
-        $card = \MercadoPago\Core\Lib\RestClient::post("/v1/customers/" . $customer_id . "/cards?access_token=" . $access_token, $request);
+        $card = \MercadoPago\Core\Lib\RestClient::post("/v1/customers/" . $customer_id . "/cards", $request, null, ["Authorization: Bearer " . $access_token]);
 
         return $card;
     }
@@ -305,7 +308,7 @@ class Api
 
         $access_token = $this->get_access_token();
 
-        $cards = \MercadoPago\Core\Lib\RestClient::get("/v1/customers/" . $customer_id . "/cards?access_token=" . $access_token);
+        $cards = \MercadoPago\Core\Lib\RestClient::get("/v1/customers/" . $customer_id . "/cards", null, ["Authorization: Bearer " . $access_token]);
 
         return $cards;
     }
@@ -314,10 +317,36 @@ class Api
     {
 
         $access_token = $this->get_access_token();
-        $url = "/discount_campaigns?access_token=$access_token&transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code";
-        $discount_info = \MercadoPago\Core\Lib\RestClient::get($url);
+        $url = "/discount_campaigns?transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code";
+        $discount_info = \MercadoPago\Core\Lib\RestClient::get($url, null, ["Authorization: Bearer " . $access_token]);
 
         return $discount_info;
+    }
+
+    /**
+     * @return bool
+     */
+    public function is_valid_access_token()
+    {
+        if (empty($this->ll_access_token)) {
+            return false;
+        }
+
+        try {
+            $response = $this->get("/v1/payment_methods");
+
+            if (empty($response)) {
+                return false;
+            }
+
+            if ((isset($response['status'])) && ($response['status'] == 401 || $response['status'] == 400)) {
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /* Generic resource call methods */
@@ -332,10 +361,9 @@ class Api
     {
         $params = is_array($params) ? $params : array();
 
+        $access_token = null;
         if ($authenticate !== false) {
             $access_token = $this->get_access_token();
-
-            $params["access_token"] = $access_token;
         }
 
         if (count($params) > 0) {
@@ -343,7 +371,7 @@ class Api
             $uri .= $this->build_query($params);
         }
 
-        $result = \MercadoPago\Core\Lib\RestClient::get($uri);
+        $result = \MercadoPago\Core\Lib\RestClient::get($uri, null, ["Authorization: Bearer " . $access_token]);
         return $result;
     }
 
@@ -358,14 +386,16 @@ class Api
         $params = is_array($params) ? $params : array();
 
         $access_token = $this->get_access_token();
-        $params["access_token"] = $access_token;
 
         if (count($params) > 0) {
             $uri .= (strpos($uri, "?") === false) ? "?" : "&";
             $uri .= $this->build_query($params);
         }
 
-        $extra_params = array('platform: ' . $this->_platform, 'so;', 'type: ' . $this->_type);
+        $extra_params = array(
+            'platform: ' . $this->_platform, 'so;',
+            'type: ' . $this->_type,
+            'Authorization: Bearer ' . $access_token);
         $result = \MercadoPago\Core\Lib\RestClient::post($uri, $data, "application/json", $extra_params);
         return $result;
     }
@@ -381,14 +411,13 @@ class Api
         $params = is_array($params) ? $params : array();
 
         $access_token = $this->get_access_token();
-        $params["access_token"] = $access_token;
 
         if (count($params) > 0) {
             $uri .= (strpos($uri, "?") === false) ? "?" : "&";
             $uri .= $this->build_query($params);
         }
 
-        $result = \MercadoPago\Core\Lib\RestClient::put($uri, $data);
+        $result = \MercadoPago\Core\Lib\RestClient::put($uri, $data, null, ["Authorization: Bearer " . $access_token]);
         return $result;
     }
 
@@ -403,14 +432,13 @@ class Api
         $params = is_array($params) ? $params : array();
 
         $access_token = $this->get_access_token();
-        $params["access_token"] = $access_token;
 
         if (count($params) > 0) {
             $uri .= (strpos($uri, "?") === false) ? "?" : "&";
             $uri .= $this->build_query($params);
         }
 
-        $result = \MercadoPago\Core\Lib\RestClient::delete($uri);
+        $result = \MercadoPago\Core\Lib\RestClient::delete($uri, null, ["Authorization: Bearer " . $access_token]);
         return $result;
     }
 

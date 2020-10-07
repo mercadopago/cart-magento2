@@ -94,14 +94,14 @@ class OrderCancelPlugin
         $mp = $this->dataHelper->getApiInstance($accessToken);
 
         //Get Payment detail
-        $urlGet = "/v1/payments/$paymentID?access_token=$accessToken";
+        $urlGet = "/v1/payments/" . $paymentID;
         $response = $mp->get($urlGet);
 
         if ($response['status'] == 200) {
 
             if ($response['response']['status'] == 'pending' || $response['response']['status'] == 'in_process') {
                 $data = ["status" => 'cancelled'];
-                $response = $mp->put("/v1/payments/$paymentID?access_token=$accessToken", $data);
+                $response = $mp->put("/v1/payments/" . $paymentID, $data);
 
                 if ($response['status'] == 200) {
                     $this->dataHelper->log("OrderCancelPlugin::salesOrderBeforeCancel - Payment canceled", 'mercadopago-custom.log', $response);
