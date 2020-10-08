@@ -22,39 +22,35 @@ class Payment
     );
 
     /**
-     * Assign corresponding data
-     *
-     * @param \Magento\Framework\DataObject|mixed $data
-     *
-     * @return $this
-     * @throws LocalizedException
+     * @param \Magento\Framework\DataObject $data
+     * @return $this|\MercadoPago\Core\Model\Custom\Payment
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
-        // route /checkout/onepage/savePayment
         if (!($data instanceof \Magento\Framework\DataObject)) {
             $data = new \Magento\Framework\DataObject($data);
         }
 
-        //get array info
         $infoForm = $data->getData();
 
         if (isset($infoForm['additional_data'])) {
-            $infoForm = $infoForm['additional_data'];
-        }
+            if (empty($infoForm['additional_data'])) {
+                return $this;
+            }
+            $additionalData = $infoForm['additional_data'];
 
-        $this->_helperData->log("CustomPaymentTicket::assignData - Bank Transfer Data: ", self::LOG_NAME, $infoForm);
+            $info = $this->getInfoInstance();
+            $info->setAdditionalInformation('method', $additionalData['method']);
 
-        $info = $this->getInfoInstance();
+            if (!empty($additionalData['coupon_code'])) {
+                $info->setAdditionalInformation('coupon_code', $additionalData['coupon_code']);
+            }
 
-        if (!empty($infoForm['coupon_code'])) {
-            $info->setAdditionalInformation('coupon_code', $infoForm['coupon_code']);
-        }
-
-        // Fields for create payment
-        foreach ($this->fields as $key) {
-            if (isset($infoForm[$key])) {
-                $info->setAdditionalInformation($key, $infoForm[$key]);
+            foreach ($this->fields as $key) {
+                if (isset($additionalData[$key])) {
+                    $info->setAdditionalInformation($key, $additionalData[$key]);
+                }
             }
         }
 
