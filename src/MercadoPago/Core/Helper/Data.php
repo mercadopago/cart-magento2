@@ -215,22 +215,14 @@ class Data
     }
 
     /**
-     * Return the access token proved by api
-     *
-     * @param null $scopeCode
-     *
+     * @param string $scopeCode
      * @return bool|mixed
-     * @throws \Exception
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getAccessToken($scopeCode = null)
+    public function getAccessToken($scopeCode = \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
     {
-        $clientId = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_ID, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE, $scopeCode);
-        $clientSecret = $this->scopeConfig->getValue(self::XML_PATH_CLIENT_SECRET, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE, $scopeCode);
-        try {
-            $accessToken = $this->getApiInstance($clientId, $clientSecret)->get_access_token();
-        } catch (\Exception $e) {
-            $accessToken = false;
+        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, $scopeCode);
+        if (empty($accessToken)) {
+            return false;
         }
 
         return $accessToken;
@@ -429,25 +421,52 @@ class Data
         return '';
     }
 
+    /**
+     * @param $order
+     * @return array
+     */
     public function getAnalyticsData($order)
     {
-        $additionalInfo = $order->getPayment()->getData('additional_information');
         $analyticsData = [];
-        if ($order->getPayment()->getData('method')) {
-            $methodCode = $order->getPayment()->getData('method');
-            $analyticsData = [
-                'payment_id' => isset($additionalInfo['payment_id_detail']) ? $order->getPayment()->getData('additional_information')['payment_id_detail'] : '',
-                'payment_type' => 'credit_card',
-                'checkout_type' => 'custom'
-            ];
-            if ($methodCode == \MercadoPago\Core\Model\Custom\Payment::CODE) {
-                $analyticsData['public_key'] = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-            } else {
-                $analyticsData['analytics_key'] = $this->getClientIdFromAccessToken($this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
-                $analyticsData['payment_type'] = 'ticket';
+
+        if (!empty($order->getPayment())) {
+            $additionalInfo = $order->getPayment()->getData('additional_information');
+
+            if ($order->getPayment()->getData('method')) {
+                $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+                $publicKey = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+                $methodCode = $order->getPayment()->getData('method');
+                $analyticsData = [
+                    'payment_id' => $this->getPaymentId($additionalInfo),
+                    'payment_type' => $additionalInfo['payment_method_id'],
+                    'checkout_type' => $additionalInfo['method'],
+                    'analytics_key' => $this->getClientIdFromAccessToken($accessToken)
+                ];
+                if ($methodCode == \MercadoPago\Core\Model\Custom\Payment::CODE) {
+                    $analyticsData['public_key'] = $publicKey;
+                }
             }
         }
+
         return $analyticsData;
     }
 
+    /**
+     * @param $additionalInfo
+     * @return string|null
+     */
+    public function getPaymentId($additionalInfo)
+    {
+        if (isset($additionalInfo['payment_id_detail']) && !empty($additionalInfo['payment_id_detail'])) {
+            return $additionalInfo['payment_id_detail'];
+        }
+
+        if (isset($additionalInfo['paymentResponse']) && !empty($additionalInfo['paymentResponse'])) {
+            return $additionalInfo['paymentResponse']['id'];
+        }
+
+        return null;
+    }
 }
