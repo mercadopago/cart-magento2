@@ -285,7 +285,7 @@ class Payment
             }
 
             $info = $this->getInfoInstance();
-            
+
             $info->setAdditionalInformation($additionalData);
             $info->setAdditionalInformation('method', $infoForm['method']);
             $info->setAdditionalInformation('payment_type_id', "credit_card");
@@ -305,7 +305,7 @@ class Payment
             }
         }
 
-         return $this;
+        return $this;
     }
 
     /**
