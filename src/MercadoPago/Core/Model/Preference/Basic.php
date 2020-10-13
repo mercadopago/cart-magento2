@@ -122,7 +122,8 @@ class Basic extends AbstractMethod
             'binary_mode' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_BINARY_MODE, ScopeInterface::SCOPE_STORE),
             'expiration_time_preference' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXPIRATION_TIME_PREFERENCE, ScopeInterface::SCOPE_STORE),
             'statement_descriptor' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_STATEMENT_DESCRIPTION, ScopeInterface::SCOPE_STORE),
-            'exclude_payment_methods' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE)
+            'exclude_payment_methods' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE),
+            'gateway_mode' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_GATEWAY_MODE, ScopeInterface::SCOPE_STORE)
         ];
 
         if (!$config) {
@@ -443,8 +444,6 @@ class Basic extends AbstractMethod
             $arr['back_urls']['pending'] = $backUrls['pending'];
             $arr['back_urls']['failure'] = $backUrls['failure'];
 
-            //var_dump($arr['back_urls']); die();
-
             $arr['notification_url'] = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL);
             $arr['payment_methods']['excluded_payment_methods'] = $this->getExcludedPaymentsMethods($config);
             $arr['payment_methods']['installments'] = (int)$config['installments'];
@@ -476,17 +475,22 @@ class Basic extends AbstractMethod
             }
 
             $arr['metadata'] = array(
-                "platform" => "Magento",
+                "platform" => "Magento2",
                 "platform_version" => $this->_productMetaData->getVersion(),
                 "module_version" => $this->_version->afterLoad(),
                 "site" => $siteId,
-                "checkout" => "smart",
+                "checkout" => "Pro",
                 "sponsor_id" => $sponsor_id,
                 "test_mode" => $test_mode
             );
 
             if (!empty($config['statement_descriptor'])) {
                 $arr['statement_descriptor'] = $config['statement_descriptor'];
+            }
+
+            if ($config['gateway_mode']) {
+                //CONFIRMAR DOCUMENTACAO: $preference->$processing_modes = array('gateway');
+                $arr['processing_modes'] = ['gateway'];
             }
 
             $this->_helperData->log("make array", 'mercadopago-basic.log', $arr);

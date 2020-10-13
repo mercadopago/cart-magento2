@@ -14,6 +14,7 @@
                 <sort_order>-2</sort_order>
                 <payment_action>authorize</payment_action>
                 <binary_mode>0</binary_mode>
+                <gateway_mode>0</gateway_mode>
             </mercadopago_custom>
             <mercadopago_customticket>
                 <active>1</active>
@@ -45,6 +46,7 @@
                 <binary_mode>0</binary_mode>
                 <sort_order>-3</sort_order>
                 <payment_action>authorize</payment_action>
+                <gateway_mode>0</gateway_mode>
             </mercadopago_basic>
             <mercadopago>
                 <order_status_approved>processing</order_status_approved>

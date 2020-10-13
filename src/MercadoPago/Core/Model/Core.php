@@ -552,11 +552,11 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $preference['sponsor_id'] = (int)$sponsorId;
             $test_mode = true;
         }
-
+        $this->_version->afterLoad();
         $preference['metadata'] = array(
             "platform" => "Magento",
             "platform_version" => $this->_productMetaData->getVersion(),
-            "module_version" => $this->_version->afterLoad(),
+            "module_version" => $this->_version->getValue(),
             "site" => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_COUNTRY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
             "checkout" => "custom",
             "sponsor_id" => $sponsorId,
