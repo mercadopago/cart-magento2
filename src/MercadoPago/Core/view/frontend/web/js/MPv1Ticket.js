@@ -9,7 +9,7 @@
             discount_action_url: "",
             payer_email: "",
             default: true,
-            status: false
+            status: true
         },
         validate_on: {
             event: false,

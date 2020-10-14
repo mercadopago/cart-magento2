@@ -16,7 +16,7 @@
             discount_action_url: '',
             payer_email: '',
             default: true,
-            status: false
+            status: true
         },
         customer_and_card: {
             default: false,
