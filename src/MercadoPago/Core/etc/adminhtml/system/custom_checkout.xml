@@ -53,7 +53,7 @@
                 Mercado Pago on the payment form.
             </comment>
         </field>
-        <field id="gateway_mode" translate="label comment" type="select" sortOrder="110" showInDefault="0" showInWebsite="0" showInStore="0">
+        <field id="gateway_mode" translate="label" type="select" sortOrder="110" showInDefault="0" showInWebsite="0" showInStore="0">
             <label>Gateway Mode</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago_custom/gateway_mode</config_path>

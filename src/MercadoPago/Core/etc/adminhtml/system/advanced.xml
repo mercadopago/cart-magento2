@@ -9,6 +9,11 @@
             <attribute type="shared">1</attribute>
         </field>
 
+        <field id="sponsor_id" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Sponsor ID</label>
+            <config_path>payment/mercadopago/sponsor_id</config_path>
+        </field>
+
         <field id="category_id" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Category of your store</label>
             <source_model>MercadoPago\Core\Model\System\Config\Source\Category</source_model>
