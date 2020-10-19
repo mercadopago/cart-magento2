@@ -60,15 +60,12 @@ class Payment
     /**
      * @param string $paymentAction
      * @param object $stateObject
-     *
-     * @return bool
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return $this|bool|\Magento\Payment\Model\Method\Cc|\MercadoPago\Core\Model\Custom\Payment
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \MercadoPago\Core\Model\Api\V1\Exception
      */
     public function initialize($paymentAction, $stateObject)
     {
-
-
         try {
             $this->_helperData->log("CustomPaymentTicket::initialize - Ticket: init prepare post payment", self::LOG_NAME);
             $quote = $this->_getQuote();
@@ -99,23 +96,13 @@ class Payment
             }
 
             //Get IP address
-            $ip = "";
-            if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-                $ip = $_SERVER['HTTP_CLIENT_IP'];
-            } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-            } else {
-                $ip = $_SERVER['REMOTE_ADDR'];
-            }
-            $preference['additional_info']['ip_address'] = $ip;
-
+            $preference['additional_info']['ip_address'] = $this->getIpAddress();
             $preference['callback_url'] = $this->_urlBuilder->getUrl('mercadopago/checkout/page?callback=' . $preference['payment_method_id']);
 
             $this->_helperData->log("CustomPaymentTicket::initialize - Preference to POST", 'mercadopago-custom.log', $preference);
         } catch (\Exception $e) {
             $this->_helperData->log("CustomPaymentTicket::initialize - There was an error retrieving the information to create the payment, more details: " . $e->getMessage());
             throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
-            return $this;
         }
 
         // POST /v1/payments
@@ -123,31 +110,53 @@ class Payment
         $this->_helperData->log("CustomPaymentTicket::initialize - POST /v1/payments RESPONSE", self::LOG_NAME, $response);
 
         if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
-
             $payment = $response['response'];
-
             $this->getInfoInstance()->setAdditionalInformation("paymentResponse", $payment);
-
             return true;
 
         } else {
-
             $messageErrorToClient = $this->_coreModel->getMessageError($response);
-
             $arrayLog = array(
                 "response" => $response,
                 "message" => $messageErrorToClient
             );
-
             $this->_helperData->log("CustomPaymentTicket::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
-
             throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
-
-            return $this;
         }
     }
 
+    /**
+     * @return mixed|string
+     */
+    public function getIpAddress()
+    {
+        $ip = "";
 
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        }
+
+        if (empty($ip) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+
+        if (empty($ip)) {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        if (is_array($ip)) {
+            return $ip[0];
+        }
+
+        return $ip;
+    }
+
+    /**
+     * @param null $usingSecondCardInfo
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \MercadoPago\Core\Model\Api\V1\Exception
+     */
     public function preparePostPayment($usingSecondCardInfo = null)
     {
         $this->_helperData->log("Ticket -> init prepare post payment", 'mercadopago-custom.log');
@@ -208,25 +217,21 @@ class Payment
 
 
     /**
-     * Return tickets options availables
-     *
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPaymentOptions()
     {
 
         $excludePaymentMethods = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $listExclude = explode(",", $excludePaymentMethods);
-
         $payment_methods = $this->_coreModel->getPaymentMethods();
         $paymentOptions = array();
 
         //each all payment methods
         foreach ($payment_methods['response'] as $pm) {
-
             //filter by bank transfer payment methods
             if ($pm['payment_type_id'] == "bank_transfer") {
-
                 //insert if not exist in list exclude payment method
                 if (!in_array($pm['id'], $listExclude)) {
                     $paymentOptions[] = $pm;
@@ -239,15 +244,12 @@ class Payment
 
 
     /**
-     * Return identification types available
-     *
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getIdentifcationTypes()
     {
-
         $identificationTypes = $this->_coreModel->getIdentificationTypes();
-
         if (isset($identificationTypes['status']) && $identificationTypes['status'] == 200 && isset($identificationTypes['response'])) {
             $identificationTypes = $identificationTypes['response'];
         } else {
@@ -273,11 +275,9 @@ class Payment
     }
 
     /**
-     * is payment method available?
-     *
      * @param \Magento\Quote\Api\Data\CartInterface|null $quote
-     *
      * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
