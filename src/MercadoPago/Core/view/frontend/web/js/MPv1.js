@@ -8,6 +8,7 @@
 
     var MPv1 = {
         debug: false,
+        gateway_mode: false,
         add_truncated_card: true,
         site_id: '',
         public_key: '',
@@ -15,7 +16,7 @@
             discount_action_url: '',
             payer_email: '',
             default: true,
-            status: false
+            status: true
         },
         customer_and_card: {
             default: false,
@@ -84,6 +85,7 @@
             cardTruncated: "#cardTruncated",
             site_id: "#site_id",
             CustomerAndCard: '#CustomerAndCard',
+            MpGatewayMode: '#MpGatewayMode',
 
             boxInstallments: '#mp-box-installments',
             boxInstallmentsSelector: '#mp-box-installments-selector',
@@ -371,6 +373,26 @@
 
         //if the API does not return any bank
         if (issuers.length > 0) {
+
+            /** INIT Gateway Mode **/
+            var list_aggregator = [];
+            var list_gateway = [];
+
+            issuers.forEach(function (issuer) {
+                if (issuer.processing_mode == 'gateway') {
+                    list_gateway.push(issuer);
+                } else {
+                    list_aggregator.push(issuer);
+                }
+            });
+
+            if (MPv1.gateway_mode) {
+                issuers = list_gateway;
+            } else {
+                issuers = list_aggregator;
+            }
+            /** END Gateway Mode **/
+
             var issuersSelector = document.querySelector(MPv1.selectors.issuer),
                 fragment = document.createDocumentFragment();
 
@@ -439,11 +461,22 @@
 
     MPv1.setInstallmentInfo = function (status, response) {
         var selectorInstallments = document.querySelector(MPv1.selectors.installments);
+        var gateway_mode = MPv1.gateway_mode;
 
         if (response.length > 0) {
 
             var html_option = '<option value="-1">' + MPv1.text.choose + '...</option>';
             payerCosts = response[0].payer_costs;
+
+            if (gateway_mode) {
+                for (var x in response) {
+                    var installments = response[x];
+                    if (installments.processing_mode == 'gateway') {
+                        payerCosts = installments.payer_costs
+                        document.querySelector(MPv1.selectors.gateway_mode).value = installments.merchant_account_id;
+                    }
+                }
+            }
 
             // fragment.appendChild(option);
             for (var i = 0; i < payerCosts.length; i++) {

@@ -48,7 +48,7 @@ class Custom extends NotificationBase
 
             $requestValues = $this->_notifications->validateRequest($request);
             $topicClass = $this->_notifications->getTopicClass($request);
-          
+
             if ($requestValues['topic'] != 'payment') {
                 $message = "Mercado Pago - Invalid Notification Parameters, Invalid Type.";
                 $this->setResponseHttp(Response::HTTP_BAD_REQUEST, $message, $request->getParams());
@@ -59,21 +59,21 @@ class Custom extends NotificationBase
                 $this->setResponseHttp(Response::HTTP_NOT_FOUND, $message, $response);
                 return;
             }
-          
+
             $payment = $response['response'];
             $response = $topicClass->updateStatusOrderByPayment($payment);
             $this->setResponseHttp($response['httpStatus'], $response['message'], $response['data']);
             return;
         } catch (\Exception $e) {
-          
-          $statusResponse = Response::HTTP_INTERNAL_ERROR;
 
-          if(method_exists($e, "getCode")){
-            $statusResponse = $e->getCode();
-          }
-          
-          $message = "Mercado Pago - There was a serious error processing the notification. Could not handle the error.";
-          $this->setResponseHttp($statusResponse, $message, ["exception_error" => $e->getMessage()]);
+            $statusResponse = Response::HTTP_INTERNAL_ERROR;
+
+            if (method_exists($e, "getCode")) {
+                $statusResponse = $e->getCode();
+            }
+
+            $message = "Mercado Pago - There was a serious error processing the notification. Could not handle the error.";
+            $this->setResponseHttp($statusResponse, $message, ["exception_error" => $e->getMessage()]);
         }
     }
 
