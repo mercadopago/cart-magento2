@@ -49,7 +49,8 @@ class BasicConfigProvider implements ConfigProviderInterface
         Repository $assetRepo,
         ProductMetadataInterface $productMetadata,
         Data $coreHelper
-    ) {
+    )
+    {
         $this->_methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
         $this->_scopeConfig = $scopeConfig;
         $this->_checkoutSession = $checkoutSession;
@@ -65,11 +66,11 @@ class BasicConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        try{
+        try {
             if (!$this->_methodInstance->isAvailable()) {
                 return [];
             }
-          
+
             $bannerInfo = $this->makeBannerCheckout();
 
             $data = [
@@ -93,55 +94,56 @@ class BasicConfigProvider implements ConfigProviderInterface
             ];
 
             return $data;
-        }catch (\Exception $e){
-            $this->_coreHelper->log("BasicConfigProvider ERROR: ". $e->getMessage(), 'BasicConfigProvider');
+        } catch (\Exception $e) {
+            $this->_coreHelper->log("BasicConfigProvider ERROR: " . $e->getMessage(), 'BasicConfigProvider');
             return [];
         }
     }
-  
-    public function makeBannerCheckout(){
-      
-      $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_WEBSITE);
-      $maxInstallments = $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_MAX_INSTALLMENTS, ScopeInterface::SCOPE_STORE);
-      $excludePaymentMethods = $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE);
-      
-      $excludePaymentMethods = explode(",", $excludePaymentMethods);
-      
-      try {
-        $paymentMethods = RestClient::get("/v1/payment_methods?access_token=" . $accessToken);
 
-        //validate active payments methods
-        $debit = 0;
-        $credit = 0;
-        $ticket = 0;
-        $choMethods = array();
+    public function makeBannerCheckout()
+    {
 
-        foreach ($paymentMethods['response'] as $pm) {
-          
-          if (!in_array($pm['id'], $excludePaymentMethods)) {
-            $choMethods[] = $pm;
-            if ($pm['payment_type_id'] == 'credit_card') {
-              $credit += 1;
-            } elseif ($pm['payment_type_id'] == 'debit_card' || $pm['payment_type_id'] == 'prepaid_card') {
-              $debit += 1;
-            } else {
-              $ticket += 1;
+        $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_WEBSITE);
+        $maxInstallments = $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_MAX_INSTALLMENTS, ScopeInterface::SCOPE_STORE);
+        $excludePaymentMethods = $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE);
+
+        $excludePaymentMethods = explode(",", $excludePaymentMethods);
+
+        try {
+            $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
+
+            //validate active payments methods
+            $debit = 0;
+            $credit = 0;
+            $ticket = 0;
+            $choMethods = array();
+
+            foreach ($paymentMethods['response'] as $pm) {
+
+                if (!in_array($pm['id'], $excludePaymentMethods)) {
+                    $choMethods[] = $pm;
+                    if ($pm['payment_type_id'] == 'credit_card') {
+                        $credit += 1;
+                    } elseif ($pm['payment_type_id'] == 'debit_card' || $pm['payment_type_id'] == 'prepaid_card') {
+                        $debit += 1;
+                    } else {
+                        $ticket += 1;
+                    }
+                }
             }
-          }
+
+            $parameters = array(
+                "debit" => $debit,
+                "credit" => $credit,
+                "ticket" => $ticket,
+                "checkout_methods" => $choMethods,
+                "installments" => $maxInstallments
+            );
+
+            return $parameters;
+
+        } catch (\Exception $e) {
+            $this->_coreHelper->log("makeBannerCheckout:: An error occurred at the time of obtaining the ticket payment methods: " . $e);
         }
-
-        $parameters = array(
-          "debit" => $debit,
-          "credit" => $credit,
-          "ticket" => $ticket,
-          "checkout_methods" => $choMethods,
-          "installments" => $maxInstallments
-        );
-        
-        return $parameters;
-
-      } catch (\Exception $e) {
-        $this->_coreHelper->log("makeBannerCheckout:: An error occurred at the time of obtaining the ticket payment methods: " . $e);
-      }
     }
 }

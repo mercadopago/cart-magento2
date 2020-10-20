@@ -51,16 +51,16 @@ class Exception
      */
     public function getUserMessage($error = null)
     {
-      if (!empty($error)) {
-        //             if ($this->_scopeConfig->isSetFlag('payment/mercadopago/debug_mode', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE)) {
-        //                 return $error['description'];
-        //             } else {
-        $code = $error['code'];
-        if (isset($this->_messagesMap[$code])) {
-          return __($this->_messagesMap[$code]);
+        if (!empty($error)) {
+            //             if ($this->_scopeConfig->isSetFlag('payment/mercadopago/debug_mode', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE)) {
+            //                 return $error['description'];
+            //             } else {
+            $code = $error['code'];
+            if (isset($this->_messagesMap[$code])) {
+                return __($this->_messagesMap[$code]);
+            }
+            //             }
         }
-        //             }
-      }
 
         return __(self::GENERIC_USER_MESSAGE);
     }

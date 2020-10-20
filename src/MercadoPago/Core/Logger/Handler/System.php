@@ -1,7 +1,9 @@
 <?php
+
 namespace MercadoPago\Core\Logger\Handler;
 
 use Monolog\Logger;
+
 /**
  * MercadoPago logger handler
  */

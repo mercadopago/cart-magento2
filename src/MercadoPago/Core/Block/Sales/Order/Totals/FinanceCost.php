@@ -33,12 +33,12 @@ class FinanceCost
      */
     public function initTotals()
     {
-        if ((float)$this->getSource()->getFinanceCostAmount() == 0 
-            || !$this->_scopeConfig->isSetFlag('payment/mercadopago/financing_cost',\Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+        if ((float)$this->getSource()->getFinanceCostAmount() == 0
+            || !$this->_scopeConfig->isSetFlag('payment/mercadopago/financing_cost', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
             return $this;
         }
         $total = new \Magento\Framework\DataObject([
-            'code'  => 'finance_cost',
+            'code' => 'finance_cost',
             'field' => 'finance_cost_amount',
             'value' => $this->getSource()->getFinanceCostAmount(),
             'label' => __('Financing Cost'),

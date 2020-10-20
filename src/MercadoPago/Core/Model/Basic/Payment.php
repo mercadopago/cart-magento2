@@ -95,7 +95,8 @@ class Payment extends AbstractMethod
         Logger $logger,
         Basic $basic,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct(
             $context,
             $registry,
@@ -125,15 +126,14 @@ class Payment extends AbstractMethod
      */
     public function postPago()
     {
-        try{
+        try {
             $response = $this->_basic->makePreference();
-            error_log(json_encode($response));
-            error_log(print_r($response, true));
+
             if ($response['status'] == 200 || $response['status'] == 201) {
                 $payment = $response['response'];
 
                 $init_point = $payment['init_point'];
-              
+
                 $array_assign = [
                     "init_point" => $init_point,
                     "status" => 201
@@ -153,8 +153,8 @@ class Payment extends AbstractMethod
                 $this->_helperData->log($message, 'mercadopago-basic.log');
             }
             return $array_assign;
-        }catch (Exception $e){
-            $this->_helperData->log('Fatal Error: Model Basic Payment PostPago:'. $e->getMessage(), 'mercadopago-basic.log');
+        } catch (Exception $e) {
+            $this->_helperData->log('Fatal Error: Model Basic Payment PostPago:' . $e->getMessage(), 'mercadopago-basic.log');
             return [];
         }
 

@@ -53,7 +53,8 @@ class Exception
     /**
      * @param \Magento\Framework\Phrase $phrase
      */
-    public function setPhrase(\Magento\Framework\Phrase $phrase) {
+    public function setPhrase(\Magento\Framework\Phrase $phrase)
+    {
         $this->phrase = $phrase;
     }
 
