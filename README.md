@@ -10,7 +10,7 @@ For a better experience, you will be redirected to our site by clicking on the l
 * [Requirements to integrate](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_requirements_to_integrate)
 * [Features](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_features)
 * [Installation](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_installation)
-* [Configure Checkout Custom](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_credit_card_and_ticket_configuration_(custom_checkout)
+* [Configure Checkout Custom](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_credit_card_and_ticket_configuration_(custom_checkout))
 * [Configure Checkout Pro](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_basic_checkout_configuration)
 * [Payment Notification Status Settings](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_payment_notification_status_settings)
 
@@ -20,7 +20,7 @@ Para una mejor experiencia, será redirigido a nuestro sitio haciendo clic en lo
 
 * [Requisitos para integrar](https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_requisitos_para_integrar)
 * [Instalación](https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_instalaci%C3%B3n)
-* [Configurar Checkout Custom](https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_configuraci%C3%B3n_de_la_tarjeta_de_cr%C3%A9dito_y_tickets_(custom_checkout)
+* [Configurar Checkout Custom](https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_configuraci%C3%B3n_de_la_tarjeta_de_cr%C3%A9dito_y_tickets_(custom_checkout))
 * [Configurar Checkout de Pro](https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_configuraci%C3%B3n_de_basic_checkout)
 * [Configuración de estado de las notificaciones de Pago](https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_configuraci%C3%B3n_de_estado_de_las_notificaciones_de_pago)
 
@@ -30,7 +30,7 @@ Para uma melhor experiência, você será redirecionado para o nosso site, clica
 
 * [Requisitos para integrar](https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_requisitos_para_integrar)
 * [Instalação](https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_instala%C3%A7%C3%A3o)
-* [Configurar Checkout Custom]( https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_configura%C3%A7%C3%B5es_de_cart%C3%A3o_de_cr%C3%A9dito_e_boleto_(custom_checkout) 
+* [Configurar Checkout Custom]( https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_configura%C3%A7%C3%B5es_de_cart%C3%A3o_de_cr%C3%A9dito_e_boleto_(custom_checkout)) 
 * [Configurar Checkout Pro](https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_configura%C3%A7%C3%B5es_de_basic_checkout)
 * [Configurações de status de Notificações de Pagamento](https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_configura%C3%A7%C3%B5es_de_status_de_notifica%C3%A7%C3%B5es_de_pagamento)
 
