@@ -9,7 +9,7 @@
             <attribute type="shared">1</attribute>
         </field>
 
-        <field id="sponsor_id" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+        <field id="sponsor_id" translate="label" type="text" sortOrder="5" showInDefault="0" showInWebsite="0" showInStore="0">
             <label>Sponsor ID</label>
             <config_path>payment/mercadopago/sponsor_id</config_path>
         </field>
