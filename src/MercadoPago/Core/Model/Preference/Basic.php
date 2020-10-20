@@ -489,7 +489,6 @@ class Basic extends AbstractMethod
             }
 
             if ($config['gateway_mode']) {
-                //CONFIRMAR DOCUMENTACAO: $preference->$processing_modes = array('gateway');
                 $arr['processing_modes'] = ['gateway'];
             }
 
