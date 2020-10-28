@@ -1,5 +1,5 @@
 {
-    "name": "mercadopago/module-core",
+    "name": "mercadopago/core",
     "description": "Mercado Pago payment method module",
     "type": "magento2-module",
     "version": "3.5.2",
