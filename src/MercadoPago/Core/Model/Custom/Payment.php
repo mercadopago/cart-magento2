@@ -434,13 +434,40 @@ class Payment
     }
 
     /**
-     * is payment method available?
-     *
      * @param \Magento\Quote\Api\Data\CartInterface|null $quote
-     *
      * @return bool
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if (empty($isActive)) {
+            return false;
+        }
+
+        $secure = $this->_request->isSecure();
+        if ($secure === FALSE) {
+            $this->_helperData->log("CustomPayment::isAvailable - Module not available because it has production credentials in non HTTPS environment.");
+            return false;
+        }
+
+        return $this->available($quote);
+    }
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function isAvailableMethod(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        return $this->available($quote);
+    }
+
+    /**
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function available(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         $parent = parent::isAvailable($quote);
         $status = true;
@@ -453,26 +480,19 @@ class Payment
         $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (empty($accessToken)) {
             $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token has not been configured.");
-            $status = false;
+            return false;
         }
 
         $public_key = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (empty($public_key)) {
             $this->_helperData->log("CustomPayment::isAvailable - Module not available because public_key has not been configured.");
-            $status = false;
+            return false;
         }
 
         if (!$this->_helperData->isValidAccessToken($accessToken)) {
             $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token is not valid.");
-            $status = false;
+            return false;
         }
-
-        $secure = $this->_request->isSecure();
-        if ($secure === FALSE) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because it has production credentials in non HTTPS environment.");
-            $status = false;
-        }
-
 
         return $status;
     }
