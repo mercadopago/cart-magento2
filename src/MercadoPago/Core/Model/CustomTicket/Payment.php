@@ -269,25 +269,11 @@ class Payment
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
 
-        $parent = parent::isAvailable($quote);
-        $status = true;
-
-        if (!$parent) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available due to magento rules.");
-            $status = false;
+        $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_TICKET_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if (empty($isActive)) {
+            return false;
         }
 
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        if (empty($accessToken)) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token has not been configured.");
-            $status = false;
-        }
-
-        if (!$this->_helperData->isValidAccessToken($accessToken)) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token is not valid.");
-            $status = false;
-        }
-
-        return $status;
+        return parent::isAvailableMethod($quote);
     }
 }
