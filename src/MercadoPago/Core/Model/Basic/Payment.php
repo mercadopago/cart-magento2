@@ -192,6 +192,11 @@ class Payment extends AbstractMethod
      */
     public function isAvailable(CartInterface $quote = null)
     {
+        $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_BASIC_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if (empty($isActive)) {
+            return false;
+        }
+
         return parent::isAvailable($quote);
     }
 
