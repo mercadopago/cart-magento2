@@ -25,10 +25,8 @@
     <type name="MercadoPago\Core\Model\Core">
         <arguments>
             <argument name="statusMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusMessage</argument>
-            <argument name="statusDetailMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusDetailMessage
-            </argument>
-            <argument name="statusOrderMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusOrderMessage
-            </argument>
+            <argument name="statusDetailMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusDetailMessage</argument>
+            <argument name="statusOrderMessage" xsi:type="object">MercadoPago\Core\Helper\Message\StatusOrderMessage</argument>
         </arguments>
     </type>
     <type name="Magento\Sales\Model\Order">
