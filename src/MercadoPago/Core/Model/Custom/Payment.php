@@ -457,7 +457,7 @@ class Payment
         }
 
         $secure = $this->_request->isSecure();
-        if ($secure === FALSE && substr($publickey, 0, 5) !== 'TEST-' && substr($accessToken, 0, 5) !== 'TEST-') {
+        if ($secure === FALSE && substr($publicKey, 0, 5) !== 'TEST-' && substr($accessToken, 0, 5) !== 'TEST-') {
             $this->_helperData->log("CustomPayment::isAvailable - Module not available because it has production credentials in non HTTPS environment.");
             return false;
         }
