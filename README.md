@@ -1,5 +1,10 @@
-<p align="center"><a href="https://www.mercadopago.com/"><img src="https://raw.githubusercontent.com/mercadopago/cart-woocommerce/master/assets/images/mplogo.png" height="80" width="auto" alt="MercadoPago">
-</a></p>
+<p align="center">
+  <a href="https://www.mercadopago.com/">
+    <img src="https://http2.mlstatic.com/ui/navigation/5.3.7/mercadopago/logo__large@2x.png" height="80" width="auto" alt="MercadoPago">
+  </a>
+</p>
+
+# Magento 2 - Mercado Pago Module (v3.5.2)
 
 The Mercado Pago plugin for Magento 2 allows you to expand the functionalities of your online store and offer a unique payment experience for your customers.
 
