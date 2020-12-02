@@ -7,9 +7,9 @@ Thumbs.db
 #IDEs
 nbproject
 /.idea
+.vscode/
 
-
-
+#General
 /.buildpath
 /.cache
 /.metadata
@@ -81,3 +81,4 @@ atlassian*
 !/.travis.yml
 !/.travis/
 !/.gitignore
+!/CHANGELOG.md
