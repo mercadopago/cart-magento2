@@ -440,8 +440,8 @@ class Data
                 $methodCode = $order->getPayment()->getData('method');
                 $analyticsData = [
                     'payment_id' => $this->getPaymentId($additionalInfo),
-                    'payment_type' => $additionalInfo['payment_method_id'],
-                    'checkout_type' => $additionalInfo['method'],
+                    'payment_type' => isset($additionalInfo['payment_method_id']) ? $additionalInfo['payment_method_id'] : "",
+                    'checkout_type' => isset($additionalInfo['method']) ? $additionalInfo['method'] : "",
                     'analytics_key' => $this->getClientIdFromAccessToken($accessToken)
                 ];
                 if ($methodCode == \MercadoPago\Core\Model\Custom\Payment::CODE) {

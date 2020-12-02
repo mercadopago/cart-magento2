@@ -140,7 +140,9 @@ class Page
 
             } else {
                 //set data for mp analytics
-                $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
+                $analyticsData = $this->_helperData->getAnalyticsData($this->_getOrder());
+                $analyticsData = array_merge($analyticsData, $this->getRequest()->getParams());
+                $this->_catalogSession->setPaymentData($analyticsData);
                 $checkoutTypeHandle = $this->getCheckoutHandle();
                 $this->_view->loadLayout(['default', $checkoutTypeHandle]);
                 $this->dispatchSuccessActionObserver();
