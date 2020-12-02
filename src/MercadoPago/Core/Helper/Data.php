@@ -433,17 +433,27 @@ class Data
             $additionalInfo = $order->getPayment()->getData('additional_information');
 
             if ($order->getPayment()->getData('method')) {
-                $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-                $publicKey = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+                $accessToken = $this->scopeConfig->getValue(
+                    \MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                );
+
+                $publicKey = $this->scopeConfig->getValue(
+                    \MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                );
+
                 $methodCode = $order->getPayment()->getData('method');
+                $paymenType = !empty($additionalInfo['payment_method_id']) ? $additionalInfo['payment_method_id'] : '';
+                $checkoutType= !empty($additionalInfo['method']) ? $additionalInfo['method'] : '';
+
                 $analyticsData = [
                     'payment_id' => $this->getPaymentId($additionalInfo),
-                    'payment_type' => $additionalInfo['payment_method_id'],
-                    'checkout_type' => $additionalInfo['method'],
+                    'payment_type' => $paymenType,
+                    'checkout_type' => $checkoutType,
                     'analytics_key' => $this->getClientIdFromAccessToken($accessToken)
                 ];
+
                 if ($methodCode == \MercadoPago\Core\Model\Custom\Payment::CODE) {
                     $analyticsData['public_key'] = $publicKey;
                 }
