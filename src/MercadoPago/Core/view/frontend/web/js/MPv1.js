@@ -74,7 +74,6 @@
             mpIssuer: ".mp-issuer",
             mpDocType: ".mp-docType",
             mpDocNumber: ".mp-docNumber",
-            // mpPaymentMethodSelector: ".mp-paymentMethodsSelector",
 
             paymentMethodId: "#paymentMethodId",
             amount: "#amount",
@@ -202,7 +201,6 @@
                     MPv1.cardsHandler();
                 },
                 success: function (status, response) {
-
                     if (response.status == 200) {
                         document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'block';
                         document.querySelector(MPv1.selectors.discount).value = response.response.coupon_amount;
@@ -237,13 +235,10 @@
                     }
 
                     document.querySelector(MPv1.selectors.applyCoupon).disabled = false;
-
                 }
             });
-
         }
     }
-
 
     MPv1.getBin = function () {
         var cardSelector = document.querySelector(MPv1.selectors.paymentMethodSelector);
@@ -276,7 +271,6 @@
     }
 
     MPv1.guessingPaymentMethod = function (event) {
-
         var bin = MPv1.getBin();
         var amount = MPv1.getAmount();
 
@@ -298,40 +292,36 @@
     };
 
     MPv1.setPaymentMethodInfo = function (status, response) {
-
         if (status == 200) {
+            //guessing
+            document.querySelector(MPv1.selectors.paymentMethodId).value = response[0].id;
+            document.querySelector(MPv1.selectors.cardNumber).style.background = "url(" + response[0].secure_thumbnail + ") 98% 50% no-repeat #fff";
 
-            if (MPv1.site_id != "MLM") {
-                //guessing
-                document.querySelector(MPv1.selectors.paymentMethodId).value = response[0].id;
-                document.querySelector(MPv1.selectors.cardNumber).style.background = "url(" + response[0].secure_thumbnail + ") 98% 50% no-repeat #fff";
+            // check if the security code (ex: Tarshop) is required
+            var cardConfiguration = response[0].settings;
+            var bin = MPv1.getBin();
+            var amount = MPv1.getAmount();
 
-                // check if the security code (ex: Tarshop) is required
-                var cardConfiguration = response[0].settings;
-                var bin = MPv1.getBin();
-                var amount = MPv1.getAmount();
+            Mercadopago.getInstallments({
+                "bin": bin,
+                "amount": amount
+            }, MPv1.setInstallmentInfo);
 
-                Mercadopago.getInstallments({
-                    "bin": bin,
-                    "amount": amount
-                }, MPv1.setInstallmentInfo);
+            // check if the issuer is necessary to pay
+            var issuerMandatory = false,
+                additionalInfo = response[0].additional_info_needed;
 
-                // check if the issuer is necessary to pay
-                var issuerMandatory = false,
-                    additionalInfo = response[0].additional_info_needed;
-
-                for (var i = 0; i < additionalInfo.length; i++) {
-                    if (additionalInfo[i] == "issuer_id") {
-                        issuerMandatory = true;
-                    }
+            for (var i = 0; i < additionalInfo.length; i++) {
+                if (additionalInfo[i] == "issuer_id") {
+                    issuerMandatory = true;
                 }
+            }
 
-                if (issuerMandatory) {
-                    var payment_method_id = response[0].id;
-                    MPv1.getIssuersPaymentMethod(payment_method_id);
-                } else {
-                    MPv1.hideIssuer();
-                }
+            if (issuerMandatory) {
+                var payment_method_id = response[0].id;
+                MPv1.getIssuersPaymentMethod(payment_method_id);
+            } else {
+                MPv1.hideIssuer();
             }
         }
     }
@@ -340,17 +330,11 @@
     MPv1.changePaymetMethodSelector = function () {
         var payment_method_id = document.querySelector(MPv1.selectors.paymentMethodSelector).value;
         MPv1.getIssuersPaymentMethod(payment_method_id);
-
     }
 
-
     /*
-    *
-    *
     * Issuers
-    *
     */
-
     MPv1.getIssuersPaymentMethod = function (payment_method_id) {
         if (payment_method_id != -1) {
             var amount = MPv1.getAmount();
@@ -368,9 +352,7 @@
         }
     }
 
-
     MPv1.showCardIssuers = function (status, issuers) {
-
         //if the API does not return any bank
         if (issuers.length > 0) {
 
@@ -453,10 +435,7 @@
     }
 
     /*
-    *
-    *
     * Installments
-    *
     */
 
     MPv1.setInstallmentInfo = function (status, response) {
@@ -464,7 +443,6 @@
         var gateway_mode = MPv1.gateway_mode;
 
         if (response.length > 0) {
-
             var html_option = '<option value="-1">' + MPv1.text.choose + '...</option>';
             payerCosts = response[0].payer_costs;
 
@@ -480,7 +458,6 @@
 
             // fragment.appendChild(option);
             for (var i = 0; i < payerCosts.length; i++) {
-
                 // Resolution 51/2017
                 var dataInput = "";
                 if (MPv1.site_id == 'MLA') {
@@ -508,16 +485,11 @@
         }
     }
 
-
     /*
-    *
-    *
     * Customer & Cards
-    *
     */
 
     MPv1.cardsHandler = function () {
-
         var cardSelector = document.querySelector(MPv1.selectors.paymentMethodSelector);
 
         if (cardSelector.options.selectedIndex < 0) {
@@ -534,11 +506,9 @@
 
     /*
     * Payment Methods
-    *
     */
 
     MPv1.getPaymentMethods = function () {
-
         var fragment = document.createDocumentFragment();
         var paymentMethodsSelector = document.querySelector(MPv1.selectors.paymentMethodSelector)
         var mainPaymentMethodSelector = document.querySelector(MPv1.selectors.paymentMethodSelector)
@@ -557,7 +527,6 @@
 
         if (customerCard || MPv1.customer_and_card.status) {
             paymentMethodsSelector = document.querySelector(MPv1.selectors.pmListOtherCards)
-
             //clean payment methods
             paymentMethodsSelector.innerHTML = "";
         } else {
@@ -578,8 +547,7 @@
                     option = new Option(pm.name, pm.id);
                     option.setAttribute("type_checkout", "custom");
                     fragment.appendChild(option);
-
-                }//end if
+                } //end if
 
             } //end for
 
@@ -590,14 +558,9 @@
     }
 
     /*
-    *
     * Functions related to Create Tokens
-    *
     */
-
-
     MPv1.createTokenByEvent = function () {
-
         var $inputs = MPv1.getForm().querySelectorAll('[data-checkout]');
         var $inputs_to_create_token = MPv1.getInputsToCreateToken();
 
@@ -606,7 +569,6 @@
 
             //add events only in the required fields
             if ($inputs_to_create_token.indexOf(element.getAttribute("data-checkout")) > -1) {
-
                 var event = "focusout";
 
                 if (element.nodeName == "SELECT") {
@@ -625,7 +587,6 @@
                 if (MPv1.create_token_on.paste) {
                     MPv1.addListenerEvent(element, "paste", MPv1.validateInputsCreateToken);
                 }
-
             }
         }
     }
@@ -643,7 +604,6 @@
             return false;
         }
     }
-
 
     MPv1.validateInputsCreateToken = function () {
         var valid_to_create_token = true;
@@ -681,7 +641,6 @@
     }
 
     MPv1.sdkResponseHandler = function (status, response) {
-
         var $form = MPv1.getForm();
 
         document.querySelector(MPv1.selectors.box_loading).style.background = "";
@@ -706,18 +665,12 @@
     }
 
     /*
-    *
-    *
     * useful functions
-    *
     */
-
-
     MPv1.resetBackgroundCard = function () {
         document.querySelector(MPv1.selectors.paymentMethodSelector).style.background = "no-repeat #fff";
         document.querySelector(MPv1.selectors.cardNumber).style.background = "no-repeat #fff";
     }
-
 
     MPv1.setForm = function () {
         if (MPv1.customer_and_card.status) {
@@ -769,7 +722,6 @@
 
         var card = first_six_digits[0] + " " + first_six_digits[1] + "** **** " + last_four_digits;
         return card;
-
     }
 
     MPv1.getAmount = function () {
@@ -781,12 +733,8 @@
     }
 
     /*
-    *
-    *
     * Show errors
-    *
     */
-
     MPv1.showErrors = function (response) {
         var $form = MPv1.getForm();
 
@@ -805,7 +753,6 @@
     }
 
     MPv1.hideErrors = function () {
-
         for (var x = 0; x < document.querySelectorAll('[data-checkout]').length; x++) {
             var $field = document.querySelectorAll('[data-checkout]')[x];
             $field.classList.remove("mp-error-input");
@@ -822,12 +769,8 @@
     }
 
     /*
-    *
     * Add events to guessing
-    *
     */
-
-
     MPv1.addListenerEvent = function (el, eventName, handler) {
         if (el.addEventListener) {
             el.addEventListener(eventName, handler);
@@ -843,8 +786,6 @@
         MPv1.addListenerEvent(document.querySelector(MPv1.selectors.cardNumber), 'keyup', MPv1.clearOptions);
         MPv1.addListenerEvent(document.querySelector(MPv1.selectors.cardNumber), 'change', MPv1.guessingPaymentMethod);
     }
-
-    // MPv1.cardsHandler();
 
     MPv1.showTaxes = function () {
         var selectorIsntallments = document.querySelector(MPv1.selectors.installments);
@@ -867,15 +808,11 @@
 
         document.querySelector(MPv1.selectors.taxTextCFT).innerHTML = cft;
         document.querySelector(MPv1.selectors.taxTextTEA).innerHTML = tea;
-
     }
 
     /*
-    *
     * Utilities
-    *
     */
-
     MPv1.referer = (function () {
         var referer = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
 
@@ -913,8 +850,7 @@
                     options.error(400, {user_agent: window.navigator.userAgent, error: "bad_request", cause: []});
                 }
             };
-            req.onprogress = function () {
-            };
+            req.onprogress = function () {};
         } else {
             req.setRequestHeader('Accept', 'application/json');
 
@@ -951,16 +887,11 @@
         }
     }
 
-
     /*
-    *
-    *
     * Initialization function
-    *
     */
 
     MPv1.Initialize = function (site_id, public_key, coupon_mode, discount_action_url, payer_email) {
-
         //sets
         MPv1.site_id = site_id
         MPv1.public_key = public_key
@@ -980,7 +911,6 @@
             document.querySelector(MPv1.selectors.formCoupon).style.display = 'none';
         }
 
-
         //flow: customer & cards
         var selectorPmCustomerAndCards = document.querySelector(MPv1.selectors.pmCustomerAndCards);
         if (selectorPmCustomerAndCards && MPv1.customer_and_card.default && selectorPmCustomerAndCards.childElementCount > 0) {
@@ -994,7 +924,6 @@
             document.querySelector(MPv1.selectors.formCustomerAndCard).style.display = 'none';
         }
 
-
         if (MPv1.create_token_on.event) {
             MPv1.createTokenByEvent();
         } else {
@@ -1007,7 +936,6 @@
         }
 
         if (MPv1.site_id == "MLM") {
-
             //hide documento for mex
             document.querySelector(MPv1.selectors.mpDoc).style.display = 'none';
             // document.querySelector(MPv1.selectors.mpPaymentMethodSelector).removeAttribute('style');
@@ -1034,26 +962,20 @@
 
         //flow: MLB AND MCO
         if (MPv1.site_id == "MLB") {
-
             document.querySelector(MPv1.selectors.mpDocType).style.display = 'none';
             document.querySelector(MPv1.selectors.mpIssuer).style.display = 'none';
             //ajust css
             document.querySelector(MPv1.selectors.docNumber).classList.remove("mp-col-75");
             document.querySelector(MPv1.selectors.docNumber).classList.add("mp-col-100");
-
         } else if (MPv1.site_id == "MCO") {
             document.querySelector(MPv1.selectors.mpIssuer).style.display = 'none';
         } else if (MPv1.site_id == "MLA") {
-
-
             document.querySelector(MPv1.selectors.boxInstallmentsSelector).classList.remove("mp-col-100");
             document.querySelector(MPv1.selectors.boxInstallmentsSelector).classList.add("mp-col-70");
-
             document.querySelector(MPv1.selectors.taxCFT).style.display = 'block';
             document.querySelector(MPv1.selectors.taxTEA).style.display = 'block';
 
             MPv1.addListenerEvent(document.querySelector(MPv1.selectors.installments), 'change', MPv1.showTaxes);
-
         } else if (MPv1.site_id == "MLC") {
             document.querySelector(MPv1.selectors.mpIssuer).style.display = 'none';
         }
@@ -1070,7 +992,6 @@
 
         return;
     }
-
 
     this.MPv1 = MPv1;
 
