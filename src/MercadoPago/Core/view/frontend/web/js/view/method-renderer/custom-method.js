@@ -19,10 +19,23 @@ define(
         'MPanalytics',
         'MPv1'
     ],
-    function ($, Component, quote, paymentService, paymentMethodList, getTotalsAction, fullScreenLoader, additionalValidators,
-              setPaymentInformationAction, placeOrderAction, customer, setAnalyticsInformation, $t, defaultTotal, cartCache) {
+    function($,
+        Component,
+        quote,
+        paymentService,
+        paymentMethodList,
+        getTotalsAction,
+        fullScreenLoader,
+        additionalValidators,
+        setPaymentInformationAction,
+        placeOrderAction,
+        customer,
+        setAnalyticsInformation,
+        $t,
+        defaultTotal,
+        cartCache
+    ) {
         'use strict';
-
         return Component.extend({
             defaults: {
                 template: 'MercadoPago_Core/payment/custom_method'
@@ -32,10 +45,9 @@ define(
             redirectAfterPlaceOrder: false,
             initialGrandTotal: null,
 
-            initApp: function () {
+            initApp: function() {
                 var self = this;
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-
                     var mercadopago_public_key = window.checkoutConfig.payment[this.getCode()]['public_key']
                     var mercadopago_site_id = window.checkoutConfig.payment[this.getCode()]['country']
                     var mercadopago_coupon = window.checkoutConfig.payment[this.getCode()]['discount_coupon'];
@@ -56,7 +68,6 @@ define(
 
                     //change url loading
                     MPv1.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
-
                     MPv1.customer_and_card.default = false;
 
                     //Initialize MPv1
@@ -69,38 +80,35 @@ define(
 
                     //get action change payment method
                     quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
-
                 }
-
             },
 
-            setPlaceOrderHandler: function (handler) {
+            setPlaceOrderHandler: function(handler) {
                 this.placeOrderHandler = handler;
             },
 
-            setValidateHandler: function (handler) {
+            setValidateHandler: function(handler) {
                 this.validateHandler = handler;
             },
 
-            context: function () {
+            context: function() {
                 return this;
             },
 
-            getCode: function () {
+            getCode: function() {
                 return 'mercadopago_custom';
             },
 
-            isActive: function () {
+            isActive: function() {
                 return true;
             },
 
-            getCardListCustomerCards: function () {
-
+            getCardListCustomerCards: function() {
                 var cards = [];
                 return cards;
             },
 
-            existBanner: function () {
+            existBanner: function() {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     if (window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null) {
                         return true;
@@ -109,75 +117,84 @@ define(
                 return false;
             },
 
-            getBannerUrl: function () {
+            getBannerUrl: function() {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['bannerUrl'];
                 }
                 return '';
             },
 
-            getGrandTotal: function () {
+            getGrandTotal: function() {
                 return quote.totals().base_grand_total;
             },
 
-            getInitialGrandTotal: function () {
-                var initialTotal = quote.totals().base_subtotal
-                    + quote.totals().base_shipping_incl_tax
-                    + quote.totals().base_tax_amount
-                    + quote.totals().base_discount_amount;
+            getInitialGrandTotal: function() {
+                var initialTotal = quote.totals().base_subtotal +
+                    quote.totals().base_shipping_incl_tax +
+                    quote.totals().base_tax_amount +
+                    quote.totals().base_discount_amount;
                 return initialTotal;
             },
 
-            getBaseUrl: function () {
+            getBaseUrl: function() {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['base_url'];
                 }
                 return '';
             },
-            getRoute: function () {
+
+            getRoute: function() {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['route'];
                 }
                 return '';
             },
-            getCountry: function () {
+
+            getCountry: function() {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['country'];
                 }
                 return '';
             },
-            getSuccessUrl: function () {
+
+            getSuccessUrl: function() {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['success_url'];
                 }
                 return '';
             },
-            getCustomer: function () {
+
+            getCustomer: function() {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['customer'];
                 }
                 return '';
             },
-            getLoadingGifUrl: function () {
+
+            getLoadingGifUrl: function() {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['loading_gif'];
                 }
                 return '';
             },
-            getMpGatewayMode: function () {
+
+            getMpGatewayMode: function() {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['mp_gateway_mode'];
                 }
                 return 0;
             },
 
-            /**
-             * Get url to logo
-             * @returns {String}
-             */
-            getLogoUrl: function () {
+            getLogoUrl: function() {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['logoUrl'];
+                }
+                return '';
+            },
+
+            getMinilogo: function() {
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    return window.checkoutConfig.payment[this.getCode()]['minilogo'];
                 }
                 return '';
             },
@@ -185,9 +202,8 @@ define(
             /**
              * @override
              */
-            getData: function () {
+            getData: function() {
                 // data to Post in backend
-
                 var dataObj = {
                     'method': this.item.method,
                     'additional_data': {
@@ -210,18 +226,19 @@ define(
                         'gateway_mode': document.querySelector(MPv1.selectors.MpGatewayMode).value,
                     }
                 };
-
                 return dataObj;
             },
-            afterPlaceOrder: function () {
+
+            afterPlaceOrder: function() {
                 setAnalyticsInformation.afterPlaceOrder(this.getCode());
                 window.location = this.getSuccessUrl();
             },
-            validate: function () {
+
+            validate: function() {
                 return this.validateHandler();
             },
 
-            hasErrors: function () {
+            hasErrors: function() {
                 var allMessageErrors = jQuery('.mp-error');
                 if (allMessageErrors.length > 1) {
                     for (var x = 0; x < allMessageErrors.length; x++) {
@@ -239,10 +256,7 @@ define(
                 return false;
             },
 
-            /**
-             * Place order.
-             */
-            placeOrder: function (data, event) {
+            placeOrder: function(data, event) {
                 var self = this;
 
                 if (event) {
@@ -250,47 +264,39 @@ define(
                 }
 
                 if (this.validate() && additionalValidators.validate() && !this.hasErrors()) {
-
                     this.isPlaceOrderActionAllowed(false);
-
                     this.getPlaceOrderDeferredObject()
                         .fail(
-                            function () {
+                            function() {
                                 self.isPlaceOrderActionAllowed(true);
                             }
-                        ).done(function () {
+                        ).done(function() {
                             self.afterPlaceOrder();
 
                             if (self.redirectAfterPlaceOrder) {
                                 redirectOnSuccessAction.execute();
                             }
-                        }
-                    );
-
+                        });
                     return true;
                 }
-
                 return false;
             },
 
-            getPlaceOrderDeferredObject: function () {
+            getPlaceOrderDeferredObject: function() {
                 return $.when(
                     placeOrderAction(this.getData(), this.messageContainer)
                 );
             },
 
-            initialize: function () {
+            initialize: function() {
                 this._super();
                 setAnalyticsInformation.beforePlaceOrder(this.getCode());
             },
 
             /*
-             *
              * Events
-             *
              */
-
-            changePaymentMethodSelector: function (paymentMethodSelected) {
+            changePaymentMethodSelector: function(paymentMethodSelected) {
                 if (paymentMethodSelected.method != 'mercadopago_custom') {
                     if (MPv1.coupon_of_discounts.status) {
                         MPv1.removeCouponDiscount();
@@ -299,13 +305,10 @@ define(
             },
 
             /*
-             *
              * Customize MPV1
-             *
              */
 
-            initializeInstallmentsAndIssuer: function () {
-
+            initializeInstallmentsAndIssuer: function() {
                 var issuer = document.querySelector(MPv1.selectors.issuer);
                 var optIssuer = document.createElement('option');
                 optIssuer.value = "-1";
@@ -321,19 +324,15 @@ define(
 
                 installment.innerHTML = "";
                 installment.appendChild(optInstallment);
-
             },
 
-            actionsCouponDiscount: function (MPv1) {
-
+            actionsCouponDiscount: function(MPv1) {
                 var self = this;
-
                 MPv1.text.apply = $t('Apply');
                 MPv1.text.remove = $t('Remove');
                 MPv1.text.coupon_empty = $t('Please, inform your coupon code');
 
-                MPv1.checkCouponEligibility = function () {
-
+                MPv1.checkCouponEligibility = function() {
                     if (document.querySelector(MPv1.selectors.couponCode).value == "") {
                         // coupon code is empty
                         document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
@@ -345,17 +344,14 @@ define(
                         document.querySelector(MPv1.selectors.discount).value = 0;
                         MPv1.cardsHandler();
                     } else if (MPv1.coupon_of_discounts.status) {
-
                         MPv1.removeCouponDiscount();
-
                     } else {
-
                         // set loading
                         MPv1.setLoadingCouponDiscount();
-
                         // get url to call internal api
                         var url = MPv1.coupon_of_discounts.discount_action_url
                         var sp = "?";
+
                         //check if there are params in the url
                         if (url.indexOf("?") >= 0) {
                             sp = "&"
@@ -371,43 +367,32 @@ define(
                             url: url,
                             method: "GET",
                             timeout: 30000,
-                            error: function () {
+                            error: function() {
                                 MPv1.removeLoadingCouponDiscount();
                                 MPv1.couponUnidentifiedError();
                             },
-
-                            success: function (response, status) {
+                            success: function(response, status) {
                                 MPv1.removeLoadingCouponDiscount();
-
                                 if (response.status == 200) {
-
                                     //set values
                                     document.querySelector(MPv1.selectors.discount).value = response.response.coupon_amount;
                                     document.querySelector(MPv1.selectors.campaign_id).value = response.response.id;
                                     document.querySelector(MPv1.selectors.campaign).value = response.response.name;
                                     document.querySelector(MPv1.selectors.applyCoupon).value = MPv1.text.remove;
                                     MPv1.coupon_of_discounts.status = true;
-
                                     // message success
                                     document.querySelector(MPv1.selectors.mpCouponApplyed).innerHTML = response.message_to_user;
-
                                     //edit styles
                                     document.querySelector(MPv1.selectors.mpCouponError).style.display = 'none';
                                     document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'block';
-
-
                                 } else if (response.status == 400 || response.status == 404) {
-
-
                                     //set values
                                     document.querySelector(MPv1.selectors.applyCoupon).value = MPv1.text.apply;
                                     document.querySelector(MPv1.selectors.discount).value = 0;
                                     MPv1.coupon_of_discounts.status = false;
-
                                     //set styles
                                     document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
                                     document.querySelector(MPv1.selectors.mpCouponError).style.display = 'block';
-
                                     // message error
                                     document.querySelector(MPv1.selectors.mpCouponError).innerHTML = response.response.message;
                                 }
@@ -415,14 +400,12 @@ define(
                                 MPv1.cardsHandler();
                                 document.querySelector(MPv1.selectors.applyCoupon).disabled = false;
                                 self.updateSummaryOrder();
-
                             }
                         });
-
                     }
                 }
 
-                MPv1.couponUnidentifiedError = function () {
+                MPv1.couponUnidentifiedError = function() {
                     // request failed
                     document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
                     document.querySelector(MPv1.selectors.mpCouponError).style.display = 'none';
@@ -434,10 +417,10 @@ define(
                     MPv1.cardsHandler();
                 }
 
-                MPv1.removeCouponDiscount = function () {
-
+                MPv1.removeCouponDiscount = function() {
                     var url = MPv1.coupon_of_discounts.discount_action_url
                     var sp = "?";
+
                     //check if there are params in the url
                     if (url.indexOf("?") >= 0) {
                         sp = "&"
@@ -450,11 +433,10 @@ define(
                         url: url,
                         method: "GET",
                         timeout: 30000,
-                        error: function () {
+                        error: function() {
                             MPv1.couponUnidentifiedError();
                         },
-
-                        success: function (response, status) {
+                        success: function(response, status) {
                             MPv1.removeLoadingCouponDiscount();
                             // we already have a coupon set, so we remove it
                             document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
@@ -465,20 +447,19 @@ define(
                             document.querySelector(MPv1.selectors.couponCode).value = "";
                             document.querySelector(MPv1.selectors.discount).value = 0;
                             MPv1.cardsHandler();
-
                             self.updateSummaryOrder();
                         }
                     });
                 }
 
-                MPv1.setLoadingCouponDiscount = function () {
+                MPv1.setLoadingCouponDiscount = function() {
                     document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
                     document.querySelector(MPv1.selectors.mpCouponError).style.display = 'none';
                     document.querySelector(MPv1.selectors.couponCode).style.background = "url(" + MPv1.paths.loading + ") 98% 50% no-repeat #fff";
                     document.querySelector(MPv1.selectors.applyCoupon).disabled = true;
                 }
 
-                MPv1.removeLoadingCouponDiscount = function () {
+                MPv1.removeLoadingCouponDiscount = function() {
                     document.querySelector(MPv1.selectors.couponCode).style.background = null;
                     document.querySelector(MPv1.selectors.applyCoupon).disabled = false;
                 }
@@ -486,23 +467,20 @@ define(
                 return MPv1;
             },
 
-            updateSummaryOrder: function () {
+            updateSummaryOrder: function() {
                 cartCache.set('totals', null);
                 defaultTotal.estimateTotals();
             },
 
             /*
-             *
              * Validation of the main fields to process a payment by credit card
-             *
              */
-
-            validateCreditCardNumber: function (a, b) {
+            validateCreditCardNumber: function(a, b) {
                 var self = this;
                 self.hideError('E301');
                 var cardNumber = document.querySelector(MPv1.selectors.cardNumber).value;
                 if (cardNumber !== "") {
-                    Mercadopago.validateCardNumber(cardNumber, function (response, status) {
+                    Mercadopago.validateCardNumber(cardNumber, function(response, status) {
                         if (status === false) {
                             self.showError('E301');
                         }
@@ -510,7 +488,7 @@ define(
                 }
             },
 
-            validateExpirationDate: function (a, b) {
+            validateExpirationDate: function(a, b) {
                 var self = this;
                 self.hideError('208');
                 var monthExperitaion = document.querySelector(MPv1.selectors.cardExpirationMonth).value;
@@ -523,7 +501,7 @@ define(
                 }
             },
 
-            validateCardHolderName: function (a, b) {
+            validateCardHolderName: function(a, b) {
                 var self = this;
                 self.hideError('316');
                 var cardHolderName = document.querySelector(MPv1.selectors.cardholderName).value;
@@ -534,7 +512,7 @@ define(
                 }
             },
 
-            validateSecurityCode: function (a, b) {
+            validateSecurityCode: function(a, b) {
                 var self = this;
                 self.hideError('E302');
                 var securityCode = document.querySelector(MPv1.selectors.securityCode).value;
@@ -543,20 +521,20 @@ define(
                 }
             },
 
-            onlyNumbersInSecurityCode: function (t, evt) {
+            onlyNumbersInSecurityCode: function(t, evt) {
                 var securityCode = document.querySelector(MPv1.selectors.securityCode);
                 if (securityCode.value.match(/[^0-9 ]/g)) {
                     securityCode.value = securityCode.value.replace(/[^0-9 ]/g, '');
                 }
             },
 
-            showError: function (code) {
+            showError: function(code) {
                 var $form = MPv1.getForm();
                 var $span = $form.querySelector('#mp-error-' + code);
                 $span.style.display = 'inline-block';
             },
 
-            hideError: function (code) {
+            hideError: function(code) {
                 var $form = MPv1.getForm();
                 var $span = $form.querySelector('#mp-error-' + code);
                 $span.style.display = 'none';

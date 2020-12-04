@@ -1,7 +1,7 @@
-#co-mercadopago-form, #co-mercadopago-form-ticket {
+#co-mercadopago-form,
+#co-mercadopago-form-ticket {
     max-width: 400px;
 }
-
 
 #mp-box-form {
     width: 100%;
@@ -102,7 +102,8 @@
     color: red;
 }
 
-.mp-box-inputs input, .mp-box-inputs select {
+.mp-box-inputs input,
+.mp-box-inputs select {
     width: 100%;
     background-color: #fff;
     border: 1px solid #cecece;
@@ -112,12 +113,15 @@
     height: 32px;
     margin-top: 0;
     max-width: unset;
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    -webkit-box-sizing: border-box;
+    /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;
+    /* Firefox, other Gecko */
     box-sizing: border-box;
 }
 
-.mp-box-inputs input:focus, .mp-box-inputs select:focus {
+.mp-box-inputs input:focus,
+.mp-box-inputs select:focus {
     border: 1px solid #999;
     outline: 0;
 }
@@ -130,7 +134,8 @@
     background: no-repeat rgb(255, 255, 255);
 }
 
-.mp-box-inputs input.mp-error-input, .mp-box-inputs select.mp-error-input {
+.mp-box-inputs input.mp-error-input,
+.mp-box-inputs select.mp-error-input {
     border: 1px solid red;
 }
 
@@ -173,7 +178,8 @@
     font-weight: 400;
 }
 
-#applyCouponCard, #applyCouponTicket {
+#applyCouponCard,
+#applyCouponTicket {
     color: #fff;
     background-color: #337ab7;
     border-color: #2e6da4;
@@ -185,7 +191,8 @@
     font-weight: 400;
 }
 
-#applyCouponCard:hover, #applyCouponTicket:hover {
+#applyCouponCard:hover,
+#applyCouponTicket:hover {
     color: #fff;
     background-color: #286090;
     border-color: #204d74;
@@ -201,12 +208,14 @@
     border-color: #204d74;
 }
 
-#mpCouponApplyed, #mpCouponError {
+#mpCouponApplyed,
+#mpCouponError {
     margin: 5px 0 5px;
     display: none;
 }
 
-#mpCouponApplyed, #mpCouponApplyedTicket {
+#mpCouponApplyed,
+#mpCouponApplyedTicket {
     display: none;
     border-style: solid;
     border-width: thin;
@@ -234,8 +243,10 @@
     padding-right: 5px;
     padding-left: 5px;
     float: left;
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    -webkit-box-sizing: border-box;
+    /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;
+    /* Firefox, other Gecko */
     box-sizing: border-box;
 }
 
@@ -306,18 +317,12 @@
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-
 [class^=form-col-] label em {
     color: red;
 }
 
-/*
-*
-*
-* Error
-*
-*
-*/
+
+/* Error */
 
 .mp-error {
     text-transform: uppercase;
@@ -345,10 +350,7 @@
 }
 
 
-/*
-* Tax
-*
-*/
+/* Tax */
 
 #mp-box-input-tax-tea {
     color: #666;
@@ -375,28 +377,25 @@
 }
 
 
-/*
-* BANNER
-*
-*/
+/* BANNER */
 
 .banner_checkout_mp {
     width: 100%;
     max-width: 400px;
 }
 
-
 .form-mercadopago {
     padding-left: 0 !important;
 }
 
-
-#mercadopago-ticket-form-general, .mercadopago-box-form {
+#mercadopago-ticket-form-general,
+.mercadopago-box-form {
     float: left;
     width: 100%;
 }
 
-#form-ticket, #mercadopago-form-coupon-ticket {
+#form-ticket,
+#mercadopago-form-coupon-ticket {
     width: 100%;
     margin-left: 10px;
     margin-right: 10px;
@@ -426,8 +425,10 @@
     padding-right: 5px;
     padding-left: 5px;
     float: left;
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    -webkit-box-sizing: border-box;
+    /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;
+    /* Firefox, other Gecko */
     box-sizing: border-box;
     margin-top: 5px;
 }
@@ -495,11 +496,12 @@
     background-image: none;
     border: 1px solid #ccc;
     border-radius: 4px;
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box; /* Firefox, other Gecko */
+    -webkit-box-sizing: border-box;
+    /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;
+    /* Firefox, other Gecko */
     box-sizing: border-box;
 }
-
 
 .form-row select {
     width: 100%;
@@ -514,12 +516,10 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-
     -webkit-appearance: menulist-button;
     -moz-appearance: menulist-button;
     -ms-appearance: menulist-button;
     appearance: menulist-button;
-
     background: no-repeat rgb(255, 255, 255);
 }
 
@@ -539,12 +539,13 @@
     font-size: 12px;
 }
 
-
 #MPv1-zipcode {
     width: 50% !important;
 }
 
+
 /* Error */
+
 .erro_febraban {
     text-transform: uppercase;
     font-size: 10px;
@@ -563,24 +564,27 @@
     width: 100%;
 }
 
-.title-razao-social, .title-cnpj {
+.title-razao-social,
+.title-cnpj {
     display: none;
 }
 
 
 /* Bank transfer */
+
 #mercadopago-bank-transfer {
     width: 100%;
     max-width: 375px;
 }
 
-
-#mercadopago-bank-transfer .field-error, #mercadopago-bank-transfer div.mage-error[generated] {
+#mercadopago-bank-transfer .field-error,
+#mercadopago-bank-transfer div.mage-error[generated] {
     margin-top: -5px;
 }
 
 
 /* Ticket */
+
 #mercadopago-payment-methods-ticket {
     margin: 0 0 0 -30px;
 }
@@ -591,6 +595,126 @@
 
 
 /* Ticket */
+
 #co-mercadopago-form-ticket .field-error {
     margin-top: -10px;
+}
+
+
+/* Wallet Button */
+
+.mp-wb-card {
+    max-width: 400px;
+    margin: 25px 0 40px;
+    border-radius: 10px;
+    box-shadow: 0 7px 12px 0 rgba(0, 0, 0, 0.11);
+    border: solid 1px #dcdcdc;
+    background-color: #ffffff;
+    padding-bottom: 32px;
+}
+
+.mp-wb-header {
+    width: 100%;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.mp-wb-header-fast-buy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0px 8px;
+    background-color: #009ee3;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    margin: -1px -1px 0px 0px;
+}
+
+.mp-wb-header-fast-buy p {
+    font-size: 12px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.17;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
+    padding: 2px 2px;
+    margin-top: 0rem;
+    margin-bottom: 0rem;
+    margin-block-end: 0em;
+    margin-block-start: 0em;
+}
+
+.mp-wb-header-fast-buy i {
+    font-size: 16px;
+}
+
+.mp-wb-body {
+    text-align: center;
+}
+
+.wp-wb-logo-frame {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(71, 154, 209, 0.1);
+    border-radius: 100%;
+    margin: 6px auto 12px;
+}
+
+.wp-wb-logo-frame img {
+    width: 40px;
+    height: auto;
+}
+
+.mp-wb-body-title {
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.8);
+    margin-top: 0rem;
+    margin-bottom: 0rem;
+    margin-block-end: 0em;
+    margin-block-start: 0em;
+    padding-bottom: 8px;
+}
+
+.mp-wb-body-text {
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.8);
+    margin-top: 0rem;
+    margin-bottom: 0rem;
+    margin-block-end: 0em;
+    margin-block-start: 0em;
+    padding-bottom: 22px;
+}
+
+.wp-wb-body-button {
+    padding: 10px 12px;
+    background-color: #009ee3;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+}
+
+.wp-wb-body-button:hover {
+    background-color: #007eb5;
+    border: none;
+    color: #ffffff;
 }
