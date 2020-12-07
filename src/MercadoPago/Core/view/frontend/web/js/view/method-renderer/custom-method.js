@@ -44,6 +44,7 @@ define(
             validateHandler: null,
             redirectAfterPlaceOrder: false,
             initialGrandTotal: null,
+            walletButtonScript: document.createElement("script"),
 
             initApp: function() {
                 var self = this;
@@ -80,6 +81,10 @@ define(
 
                     //get action change payment method
                     quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
+                    
+                    //insert wallet button on form
+                    var custom_form = document.getElementById("co-mercadopago-form");
+                    custom_form.appendChild(this.walletButtonScript);
                 }
             },
 
@@ -199,6 +204,28 @@ define(
                 return '';
             },
 
+            addWalletButton: function(countryLink, preferenceId) {
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    var mp_public_key = window.checkoutConfig.payment[this.getCode()]['public_key'];
+
+                    this.walletButtonScript.src = countryLink;
+                    this.walletButtonScript.setAttribute('data-public-key', mp_public_key);
+                    this.walletButtonScript.setAttribute('data-preference-id', preferenceId);
+                    this.walletButtonScript.setAttribute('data-open', 'false');
+                    this.walletButtonScript.async = true;
+
+                    setTimeout(function() {
+                        var mercadopago_button = document.querySelector('.mercadopago-button');
+                        mercadopago_button.style.display = 'none';
+                        mercadopago_button.click();
+                    }, 300);
+
+                    return;
+                }
+
+                return;
+            },
+
             /**
              * @override
              */
@@ -307,7 +334,6 @@ define(
             /*
              * Customize MPV1
              */
-
             initializeInstallmentsAndIssuer: function() {
                 var issuer = document.querySelector(MPv1.selectors.issuer);
                 var optIssuer = document.createElement('option');
