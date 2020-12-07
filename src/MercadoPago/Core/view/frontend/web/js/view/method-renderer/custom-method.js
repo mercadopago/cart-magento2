@@ -218,7 +218,7 @@ define(
                         var mercadopago_button = document.querySelector('.mercadopago-button');
                         mercadopago_button.style.display = 'none';
                         mercadopago_button.click();
-                    }, 300);
+                    }, 500);
 
                     return;
                 }
