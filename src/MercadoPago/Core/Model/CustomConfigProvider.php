@@ -2,8 +2,11 @@
 
 namespace MercadoPago\Core\Model;
 
-use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Payment\Helper\Data as PaymentHelper;
+use MercadoPago\Core\Lib\RestClient;
+use MercadoPago\Core\Helper\ConfigData;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Checkout\Model\ConfigProviderInterface;
 
 /**
  * Return configs to Standard Method
@@ -38,6 +41,7 @@ class CustomConfigProvider implements ConfigProviderInterface
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
+
     /**
      * @var \Magento\Framework\App\RequestInterface
      */
@@ -65,29 +69,30 @@ class CustomConfigProvider implements ConfigProviderInterface
      * @param PaymentHelper $paymentHelper
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
         PaymentHelper $paymentHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \MercadoPago\Core\Helper\Data $coreHelper,
+        \Magento\Framework\App\Action\Context $context,
         \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\View\Asset\Repository $assetRepo,
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
-        \MercadoPago\Core\Helper\Data $coreHelper
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata
     )
     {
-        $this->_request = $context->getRequest();
-        $this->methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
-        $this->_scopeConfig = $scopeConfig;
-        $this->_checkoutSession = $checkoutSession;
-        $this->_storeManager = $storeManager;
-        $this->_assetRepo = $assetRepo;
         $this->_context = $context;
-        $this->_productMetaData = $productMetadata;
+        $this->_request = $context->getRequest();
+        $this->_assetRepo = $assetRepo;
         $this->_coreHelper = $coreHelper;
+        $this->_scopeConfig = $scopeConfig;
+        $this->_storeManager = $storeManager;
+        $this->methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
+        $this->_checkoutSession = $checkoutSession;
+        $this->_productMetaData = $productMetadata;
     }
 
     /**
      * Gather information to be sent to javascript method renderer
+     * 
      * @return array
      */
     public function getConfig()
@@ -107,24 +112,19 @@ class CustomConfigProvider implements ConfigProviderInterface
             'payment' => [
                 $this->methodCode => [
                     'bannerUrl' => $this->_scopeConfig->getValue(
-                        \MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANNER,
-                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_CUSTOM_BANNER, ScopeInterface::SCOPE_STORE
                     ),
                     'public_key' => $this->_scopeConfig->getValue(
-                        \MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY,
-                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE
                     ),
                     'logEnabled' => $this->_scopeConfig->getValue(
-                        \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG,
-                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_ADVANCED_LOG, ScopeInterface::SCOPE_STORE
                     ),
                     'discount_coupon' => $this->_scopeConfig->isSetFlag(
-                        \MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_COUPON,
-                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_CUSTOM_COUPON, ScopeInterface::SCOPE_STORE
                     ),
                     'mp_gateway_mode' => $this->_scopeConfig->getValue(
-                        \MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_GATEWAY_MODE,
-                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_CUSTOM_GATEWAY_MODE, ScopeInterface::SCOPE_STORE
                     ),
                     'country' => $country,
                     'route' => $this->_request->getRouteName(),
@@ -142,10 +142,43 @@ class CustomConfigProvider implements ConfigProviderInterface
                     'platform_version' => $this->_productMetaData->getVersion(),
                     'text-installment' => __('Enter the card number'),
                     'wallet_button_link' => $walletButtonLink,
+                    'payment_methods' => $this->getPaymentMethods(),
                 ],
             ],
         ];
 
         return $data;
+    }
+
+    /**
+     * Get payment methods to show on checkout
+     *
+     * @return array
+     */
+    public function getPaymentMethods()
+    {
+        $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_WEBSITE);
+
+        try {
+
+            $cards = array();
+            $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
+            $response = $paymentMethods['response'];
+
+            foreach ($response as $card) {
+                if ($card['payment_type_id'] == 'credit_card') {
+                    $cards[] = $card;
+                } elseif ($card['payment_type_id'] == 'debit_card' || $card['payment_type_id'] == 'prepaid_card') {
+                    $cards[] = $card;
+                }
+            }
+
+            return $cards;
+
+        } catch (\Exception $e) {
+            $this->_coreHelper->log(
+                "[Custom config] getPaymentMethods:: An error occurred at the time of obtaining payment methods: " . $e
+            );
+        }
     }
 }
