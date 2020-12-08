@@ -96,6 +96,13 @@ class CustomConfigProvider implements ConfigProviderInterface
             return [];
         }
 
+        $country = strtoupper($this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        ));
+
+        $walletButtonLink = $this->_coreHelper->getWalletButtonLink($country);
+
         $data = [
             'payment' => [
                 $this->methodCode => [
@@ -103,10 +110,6 @@ class CustomConfigProvider implements ConfigProviderInterface
                         \MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANNER,
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     ),
-                    'country' => strtoupper($this->_scopeConfig->getValue(
-                        \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
-                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                    )),
                     'public_key' => $this->_scopeConfig->getValue(
                         \MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY,
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
@@ -123,6 +126,7 @@ class CustomConfigProvider implements ConfigProviderInterface
                         \MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_GATEWAY_MODE,
                         \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                     ),
+                    'country' => $country,
                     'route' => $this->_request->getRouteName(),
                     'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                     'minilogo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/minilogo.png"),
@@ -137,6 +141,7 @@ class CustomConfigProvider implements ConfigProviderInterface
                     'module_version' => $this->_coreHelper->getModuleVersion(),
                     'platform_version' => $this->_productMetaData->getVersion(),
                     'text-installment' => __('Enter the card number'),
+                    'wallet_button_link' => $walletButtonLink,
                 ],
             ],
         ];
