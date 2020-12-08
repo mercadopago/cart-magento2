@@ -739,11 +739,13 @@
     text-decoration: none;
 }
 
+/* Protect buy */
+
 .mp-protect-buy {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 20px 0px 38px;
+    padding: 15px 0px 38px;
 }
 
 .mp-protect-buy i {
@@ -766,10 +768,12 @@
 .mp-payment-methods-container {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .mp-pm-card-image {
-    width: auto;
-    height: 24px;
+    width: 32px;
+    height: auto;
+    max-height: 32px;
     padding: 12px 8px 12px 0px !important;
 }
