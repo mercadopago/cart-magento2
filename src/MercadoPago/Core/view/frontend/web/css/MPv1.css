@@ -18,6 +18,7 @@
 
 .mp-box-inputs {
     float: left;
+    margin: 5px 0px;
 }
 
 .mp-col-10 {
@@ -619,6 +620,10 @@
     margin-left: 0;
 }
 
+.mp-custom-display-inline-block {
+    display: inline-block !important;
+}
+
 .mp-wb-card {
     max-width: 400px;
     margin: 25px 0 40px;
@@ -769,11 +774,12 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    padding-top: 12px;
 }
 
 .mp-pm-card-image {
     width: 32px;
     height: auto;
     max-height: 32px;
-    padding: 12px 8px 12px 0px !important;
+    padding: 0px 8px 12px 0px !important;
 }
