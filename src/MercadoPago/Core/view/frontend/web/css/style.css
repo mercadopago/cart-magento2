@@ -582,3 +582,11 @@ textarea.has-error {
     text-align: center !important;
     color: #333333 !important;
 }
+
+.mp-custom-display-inline-block {
+    display: inline-block !important;
+}
+
+.mp-mt-16 {
+    margin-top: 16px !important;
+}
