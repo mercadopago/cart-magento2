@@ -7,14 +7,12 @@ use Magento\Payment\Helper\Data as PaymentHelper;
 
 /**
  * Return configs to Standard Method
- *
  * Class StandardConfigProvider
  *
  * @package MercadoPago\Core\Model
  */
 class CustomConfigProvider implements ConfigProviderInterface
 {
-
     /**
      * @var \Magento\Payment\Model\MethodInterface
      */
@@ -37,7 +35,6 @@ class CustomConfigProvider implements ConfigProviderInterface
 
     /**
      * Store manager
-     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
@@ -45,7 +42,6 @@ class CustomConfigProvider implements ConfigProviderInterface
      * @var \Magento\Framework\App\RequestInterface
      */
     protected $_request;
-
 
     /**
      * @var \Magento\Framework\View\Asset\Repository
@@ -61,11 +57,8 @@ class CustomConfigProvider implements ConfigProviderInterface
      * @var \Magento\Framework\App\ProductMetadataInterface
      */
     protected $_productMetaData;
-
     protected $_composerInformation;
-
     protected $_coreHelper;
-
     protected $_productMetadata;
 
     /**
@@ -93,47 +86,66 @@ class CustomConfigProvider implements ConfigProviderInterface
         $this->_coreHelper = $coreHelper;
     }
 
-
     /**
      * Gather information to be sent to javascript method renderer
-     *
      * @return array
      */
     public function getConfig()
     {
-
         if (!$this->methodInstance->isAvailable()) {
-
             return [];
         }
+
+        $country = strtoupper($this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        ));
+
+        $walletButtonLink = $this->_coreHelper->getWalletButtonLink($country);
 
         $data = [
             'payment' => [
                 $this->methodCode => [
-                    'bannerUrl' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANNER, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                    'country' => strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
-                    'public_key' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                    'logEnabled' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                    'discount_coupon' => $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_COUPON, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                    'grand_total' => $this->_checkoutSession->getQuote()->getGrandTotal(),
-                    'base_url' => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
-                    'success_url' => $this->methodInstance->getConfigData('order_place_redirect_url'),
+                    'bannerUrl' => $this->_scopeConfig->getValue(
+                        \MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANNER,
+                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ),
+                    'public_key' => $this->_scopeConfig->getValue(
+                        \MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY,
+                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ),
+                    'logEnabled' => $this->_scopeConfig->getValue(
+                        \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG,
+                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ),
+                    'discount_coupon' => $this->_scopeConfig->isSetFlag(
+                        \MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_COUPON,
+                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ),
+                    'mp_gateway_mode' => $this->_scopeConfig->getValue(
+                        \MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_GATEWAY_MODE,
+                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ),
+                    'country' => $country,
                     'route' => $this->_request->getRouteName(),
-                    'customer' => $this->methodInstance->getCustomerAndCards(),
-                    'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
-                    'text-currency' => __('$'),
-                    'text-choice' => __('Select'),
-                    'default-issuer' => __('Default issuer'),
-                    'text-installment' => __('Enter the card number'),
                     'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
-                    'platform_version' => $this->_productMetaData->getVersion(),
+                    'minilogo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/minilogo.png"),
+                    'base_url' => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
+                    'customer' => $this->methodInstance->getCustomerAndCards(),
+                    'grand_total' => $this->_checkoutSession->getQuote()->getGrandTotal(),
+                    'success_url' => $this->methodInstance->getConfigData('order_place_redirect_url'),
+                    'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
+                    'text-choice' => __('Select'),
+                    'text-currency' => __('$'),
+                    'default-issuer' => __('Default issuer'),
                     'module_version' => $this->_coreHelper->getModuleVersion(),
-                    'mp_gateway_mode' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_GATEWAY_MODE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+                    'platform_version' => $this->_productMetaData->getVersion(),
+                    'text-installment' => __('Enter the card number'),
+                    'wallet_button_link' => $walletButtonLink,
                 ],
             ],
         ];
 
         return $data;
     }
-
 }

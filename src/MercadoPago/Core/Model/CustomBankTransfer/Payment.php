@@ -148,7 +148,7 @@ class Payment
             return $ip[0];
         }
 
-        if (strpos($ip, ',') != false) {
+        if (strpos($ip, ',') !== false) {
             $exploded_ip = explode(',', $ip);
             $ip = $exploded_ip[0];
         }

@@ -4,17 +4,14 @@ namespace MercadoPago\Core\Helper;
 
 use Magento\Framework\View\LayoutFactory;
 
-
 /**
  * Class Data
  *
  * @package MercadoPago\Core\Helper
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Data
-    extends \Magento\Payment\Helper\Data
+class Data extends \Magento\Payment\Helper\Data
 {
-
     /**
      *api platform openplatform
      */
@@ -27,7 +24,6 @@ class Data
      *type
      */
     const TYPE = 'magento';
-    //end const platform
 
     /**
      * payment calculator
@@ -67,7 +63,6 @@ class Data
      */
     protected $_switcher;
     protected $_composerInformation;
-
 
     /**
      * @var \Magento\Framework\Module\ResourceInterface $moduleResource
@@ -109,7 +104,6 @@ class Data
 
     )
     {
-
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
         $this->_mpLogger = $logger;
@@ -152,7 +146,6 @@ class Data
      */
     public function getApiInstance($accessToken = null)
     {
-
         if (is_null($accessToken)) {
             throw new \Magento\Framework\Exception\LocalizedException(__('The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
         }
@@ -170,7 +163,6 @@ class Data
         //$api->set_so((string)$this->_moduleContext->getVersion()); //TODO tracking
 
         return $api;
-
     }
 
     /**
@@ -363,6 +355,11 @@ class Data
         return $response['response'];
     }
 
+    /**
+     * Get initial country
+     *
+     * @return string
+     */
     public function getCountryInitial()
     {
         try {
@@ -380,6 +377,11 @@ class Data
         }
     }
 
+    /**
+     * Get store URL
+     * 
+     * @return string
+     */
     public function getUrlStore()
     {
 
@@ -397,6 +399,11 @@ class Data
 
     }
 
+    /**
+     * Get module version
+     * 
+     * @return string
+     */
     public function getModuleVersion()
     {
         $version = $this->_moduleResource->getDbVersion('MercadoPago_Core');
@@ -478,5 +485,31 @@ class Data
         }
 
         return null;
+    }
+
+    /**
+     * Get modal link
+     *
+     * @param string $localization
+     * @return string
+     */
+    public function getWalletButtonLink($localization)
+    {
+        $site_id = array(
+            'MCO' => 'https://www.mercadopago.com.co/integrations/v1/web-payment-checkout.js',
+            'MLA' => 'https://www.mercadopago.com.ar/integrations/v1/web-payment-checkout.js',
+            'MLB' => 'https://www.mercadopago.com.br/integrations/v1/web-payment-checkout.js',
+            'MLC' => 'https://www.mercadopago.cl/integrations/v1/web-payment-checkout.js',
+            'MLM' => 'https://www.mercadopago.com.mx/integrations/v1/web-payment-checkout.js',
+            'MLU' => 'https://www.mercadopago.com.uy/integrations/v1/web-payment-checkout.js',
+            'MLV' => 'https://www.mercadopago.com.ve/integrations/v1/web-payment-checkout.js',
+            'MPE' => 'https://www.mercadopago.com.pe/integrations/v1/web-payment-checkout.js',
+        );
+
+        if (array_key_exists($localization, $site_id)) {
+            return $site_id[$localization];
+        }
+
+        return $site_id['MLA'];
     }
 }
