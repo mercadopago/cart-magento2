@@ -18,7 +18,7 @@
         <div class="mp-wb-card">
             <div class="mp-wb-header">
                 <div class="mp-wb-header-fast-buy">
-                    <p>Compra rápida!</p>
+                    <p><!-- ko i18n: 'Fast buy!'--><!-- /ko --></p>
                     <i>⚡️</i>
                 </div>
             </div>
@@ -28,14 +28,17 @@
                     <img data-bind="attr: { alt: 'Mercado Pago', src: getMinilogo() }" />
                 </div>
 
-                <p class="mp-wb-body-title">Usa tus tarjetas guardadas</p>
-                <p class="mp-wb-body-text">Paga sin cargar más datos, de forma <br /> financiada y segura.</p>
+                <p class="mp-wb-body-title"><!-- ko i18n: 'Use your saved cards'--><!-- /ko --></p>
+                <p class="mp-wb-body-text">
+                    <!-- ko i18n: 'Pay without loading more data, in a'--><!-- /ko --> <br>
+                    <!-- ko i18n: 'financed and secure way.'--><!-- /ko -->
+                </p>
 
                 <a
                 class="wp-wb-body-button"
                 data-bind="click: function() {  addWalletButton('418072211-aeb85128-95be-4cfe-886e-44d85598efab') }"
                 >
-                Pagar com Mercado Pago
+                <!-- ko i18n: 'Pay with Mercado Pago'--><!-- /ko -->
                 </a>
             </div>
         </div>
@@ -60,7 +63,7 @@
                     }, 'validation':[]}"
         >
             <!-- START MPV1 -->
-            <p class="mp-custom-title">O completa todos los datos de tu tarjeta:</p>
+            <p class="mp-custom-title"><!-- ko i18n: 'Or complete all the information on your card:'--><!-- /ko --></p>
             <div class="mp-box-inputs mp-line" id="mercadopago-form-coupon">
                 <label for="couponCode"> <!-- ko i18n: 'Discount Coupon'--><!-- /ko --> </label>
                 <div class="mp-box-inputs mp-col-70">
@@ -356,13 +359,13 @@
             <div class="mp-box-inputs mp-col-100">
                 <div class="mp-protect-buy">
                     <i>logo</i>
-                    <p>Pago procesado por Mercado Pago</p>
+                    <p><!-- ko i18n: 'Payment processed by Mercado Pago'--><!-- /ko --></p>
                 </div>
 
                 <hr class="mp-custom-hr" />
             </div>
 
-            <div class="mp-box-inputs mp-line">
+            <div class="mp-line">
                 <div class="mp-box-inputs mp-col-25">
                     <div id="mp-box-loading"></div>
                 </div>

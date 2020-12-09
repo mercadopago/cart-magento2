@@ -434,3 +434,12 @@
 "We could not process your payment in this moment. Please retry later", "No se pudo procesar su pago. Por favor inténtelo más tarde"
 "Processing error in the payment gateway. Please contact the administrator.", "Error de procesamiento en la pasarela de pago. Por favor, póngase en contacto con el administrador."
 "Error on process of payment data. Please contact the administrator.", "Error al procesar los datos de pago."
+
+"==================== WALLET BUTTON =====================","================================================"
+"Fast buy!", "Compra rápida!"
+"Use your saved cards", "Usa tus tarjetas guardadas"
+"Pay without loading more data, in a", "Paga sin cargar más datos, de forma"
+"financed and secure way.", "financiada y segura."
+"Pay with Mercado Pago", "Pagar com Mercado Pago"
+"Or complete all the information on your card:", "O completa todos los datos de tu tarjeta:"
+"Payment processed by Mercado Pago", "Pago procesado por Mercado Pago"

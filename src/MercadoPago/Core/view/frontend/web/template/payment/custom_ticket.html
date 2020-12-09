@@ -301,20 +301,20 @@
                 </div>
                 <!-- end formulario unico -->
             </div>
-        </form>
 
-        <div class="payment-method-billing-address mp-ticket-display-inline-block mp-mt-16">
-            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
-            <!-- ko template: getTemplate() --><!-- /ko -->
-            <!--/ko-->
-        </div>
+            <div class="payment-method-billing-address mp-ticket-display-inline-block mp-mt-16">
+                <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
+                <!--/ko-->
+            </div>
+        </form>
 
         <div data-bind="template: {afterRender: initializeMethod()}"></div>
 
         <div class="checkout-agreements-block">
-        <!-- ko foreach: $parent.getRegion('before-place-order') -->
-        <!-- ko template: getTemplate() --><!-- /ko -->
-        <!--/ko-->
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
         </div>
 
         <!-- ko if: (getCountTickets() > 0)-->

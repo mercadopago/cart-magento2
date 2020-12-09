@@ -436,6 +436,13 @@ Cannot operate between users from different countries.", "Não é possível oper
 "Amount discount is invalid", "Valor do desconto é inválido"
 "We could not process your payment in this moment. Please retry later", "Não foi possível processar seu pagamento. Por favor tente mais tarde"
 "Processing error in the payment gateway. Please contact the administrator.", "Erro ao gerar pedido no gateway de pagamento. Por favor, entre em contato com o administrador."
-
-
 "Error on process of payment data. Please contact the administrator.", "Erro no processamento dos dados de pagamento."
+
+"==================== WALLET BUTTON =====================","================================================"
+"Fast buy!", "Compra rápida!"
+"Use your saved cards", "Use seus cartões salvos"
+"Pay without loading more data, in a", "Pague sem carregar mais dados, de forma"
+"financed and secure way.", "financiada e segura."
+"Pay with Mercado Pago", "Pague com Mercado Pago"
+"Or complete all the information on your card:", "Ou preencha todas as informações do seu cartão:"
+"Payment processed by Mercado Pago", "Pagamento processado pelo Mercado Pago"
