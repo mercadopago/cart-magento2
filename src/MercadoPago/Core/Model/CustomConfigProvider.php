@@ -130,6 +130,7 @@ class CustomConfigProvider implements ConfigProviderInterface
                     'route' => $this->_request->getRouteName(),
                     'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                     'minilogo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/minilogo.png"),
+                    'gray_minilogo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/gray_minilogo.png"),
                     'base_url' => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
                     'customer' => $this->methodInstance->getCustomerAndCards(),
                     'grand_total' => $this->_checkoutSession->getQuote()->getGrandTotal(),
