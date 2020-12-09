@@ -753,9 +753,9 @@
     padding: 15px 0px 38px;
 }
 
-.mp-protect-buy i {
-    font-size: 12px;
-    color: #bfbfbf;
+.mp-protect-buy img {
+    width: auto;
+    height: 22px;
     padding-right: 8px;
 }
 

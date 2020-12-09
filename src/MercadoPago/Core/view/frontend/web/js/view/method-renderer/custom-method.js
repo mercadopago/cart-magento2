@@ -204,6 +204,13 @@ define(
                 return '';
             },
 
+            getGrayMinilogo: function() {
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    return window.checkoutConfig.payment[this.getCode()]['gray_minilogo'];
+                }
+                return '';
+            },
+
             addWalletButton: function(preferenceId) {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     var wb_link = window.checkoutConfig.payment[this.getCode()]['wallet_button_link'];
