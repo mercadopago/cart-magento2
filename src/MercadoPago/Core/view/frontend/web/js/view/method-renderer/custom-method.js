@@ -204,6 +204,13 @@ define(
                 return '';
             },
 
+            getGrayMinilogo: function() {
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    return window.checkoutConfig.payment[this.getCode()]['gray_minilogo'];
+                }
+                return '';
+            },
+
             addWalletButton: function(preferenceId) {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     var wb_link = window.checkoutConfig.payment[this.getCode()]['wallet_button_link'];
@@ -222,6 +229,28 @@ define(
                     }, 500);
 
                     return;
+                }
+
+                return;
+            },
+
+            getPaymentMethods: function() {
+                if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+                    var thumbnails = [];
+                    var payment_methods = window.checkoutConfig.payment[this.getCode()]['payment_methods'];
+
+                    var sort_payment_methods = payment_methods.sort(function(a, b) {
+                        return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+                    });
+
+                    for (var i = 0; i < sort_payment_methods.length; i++) {
+                        thumbnails.push({
+                            src: sort_payment_methods[i].secure_thumbnail,
+                            name: sort_payment_methods[i].name,
+                        });
+                    }
+
+                    return thumbnails;
                 }
 
                 return;
