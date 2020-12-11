@@ -31,17 +31,13 @@
         <field id="statement_desc" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Statement Descriptor</label>
             <config_path>payment/mercadopago_basic/statement_desc</config_path>
-            <comment>Text that will identify the payment on the credit card invoice, this functionality is limited to
-                some countries.
-            </comment>
+            <comment>Text that will identify the payment on the credit card invoice, this functionality is limited to some countries.</comment>
         </field>
         <field id="binary_mode" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Binary Mode</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago_basic/binary_mode</config_path>
-            <comment>This functionality will mark the payment to approve or reject at the time it is created, there will
-                be no intermediate status pending.
-            </comment>
+            <comment>This functionality will mark the payment to approve or reject at the time it is created, there will be no intermediate status pending.</comment>
         </field>
         <field id="exp_time_pref" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Expiration Time Preference</label>
@@ -57,8 +53,7 @@
             <label>Checkout Position</label>
             <frontend_class>validate-number</frontend_class>
             <config_path>payment/mercadopago_basic/sort_order</config_path>
-            <comment>This setting will be the position in which the payment method will be available to the buyer.
-            </comment>
+            <comment>This setting will be the position in which the payment method will be available to the buyer.</comment>
         </field>
     </group>
 </include>

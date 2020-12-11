@@ -66,18 +66,14 @@
             <label>Refund payment</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago/refund_available</config_path>
-            <comment>Enable payment refund when a Credit Memo is created, the refund will occur if the payment is
-                Approved.
-            </comment>
+            <comment>Enable payment refund when a Credit Memo is created, the refund will occur if the payment is Approved.</comment>
         </field>
 
         <field id="cancel_payment" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Cancel payment</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago/cancel_payment</config_path>
-            <comment>Enable automatic cancellation of Payment in the Mercado Pago when an order is canceled. Payment is
-                only canceled when payment is pending or in_process.
-            </comment>
+            <comment>Enable automatic cancellation of Payment in the Mercado Pago when an order is canceled. Payment is only canceled when payment is pending or in_process.</comment>
         </field>
     </group>
 </include>

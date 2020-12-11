@@ -19,6 +19,7 @@ class ConfigData
     const PATH_CUSTOM_BANNER = 'payment/mercadopago_custom/banner_checkout';
     const PATH_CUSTOM_COUPON = 'payment/mercadopago_custom/coupon_mercadopago';
     const PATH_CUSTOM_GATEWAY_MODE = 'payment/mercadopago_custom/gateway_mode';
+    const PATH_CUSTOM_WALLET_BUTTON = 'payment/mercadopago_custom/wallet_button';
 
     //custom method ticket
     const PATH_CUSTOM_TICKET_ACTIVE = 'payment/mercadopago_customticket/active';
