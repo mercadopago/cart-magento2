@@ -15,9 +15,20 @@ define(
         'MPcustom',
         'MPv1Ticket'
     ],
-    function (Component, quote, paymentService, paymentMethodList, getTotalsAction, $, fullScreenLoader, setAnalyticsInformation, $t, defaultTotal, cartCache) {
+    function (
+        Component,
+        quote,
+        paymentService,
+        paymentMethodList,
+        getTotalsAction,
+        $,
+        fullScreenLoader,
+        setAnalyticsInformation,
+        $t,
+        defaultTotal,
+        cartCache
+    ) {
         'use strict';
-
         var configPayment = window.checkoutConfig.payment.mercadopago_customticket;
 
         return Component.extend({
@@ -30,7 +41,6 @@ define(
             validateHandler: null,
 
             initializeMethod: function () {
-
                 var self = this;
                 var mercadopago_site_id = window.checkoutConfig.payment[this.getCode()]['country']
                 var mercadopago_coupon = window.checkoutConfig.payment[this.getCode()]['discount_coupon'];
@@ -41,13 +51,11 @@ define(
                     payer_email = quote.guestEmail
                 }
 
-
                 MPv1Ticket.text.apply = $t('Apply');
                 MPv1Ticket.text.remove = $t('Remove');
                 MPv1Ticket.text.coupon_empty = $t('Please, inform your coupon code');
 
                 MPv1Ticket.actionsMLB = function () {
-
                     if (document.querySelector(MPv1Ticket.selectors.docNumber)) {
                         MPv1Ticket.addListenerEvent(document.querySelector(MPv1Ticket.selectors.docNumber), 'keyup', MPv1Ticket.execFormatDocument);
                     }
@@ -123,10 +131,6 @@ define(
                 return this;
             },
 
-            /**
-             * Get url to logo
-             * @returns {String}
-             */
             getLogoUrl: function () {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return configPayment['logoUrl'];
@@ -194,28 +198,24 @@ define(
             },
 
             getPaymentSelected: function () {
-
                 if (this.getCountTickets() == 1) {
                     var input = document.getElementsByName("mercadopago_custom_ticket[payment_method_ticket]")[0];
                     return input.value;
                 }
 
                 var element = document.querySelector('input[name="mercadopago_custom_ticket[payment_method_ticket]"]:checked');
+                
                 if (this.getCountTickets() > 1 && element) {
                     return element.value;
-
                 } else {
                     return false;
                 }
-
-
             },
 
             /**
              * @override
              */
             getData: function () {
-
                 var dataObj = {
                     'method': this.item.method,
                     'additional_data': {
@@ -227,7 +227,6 @@ define(
                 };
 
                 if (this.getCountryId() == 'MLB' && this.getCountTickets() > 0) {
-
                     //febraban rules
                     dataObj.additional_data.firstName = document.querySelector(MPv1Ticket.selectors.firstName).value
                     dataObj.additional_data.lastName = document.querySelector(MPv1Ticket.selectors.lastName).value
@@ -238,10 +237,8 @@ define(
                     dataObj.additional_data.addressCity = document.querySelector(MPv1Ticket.selectors.city).value
                     dataObj.additional_data.addressState = document.querySelector(MPv1Ticket.selectors.state).value
                     dataObj.additional_data.addressZipcode = document.querySelector(MPv1Ticket.selectors.zipcode).value
-
                 }
 
-                // return false;
                 return dataObj;
             },
 
@@ -253,13 +250,9 @@ define(
                 return this.validateHandler();
             },
 
-
             /*
-             *
              * Events
-             *
              */
-
             changePaymentMethodSelector: function (paymentMethodSelected) {
                 if (paymentMethodSelected.method != 'mercadopago_customticket') {
                     if (MPv1Ticket.coupon_of_discounts.status) {
@@ -269,13 +262,9 @@ define(
             },
 
             /*
-             *
              * Customize MPV1
-             *
              */
-
             actionsCouponDiscount: function (MPv1Ticket) {
-
                 var self = this;
 
                 MPv1Ticket.text.apply = $t('Apply');
@@ -283,9 +272,7 @@ define(
                 MPv1Ticket.text.coupon_empty = $t('Please, inform your coupon code');
 
                 MPv1Ticket.checkCouponEligibility = function () {
-
                     if (document.querySelector(MPv1Ticket.selectors.couponCode).value == "") {
-                        // coupon code is empty
                         document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).style.display = 'none';
                         document.querySelector(MPv1Ticket.selectors.mpCouponError).style.display = 'block';
                         document.querySelector(MPv1Ticket.selectors.mpCouponError).innerHTML = MPv1Ticket.text.coupon_empty;
@@ -293,13 +280,9 @@ define(
                         document.querySelector(MPv1Ticket.selectors.couponCode).style.background = null;
                         document.querySelector(MPv1Ticket.selectors.applyCoupon).value = MPv1Ticket.text.apply;
                         document.querySelector(MPv1Ticket.selectors.discount).value = 0;
-
                     } else if (MPv1Ticket.coupon_of_discounts.status) {
-
                         MPv1Ticket.removeCouponDiscount();
-
                     } else {
-
                         // set loading
                         MPv1Ticket.setLoadingCouponDiscount();
 
@@ -325,54 +308,41 @@ define(
                                 MPv1Ticket.removeLoadingCouponDiscount();
                                 MPv1Ticket.couponUnidentifiedError();
                             },
-
                             success: function (response, status) {
                                 MPv1Ticket.removeLoadingCouponDiscount();
 
                                 if (response.status == 200) {
-
                                     //set values
                                     document.querySelector(MPv1Ticket.selectors.discount).value = response.response.coupon_amount;
                                     document.querySelector(MPv1Ticket.selectors.campaign_id).value = response.response.id;
                                     document.querySelector(MPv1Ticket.selectors.campaign).value = response.response.name;
                                     document.querySelector(MPv1Ticket.selectors.applyCoupon).value = MPv1Ticket.text.remove;
                                     MPv1Ticket.coupon_of_discounts.status = true;
-
                                     // message success
                                     document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).innerHTML = response.message_to_user;
-
                                     //edit styles
                                     document.querySelector(MPv1Ticket.selectors.mpCouponError).style.display = 'none';
                                     document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).style.display = 'block';
-
-
                                 } else if (response.status == 400 || response.status == 404) {
-
-
                                     //set values
                                     document.querySelector(MPv1Ticket.selectors.applyCoupon).value = MPv1Ticket.text.apply;
                                     document.querySelector(MPv1Ticket.selectors.discount).value = 0;
                                     MPv1Ticket.coupon_of_discounts.status = false;
-
                                     //set styles
                                     document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).style.display = 'none';
                                     document.querySelector(MPv1Ticket.selectors.mpCouponError).style.display = 'block';
-
                                     // message error
                                     document.querySelector(MPv1Ticket.selectors.mpCouponError).innerHTML = response.response.message;
                                 }
 
                                 document.querySelector(MPv1Ticket.selectors.applyCoupon).disabled = false;
                                 self.updateSummaryOrder();
-
                             }
                         });
-
                     }
                 }
 
                 MPv1Ticket.couponUnidentifiedError = function () {
-                    // request failed
                     document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).style.display = 'none';
                     document.querySelector(MPv1Ticket.selectors.mpCouponError).style.display = 'none';
                     MPv1Ticket.coupon_of_discounts.status = false;
@@ -383,7 +353,6 @@ define(
                 }
 
                 MPv1Ticket.removeCouponDiscount = function () {
-
                     var url = MPv1Ticket.coupon_of_discounts.discount_action_url
                     var sp = "?";
                     //check if there are params in the url

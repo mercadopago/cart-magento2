@@ -15,10 +15,20 @@ define(
         'MPcustom',
         'MPv1Ticket'
     ],
-    function (Component, quote, paymentService, paymentMethodList, getTotalsAction, $, fullScreenLoader, setAnalyticsInformation, $t, defaultTotal, cartCache) {
+    function (
+        Component,
+        quote,
+        paymentService,
+        paymentMethodList,
+        getTotalsAction,
+        $,
+        fullScreenLoader,
+        setAnalyticsInformation,
+        $t,
+        defaultTotal,
+        cartCache
+    ) {
         'use strict';
-
-        //     var configPayment = window.checkoutConfig.payment.mercadopago_custom_bank_transfer;
 
         return Component.extend({
             defaults: {
@@ -37,14 +47,12 @@ define(
                 return 'mercadopago_custom_bank_transfer';
             },
 
-
             getPaymentMethods: function () {
                 return window.checkoutConfig.payment[this.getCode()]['payment_method_options'];
             },
 
             getLengthPaymentMethods: function () {
                 var options = this.getPaymentMethods();
-
                 return options.length;
             },
 
@@ -60,7 +68,6 @@ define(
             getFinancialInstitutions: function () {
                 // We need to customize this feature to get the information according to the payment method selected.
                 // Since we only have one payment method of this type, we only get the first element
-
                 var options = this.getPaymentMethods();
                 return options[0]['financial_institutions'];
             },
@@ -88,10 +95,6 @@ define(
                 return this;
             },
 
-            /**
-             * Get url to logo
-             * @returns {String}
-             */
             getLogoUrl: function () {
                 if (window.checkoutConfig.payment[this.getCode()] != undefined) {
                     return window.checkoutConfig.payment[this.getCode()]['logoUrl'];
@@ -130,11 +133,7 @@ define(
                 return '';
             },
 
-            /**
-             * @override
-             */
             getData: function () {
-
                 var postData = {
                     'method': this.item.method,
                     'additional_data': {
@@ -160,7 +159,6 @@ define(
             validate: function () {
                 return this.validateHandler();
             },
-
         });
     }
 );

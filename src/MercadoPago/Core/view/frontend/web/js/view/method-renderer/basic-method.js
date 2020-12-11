@@ -18,23 +18,17 @@ define(
 
             initObservable: function () {
                 this._super().observe('paymentReady');
-
                 return this;
             },
+
             isPaymentReady: function () {
                 return this.paymentReady();
             },
 
-            /**
-             *
-             */
             afterPlaceOrder: function () {
                 window.location = this.getActionUrl();
             },
 
-            /**
-             * Places order in pending payment status.
-             */
             placePendingPaymentOrder: function () {
                 this.placeOrder();
             },
@@ -43,17 +37,10 @@ define(
                 setAnalyticsInformation.beforePlaceOrder(this.getCode());
             },
 
-
-            /**
-             * @returns {string}
-             */
             getCode: function () {
                 return 'mercadopago_basic';
             },
 
-            /**
-             * @returns {*}
-             */
             getLogoUrl: function () {
                 if (configPayment !== undefined) {
                     return configPayment['logoUrl'];
@@ -61,10 +48,6 @@ define(
                 return '';
             },
 
-            /**
-             *
-             * @returns {boolean}
-             */
             existBanner: function () {
                 if (configPayment !== undefined) {
                     if (configPayment['bannerUrl'] != null) {
@@ -74,10 +57,6 @@ define(
                 return false;
             },
 
-            /**
-             *
-             * @returns {*}
-             */
             getBannerUrl: function () {
                 if (configPayment !== undefined) {
                     return configPayment['bannerUrl'];
@@ -85,22 +64,12 @@ define(
                 return '';
             },
 
-            /**
-             *
-             * @returns {*}
-             */
             getActionUrl: function () {
                 if (configPayment !== undefined) {
                     return configPayment['actionUrl'];
                 }
                 return '';
             },
-
-
-            /**
-             *
-             * Basic Checkout
-             */
 
             getRedirectImage: function () {
                 return configPayment['redirect_image'];
@@ -156,7 +125,6 @@ define(
                     return listPm;
                 }
             },
-
         });
     }
 );
