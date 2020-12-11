@@ -256,6 +256,13 @@ define(
         return;
       },
 
+      getMpWalletButton: function () {
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['mp_wallet_button'];
+        }
+        return 0;
+      },
+
       /**
        * @override
        */
