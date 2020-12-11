@@ -15,6 +15,7 @@
     </div>
 
     <div class="payment-method-content">
+        <!-- ko if: (getMpWalletButton() != 0)-->
         <div class="mp-wb-card">
             <div class="mp-wb-header">
                 <div class="mp-wb-header-fast-buy">
@@ -44,6 +45,7 @@
         </div>
 
         <hr class="mp-custom-hr" />
+        <!--/ko-->
 
         <form
         class="form"
@@ -62,8 +64,11 @@
                         'nativeAction': getSaveOrderUrl()
                     }, 'validation':[]}"
         >
-            <!-- START MPV1 -->
+            <!-- ko if: (getMpWalletButton() != 0)-->
             <p class="mp-custom-title"><!-- ko i18n: 'Or enter all your card details:'--><!-- /ko --></p>
+            <!--/ko-->
+
+            <!-- START MPV1 -->
             <div class="mp-box-inputs mp-line" id="mercadopago-form-coupon">
                 <label for="couponCode"> <!-- ko i18n: 'Discount Coupon'--><!-- /ko --> </label>
                 <div class="mp-box-inputs mp-col-70">
@@ -115,7 +120,7 @@
                         autocomplete="off"
                         maxlength="4"
                         data-bind="attr: {
-                                    'data-validate': JSON.stringify({required:true})}, 
+                                    'data-validate': JSON.stringify({required:true})},
                                     event: { keyup: onlyNumbersInSecurityCode, blur: validateSecurityCode }"
                         />
 
@@ -177,7 +182,7 @@
                         id="cardExpirationMonth"
                         data-checkout="cardExpirationMonth"
                         name="mercadopago_custom[cardExpirationMonth]"
-                        data-bind="attr: 
+                        data-bind="attr:
                                     {'data-container': getCode() + '-cc-month', 'data-validate': JSON.stringify({required:true})},
                                     enable: isActive($parents),
                                     options: getCcMonthsValues(),
@@ -197,7 +202,7 @@
                         id="cardExpirationYear"
                         data-checkout="cardExpirationYear"
                         name="mercadopago_custom[cardExpirationYear]"
-                        data-bind="attr: 
+                        data-bind="attr:
                                     {'data-container': getCode() + '-cc-year', 'data-validate': JSON.stringify({required:true})},
                                     enable: isActive($parents),
                                     options: getCcYearsValues(),
@@ -238,8 +243,8 @@
                         name="mercadopago_custom[cardholderName]"
                         data-checkout="cardholderName"
                         autocomplete="off"
-                        data-bind="attr: 
-                                    {'data-validate': JSON.stringify({required:true})}, 
+                        data-bind="attr:
+                                    {'data-validate': JSON.stringify({required:true})},
                                     event: { blur: validateCardHolderName }"
                     />
 
@@ -266,8 +271,8 @@
                         autocomplete="off"
                         maxlength="4"
                         required
-                        data-bind="attr: 
-                                    {'data-validate': JSON.stringify({required:true})}, 
+                        data-bind="attr:
+                                    {'data-validate': JSON.stringify({required:true})},
                                     event: { keyup: onlyNumbersInSecurityCode, blur: validateSecurityCode }"
                         />
 

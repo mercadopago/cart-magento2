@@ -92,7 +92,7 @@ class CustomConfigProvider implements ConfigProviderInterface
 
     /**
      * Gather information to be sent to javascript method renderer
-     * 
+     *
      * @return array
      */
     public function getConfig()
@@ -125,6 +125,9 @@ class CustomConfigProvider implements ConfigProviderInterface
                     ),
                     'mp_gateway_mode' => $this->_scopeConfig->getValue(
                         ConfigData::PATH_CUSTOM_GATEWAY_MODE, ScopeInterface::SCOPE_STORE
+                    ),
+                    'mp_wallet_button' => $this->_scopeConfig->getValue(
+                        ConfigData::PATH_CUSTOM_WALLET_BUTTON, ScopeInterface::SCOPE_STORE
                     ),
                     'country' => $country,
                     'route' => $this->_request->getRouteName(),
