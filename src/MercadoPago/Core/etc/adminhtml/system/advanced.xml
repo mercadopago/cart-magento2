@@ -52,7 +52,7 @@
             <label>Order update email</label>
             <source_model>MercadoPago\Core\Model\System\Config\Source\ListStatus</source_model>
             <config_path>payment/mercadopago/email_order_update</config_path>
-            <comment>Select the statuses you want to send update emails to. This email is only sent when the order status is updated. It is not sent on the first status update because the order creation email is sent.If the order creation email is deactivated, then the email of the first order update will be sent</comment>
+            <comment>Select the statuses you want to send update emails to. This email is only sent when the order status is updated. It is not sent on the first status update because the order creation email is sent. If the order creation email is deactivated, then the email of the first order update will be sent</comment>
         </field>
 
         <field id="heading_developer" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1">
@@ -72,6 +72,5 @@
             <label>Current Version</label>
             <backend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Version</backend_model>
         </field>
-
     </group>
 </include>
