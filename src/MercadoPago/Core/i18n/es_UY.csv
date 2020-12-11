@@ -34,6 +34,8 @@
 "When enabling the option will appear a discount field for the buyer to use a discount coupon of the Mercado Pago on the payment form.","Si habilitas esta opción aparecerá un campo de descuento en el que el usuario podrá ingresar su cupón de descuento creado en Mercado Pago."
 "This setting will be the position in which the payment method will be available to the buyer.","Esta configuración es la posición en la que la forma de pago está disponible para el comprador."
 "By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.","Por defecto el módulo de Mercado Pago configurará un banner con los métodos disponibles de acuerdo a su país, si desea personalizarlo basta cambiar la url de la imagen."
+"Cards saved in Mercado Pago","Tarjetas guardadas en Mercado Pago"
+"Make more sales by allowing your customers to pay quickly using the cards saved in their account.","Logra más ventas permitiendo que tus clientes paguen rápido usando las tarjetas guardadas en su cuenta."
 
 "==================== CUSTOM CHECKOUT OFFLINE CONFIGURATION PAGE =====================","================================================"
 "Custom Checkout - Offline Payments Methods (Ticket)","Custom Checkout - Medios de Pago OFF (Ticket)"
@@ -78,7 +80,7 @@
 "Email sent when the order is created does not mean that the payment has been approved","Un email será enviado cuando la orden sea creada, no implica que el pago haya sido aprobado "
 "Order update email","Email de actualización de orden"
 "Do not send","No enviar"
-"Select the statuses you want to send update emails to. This email is only sent when the order status is updated. It is not sent on the first status update because the order creation email is sent. If the order creation email is deactivated, then the email of the first order update will be sent","Seleccionar los estados a los que se les desea enviar email. Este email sólo se envía cuando el estado de la orden se actualiza. No se envía en la primera actualización de estado porque se envía el email de creación de orden. Si el email de creación de orden se desactiva, el email de actualización de orden para la primera actualización será enviado."
+"Select the statuses you want to send update emails to. This email is only sent when the order status is updated. It is not sent on the first status update because the order creation email is sent. If the order creation email is deactivated, then the email of the first order update will be sent.","Seleccionar los estados a los que se les desea enviar email. Este email sólo se envía cuando el estado de la orden se actualiza. No se envía en la primera actualización de estado porque se envía el email de creación de orden. Si el email de creación de orden se desactiva, el email de actualización de orden para la primera actualización será enviado."
 "Developer Options","Opciones para desarrolladores"
 "Log to File","Logs en archivo"
 "A file named mercadopago.log will be created in your store's log folder (var/log). This file will contain the module debug, where it will help to understand the behavior of the module.","Un archivo llamado mercadopago.log será creado en la carpeta de logs (var/log) para detallar el comportamiento del módulo."

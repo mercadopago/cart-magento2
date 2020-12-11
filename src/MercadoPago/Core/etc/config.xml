@@ -15,6 +15,7 @@
                 <payment_action>authorize</payment_action>
                 <binary_mode>0</binary_mode>
                 <gateway_mode>0</gateway_mode>
+                <wallet_button>0</wallet_button>
             </mercadopago_custom>
             <mercadopago_customticket>
                 <active>1</active>

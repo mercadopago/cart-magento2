@@ -53,5 +53,11 @@
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago_custom/gateway_mode</config_path>
         </field>
+        <field id="wallet_button" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Cards saved in Mercado Pago</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/mercadopago_custom/wallet_button</config_path>
+            <comment>Make more sales by allowing your customers to pay quickly using the cards saved in their account.</comment>
+        </field>
     </group>
 </include>
