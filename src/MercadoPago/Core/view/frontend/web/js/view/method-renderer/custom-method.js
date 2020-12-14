@@ -83,8 +83,8 @@ define(
           quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
 
           //insert wallet button on form
-          var custom_form = document.getElementById("co-mercadopago-form");
-          custom_form.appendChild(this.walletButtonScript);
+          var wb_button = document.querySelector(".wb-cho-button-frame");
+          wb_button.appendChild(this.walletButtonScript);
         }
       },
 
@@ -221,17 +221,26 @@ define(
           this.walletButtonScript.setAttribute('data-preference-id', preferenceId);
           this.walletButtonScript.setAttribute('data-open', 'false');
           this.walletButtonScript.async = true;
+          this.walletButtonScript.onload = function () {
+            document.querySelector('.mercadopago-button').click();
+          };
 
-          setTimeout(function () {
-            var mercadopago_button = document.querySelector('.mercadopago-button');
-            mercadopago_button.style.display = 'none';
+          var mercadopago_button = document.querySelector('.mercadopago-button');
+          if (mercadopago_button !== null || mercadopago_button !== undefined) {
             mercadopago_button.click();
-          }, 500);
+          }
 
           return;
         }
 
         return;
+      },
+
+      getMpWalletButton: function () {
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['mp_wallet_button'];
+        }
+        return 0;
       },
 
       getPaymentMethods: function () {
@@ -254,13 +263,6 @@ define(
         }
 
         return;
-      },
-
-      getMpWalletButton: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-          return window.checkoutConfig.payment[this.getCode()]['mp_wallet_button'];
-        }
-        return 0;
       },
 
       /**
