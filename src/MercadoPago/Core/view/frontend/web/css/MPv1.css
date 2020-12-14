@@ -723,6 +723,10 @@
   text-decoration: none;
 }
 
+.wb-cho-button-frame {
+  display: none;
+}
+
 /* Protect buy */
 
 .mp-protect-buy {
