@@ -7,8 +7,7 @@ namespace MercadoPago\Core\Model\CustomBankTransfer;
  *
  * @package MercadoPago\Core\Model\CustomBankTransfer
  */
-class Payment
-    extends \MercadoPago\Core\Model\Custom\Payment
+class Payment extends \MercadoPago\Core\Model\Custom\Payment
 {
     /**
      * Define payment method code
@@ -17,9 +16,9 @@ class Payment
 
     protected $_code = self::CODE;
 
-    protected $fields = array(
+    protected $fields = [
         "payment_method_id", "identification_type", "identification_number", "financial_institution", "entity_type"
-    );
+    ];
 
     /**
      * @param \Magento\Framework\DataObject $data
@@ -72,7 +71,7 @@ class Payment
             $order = $this->getInfoInstance()->getOrder();
             $payment = $order->getPayment();
 
-            $payment_info = array();
+            $payment_info = [];
 
             if ($payment->getAdditionalInformation("coupon_code") != "") {
                 $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
@@ -113,13 +112,12 @@ class Payment
             $payment = $response['response'];
             $this->getInfoInstance()->setAdditionalInformation("paymentResponse", $payment);
             return true;
-
         } else {
             $messageErrorToClient = $this->_coreModel->getMessageError($response);
-            $arrayLog = array(
+            $arrayLog = [
                 "response" => $response,
                 "message" => $messageErrorToClient
-            );
+            ];
             $this->_helperData->log("CustomPaymentTicket::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
             throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
         }
@@ -169,7 +167,7 @@ class Payment
         $order = $this->getInfoInstance()->getOrder();
         $payment = $order->getPayment();
 
-        $payment_info = array();
+        $payment_info = [];
 
         if ($payment->getAdditionalInformation("coupon_code") != "") {
             $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
@@ -178,7 +176,6 @@ class Payment
         $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
         $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method");
-
 
         if ($payment->getAdditionalInformation("firstName") != "") {
             $preference['payer']['first_name'] = $payment->getAdditionalInformation("firstName");
@@ -220,18 +217,16 @@ class Payment
         return $this->_coreModel->postPaymentV1($preference);
     }
 
-
     /**
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPaymentOptions()
     {
-
         $excludePaymentMethods = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $listExclude = explode(",", $excludePaymentMethods);
         $payment_methods = $this->_coreModel->getPaymentMethods();
-        $paymentOptions = array();
+        $paymentOptions = [];
 
         //each all payment methods
         foreach ($payment_methods['response'] as $pm) {
@@ -247,7 +242,6 @@ class Payment
         return $paymentOptions;
     }
 
-
     /**
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -258,14 +252,14 @@ class Payment
         if (isset($identificationTypes['status']) && $identificationTypes['status'] == 200 && isset($identificationTypes['response'])) {
             $identificationTypes = $identificationTypes['response'];
         } else {
-            $identificationTypes = array();
+            $identificationTypes = [];
             $this->_helperData->log("CustomPayment::getIdentifcationTypes - API did not return identification types in the way it was expected. Response API: " . json_encode($identificationTypes));
         }
 
         return $identificationTypes;
     }
 
-    function setOrderSubtotals($data)
+    public function setOrderSubtotals($data)
     {
         $total = $data['transaction_details']['total_paid_amount'];
         $order = $this->getInfoInstance()->getOrder();
@@ -286,7 +280,6 @@ class Payment
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
-
         $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {
             return false;

@@ -13,7 +13,7 @@ class Coupon
 
 {
     /**
-     * @var \MercadoPago\Core\Helper\
+     * @var \MercadoPago\Core\Helper\Data
      */
     protected $coreHelper;
 
