@@ -50,7 +50,14 @@ class Preference extends Action
 
         try {
             $preference = $this->walletPreference->makePreference();
-            $response->setData($preference);
+            $response->setData(
+                [
+                    'status' => $preference['status'],
+                    'preference' => [
+                        'id' => $preference['response']['id']
+                    ],
+                ]
+            );
         } catch (\Exception $exception) {
             $this->messageManager->addExceptionMessage(
                 $exception,
@@ -70,7 +77,7 @@ class Preference extends Action
     protected function getErrorResponse(Json $response)
     {
         $response->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
-        $response->setData(['message' => __('Sorry, , but something went wrong when starts Mercado Pago Wallet')]);
+        $response->setData(['message' => __('Sorry, but something went wrong when starts Mercado Pago Wallet')]);
 
         return $response;
     }
