@@ -228,10 +228,11 @@ define(
             self.walletButtonScript.setAttribute('data-public-key', mp_public_key);
             self.walletButtonScript.setAttribute('data-preference-id', preferenceId);
             self.walletButtonScript.setAttribute('data-open', 'false');
-            self.walletButtonScript.setAttribute('style', 'display: none');
             self.walletButtonScript.async = true;
             self.walletButtonScript.onload = function () {
-              document.querySelector('.mercadopago-button').click();
+              var mecadopagoButton = document.querySelector('.mercadopago-button');
+              mecadopagoButton.style.display = 'none';
+              mecadopagoButton.click();
               return;
             };
 

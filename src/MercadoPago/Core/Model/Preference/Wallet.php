@@ -281,7 +281,7 @@ class Wallet
      */
     protected function getSiteId()
     {
-        return mb_strtoupper($this->getConfig(ConfigData::PATH_ADVANCED_COUNTRY));
+        return mb_strtoupper($this->getConfig(ConfigData::PATH_SITE_ID));
     }
 
     /**
