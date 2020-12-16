@@ -2,30 +2,17 @@
 
 namespace MercadoPago\Core\Controller\Wallet;
 
-use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
-use Magento\Framework\Webapi\Exception;
 use MercadoPago\Core\Model\Preference\Wallet;
 
 /**
  * Class Preference
  * @package MercadoPago\Core\Controller\Wallet
  */
-class Preference extends Action
+class Preference extends AbstractAction
 {
-    /**
-     * @var JsonFactory
-     */
-    protected $resultJsonFactory;
-
-    /**
-     * @var Wallet
-     */
-    protected $walletPreference;
-
     /**
      * Preference constructor.
      * @param Context $context
@@ -34,9 +21,7 @@ class Preference extends Action
      */
     public function __construct(Context $context, JsonFactory $resultJsonFactory, Wallet $walletPreference)
     {
-        parent::__construct($context);
-        $this->resultJsonFactory = $resultJsonFactory;
-        $this->walletPreference = $walletPreference;
+        parent::__construct($context, $resultJsonFactory, $walletPreference);
     }
 
     /**
@@ -58,27 +43,15 @@ class Preference extends Action
                     ],
                 ]
             );
+
+            return $response;
         } catch (\Exception $exception) {
             $this->messageManager->addExceptionMessage(
                 $exception,
                 __('We can\'t start Mercado Pago Wallet Payment.')
             );
 
-            return $this->getErrorResponse($response);
+            return $this->getErrorResponse($response, __('Sorry, but something went wrong when starts Mercado Pago Wallet'));
         }
-
-        return $response;
-    }
-
-    /**
-     * @param Json $response
-     * @return Json
-     */
-    protected function getErrorResponse(Json $response)
-    {
-        $response->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
-        $response->setData(['message' => __('Sorry, but something went wrong when starts Mercado Pago Wallet')]);
-
-        return $response;
     }
 }

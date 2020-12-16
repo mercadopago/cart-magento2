@@ -1,22 +1,33 @@
-<?php
+<?php /** @noinspection ALL */
 
 namespace MercadoPago\Core\Model\Preference;
 
+use Exception;
 use Magento\Catalog\Helper\Image;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Customer\Api\Data\CustomerInterface as DataCustomerInterface;
+use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Framework\Api\ExtensibleDataInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Payment\Model\Method\Logger;
+use Magento\Quote\Api\CartManagementInterface as CartManagement;
+use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\Quote as ModelQuote;
 use Magento\Quote\Model\Quote\Item;
+use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
+use MercadoPago\Core\Lib\Api;
 
 /**
  * Class Wallet
@@ -78,6 +89,11 @@ class Wallet
     protected $quoteRepository;
 
     /**
+     * @var CartManagement
+     */
+    protected $quoteManagement;
+
+    /**
      * @var Basic
      */
     protected $preferenceBasic;
@@ -115,6 +131,7 @@ class Wallet
         Data $helperData,
         ScopeConfigInterface $scopeConfig,
         QuoteRepository $quoteRepository,
+        QuoteManagement $quoteManagement,
         Basic $preferenceBasic,
         UrlInterface $urlBuilder,
         Logger $logger
@@ -127,6 +144,7 @@ class Wallet
         $this->helperData = $helperData;
         $this->scopeConfig = $scopeConfig;
         $this->quoteRepository = $quoteRepository;
+        $this->quoteManagement = $quoteManagement;
         $this->preferenceBasic = $preferenceBasic;
         $this->urlBuilder = $urlBuilder;
         $this->logger = $logger;
@@ -134,25 +152,42 @@ class Wallet
 
     /**
      * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function makePreference()
     {
-        try {
-            $preference = $this->buildPreferenceArray();
+        $preference = $this->buildPreferenceArray();
+        return $this->getMercadoPagoInstance()->create_preference($preference);
+    }
 
-            return $this->getMercadoPagoInstance()->create_preference($preference);
-        } catch (\Exception $exception) {
-            return [
-                'status' => 500,
-                'message' => $exception->getMessage()
-            ];
+    public function processNotification($merchantOrderId)
+    {
+        $merchantOrder = $this->loadMerchantOrder($merchantOrderId);
+        $quote = $this->quoteRepository->get($merchantOrder['external_reference']);
+        $order = $this->quoteManagement->submit($quote);
+        return $order->getStatus();
+    }
+
+    /**
+     * @param $merchantOrderId
+     * @return mixed
+     * @throws LocalizedException
+     */
+    protected function loadMerchantOrder($merchantOrderId)
+    {
+        $response = $this->getMercadoPagoInstance()->get_merchant_order($merchantOrderId);
+        if (!empty($response['response'])) {
+            return $response['response'];
         }
+
+        throw new \Exception('Merchant Order Not Found!');
     }
 
     /**
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     protected function buildPreferenceArray()
     {
@@ -285,9 +320,9 @@ class Wallet
     }
 
     /**
-     * @return \Magento\Quote\Api\Data\CartInterface|\Magento\Quote\Model\Quote
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return CartInterface|ModelQuote
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     protected function getQuote()
     {
@@ -295,9 +330,9 @@ class Wallet
     }
 
     /**
-     * @return \Magento\Customer\Api\Data\CustomerInterface|\Magento\Customer\Model\Customer|\Magento\Framework\Api\ExtensibleDataInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return DataCustomerInterface|Customer|ExtensibleDataInterface
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     protected function getCustomer()
     {
@@ -400,7 +435,7 @@ class Wallet
             return false;
         }
 
-        if (preg_match('/@testuser/i', $payer['email'])) {
+        if (preg_match('/@testuser\.com$/i', $payer['email'])) {
             return true;
         }
 
@@ -431,8 +466,8 @@ class Wallet
     }
 
     /**
-     * @return \MercadoPago\Core\Lib\Api
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return Api
+     * @throws LocalizedException
      */
     protected function getMercadoPagoInstance()
     {

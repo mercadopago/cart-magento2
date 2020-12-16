@@ -211,12 +211,8 @@ define(
         return '';
       },
 
-      addWalletButton: function (data, event) {
+      addWalletButton: function () {
         var self = this;
-
-        if (event) {
-          event.preventDefault();
-        }
 
         $.getJSON('/mercadopago/wallet/preference').done(function (response){
           var preferenceId = response.preference.id
