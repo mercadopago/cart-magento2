@@ -175,6 +175,9 @@ class Wallet
         $merchantOrder = $this->loadMerchantOrder($merchantOrderId);
         // @todo verify is paid @see https://www.mercadopago.com.br/developers/pt/reference/merchant_orders/_merchant_orders_search/get/
         $preference = $this->loadPreference($merchantOrder['preference_id']);
+        if (empty($merchantOrder['payments'][0])) {
+            throw new \Exception('Payment not available yet.');
+        }
         $paymentData = $merchantOrder['payments'][0];
         $payment = $this->loadPayment($paymentData['id']);
         $quoteId = $preference['metadata']['quote_id'];
@@ -186,7 +189,9 @@ class Wallet
 
         $this->paymentNotification->updateStatusOrderByPayment($payment);
 
-        return [$order->getStatus()];
+        return [
+            $order
+        ];
     }
 
     /**

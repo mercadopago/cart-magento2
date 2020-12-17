@@ -13,6 +13,6 @@ class Success extends AbstractAction
      */
     public function execute()
     {
-        // TODO: Implement execute() method.
+        $this->_redirect('checkout/onepage/success');
     }
 }

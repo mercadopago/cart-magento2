@@ -53,8 +53,8 @@ class Notification extends AbstractAction
 
             $result = $this->walletPreference->processNotification($id);
 
-            return $response->setData($result);
-        } catch (\Exception $exception) {
+            return $response->setJsonData(json_encode($result));
+        } catch (\Throwable $exception) {
             return $this->getErrorResponse($response, $exception->getMessage());
         }
     }
