@@ -6,7 +6,6 @@ use Exception;
 use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\OrderFactory;
 use MercadoPago\Core\Helper\Data;
-use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Model\Basic\Payment;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
@@ -39,8 +38,7 @@ class Basic extends NotificationBase
         Core $coreModel,
         OrderFactory $orderFactory,
         Notifications $notifications
-    )
-    {
+    ) {
         $this->_paymentFactory = $paymentFactory;
         $this->coreHelper = $coreHelper;
         $this->coreModel = $coreModel;
@@ -87,7 +85,6 @@ class Basic extends NotificationBase
             $statusResponse = $topicClass->updateOrder($order, $data);
 
             $this->setResponseHttp($statusResponse['code'], $statusResponse['text'], $request->getParams());
-
         } catch (\Exception $e) {
             $this->setResponseHttp($e->getCode(), $e->getMessage(), $request->getParams());
         }
@@ -114,6 +111,4 @@ class Basic extends NotificationBase
 
         return;
     }
-
-
 }

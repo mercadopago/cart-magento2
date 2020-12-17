@@ -51,7 +51,7 @@ class Preference extends AbstractAction
                 __('We can\'t start Mercado Pago Wallet Payment.')
             );
 
-            return $this->getErrorResponse($response, __('Sorry, but something went wrong when starts Mercado Pago Wallet'));
+            return $this->getErrorResponse($response, $exception->getMessage());
         }
     }
 }

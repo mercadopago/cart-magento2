@@ -1,14 +1,13 @@
-<?php /** @noinspection ALL */
+<?php
 
 namespace MercadoPago\Core\Model\Preference;
 
-use Exception;
 use Magento\Catalog\Helper\Image;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\Data\CustomerInterface as DataCustomerInterface;
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\Session as CustomerSession;
-use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Api\ExtensibleDataInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ProductMetadataInterface;
@@ -28,6 +27,7 @@ use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Lib\Api;
+use MercadoPago\Core\Model\Notifications\Topics\Payment;
 
 /**
  * Class Wallet
@@ -104,6 +104,11 @@ class Wallet
     protected $urlBuilder;
 
     /**
+     * @var Payment
+     */
+    protected $paymentNotification;
+
+    /**
      * @var Logger
      */
     protected $logger;
@@ -118,8 +123,10 @@ class Wallet
      * @param Data $helperData
      * @param ScopeConfigInterface $scopeConfig
      * @param QuoteRepository $quoteRepository
+     * @param QuoteManagement $quoteManagement
      * @param Basic $preferenceBasic
      * @param UrlInterface $urlBuilder
+     * @param Payment $paymentNotification
      * @param Logger $logger
      */
     public function __construct(
@@ -134,6 +141,7 @@ class Wallet
         QuoteManagement $quoteManagement,
         Basic $preferenceBasic,
         UrlInterface $urlBuilder,
+        Payment $paymentNotification,
         Logger $logger
     ) {
         $this->checkoutSession = $checkoutSession;
@@ -147,6 +155,7 @@ class Wallet
         $this->quoteManagement = $quoteManagement;
         $this->preferenceBasic = $preferenceBasic;
         $this->urlBuilder = $urlBuilder;
+        $this->paymentNotification = $paymentNotification;
         $this->logger = $logger;
     }
 
@@ -164,15 +173,27 @@ class Wallet
     public function processNotification($merchantOrderId)
     {
         $merchantOrder = $this->loadMerchantOrder($merchantOrderId);
-        $quote = $this->quoteRepository->get($merchantOrder['external_reference']);
-        $order = $this->quoteManagement->submit($quote);
-        return $order->getStatus();
+        // @todo verify is paid @see https://www.mercadopago.com.br/developers/pt/reference/merchant_orders/_merchant_orders_search/get/
+        $preference = $this->loadPreference($merchantOrder['preference_id']);
+        $paymentData = $merchantOrder['payments'][0];
+        $payment = $this->loadPayment($paymentData['id']);
+        $quoteId = $preference['metadata']['quote_id'];
+
+        $quote = $this->quoteRepository->get($quoteId);
+        $quote->getPayment()->importData(['method' => 'mercadopago_basic']);
+
+        $order = $this->quoteManagement->placeOrder($quote->getId());
+
+        $this->paymentNotification->updateStatusOrderByPayment($payment);
+
+        return [$order->getStatus()];
     }
 
     /**
      * @param $merchantOrderId
      * @return mixed
      * @throws LocalizedException
+     * @throws \Exception
      */
     protected function loadMerchantOrder($merchantOrderId)
     {
@@ -181,7 +202,40 @@ class Wallet
             return $response['response'];
         }
 
-        throw new \Exception('Merchant Order Not Found!');
+        throw new \Exception(sprintf('Merchant Order #%s not found!', $merchantOrderId));
+    }
+
+    /**
+     * @param $preferenceId
+     * @return mixed
+     * @throws LocalizedException
+     * @throws \Exception
+     */
+    protected function loadPreference($preferenceId)
+    {
+        $response = $this->getMercadoPagoInstance()->get_preference($preferenceId);
+        if (!empty($response['response'])) {
+            return $response['response'];
+        }
+
+        throw new \Exception(sprintf('Preference #%s not found!', $preferenceId));
+    }
+
+
+    /**
+     * @param $paymentId
+     * @return mixed
+     * @throws LocalizedException
+     * @throws \Exception
+     */
+    protected function loadPayment($paymentId)
+    {
+        $response = $this->getMercadoPagoInstance()->get("/v1/payments/{$paymentId}");
+        if (!empty($response['response'])) {
+            return $response['response'];
+        }
+
+        throw new \Exception(sprintf('Payment #%s not found!', $paymentId));
     }
 
     /**
@@ -191,17 +245,24 @@ class Wallet
      */
     protected function buildPreferenceArray()
     {
+        $quote = $this->getQuote();
         $preference = $this->getPreference();
         $siteId = $preference['metadata']['site'];
-        $quote = $this->getQuote();
         $customer = $this->getCustomer();
-
         $quote->reserveOrderId();
-        $this->quoteRepository->save($quote);
 
         $preference['external_reference'] = $quote->getReservedOrderId();
         $preference['items'] = $this->getItems($quote, $siteId);
         $preference['payer'] = $this->getPayer($quote, $customer);
+
+        if (!$customer->getId()) {
+            $quote->setCustomerIsGuest(true);
+            $quote->setCustomerEmail($preference['payer']['email']);
+            $quote->setCustomerFirstname($preference['payer']['name']);
+            $quote->setCustomerLastname($preference['payer']['surname']);
+        }
+
+        $this->quoteRepository->save($quote);
 
         if (!$quote->getShippingAddress()) {
             unset($preference['shipments']);
@@ -209,6 +270,7 @@ class Wallet
 
         $preference['shipments']['cost'] = $this->getPrice($quote->getShippingAddress()->getShippingAmount(), $siteId);
         $preference['metadata']['test_mode'] = $this->isTestMode($preference['payer']);
+        $preference['metadata']['quote_id'] = $quote->getId();
 
         if ($this->getGatewayMode()) {
             $preference['gateway_mode'] = ['gateway'];
@@ -253,7 +315,8 @@ class Wallet
                 'site' => $this->getSiteId(),
                 'checkout' => 'Wallet',
                 'sponsor_id' => $this->getSiteId(),
-                'test_mode' => ''
+                'test_mode' => '',
+                'quote_id' => '',
             ]
         ];
     }

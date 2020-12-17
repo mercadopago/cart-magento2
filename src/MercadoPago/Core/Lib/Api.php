@@ -116,32 +116,33 @@ class Api
      * Get information for specific authorized payment
      * @param id
      * @return array(json)
+     * @throws \Exception
      */
     public function get_authorized_payment($id)
     {
         $access_token = $this->get_access_token();
 
-        $authorized_payment_info = RestClient::get("/authorized_payments/" . $id, null, ["Authorization: Bearer " . $access_token]);
-        return $authorized_payment_info;
+        return RestClient::get("/authorized_payments/" . $id, null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
      * Refund accredited payment
      * @param int $id
      * @return array(json)
+     * @throws \Exception
      */
     public function refund_payment($id)
     {
         $access_token = $this->get_access_token();
 
-        $response = RestClient::post("/v1/payments/$id/refunds", [], null, ["Authorization: Bearer " . $access_token]);
-        return $response;
+        return RestClient::post("/v1/payments/$id/refunds", [], null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
      * Cancel preapproval payment
      * @param int $id
      * @return array(json)
+     * @throws \Exception
      */
     public function cancel_preapproval_payment($id)
     {
@@ -151,14 +152,14 @@ class Api
             "status" => "cancelled"
         ];
 
-        $response = RestClient::put("/preapproval/" . $id, $cancel_status, null, ["Authorization: Bearer " . $access_token]);
-        return $response;
+        return RestClient::put("/preapproval/" . $id, $cancel_status, null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
      * Create a checkout preference
      * @param array $preference
      * @return array(json)
+     * @throws \Exception
      */
     public function create_preference($preference)
     {
@@ -167,9 +168,10 @@ class Api
         $extra_params = [
             'platform: ' . $this->_platform, 'so;',
             'type: ' . $this->_type,
-            'Authorization: Bearer ' . $access_token];
-        $preference_result = RestClient::post("/checkout/preferences", $preference, "application/json", $extra_params);
-        return $preference_result;
+            'Authorization: Bearer ' . $access_token
+        ];
+
+        return RestClient::post("/checkout/preferences", $preference, "application/json", $extra_params);
     }
 
     /**
@@ -177,81 +179,85 @@ class Api
      * @param string $id
      * @param array $preference
      * @return array(json)
+     * @throws \Exception
      */
     public function update_preference($id, $preference)
     {
         $access_token = $this->get_access_token();
 
-        $preference_result = RestClient::put("/checkout/preferences/{$id}", $preference, null, ["Authorization: Bearer " . $access_token]);
-        return $preference_result;
+        return RestClient::put("/checkout/preferences/{$id}", $preference, null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
      * Get a checkout preference
      * @param string $id
      * @return array(json)
+     * @throws \Exception
      */
     public function get_preference($id)
     {
         $access_token = $this->get_access_token();
 
-        $preference_result = RestClient::get("/checkout/preferences/{$id}", null, ["Authorization: Bearer " . $access_token]);
-        return $preference_result;
+        return RestClient::get("/checkout/preferences/{$id}", null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
      * Create a preapproval payment
      * @param array $preapproval_payment
      * @return array(json)
+     * @throws \Exception
      */
     public function create_preapproval_payment($preapproval_payment)
     {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = RestClient::post("/preapproval", $preapproval_payment, null, ["Authorization: Bearer " . $access_token]);
-        return $preapproval_payment_result;
+        return RestClient::post("/preapproval", $preapproval_payment, null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
      * Get a preapproval payment
      * @param string $id
      * @return array(json)
+     * @throws \Exception
      */
     public function get_preapproval_payment($id)
     {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = RestClient::get("/preapproval/{$id}", null, ["Authorization: Bearer " . $access_token]);
-        return $preapproval_payment_result;
+        return RestClient::get("/preapproval/{$id}", null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
      * Update a preapproval payment
-     * @param string $preapproval_payment , $id
-     * @return array(json)
+     * @param $id
+     * @param string $preapproval_payment
+     * @return array
+     * @throws \Exception
      */
-
     public function update_preapproval_payment($id, $preapproval_payment)
     {
         $access_token = $this->get_access_token();
 
-        $preapproval_payment_result = RestClient::put("/preapproval/" . $id, $preapproval_payment, null, ["Authorization: Bearer " . $access_token]);
-        return $preapproval_payment_result;
+        return RestClient::put("/preapproval/" . $id, $preapproval_payment, null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
      * Create a custon payment
      * @param array $preference
      * @return array(json)
+     * @throws \Exception
      */
     public function create_custon_payment($info)
     {
         $access_token = $this->get_access_token();
 
-        $preference_result = RestClient::post("/checkout/custom/create_payment", $info, null, ["Authorization: Bearer " . $access_token]);
-        return $preference_result;
+        return RestClient::post("/checkout/custom/create_payment", $info, null, ["Authorization: Bearer " . $access_token]);
     }
 
+    /**
+     * @param $payer_email
+     * @return mixed
+     */
     public function get_or_create_customer($payer_email)
     {
         $customer = $this->search_customer($payer_email);
@@ -263,6 +269,11 @@ class Api
         return $customer;
     }
 
+    /**
+     * @param $email
+     * @return array
+     * @throws \Exception
+     */
     public function create_customer($email)
     {
         $access_token = $this->get_access_token();
@@ -271,19 +282,29 @@ class Api
             "email" => $email
         ];
 
-        $customer = RestClient::post("/v1/customers", $request, null, ["Authorization: Bearer " . $access_token]);
-
-        return $customer;
+        return RestClient::post("/v1/customers", $request, null, ["Authorization: Bearer " . $access_token]);
     }
 
+    /**
+     * @param $email
+     * @return array
+     * @throws \Exception
+     */
     public function search_customer($email)
     {
         $access_token = $this->get_access_token();
 
-        $customer = RestClient::get("/v1/customers/search?email=" . $email, null, ["Authorization: Bearer " . $access_token]);
-        return $customer;
+        return RestClient::get("/v1/customers/search?email=" . $email, null, ["Authorization: Bearer " . $access_token]);
     }
 
+    /**
+     * @param $customer_id
+     * @param $token
+     * @param null $payment_method_id
+     * @param null $issuer_id
+     * @return array
+     * @throws \Exception
+     */
     public function create_card_in_customer($customer_id, $token, $payment_method_id = null, $issuer_id = null)
     {
         $access_token = $this->get_access_token();
@@ -294,27 +315,34 @@ class Api
             "payment_method_id" => $payment_method_id
         ];
 
-        $card = RestClient::post("/v1/customers/" . $customer_id . "/cards", $request, null, ["Authorization: Bearer " . $access_token]);
-
-        return $card;
+        return RestClient::post("/v1/customers/" . $customer_id . "/cards", $request, null, ["Authorization: Bearer " . $access_token]);
     }
 
+    /**
+     * @param $customer_id
+     * @param $token
+     * @return array
+     * @throws \Exception
+     */
     public function get_all_customer_cards($customer_id, $token)
     {
         $access_token = $this->get_access_token();
 
-        $cards = RestClient::get("/v1/customers/" . $customer_id . "/cards", null, ["Authorization: Bearer " . $access_token]);
-
-        return $cards;
+        return RestClient::get("/v1/customers/" . $customer_id . "/cards", null, ["Authorization: Bearer " . $access_token]);
     }
 
+    /**
+     * @param $transaction_amount
+     * @param $payer_email
+     * @param $coupon_code
+     * @return array
+     * @throws \Exception
+     */
     public function check_discount_campaigns($transaction_amount, $payer_email, $coupon_code)
     {
         $access_token = $this->get_access_token();
         $url = "/discount_campaigns?transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code";
-        $discount_info = RestClient::get($url, null, ["Authorization: Bearer " . $access_token]);
-
-        return $discount_info;
+        return RestClient::get($url, null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
@@ -352,7 +380,29 @@ class Api
     {
         $access_token = $this->get_access_token();
 
-        return RestClient::get("/merchant_orders/{$id}", null, ["Authorization: Bearer " . $access_token]);
+        return RestClient::get(
+            "/merchant_orders/{$id}",
+            null,
+            ["Authorization: Bearer " . $access_token]
+        );
+    }
+
+    /**
+     * @param $id
+     * @param $order
+     * @return array
+     * @throws \Exception
+     */
+    public function update_merchant_order($id, $order)
+    {
+        $access_token = $this->get_access_token();
+
+        return RestClient::put(
+            "/checkout/preferences/{$id}",
+            $order,
+            null,
+            ["Authorization: Bearer " . $access_token]
+        );
     }
 
     /* Generic resource call methods */
