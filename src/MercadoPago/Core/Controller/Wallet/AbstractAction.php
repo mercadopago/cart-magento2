@@ -48,11 +48,12 @@ abstract class AbstractAction extends Action
     /**
      * @param Json $response
      * @param $message
+     * @param int $code
      * @return Json
      */
-    protected function getErrorResponse(Json $response, $message)
+    protected function getErrorResponse(Json $response, $message, $code = ExceptionHttpCode::HTTP_BAD_REQUEST)
     {
-        $response->setHttpResponseCode(ExceptionHttpCode::HTTP_BAD_REQUEST);
+        $response->setHttpResponseCode($code);
         $response->setData(['message' => $message]);
 
         return $response;

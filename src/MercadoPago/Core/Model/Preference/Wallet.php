@@ -22,6 +22,7 @@ use Magento\Quote\Model\Quote as ModelQuote;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Model\QuoteRepository;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 use MercadoPago\Core\Helper\ConfigData;
@@ -109,6 +110,11 @@ class Wallet
     protected $paymentNotification;
 
     /**
+     * @var OrderInterface
+     */
+    protected $order;
+
+    /**
      * @var Logger
      */
     protected $logger;
@@ -127,6 +133,7 @@ class Wallet
      * @param Basic $preferenceBasic
      * @param UrlInterface $urlBuilder
      * @param Payment $paymentNotification
+     * @param OrderInterface $order
      * @param Logger $logger
      */
     public function __construct(
@@ -142,6 +149,7 @@ class Wallet
         Basic $preferenceBasic,
         UrlInterface $urlBuilder,
         Payment $paymentNotification,
+        OrderInterface $order,
         Logger $logger
     ) {
         $this->checkoutSession = $checkoutSession;
@@ -156,6 +164,7 @@ class Wallet
         $this->preferenceBasic = $preferenceBasic;
         $this->urlBuilder = $urlBuilder;
         $this->paymentNotification = $paymentNotification;
+        $this->order = $order;
         $this->logger = $logger;
     }
 
@@ -170,15 +179,30 @@ class Wallet
         return $this->getMercadoPagoInstance()->create_preference($preference);
     }
 
+    /**
+     * @param $merchantOrderId
+     * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     */
     public function processNotification($merchantOrderId)
     {
         $merchantOrder = $this->loadMerchantOrder($merchantOrderId);
         // @todo verify is paid @see https://www.mercadopago.com.br/developers/pt/reference/merchant_orders/_merchant_orders_search/get/
         $preference = $this->loadPreference($merchantOrder['preference_id']);
-        if (empty($merchantOrder['payments'][0])) {
+        $totalQuantity = count($merchantOrder['payments']);
+        $hasOrder = $this->loadOrderByIncrementalId($merchantOrder['external_reference']);
+
+        if (!$hasOrder) {
+            throw new \Exception("Order exists #{$merchantOrder['external_reference']}");
+        }
+
+        if (!in_array($merchantOrder['order_status'], ['paid', 'partially_paid']) || !$totalQuantity) {
             throw new \Exception('Payment not available yet.');
         }
-        $paymentData = $merchantOrder['payments'][0];
+
+        $paymentData = $merchantOrder['payments'][$totalQuantity - 1];
         $payment = $this->loadPayment($paymentData['id']);
         $quoteId = $preference['metadata']['quote_id'];
 
@@ -192,6 +216,25 @@ class Wallet
         return [
             $order
         ];
+    }
+
+    /**
+     * @param $incrementalId
+     * @return OrderInterface
+     */
+    public function loadOrderByIncrementalId($incrementalId)
+    {
+        return $this->order->loadByIncrementId($incrementalId);
+    }
+
+    /**
+     * @return OrderInterface
+     */
+    public function loadOrderFromCheckoutSession()
+    {
+        return $this->loadOrderByIncrementalId(
+            $this->checkoutSession->getQuote()->getReservedOrderId()
+        );
     }
 
     /**
@@ -537,7 +580,7 @@ class Wallet
      * @return Api
      * @throws LocalizedException
      */
-    protected function getMercadoPagoInstance()
+    public function getMercadoPagoInstance()
     {
         return $this->helperData->getApiInstance($this->getAccessToken());
     }
