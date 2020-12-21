@@ -32,16 +32,18 @@ class Success extends AbstractAction
      */
     public function execute()
     {
-        $paymentId = $this->getRequest()->getParam('payment_id');
-        $response = $this->walletPreference->getMercadoPagoInstance()->get("/v1/payments/{$paymentId}");
-        $payment = $response['response'];
-        $this->session->setLastSuccessQuoteId($payment['metadata']['quote_id']);
-        $this->session->setLastQuoteId($payment['metadata']['quote_id']);
-        $this->session->setLastOrderId($payment['external_reference']);
-        $this->session->setLastRealOrderId($payment['external_reference']);
-        $this->quote = $this->session->getQuote();
-        $this->quote->getPayment()->setMethod('mercado_pago_custom');
+        try {
+            $paymentId = $this->getRequest()->getParam('payment_id', false);
 
-        return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
+            if (!$paymentId) {
+                throw new \Exception('Payment ID not found');
+            }
+
+            $this->walletPreference->processSuccessRequest($paymentId, $this->session);
+            return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
+        } catch (\Throwable $exception) {
+            $this->messageManager->addExceptionMessage($exception->getMessage());
+            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
+        }
     }
 }

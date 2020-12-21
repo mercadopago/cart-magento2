@@ -88,6 +88,9 @@ class Api
 
     /**
      * Get Access Token for API use
+     *
+     * @return false|mixed
+     * @throws \Exception
      */
     public function get_access_token()
     {
@@ -429,8 +432,7 @@ class Api
             $uri .= $this->build_query($params);
         }
 
-        $result = RestClient::get($uri, null, ["Authorization: Bearer " . $access_token]);
-        return $result;
+        return RestClient::get($uri, null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
@@ -455,9 +457,10 @@ class Api
         $extra_params = [
             'platform: ' . $this->_platform, 'so;',
             'type: ' . $this->_type,
-            'Authorization: Bearer ' . $access_token];
-        $result = RestClient::post($uri, $data, "application/json", $extra_params);
-        return $result;
+            'Authorization: Bearer ' . $access_token
+        ];
+
+        return RestClient::post($uri, $data, "application/json", $extra_params);
     }
 
     /**
@@ -479,8 +482,7 @@ class Api
             $uri .= $this->build_query($params);
         }
 
-        $result = RestClient::put($uri, $data, null, ["Authorization: Bearer " . $access_token]);
-        return $result;
+        return RestClient::put($uri, $data, null, ["Authorization: Bearer " . $access_token]);
     }
 
     /**
@@ -501,8 +503,7 @@ class Api
             $uri .= $this->build_query($params);
         }
 
-        $result = RestClient::delete($uri, null, ["Authorization: Bearer " . $access_token]);
-        return $result;
+        return RestClient::delete($uri, null, ["Authorization: Bearer " . $access_token]);
     }
 
     /* **************************************************************************************** */

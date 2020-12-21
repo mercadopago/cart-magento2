@@ -15,6 +15,7 @@ class Failure extends AbstractAction
      */
     public function execute()
     {
-        // TODO: Implement execute() method.
+        $this->messageManager->addNoticeMessage('The payment process with Mercado Pago failure, try again later');
+        return $this->resultRedirectFactory->create()->setPath('checkout/cart');
     }
 }

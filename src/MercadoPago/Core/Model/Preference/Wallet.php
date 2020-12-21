@@ -185,37 +185,99 @@ class Wallet
      * @throws LocalizedException
      * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Exception
      */
     public function processNotification($merchantOrderId)
     {
         $merchantOrder = $this->loadMerchantOrder($merchantOrderId);
-        // @todo verify is paid @see https://www.mercadopago.com.br/developers/pt/reference/merchant_orders/_merchant_orders_search/get/
+
+        if (!$merchantOrder) {
+            throw new \Exception("Merchant order #{$merchantOrderId} not exists");
+        }
+
         $preference = $this->loadPreference($merchantOrder['preference_id']);
+
+        if (!$preference) {
+            throw new \Exception("Preference #{$merchantOrder['preference_id']} not exists");
+        }
+
         $totalQuantity = count($merchantOrder['payments']);
         $hasOrder = $this->loadOrderByIncrementalId($merchantOrder['external_reference']);
 
-        if (!$hasOrder) {
-            throw new \Exception("Order exists #{$merchantOrder['external_reference']}");
+        if ($hasOrder->getIncrementId()) {
+            return [
+                "Order has exists with ID #{$hasOrder->getEntityId()} and Incremental ID #{$hasOrder->getIncrementId()}"
+            ];
         }
 
         if (!in_array($merchantOrder['order_status'], ['paid', 'partially_paid']) || !$totalQuantity) {
             throw new \Exception('Payment not available yet.');
         }
 
-        $paymentData = $merchantOrder['payments'][$totalQuantity - 1];
-        $payment = $this->loadPayment($paymentData['id']);
-        $quoteId = $preference['metadata']['quote_id'];
+        $lastPayment = $merchantOrder['payments'][$totalQuantity - 1];
+        $payment = $this->loadPayment($lastPayment['id']);
+        $order = $this->createOrderByPaymentWithQuote($payment);
+        $this->paymentNotification->updateStatusOrderByPayment($payment);
+
+        return [
+            "Order created with ID #{$order->getEntityId()} and Incremental ID #{$merchantOrder['external_reference']}"
+        ];
+    }
+
+    /**
+     * @param $paymentId
+     * @param CheckoutSession $session
+     * @return string[]
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     */
+    public function processSuccessRequest($paymentId, CheckoutSession $session)
+    {
+        $payment = $this->loadPayment($paymentId);
+        $orderIncrementalId = $payment['external_reference'];
+
+        $order = $this->loadOrderByIncrementalId($orderIncrementalId);
+
+        if (!$order->getIncrementId()) {
+            $quote = $session->getQuote();
+            $quote->getPayment()->setMethod('mercado_pago_custom');
+            $order = $this->createOrderByPaymentWithQuote($payment);
+        }
+
+        if (!$order->getIncrementId()) {
+            throw new \Exception("Sorry, we can't create a order with external reference #{$orderIncrementalId}");
+        }
+
+        $this->paymentNotification->updateStatusOrderByPayment($payment);
+
+        $session->setLastSuccessQuoteId($payment['metadata']['quote_id']);
+        $session->setLastQuoteId($payment['metadata']['quote_id']);
+        $session->setLastOrderId($payment['external_reference']);
+        $session->setLastRealOrderId($payment['external_reference']);
+
+        return [
+            "Order created with ID #{$order->getId()} and Incremental ID #{$order->getIncrementId()}"
+        ];
+    }
+
+    /**
+     * @param $paymentId
+     * @return int|mixed
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     */
+    protected function createOrderByPaymentWithQuote($payment)
+    {
+        $quoteId = $payment['metadata']['quote_id'];
 
         $quote = $this->quoteRepository->get($quoteId);
         $quote->getPayment()->importData(['method' => 'mercadopago_basic']);
 
-        $order = $this->quoteManagement->placeOrder($quote->getId());
+        $orderId = $this->quoteManagement->placeOrder($quote->getId());
 
-        $this->paymentNotification->updateStatusOrderByPayment($payment);
-
-        return [
-            $order
-        ];
+        return $this->loadOrderById($orderId);
     }
 
     /**
@@ -225,6 +287,15 @@ class Wallet
     public function loadOrderByIncrementalId($incrementalId)
     {
         return $this->order->loadByIncrementId($incrementalId);
+    }
+
+    /**
+     * @param $orderId
+     * @return OrderInterface
+     */
+    public function loadOrderById($orderId)
+    {
+        return $this->order->loadByAttribute('entity_id', $orderId);
     }
 
     /**
@@ -246,7 +317,7 @@ class Wallet
     protected function loadMerchantOrder($merchantOrderId)
     {
         $response = $this->getMercadoPagoInstance()->get_merchant_order($merchantOrderId);
-        if (!empty($response['response'])) {
+        if (!empty($response['response']) && $response['status'] < 300) {
             return $response['response'];
         }
 
@@ -262,13 +333,12 @@ class Wallet
     protected function loadPreference($preferenceId)
     {
         $response = $this->getMercadoPagoInstance()->get_preference($preferenceId);
-        if (!empty($response['response'])) {
+        if (!empty($response['response']) && $response['status'] < 300) {
             return $response['response'];
         }
 
         throw new \Exception(sprintf('Preference #%s not found!', $preferenceId));
     }
-
 
     /**
      * @param $paymentId
@@ -279,7 +349,7 @@ class Wallet
     protected function loadPayment($paymentId)
     {
         $response = $this->getMercadoPagoInstance()->get("/v1/payments/{$paymentId}");
-        if (!empty($response['response'])) {
+        if (!empty($response['response']) && $response['status'] < 300) {
             return $response['response'];
         }
 
