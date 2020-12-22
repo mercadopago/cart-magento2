@@ -191,7 +191,7 @@ class Wallet
         $preference = $this->loadPreference($merchantOrder['preference_id']);
 
         if (!$preference) {
-            throw new \Exception("Preference #{$merchantOrder['preference_id']} not exists", 404);
+            throw new \Exception(__("Preference #%1 not found!", $merchantOrder['preference_id']), 404);
         }
 
         $totalQuantity = count($merchantOrder['payments']);
@@ -202,7 +202,7 @@ class Wallet
         }
 
         if (!in_array($merchantOrder['order_status'], ['paid', 'partially_paid']) || !$totalQuantity) {
-            throw new \Exception('Payment not available yet.', 400);
+            throw new \Exception(__('Payment #%1 not found!'), 400);
         }
 
         $lastPayment = $merchantOrder['payments'][$totalQuantity - 1];
@@ -211,7 +211,7 @@ class Wallet
         $order = $this->createOrderByPaymentWithQuote($payment);
 
         if (!$order->getIncrementId()) {
-            throw new \Exception("Error to create Order #{$merchantOrder['external_reference']} not available yet.", 500);
+            throw new \Exception(__("Error to create. Order #%1 not available yet.", $merchantOrder['external_reference']), 500);
         }
 
         return $order;
@@ -284,16 +284,6 @@ class Wallet
     public function loadOrderById($orderId)
     {
         return $this->order->loadByAttribute('entity_id', $orderId);
-    }
-
-    /**
-     * @return OrderInterface
-     */
-    public function loadOrderFromCheckoutSession()
-    {
-        return $this->loadOrderByIncrementalId(
-            $this->checkoutSession->getQuote()->getReservedOrderId()
-        );
     }
 
     /**

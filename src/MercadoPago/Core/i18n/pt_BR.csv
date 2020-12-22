@@ -453,3 +453,4 @@ Cannot operate between users from different countries.", "Não é possível oper
 "Sorry, we can't create a order with external reference #%1", "Desculpa. não conseguimos criar o pedido com a referência externa #%1"
 "Preference #%1 not found!", "Preferência #%1 não encontrada"
 "Payment #%1 not found!", "Pagamento #%1 não encontrado"
+"Error to create. Order #%1 not available yet.", "Erro ao criar. Pedido #%1 não está disponível ainda."

@@ -450,3 +450,4 @@
 "Sorry, we can't create a order with external reference #%1", "Lo sentimos, no pudimos crear el pedido con la referencia externa #%1"
 "Preference #%1 not found!", "Preferencia #%1 no encontrada"
 "Payment #%1 not found!", "Pago #%1 no encontrado"
+"Error to create. Order #%1 not available yet.", "Error al crear. El pedido #% 1 aún no está disponible."
