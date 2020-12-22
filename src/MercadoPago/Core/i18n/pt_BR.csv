@@ -448,3 +448,8 @@ Cannot operate between users from different countries.", "Não é possível oper
 "Pay with Mercado Pago", "Pagar com Mercado Pago"
 "Or enter all your card details:", "Ou preencha todos os dados do seu cartão:"
 "Payment processed by Mercado Pago", "Pagamento processado pelo Mercado Pago"
+"Sorry, we can't finish Mercado Pago Wallet Payment", "Desculpa, não conseguimos finalizar o pagamento com a carteira Mercado Pago"
+"Sorry, we can't process the payment id not found", "Desculpa, não conseguimos processar o id do pagamento não foi encontrado"
+"Sorry, we can't create a order with external reference #%1", "Desculpa. não conseguimos criar o pedido com a referência externa #%1"
+"Preference #%1 not found!", "Preferência #%1 não encontrada"
+"Payment #%1 not found!", "Pagamento #%1 não encontrado"

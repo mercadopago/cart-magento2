@@ -3,7 +3,8 @@
 namespace MercadoPago\Core\Controller\Wallet;
 
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\Controller\Result\JsonFactory;
+use MercadoPago\Core\Controller\Notifications\NotificationBase;
+use MercadoPago\Core\Model\Notifications\Notifications;
 use MercadoPago\Core\Model\Notifications\Topics\Payment;
 use MercadoPago\Core\Model\Preference\Wallet;
 
@@ -11,9 +12,13 @@ use MercadoPago\Core\Model\Preference\Wallet;
  * Class Notification
  * @package MercadoPago\Core\Controller\Wallet
  */
-class Notification extends AbstractAction
+class Notification extends NotificationBase
 {
-    const HTTP_RESPONSE_NO_CONTENT = 204;
+    const HTTP_RESPONSE_NOT_FOUND = 404;
+
+    const HTTP_RESPONSE_BAD_REQUEST = 400;
+
+    const HTTP_RESPONSE_INTERNAL_ERROR = 500;
 
     /**
      * @var Payment
@@ -21,20 +26,29 @@ class Notification extends AbstractAction
     protected $paymentNotification;
 
     /**
+     * @var Wallet
+     */
+    protected $wallet;
+
+    /**
+     * @var Notifications
+     */
+    protected $notifications;
+
+    /**
      * Notification constructor.
      * @param Context $context
-     * @param JsonFactory $resultJsonFactory
-     * @param Wallet $walletPreference
-     * @param Payment $paymentNotification
+     * @param Wallet $wallet
+     * @param Notifications $notifications
      */
     public function __construct(
         Context $context,
-        JsonFactory $resultJsonFactory,
-        Wallet $walletPreference,
-        Payment $paymentNotification
+        Wallet $wallet,
+        Notifications $notifications
     ) {
-        parent::__construct($context, $resultJsonFactory, $walletPreference);
-        $this->paymentNotification = $paymentNotification;
+        parent::__construct($context);
+        $this->notifications = $notifications;
+        $this->wallet = $wallet;
     }
 
     /**
@@ -42,20 +56,61 @@ class Notification extends AbstractAction
      */
     public function execute()
     {
-        $response = $this->resultJsonFactory->create();
+        $request = $this->getRequest();
         try {
-            $id = $this->getRequest()->getParam('id', false);
-            $topic = $this->getRequest()->getParam('topic', false);
+            $requestValues = $this->notifications->validateRequest($request);
+            $topicClass = $this->notifications->getTopicClass($request);
+            $data = $this->notifications->getPaymentInformation($topicClass, $requestValues);
+            if (empty($data)) {
+                throw new \Exception(__('Error Merchant Order notification is expected'), self::HTTP_RESPONSE_NOT_FOUND);
+            }
+            $merchantOrder = $data['merchantOrder'];
 
-            if ($topic !== 'merchant_order' || !$id) {
-                return $response->setHttpResponseCode(self::HTTP_RESPONSE_NO_CONTENT);
+            if (is_null($merchantOrder)) {
+                throw new \Exception(__('Merchant Order not found or is an notification invalid type.'), self::HTTP_RESPONSE_NOT_FOUND);
             }
 
-            $result = $this->walletPreference->processNotification($id);
+            $order = $this->wallet->processNotification($merchantOrder);
 
-            return $response->setData($result);
+            if ($order->getStatus() === 'canceled') {
+                throw new \Exception(__('Order already canceled: ') . $merchantOrder["external_reference"], self::HTTP_RESPONSE_BAD_REQUEST);
+            }
+
+            $data['statusFinal'] = $topicClass->getStatusFinal($data['payments'], $merchantOrder);
+
+            if (!$topicClass->validateRefunded($order, $data)) {
+                throw new \Exception(__('Error Order Refund'), self::HTTP_RESPONSE_BAD_REQUEST);
+            }
+
+            $statusResponse = $topicClass->updateOrder($order, $data);
+
+            $this->setResponseHttp($statusResponse['code'], $statusResponse['text'], $request->getParams());
         } catch (\Throwable $exception) {
-            return $this->getErrorResponse($response, $exception->getMessage());
+            $code = $exception->getCode();
+            if ($exception->getCode() < 200 || $exception->getCode() > 500) {
+                $code = self::HTTP_RESPONSE_INTERNAL_ERROR;
+            }
+            $this->setResponseHttp($code, $exception->getMessage(), $request->getParams());
         }
+    }
+
+    /**
+     * @param $httpStatus
+     * @param $message
+     * @param array $data
+     */
+    protected function setResponseHttp($httpStatus, $message, $data = [])
+    {
+        $response = [
+            "status" => $httpStatus,
+            "message" => $message,
+            "data" => $data
+        ];
+
+        //$this->coreHelper->log("NotificationsBasic::setResponseHttp - Response: " . json_encode($response), self::LOG_NAME);
+
+        $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
+        $this->getResponse()->setBody(json_encode($response));
+        $this->getResponse()->setHttpResponseCode($httpStatus);
     }
 }

@@ -48,7 +48,7 @@ class Preference extends AbstractAction
         } catch (\Exception $exception) {
             $this->messageManager->addExceptionMessage(
                 $exception,
-                __('We can\'t start Mercado Pago Wallet Payment.')
+                __('Sorry, we can\'t start Mercado Pago Wallet Payment.')
             );
 
             return $this->getErrorResponse($response, $exception->getMessage());

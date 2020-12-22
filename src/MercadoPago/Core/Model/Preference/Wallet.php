@@ -180,54 +180,46 @@ class Wallet
     }
 
     /**
-     * @param $merchantOrderId
-     * @return array
+     * @param $merchantOrder
+     * @return int|OrderInterface|mixed
      * @throws LocalizedException
      * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Exception
      */
-    public function processNotification($merchantOrderId)
+    public function processNotification($merchantOrder)
     {
-        $merchantOrder = $this->loadMerchantOrder($merchantOrderId);
-
-        if (!$merchantOrder) {
-            throw new \Exception("Merchant order #{$merchantOrderId} not exists");
-        }
-
         $preference = $this->loadPreference($merchantOrder['preference_id']);
 
         if (!$preference) {
-            throw new \Exception("Preference #{$merchantOrder['preference_id']} not exists");
+            throw new \Exception("Preference #{$merchantOrder['preference_id']} not exists", 404);
         }
 
         $totalQuantity = count($merchantOrder['payments']);
         $hasOrder = $this->loadOrderByIncrementalId($merchantOrder['external_reference']);
 
         if ($hasOrder->getIncrementId()) {
-            return [
-                "Order has exists with ID #{$hasOrder->getEntityId()} and Incremental ID #{$hasOrder->getIncrementId()}"
-            ];
+            return $hasOrder;
         }
 
         if (!in_array($merchantOrder['order_status'], ['paid', 'partially_paid']) || !$totalQuantity) {
-            throw new \Exception('Payment not available yet.');
+            throw new \Exception('Payment not available yet.', 400);
         }
 
         $lastPayment = $merchantOrder['payments'][$totalQuantity - 1];
         $payment = $this->loadPayment($lastPayment['id']);
-        $order = $this->createOrderByPaymentWithQuote($payment);
-        $this->paymentNotification->updateStatusOrderByPayment($payment);
 
-        return [
-            "Order created with ID #{$order->getEntityId()} and Incremental ID #{$merchantOrder['external_reference']}"
-        ];
+        $order = $this->createOrderByPaymentWithQuote($payment);
+
+        if (!$order->getIncrementId()) {
+            throw new \Exception("Error to create Order #{$merchantOrder['external_reference']} not available yet.", 500);
+        }
+
+        return $order;
     }
 
     /**
      * @param $paymentId
      * @param CheckoutSession $session
-     * @return string[]
      * @throws LocalizedException
      * @throws NoSuchEntityException
      * @throws \Magento\Framework\Exception\CouldNotSaveException
@@ -246,7 +238,7 @@ class Wallet
         }
 
         if (!$order->getIncrementId()) {
-            throw new \Exception("Sorry, we can't create a order with external reference #{$orderIncrementalId}");
+            throw new \Exception(__("Sorry, we can't create a order with external reference #%1", $orderIncrementalId));
         }
 
         $this->paymentNotification->updateStatusOrderByPayment($payment);
@@ -255,10 +247,6 @@ class Wallet
         $session->setLastQuoteId($payment['metadata']['quote_id']);
         $session->setLastOrderId($payment['external_reference']);
         $session->setLastRealOrderId($payment['external_reference']);
-
-        return [
-            "Order created with ID #{$order->getId()} and Incremental ID #{$order->getIncrementId()}"
-        ];
     }
 
     /**
@@ -321,7 +309,7 @@ class Wallet
             return $response['response'];
         }
 
-        throw new \Exception(sprintf('Merchant Order #%s not found!', $merchantOrderId));
+        throw new \Exception(__('Merchant Order not found or is an notification invalid type.'));
     }
 
     /**
@@ -337,7 +325,7 @@ class Wallet
             return $response['response'];
         }
 
-        throw new \Exception(sprintf('Preference #%s not found!', $preferenceId));
+        throw new \Exception(__('Preference #%1 not found!', $preferenceId));
     }
 
     /**
@@ -353,7 +341,7 @@ class Wallet
             return $response['response'];
         }
 
-        throw new \Exception(sprintf('Payment #%s not found!', $paymentId));
+        throw new \Exception(__('Payment #%1 not found!', $paymentId));
     }
 
     /**

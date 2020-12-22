@@ -7,6 +7,10 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use MercadoPago\Core\Model\Preference\Wallet;
 
+/**
+ * Class Success
+ * @package MercadoPago\Core\Controller\Wallet
+ */
 class Success extends AbstractAction
 {
     /**
@@ -36,13 +40,16 @@ class Success extends AbstractAction
             $paymentId = $this->getRequest()->getParam('payment_id', false);
 
             if (!$paymentId) {
-                throw new \Exception('Payment ID not found');
+                throw new \Exception(__('Sorry, we can\'t process the payment id not found'));
             }
 
             $this->walletPreference->processSuccessRequest($paymentId, $this->session);
             return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
         } catch (\Throwable $exception) {
-            $this->messageManager->addExceptionMessage($exception->getMessage());
+            $this->messageManager->addExceptionMessage(
+                $exception,
+                __('Sorry, we can\'t finish Mercado Pago Wallet Payment.')
+            );
             return $this->resultRedirectFactory->create()->setPath('checkout/cart');
         }
     }
