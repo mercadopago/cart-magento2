@@ -2,7 +2,26 @@
 
 namespace MercadoPago\Core\Helper;
 
+use Exception;
+use Magento\Backend\Block\Store\Switcher;
+use Magento\Framework\App\Config\Initial;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Composer\ComposerInformation;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Module\ResourceInterface;
 use Magento\Framework\View\LayoutFactory;
+use Magento\Payment\Model\Config;
+use Magento\Payment\Model\Method\Factory;
+use Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Model\ResourceModel\Status\Collection;
+use Magento\Store\Model\App\Emulation;
+use Magento\Store\Model\ScopeInterface;
+use MercadoPago\Core\Helper\Message\MessageInterface;
+use MercadoPago\Core\Lib\Api;
+use MercadoPago\Core\Lib\RestClient;
+use MercadoPago\Core\Logger\Logger;
+use MercadoPago\Core\Model\Custom\Payment;
 
 /**
  * Class Data
@@ -32,14 +51,14 @@ class Data extends \Magento\Payment\Helper\Data
     const PAYMENT_TYPE_CREDIT_CARD = 'credit_card';
 
     /**
-     * @var \MercadoPago\Core\Helper\Message\MessageInterface
+     * @var MessageInterface
      */
     protected $_messageInterface;
 
     /**
      * MercadoPago Logging instance
      *
-     * @var \MercadoPago\Core\Logger\Logger
+     * @var Logger
      */
     protected $_mpLogger;
 
@@ -49,23 +68,23 @@ class Data extends \Magento\Payment\Helper\Data
     protected $_mpCache;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Status\Collection
+     * @var Collection
      */
     protected $_statusFactory;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var OrderFactory
      */
     protected $_orderFactory;
 
     /**
-     * @var \Magento\Backend\Block\Store\Switcher
+     * @var Switcher
      */
     protected $_switcher;
     protected $_composerInformation;
 
     /**
-     * @var \Magento\Framework\Module\ResourceInterface $moduleResource
+     * @var ResourceInterface $moduleResource
      */
     protected $_moduleResource;
 
@@ -73,37 +92,35 @@ class Data extends \Magento\Payment\Helper\Data
      * Data constructor.
      * @param Message\MessageInterface $messageInterface
      * @param Cache $mpCache
-     * @param \Magento\Framework\App\Helper\Context $context
+     * @param Context $context
      * @param LayoutFactory $layoutFactory
-     * @param \Magento\Payment\Model\Method\Factory $paymentMethodFactory
-     * @param \Magento\Store\Model\App\Emulation $appEmulation
-     * @param \Magento\Payment\Model\Config $paymentConfig
-     * @param \Magento\Framework\App\Config\Initial $initialConfig
-     * @param \MercadoPago\Core\Logger\Logger $logger
-     * @param \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
-     * @param \Magento\Backend\Block\Store\Switcher $switcher
-     * @param \Magento\Framework\Composer\ComposerInformation $composerInformation
-     * @param \Magento\Framework\Module\ResourceInterface $moduleResource
+     * @param Factory $paymentMethodFactory
+     * @param Emulation $appEmulation
+     * @param Config $paymentConfig
+     * @param Initial $initialConfig
+     * @param Logger $logger
+     * @param Collection $statusFactory
+     * @param OrderFactory $orderFactory
+     * @param Switcher $switcher
+     * @param ComposerInformation $composerInformation
+     * @param ResourceInterface $moduleResource
      */
     public function __construct(
         Message\MessageInterface $messageInterface,
         Cache $mpCache,
-        \Magento\Framework\App\Helper\Context $context,
+        Context $context,
         LayoutFactory $layoutFactory,
-        \Magento\Payment\Model\Method\Factory $paymentMethodFactory,
-        \Magento\Store\Model\App\Emulation $appEmulation,
-        \Magento\Payment\Model\Config $paymentConfig,
-        \Magento\Framework\App\Config\Initial $initialConfig,
-        \MercadoPago\Core\Logger\Logger $logger,
-        \Magento\Sales\Model\ResourceModel\Status\Collection $statusFactory,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Backend\Block\Store\Switcher $switcher,
-        \Magento\Framework\Composer\ComposerInformation $composerInformation,
-        \Magento\Framework\Module\ResourceInterface $moduleResource
-
-    )
-    {
+        Factory $paymentMethodFactory,
+        Emulation $appEmulation,
+        Config $paymentConfig,
+        Initial $initialConfig,
+        Logger $logger,
+        Collection $statusFactory,
+        OrderFactory $orderFactory,
+        Switcher $switcher,
+        ComposerInformation $composerInformation,
+        ResourceInterface $moduleResource
+    ) {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
         $this->_mpLogger = $logger;
@@ -125,7 +142,7 @@ class Data extends \Magento\Payment\Helper\Data
     public function log($message, $name = "mercadopago", $array = null)
     {
         //load admin configuration value, default is true
-        $actionLog = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $actionLog = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG, ScopeInterface::SCOPE_STORE);
         if (!$actionLog) {
             return;
         }
@@ -141,24 +158,24 @@ class Data extends \Magento\Payment\Helper\Data
 
     /**
      * @param null $accessToken
-     * @return \MercadoPago\Core\Lib\Api
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return Api
+     * @throws LocalizedException
      */
     public function getApiInstance($accessToken = null)
     {
         if (is_null($accessToken)) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
+            throw new LocalizedException(__('The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
         }
 
-        $api = new \MercadoPago\Core\Lib\Api($accessToken);
+        $api = new Api($accessToken);
         $api->set_platform(self::PLATFORM_OPENPLATFORM);
 
         $api->set_type(self::TYPE);
-        \MercadoPago\Core\Lib\RestClient::setModuleVersion((string)$this->getModuleVersion());
-        \MercadoPago\Core\Lib\RestClient::setUrlStore($this->getUrlStore());
-        \MercadoPago\Core\Lib\RestClient::setEmailAdmin($this->scopeConfig->getValue('trans_email/ident_sales/email', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
-        \MercadoPago\Core\Lib\RestClient::setCountryInitial($this->getCountryInitial());
-        \MercadoPago\Core\Lib\RestClient::setSponsorID($this->scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+        RestClient::setModuleVersion((string)$this->getModuleVersion());
+        RestClient::setUrlStore($this->getUrlStore());
+        RestClient::setEmailAdmin($this->scopeConfig->getValue('trans_email/ident_sales/email', ScopeInterface::SCOPE_STORE));
+        RestClient::setCountryInitial($this->getCountryInitial());
+        RestClient::setSponsorID($this->scopeConfig->getValue('payment/mercadopago/sponsor_id', ScopeInterface::SCOPE_STORE));
 
         //$api->set_so((string)$this->_moduleContext->getVersion()); //TODO tracking
 
@@ -168,7 +185,7 @@ class Data extends \Magento\Payment\Helper\Data
     /**
      * @param $accessToken
      * @return bool
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function isValidAccessToken($accessToken)
     {
@@ -192,14 +209,14 @@ class Data extends \Magento\Payment\Helper\Data
      * @param $clientSecret
      *
      * @return bool
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function isValidClientCredentials($clientId, $clientSecret)
     {
         $mp = $this->getApiInstance($clientId, $clientSecret);
         try {
             $mp->get_access_token();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
 
@@ -210,7 +227,7 @@ class Data extends \Magento\Payment\Helper\Data
      * @param string $scopeCode
      * @return bool|mixed
      */
-    public function getAccessToken($scopeCode = \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+    public function getAccessToken($scopeCode = ScopeInterface::SCOPE_STORE)
     {
         $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, $scopeCode);
         if (empty($accessToken)) {
@@ -241,7 +258,7 @@ class Data extends \Magento\Payment\Helper\Data
         $originalAmount = $transactionAmount + $shippingCost;
 
         if ($couponAmount
-            && $this->scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CONSIDER_DISCOUNT, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+            && $this->scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CONSIDER_DISCOUNT, ScopeInterface::SCOPE_STORE)) {
             $order->setDiscountCouponAmount($couponAmount * -1);
             $order->setBaseDiscountCouponAmount($couponAmount * -1);
             $financingCost = $paidAmount + $couponAmount - $originalAmount;
@@ -284,7 +301,7 @@ class Data extends \Magento\Payment\Helper\Data
         }
         if (isset($payment['trunc_card'])) {
             $payment["trunc_card"] = $payment['trunc_card'];
-        } else if (isset($payment['card']) && isset($payment['card']['last_four_digits'])) {
+        } elseif (isset($payment['card']) && isset($payment['card']['last_four_digits'])) {
             $payment["trunc_card"] = "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
         }
 
@@ -348,7 +365,7 @@ class Data extends \Magento\Payment\Helper\Data
             if ($response['status'] == 401 || $response['status'] == 400) {
                 return false;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
 
@@ -363,45 +380,39 @@ class Data extends \Magento\Payment\Helper\Data
     public function getCountryInitial()
     {
         try {
-
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $objectManager = ObjectManager::getInstance();
             $store = $objectManager->get('Magento\Framework\Locale\Resolver');
             $locale = $store->getLocale();
             $locale = explode("_", $locale);
             $locale = $locale[1];
 
             return $locale;
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return "US";
         }
     }
 
     /**
      * Get store URL
-     * 
+     *
      * @return string
      */
     public function getUrlStore()
     {
-
         try {
-
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); //instance of\Magento\Framework\App\ObjectManager
+            $objectManager = ObjectManager::getInstance(); //instance of\Magento\Framework\App\ObjectManager
             $storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
             $currentStore = $storeManager->getStore();
             $baseUrl = $currentStore->getBaseUrl();
             return $baseUrl;
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return "";
         }
-
     }
 
     /**
      * Get module version
-     * 
+     *
      * @return string
      */
     public function getModuleVersion()
@@ -442,12 +453,12 @@ class Data extends \Magento\Payment\Helper\Data
             if ($order->getPayment()->getData('method')) {
                 $accessToken = $this->scopeConfig->getValue(
                     \MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ScopeInterface::SCOPE_STORE
                 );
 
                 $publicKey = $this->scopeConfig->getValue(
                     \MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ScopeInterface::SCOPE_STORE
                 );
 
                 $methodCode = $order->getPayment()->getData('method');
@@ -461,7 +472,7 @@ class Data extends \Magento\Payment\Helper\Data
                     'analytics_key' => $this->getClientIdFromAccessToken($accessToken)
                 ];
 
-                if ($methodCode == \MercadoPago\Core\Model\Custom\Payment::CODE) {
+                if ($methodCode == Payment::CODE) {
                     $analyticsData['public_key'] = $publicKey;
                 }
             }
@@ -495,7 +506,7 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function getWalletButtonLink($localization)
     {
-        $site_id = array(
+        $site_id = [
             'MCO' => 'https://www.mercadopago.com.co/integrations/v1/web-payment-checkout.js',
             'MLA' => 'https://www.mercadopago.com.ar/integrations/v1/web-payment-checkout.js',
             'MLB' => 'https://www.mercadopago.com.br/integrations/v1/web-payment-checkout.js',
@@ -504,7 +515,7 @@ class Data extends \Magento\Payment\Helper\Data
             'MLU' => 'https://www.mercadopago.com.uy/integrations/v1/web-payment-checkout.js',
             'MLV' => 'https://www.mercadopago.com.ve/integrations/v1/web-payment-checkout.js',
             'MPE' => 'https://www.mercadopago.com.pe/integrations/v1/web-payment-checkout.js',
-        );
+        ];
 
         if (array_key_exists($localization, $site_id)) {
             return $site_id[$localization];

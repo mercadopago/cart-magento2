@@ -2,45 +2,46 @@
 
 namespace MercadoPago\Core\Controller\Customticket;
 
+use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use Magento\Sales\Model\OrderFactory;
+
 /**
  * Class Success
  *
  * @package MercadoPago\Core\Controller\Customticket
  */
-class Success
-    extends \Magento\Framework\App\Action\Action
+class Success extends Action
 {
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $_checkoutSession;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var OrderFactory
      */
     protected $_orderFactory;
 
     /**
      * Success constructor.
      *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param Context $context
+     * @param Session $checkoutSession
+     * @param OrderFactory $orderFactory
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Sales\Model\OrderFactory $orderFactory
-    )
-    {
-
+        Context $context,
+        Session $checkoutSession,
+        OrderFactory $orderFactory
+    ) {
         $this->_checkoutSession = $checkoutSession;
         $this->_orderFactory = $orderFactory;
 
         parent::__construct(
             $context
         );
-
     }
 
     /**

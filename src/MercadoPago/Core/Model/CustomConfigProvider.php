@@ -2,11 +2,22 @@
 
 namespace MercadoPago\Core\Model;
 
-use Magento\Payment\Helper\Data as PaymentHelper;
-use MercadoPago\Core\Lib\RestClient;
-use MercadoPago\Core\Helper\ConfigData;
-use Magento\Store\Model\ScopeInterface;
+use Exception;
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\UrlInterface;
+use Magento\Framework\View\Asset\Repository;
+use Magento\Payment\Helper\Data as PaymentHelper;
+use Magento\Payment\Model\MethodInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Data;
+use MercadoPago\Core\Lib\RestClient;
 
 /**
  * Return configs to Standard Method
@@ -17,7 +28,7 @@ use Magento\Checkout\Model\ConfigProviderInterface;
 class CustomConfigProvider implements ConfigProviderInterface
 {
     /**
-     * @var \Magento\Payment\Model\MethodInterface
+     * @var MethodInterface
      */
     protected $methodInstance;
 
@@ -27,58 +38,68 @@ class CustomConfigProvider implements ConfigProviderInterface
     protected $methodCode = Custom\Payment::CODE;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $_scopeConfig;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $_checkoutSession;
 
     /**
      * Store manager
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     protected $_storeManager;
 
     /**
-     * @var \Magento\Framework\App\RequestInterface
+     * @var RequestInterface
      */
     protected $_request;
 
     /**
-     * @var \Magento\Framework\View\Asset\Repository
+     * @var Repository
      */
     protected $_assetRepo;
 
     /**
-     * @var \Magento\Framework\App\Action\Context
+     * @var Context
      */
     protected $_context;
 
     /**
-     * @var \Magento\Framework\App\ProductMetadataInterface
+     * @var ProductMetadataInterface
      */
     protected $_productMetaData;
-    protected $_composerInformation;
-    protected $_coreHelper;
-    protected $_productMetadata;
 
     /**
+     * @var Data
+     */
+    protected $_coreHelper;
+
+    /**
+     * CustomConfigProvider constructor.
      * @param PaymentHelper $paymentHelper
+     * @param Data $coreHelper
+     * @param Context $context
+     * @param Session $checkoutSession
+     * @param Repository $assetRepo
+     * @param StoreManagerInterface $storeManager
+     * @param ScopeConfigInterface $scopeConfig
+     * @param ProductMetadataInterface $productMetadata
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function __construct(
         PaymentHelper $paymentHelper,
-        \MercadoPago\Core\Helper\Data $coreHelper,
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Framework\View\Asset\Repository $assetRepo,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata
-    )
-    {
+        Data $coreHelper,
+        Context $context,
+        Session $checkoutSession,
+        Repository $assetRepo,
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig,
+        ProductMetadataInterface $productMetadata
+    ) {
         $this->_context = $context;
         $this->_request = $context->getRequest();
         $this->_assetRepo = $assetRepo;
@@ -102,8 +123,8 @@ class CustomConfigProvider implements ConfigProviderInterface
         }
 
         $country = strtoupper($this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            ConfigData::PATH_SITE_ID,
+            ScopeInterface::SCOPE_STORE
         ));
 
         $walletButtonLink = $this->_coreHelper->getWalletButtonLink($country);
@@ -112,29 +133,35 @@ class CustomConfigProvider implements ConfigProviderInterface
             'payment' => [
                 $this->methodCode => [
                     'bannerUrl' => $this->_scopeConfig->getValue(
-                        ConfigData::PATH_CUSTOM_BANNER, ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_CUSTOM_BANNER,
+                        ScopeInterface::SCOPE_STORE
                     ),
                     'public_key' => $this->_scopeConfig->getValue(
-                        ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_PUBLIC_KEY,
+                        ScopeInterface::SCOPE_STORE
                     ),
                     'logEnabled' => $this->_scopeConfig->getValue(
-                        ConfigData::PATH_ADVANCED_LOG, ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_ADVANCED_LOG,
+                        ScopeInterface::SCOPE_STORE
                     ),
                     'discount_coupon' => $this->_scopeConfig->isSetFlag(
-                        ConfigData::PATH_CUSTOM_COUPON, ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_CUSTOM_COUPON,
+                        ScopeInterface::SCOPE_STORE
                     ),
                     'mp_gateway_mode' => $this->_scopeConfig->getValue(
-                        ConfigData::PATH_CUSTOM_GATEWAY_MODE, ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_CUSTOM_GATEWAY_MODE,
+                        ScopeInterface::SCOPE_STORE
                     ),
                     'mp_wallet_button' => $this->_scopeConfig->getValue(
-                        ConfigData::PATH_CUSTOM_WALLET_BUTTON, ScopeInterface::SCOPE_STORE
+                        ConfigData::PATH_CUSTOM_WALLET_BUTTON,
+                        ScopeInterface::SCOPE_STORE
                     ),
                     'country' => $country,
                     'route' => $this->_request->getRouteName(),
                     'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                     'minilogo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/minilogo.png"),
                     'gray_minilogo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/gray_minilogo.png"),
-                    'base_url' => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
+                    'base_url' => $this->_storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK),
                     'customer' => $this->methodInstance->getCustomerAndCards(),
                     'grand_total' => $this->_checkoutSession->getQuote()->getGrandTotal(),
                     'success_url' => $this->methodInstance->getConfigData('order_place_redirect_url'),
@@ -164,8 +191,7 @@ class CustomConfigProvider implements ConfigProviderInterface
         $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_WEBSITE);
 
         try {
-
-            $cards = array();
+            $cards = [];
             $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
             $response = $paymentMethods['response'];
 
@@ -178,8 +204,7 @@ class CustomConfigProvider implements ConfigProviderInterface
             }
 
             return $cards;
-
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->_coreHelper->log(
                 "[Custom config] getPaymentMethods:: An error occurred at the time of obtaining payment methods: " . $e
             );

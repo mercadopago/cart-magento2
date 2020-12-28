@@ -83,7 +83,7 @@ define(
           quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
 
           //insert wallet button on form
-          var wb_button = document.querySelector(".wb-cho-button-frame");
+          var wb_button = document.querySelector("body");
           wb_button.appendChild(this.walletButtonScript);
         }
       },
@@ -211,29 +211,33 @@ define(
         return '';
       },
 
-      addWalletButton: function (preferenceId) {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-          var wb_link = window.checkoutConfig.payment[this.getCode()]['wallet_button_link'];
-          var mp_public_key = window.checkoutConfig.payment[this.getCode()]['public_key'];
+      addWalletButton: function () {
+        var self = this;
+        setPaymentInformationAction(this.messageContainer, {method: 'mercadopago_custom'}).done(() => {
+          $.getJSON('/mercadopago/wallet/preference').done(function (response){
+            var preferenceId = response.preference.id
+            if (window.checkoutConfig.payment[self.getCode()] != undefined) {
+              var wb_link = window.checkoutConfig.payment[self.getCode()]['wallet_button_link'];
+              var mp_public_key = window.checkoutConfig.payment[self.getCode()]['public_key'];
 
-          this.walletButtonScript.src = wb_link;
-          this.walletButtonScript.setAttribute('data-public-key', mp_public_key);
-          this.walletButtonScript.setAttribute('data-preference-id', preferenceId);
-          this.walletButtonScript.setAttribute('data-open', 'false');
-          this.walletButtonScript.async = true;
-          this.walletButtonScript.onload = function () {
-            document.querySelector('.mercadopago-button').click();
-          };
+              self.walletButtonScript.src = wb_link;
+              self.walletButtonScript.setAttribute('data-public-key', mp_public_key);
+              self.walletButtonScript.setAttribute('data-preference-id', preferenceId);
+              self.walletButtonScript.setAttribute('data-open', 'false');
+              self.walletButtonScript.async = true;
+              self.walletButtonScript.onload = function () {
+                var mecadopagoButton = document.querySelector('.mercadopago-button');
+                mecadopagoButton.style.display = 'none';
+                mecadopagoButton.click();
+              };
 
-          var mercadopago_button = document.querySelector('.mercadopago-button');
-          if (mercadopago_button !== null || mercadopago_button !== undefined) {
-            mercadopago_button.click();
-          }
-
-          return;
-        }
-
-        return;
+              var mercadopago_button = document.querySelector('.mercadopago-button');
+              if (mercadopago_button !== null || mercadopago_button !== undefined) {
+                mercadopago_button.click();
+              }
+            }
+          })
+        })
       },
 
       getMpWalletButton: function () {
