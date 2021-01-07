@@ -7,16 +7,15 @@ use Magento\Catalog\Controller\Product\View\ViewInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\UrlInterface;
 use MercadoPago\Core\Helper\ConfigData;
-use MercadoPago\Core\Model\Basic\Payment;
 use MercadoPago\Core\Helper\Data;
+use MercadoPago\Core\Model\Basic\Payment;
 
 class Pay extends Action implements ViewInterface
 {
-
     const LOG_NAME = 'CONTROLLER_BASIC_PAY';
     /**
      * @var \MercadoPago\Core\Model\Basic\Payment
@@ -58,9 +57,15 @@ class Pay extends Action implements ViewInterface
      * @param UrlInterface $urlInterface
      * @param Data $coreHelper
      */
-    public function __construct(Context $context, Payment $paymentFactory, ScopeConfigInterface $scopeConfig, ManagerInterface $messageManager, ResultFactory $resultFactory, UrlInterface $urlInterface,
-                                Data $coreHelper)
-    {
+    public function __construct(
+        Context $context,
+        Payment $paymentFactory,
+        ScopeConfigInterface $scopeConfig,
+        ManagerInterface $messageManager,
+        ResultFactory $resultFactory,
+        UrlInterface $urlInterface,
+        Data $coreHelper
+    ) {
         $this->_paymentFactory = $paymentFactory;
         $this->_scopeConfig = $scopeConfig;
         $this->_messageManager = $messageManager;
@@ -89,6 +94,5 @@ class Pay extends Action implements ViewInterface
         } catch (Exception $e) {
             $this->_coreHelper->log("ERROR CONTROLLER BASIC PAY: " . $e->getMessage(), self::LOG_NAME);
         }
-
     }
 }

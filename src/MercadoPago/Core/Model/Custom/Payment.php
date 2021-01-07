@@ -3,8 +3,8 @@
 namespace MercadoPago\Core\Model\Custom;
 
 use Magento\Framework\DataObject;
-use Magento\Payment\Model\Method\Online\GatewayInterface;
 use Magento\Payment\Model\Method\ConfigInterface;
+use Magento\Payment\Model\Method\Online\GatewayInterface;
 
 /**
  * Class Payment
@@ -13,9 +13,7 @@ use Magento\Payment\Model\Method\ConfigInterface;
  * @SuppressWarnings(PHPMD.TooManyFields)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Payment
-    extends \Magento\Payment\Model\Method\Cc
-    implements GatewayInterface
+class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterface
 {
     /**
      * Define payment method code
@@ -223,8 +221,8 @@ class Payment
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \MercadoPago\Core\Model\Core $coreModel,
-        \Magento\Framework\App\RequestInterface $request)
-    {
+        \Magento\Framework\App\RequestInterface $request
+    ) {
         parent::__construct(
             $context,
             $registry,
@@ -245,7 +243,6 @@ class Payment
         $this->_urlBuilder = $urlBuilder;
         $this->_request = $request;
         $this->_scopeConfig = $scopeConfig;
-
     }
 
     /**
@@ -380,10 +377,10 @@ class Payment
             return true;
         }
         $messageErrorToClient = $this->_coreModel->getMessageError($response);
-        $arrayLog = array(
+        $arrayLog = [
             "response" => $response,
             "message" => $messageErrorToClient
-        );
+        ];
         $this->_helperData->log("CustomPayment::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
         throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
     }
@@ -408,7 +405,6 @@ class Payment
     {
         return $this->_checkoutSession->getQuote();
     }
-
 
     /**
      * Retrieves Order
@@ -445,7 +441,7 @@ class Payment
         }
 
         $secure = $this->_request->isSecure();
-        if ($secure === FALSE) {
+        if ($secure === false) {
             $this->_helperData->log("CustomPayment::isAvailable - Module not available because it has production credentials in non HTTPS environment.");
             return false;
         }
@@ -538,14 +534,11 @@ class Payment
      */
     public function checkAndcreateCard($customer, $token, $payment)
     {
-
         $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         $mp = $this->_helperData->getApiInstance($accessToken);
 
         foreach ($customer['cards'] as $card) {
-
-
             if ($card['first_six_digits'] == $payment['card']['first_six_digits']
                 && $card['last_four_digits'] == $payment['card']['last_four_digits']
                 && $card['expiration_month'] == $payment['card']['expiration_month']
@@ -599,7 +592,6 @@ class Payment
         $this->_helperData->log("Response search customer", self::LOG_NAME, $customer);
 
         if ($customer['status'] == 200) {
-
             if ($customer['response']['paging']['total'] > 0) {
                 return $customer['response']['results'][0];
             } else {
@@ -656,5 +648,4 @@ class Payment
 
         return $payment_info;
     }
-
 }

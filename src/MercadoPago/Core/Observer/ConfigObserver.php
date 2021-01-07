@@ -243,22 +243,20 @@ class ConfigObserver
         $this->coreHelper->log("API Users response", self::LOG_NAME, $user);
 
         if ($user['status'] == 200) {
-
             $siteId = $user['response']['site_id'];
 
             if (!in_array("test_user", $user['response']['tags'])) {
-
+                $countryCode = $user['response']['site_id'];
                 $sponsors = [
                     'MLA' => 222568987,
                     'MLB' => 222567845,
-                    'MLM' => 222568246,
-                    'MCO' => 222570694,
                     'MLC' => 222570571,
-                    'MLV' => 222569730,
+                    'MCO' => 222570694,
+                    'MLM' => 222568246,
                     'MPE' => 222568315,
+                    'MLV' => 222569730,
                     'MLU' => 247030424,
                 ];
-                $countryCode = $user['response']['site_id'];
 
                 if (isset($sponsors[$countryCode])) {
                     $sponsorId = $sponsors[$countryCode];

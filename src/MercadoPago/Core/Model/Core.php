@@ -79,7 +79,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     protected $_storeManager;
 
     /**
-     * @var \MercadoPago\Core\Helper\
+     * @var \MercadoPago\Core\Helper\Data
      */
     protected $_coreHelper;
 
@@ -199,8 +199,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Checkout\Model\Session $checkoutSession,
         \MercadoPago\Core\Block\Adminhtml\System\Config\Version $version,
         \Magento\Framework\App\ProductMetadataInterface $productMetadata
-    )
-    {
+    ) {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
         $this->_storeManager = $storeManager;
         $this->_coreHelper = $coreHelper;
@@ -553,7 +552,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $test_mode = true;
         }
         $this->_version->afterLoad();
-        $preference['metadata'] = array(
+        $preference['metadata'] = [
             "platform" => "Magento",
             "platform_version" => $this->_productMetaData->getVersion(),
             "module_version" => $this->_version->getValue(),
@@ -561,7 +560,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             "checkout" => "custom",
             "sponsor_id" => $sponsorId,
             "test_mode" => $test_mode
-        );
+        ];
 
         return $preference;
     }
