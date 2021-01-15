@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Block\Basic;
 
 use Magento\Framework\View\Element\Template;

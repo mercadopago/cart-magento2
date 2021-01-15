@@ -58,7 +58,8 @@ class Payment extends TopicsAbstract
         InvoiceSender $invoiceSender,
         InvoiceService $invoiceService
 
-    ) {
+    )
+    {
         $this->_mpHelper = $mpHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_coreModel = $coreModel;
@@ -74,10 +75,10 @@ class Payment extends TopicsAbstract
     public function updateStatusOrderByPayment($payment)
     {
         $order = parent::getOrderByIncrementId($payment['external_reference']);
-      
+
         if (!$order->getId()) {
             $message = "Mercado Pago - The order was not found in Magento. You will not be able to follow the process without this information.";
-            return [ "httpStatus" => Response::HTTP_NOT_FOUND, "message" => $message, "data" => $payment['external_reference']];
+            return ["httpStatus" => Response::HTTP_NOT_FOUND, "message" => $message, "data" => $payment['external_reference']];
         }
 
         $message = parent::getMessage($payment);
@@ -230,7 +231,7 @@ class Payment extends TopicsAbstract
                 "issuer_id" => $issuer_id,
                 "payment_method_id" => $payment_method_id
             ];
-            $card = RestClient::post("/v1/customers/" . $customer_id . "/cards?access_token=" . $accessToken, $request);
+            $card = RestClient::post("/v1/customers/" . $customer_id . "/cards", $request, null, ["Authorization: Bearer " . $accessToken]);
             return $card;
         }
     }
