@@ -83,6 +83,13 @@ class Payment extends TopicsAbstract
         $statusAlreadyUpdated = $this->checkStatusAlreadyUpdated($payment, $order);
         $newOrderStatus = parent::getConfigStatus($payment, $order->canCreditmemo());
         $currentOrderStatus = $order->getState();
+
+        if ($order->getGrandTotal() > $payment['transaction_details']['total_paid_amount']) {
+            $newOrderStatus = 'fraud';
+            $message .= __('<br/> Order total: %s', $order->getGrandTotal());
+            $message .= __('<br/> Paid: %s', $payment['transaction_details']['total_paid_amount']);
+        }
+
         if ($statusAlreadyUpdated) {
             $orderPayment = $order->getPayment();
             $orderPayment->setAdditionalInformation("paymentResponse", $payment);
