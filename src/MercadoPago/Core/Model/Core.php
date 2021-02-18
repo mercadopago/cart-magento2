@@ -485,7 +485,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
 
-        $preference['transaction_amount'] = (float)$this->getAmount();
+        $preference['transaction_amount'] = round((float)$this->getAmount(),2);
 
         $preference['external_reference'] = $order->getIncrementId();
 
