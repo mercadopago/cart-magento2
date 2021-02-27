@@ -48,7 +48,7 @@
             <config_path>payment/mercadopago_basic/exp_time_pref</config_path>
             <comment>Time in days to expiration preference.</comment>
         </field>
-        <field id="gateway_mode" translate="label comment" type="select" sortOrder="100" showInDefault="0" showInWebsite="0" showInStore="0">
+        <field id="gateway_mode" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Gateway Mode</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago_basic/gateway_mode</config_path>
