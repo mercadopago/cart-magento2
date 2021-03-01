@@ -5,15 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.7.1] - 2021-01-18
-
-### Added
-- Added validation amount x paid amount
-
-## [3.7.0] - 2021-01-07
+## [3.7.0] - 2021-03-01
 
 ### Added
 - Added support to pay with wallet purchase
+- Added validation amount x paid amount
+
+### Fixed
+- Removed unused metric module API
+- Amount round adjusted
+- Responding ok for unused notification
 
 ### Fixed
 - Fixed same classes with Magento 2 Code Standards
