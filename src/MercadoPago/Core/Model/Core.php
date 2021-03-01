@@ -581,8 +581,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
-        $this->_coreHelper->log("Access Token for Post", 'mercadopago-custom.log', $this->_accessToken);
-
         //set sdk php mercadopago
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
@@ -753,7 +751,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         if (!$this->_accessToken) {
             $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
-        $this->_coreHelper->log("Access Token for Post", 'mercadopago-basic.log', $this->_accessToken);
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
         return $mp->get("/merchant_orders/" . $merchant_order_id);
@@ -764,7 +761,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         if (!$this->_accessToken) {
             $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
-        $this->_coreHelper->log("Access Token for Post", 'mercadopago-basic.log', $this->_accessToken);
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
         return $mp->get("/v1/payments/" . $payment_id);
