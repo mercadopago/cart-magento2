@@ -545,7 +545,7 @@ class Wallet
     {
         $amount = (float) number_format($price, 2, '.', '');
 
-        if (in_array($siteId, self::COUNTRIES_WITH_INTEGER_PRICE)) {
+        if (in_array($siteId, self::COUNTRIES_WITH_INTEGER_PRICE, true)) {
             return (int) $amount;
         }
 
