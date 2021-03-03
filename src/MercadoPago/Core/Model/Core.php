@@ -79,7 +79,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     protected $_storeManager;
 
     /**
-     * @var \MercadoPago\Core\Helper\
+     * @var \MercadoPago\Core\Helper\Data
      */
     protected $_coreHelper;
 
@@ -199,8 +199,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Checkout\Model\Session $checkoutSession,
         \MercadoPago\Core\Block\Adminhtml\System\Config\Version $version,
         \Magento\Framework\App\ProductMetadataInterface $productMetadata
-    )
-    {
+    ) {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
         $this->_storeManager = $storeManager;
         $this->_coreHelper = $coreHelper;
@@ -486,7 +485,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         $preference['description'] = __("Order # %1 in store %2", $order->getIncrementId(), $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK));
 
-        $preference['transaction_amount'] = (float)$this->getAmount();
+        $preference['transaction_amount'] = round((float)$this->getAmount(),2);
 
         $preference['external_reference'] = $order->getIncrementId();
 
@@ -553,7 +552,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $test_mode = true;
         }
         $this->_version->afterLoad();
-        $preference['metadata'] = array(
+        $preference['metadata'] = [
             "platform" => "Magento",
             "platform_version" => $this->_productMetaData->getVersion(),
             "module_version" => $this->_version->getValue(),
@@ -561,7 +560,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             "checkout" => "custom",
             "sponsor_id" => $sponsorId,
             "test_mode" => $test_mode
-        );
+        ];
 
         return $preference;
     }
@@ -581,8 +580,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         if (!$this->_accessToken) {
             $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
-
-        $this->_coreHelper->log("Access Token for Post", 'mercadopago-custom.log', $this->_accessToken);
 
         //set sdk php mercadopago
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
@@ -754,7 +751,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         if (!$this->_accessToken) {
             $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
-        $this->_coreHelper->log("Access Token for Post", 'mercadopago-basic.log', $this->_accessToken);
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
         return $mp->get("/merchant_orders/" . $merchant_order_id);
@@ -765,7 +761,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         if (!$this->_accessToken) {
             $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
-        $this->_coreHelper->log("Access Token for Post", 'mercadopago-basic.log', $this->_accessToken);
         $mp = $this->_coreHelper->getApiInstance($this->_accessToken);
 
         return $mp->get("/v1/payments/" . $payment_id);

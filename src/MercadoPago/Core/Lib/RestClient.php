@@ -8,19 +8,19 @@ class RestClient
 {
 
     /**
-     *API URL
+     * API URL
      */
     const API_BASE_URL = "https://api.mercadopago.com";
 
     /**
-     *Product Id
+     * Product Id
      */
     const PRODUCT_ID = "BC32CANTRPP001U8NHO0";
 
     /**
-     *Plataform Id
+     * Platform Id
      */
-    const PLATAFORM_ID = "Magento2";
+    const PLATAFORM_ID = "BP1EF6QIC4P001KBGQ10";
 
     /**
      * @param       $uri

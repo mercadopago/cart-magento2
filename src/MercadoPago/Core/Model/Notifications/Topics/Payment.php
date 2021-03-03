@@ -4,12 +4,14 @@ namespace MercadoPago\Core\Model\Notifications\Topics;
 
 use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DB\TransactionFactory;
 use Magento\Sales\Model\Order\CreditmemoFactory;
 use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\ResourceModel\Status\Collection as StatusFactory;
+use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data as mpHelper;
@@ -17,8 +19,6 @@ use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Lib\RestClient;
 use MercadoPago\Core\Model\Core;
-use Magento\Framework\DB\TransactionFactory;
-use Magento\Sales\Model\Service\InvoiceService;
 
 class Payment extends TopicsAbstract
 {
@@ -57,9 +57,7 @@ class Payment extends TopicsAbstract
         TransactionFactory $transactionFactory,
         InvoiceSender $invoiceSender,
         InvoiceService $invoiceService
-
-    )
-    {
+    ) {
         $this->_mpHelper = $mpHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_coreModel = $coreModel;
@@ -85,6 +83,13 @@ class Payment extends TopicsAbstract
         $statusAlreadyUpdated = $this->checkStatusAlreadyUpdated($payment, $order);
         $newOrderStatus = parent::getConfigStatus($payment, $order->canCreditmemo());
         $currentOrderStatus = $order->getState();
+
+        if ($order->getGrandTotal() > $payment['transaction_details']['total_paid_amount']) {
+            $newOrderStatus = 'fraud';
+            $message .= __('<br/> Order total: %s', $order->getGrandTotal());
+            $message .= __('<br/> Paid: %s', $payment['transaction_details']['total_paid_amount']);
+        }
+
         if ($statusAlreadyUpdated) {
             $orderPayment = $order->getPayment();
             $orderPayment->setAdditionalInformation("paymentResponse", $payment);
