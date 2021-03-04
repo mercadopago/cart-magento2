@@ -137,8 +137,6 @@ class Page extends Action
                     $this->_redirect('checkout/onepage/failure/');
                 }
             } else {
-                //set data for mp analytics
-                $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
                 $checkoutTypeHandle = $this->getCheckoutHandle();
                 $this->_view->loadLayout(['default', $checkoutTypeHandle]);
                 $this->dispatchSuccessActionObserver();

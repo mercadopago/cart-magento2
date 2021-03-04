@@ -103,7 +103,6 @@ class CustomTicketConfigProvider
         $data = [
             'payment' => [
                 $this->methodCode => [
-                    'analytics_key' => $this->_coreHelper->getClientIdFromAccessToken($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
                     'country' => strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
                     'bannerUrl' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_TICKET_BANNER, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                     'discount_coupon' => $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_TICKET_COUPON, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),

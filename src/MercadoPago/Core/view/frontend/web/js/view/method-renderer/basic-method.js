@@ -1,10 +1,9 @@
 define(
   [
     'Magento_Checkout/js/view/payment/default',
-    'MercadoPago_Core/js/model/set-analytics-information',
     'mage/translate'
   ],
-  function (Component, setAnalyticsInformation, $t) {
+  function (Component, $t) {
     'use strict';
 
     let configPayment = window.checkoutConfig.payment.mercadopago_basic;
@@ -34,7 +33,6 @@ define(
       },
       initialize: function () {
         this._super();
-        setAnalyticsInformation.beforePlaceOrder(this.getCode());
       },
 
       getCode: function () {
