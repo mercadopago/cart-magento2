@@ -49,6 +49,15 @@
                 <payment_action>authorize</payment_action>
                 <gateway_mode>0</gateway_mode>
             </mercadopago_basic>
+            <mercadopago_custom_pix>
+                <active>1</active>
+                <model>MercadoPago\Core\Model\CustomPix\Payment</model>
+                <title translate="label">Ticket - Mercado Pago</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>-1</sort_order>
+                <payment_action>authorize</payment_action>
+                <cctypes>AE,VI,MC,DI,JCB</cctypes>
+            </mercadopago_custom_pix>
             <mercadopago>
                 <order_status_approved>processing</order_status_approved>
                 <order_status_in_process>pending</order_status_in_process>

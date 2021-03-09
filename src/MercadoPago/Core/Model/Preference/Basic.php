@@ -89,7 +89,7 @@ class Basic extends AbstractMethod
     {
         $order = $this->_orderFactory->create()->loadByIncrementId($this->_checkoutSession->getLastRealOrderId());
         if (empty($order->getId())) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on getOrderInfo'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on getOrderInfo'));
         }
         return $order;
     }
@@ -102,7 +102,7 @@ class Basic extends AbstractMethod
     {
         $customer = $this->_customerSession->getCustomer();
         if (empty($customer)) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on getCustomerInfo'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on getCustomerInfo'));
         }
         return $customer;
     }
@@ -129,7 +129,7 @@ class Basic extends AbstractMethod
         ];
 
         if (!$config) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on getConfig'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on getConfig'));
         }
 
         return $config;
@@ -183,7 +183,7 @@ class Basic extends AbstractMethod
         }
 
         if (!$items) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on getItems'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on getItems'));
         }
 
         $result = ['items' => $items, 'difference' => $difference];
@@ -210,7 +210,7 @@ class Basic extends AbstractMethod
         }
 
         if (empty($arr)) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on calculateDiscountAmount'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on calculateDiscountAmount'));
         }
     }
 
@@ -233,7 +233,7 @@ class Basic extends AbstractMethod
         }
 
         if (empty($arr)) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on calculateBaseTaxAmount'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on calculateBaseTaxAmount'));
         }
     }
 
@@ -250,7 +250,7 @@ class Basic extends AbstractMethod
         }
 
         if (empty($total)) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on getTotalItems'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on getTotalItems'));
         }
 
         return $total;
@@ -272,7 +272,7 @@ class Basic extends AbstractMethod
         ];
 
         if (!is_array($receiverAddress)) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on getReceiverAddress'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on getReceiverAddress'));
         }
         return $receiverAddress;
     }
@@ -294,7 +294,7 @@ class Basic extends AbstractMethod
         }
 
         if (!is_array($excludedMethods)) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on getExcludedPaymentsMethods'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on getExcludedPaymentsMethods'));
         }
 
         return $excludedMethods;
@@ -329,7 +329,7 @@ class Basic extends AbstractMethod
         ];
 
         if (!is_array($result)) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on getPayerInfo'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on getPayerInfo'));
         }
 
         return $result;
@@ -349,7 +349,7 @@ class Basic extends AbstractMethod
         $result['failure'] = $config['success_page'] ? $this->_urlBuilder->getUrl(self::FAILURE_URL) : $this->_urlBuilder->getUrl('checkout/onepage/failure');
 
         if (!is_array($result)) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on getBackUrls'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on getBackUrls'));
         }
         return $result;
     }
@@ -386,7 +386,7 @@ class Basic extends AbstractMethod
         $this->_helperData->log("create preference result", 'mercadopago-basic.log', $response);
 
         if (!is_array($arr)) {
-            throw new Exception(__('Error on create preference Basic Checkout - Exception on createPreference'));
+            throw new Exception(__('Error on create preference Checkout Pro - Exception on createPreference'));
         }
 
         return $response;

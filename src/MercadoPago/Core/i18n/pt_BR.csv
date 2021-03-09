@@ -58,8 +58,8 @@
 "Redirect Payer","Redirecionar Comprador"
 "By enabling this option the buyer will be automatically redirected to the payment page of the bank, it will not go through an intermediate page of your store.","Ao habilitar essa opção o comprador será redirecionado automaticamente para a pagina de pagamento do banco, ele não irá passar por uma pagina intermedia da sua loja."
 
-"==================== v3.3.1 Basic Checkout PAGE =====================","================================================"
-"Basic Checkout","Checkout Básico - Redirecionado"
+"==================== v3.3.1 Checkout Pro PAGE =====================","================================================"
+"Checkout Pro","Checkout Pro - Redirecionado"
 "Auto Return","Redirecionamento Automático"
 "Redirect buyer automatically to your store when payment is approved.","Redireciona o comprador automaticamente para a sua loja quando o pagamento é aprovado."
 "Max Installments","Numero máximo de parcelas aceitas"
@@ -165,7 +165,7 @@
 "Natural", "Pessoa física"
 "Jurídica", "Pessoa jurídica"
 
-"==================== 3.3.1 - Basic Checkout Checkout FLOW =====================","================================================"
+"==================== 3.3.1 - Checkout Pro Checkout FLOW =====================","================================================"
 
 "Quiero pagar con Mercado Pago sin costo Adicional.", "Quero pagar com Mercado Pago sem custo adicional."
 "Usa el medio de pago que prefieras","Use os meios de pagamento que você preferir"

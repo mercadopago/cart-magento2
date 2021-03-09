@@ -18,5 +18,8 @@
         <method name="mercadopago_basic">
             <allow_multiple_address>1</allow_multiple_address>
         </method>
+        <method name="mercadopago_custom_pix">
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
     </methods>
 </payment>

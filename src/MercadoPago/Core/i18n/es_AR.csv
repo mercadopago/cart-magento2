@@ -59,7 +59,7 @@
 "By enabling this option the buyer will be automatically redirected to the payment page of the bank, it will not go through an intermediate page of your store.","Al habilitar esta opción el comprador será redirigido automáticamente a la página de pago del banco, no pasará por una página intermedia de su tienda."
 
 "==================== v3.3.1 Basic Checkout PAGE =====================","================================================"
-"Basic Checkout","Checkout Básico - Redireccionado"
+"Checkout Pro","Checkout Pro - Redireccionado"
 "Auto Return","Redireccionamiento automático"
 "Redirect buyer automatically to your store when payment is approved.","Redirecciona automáticamente el comprador a su tienda cuando se aprueba el pago."
 "Max Installments","Número máximo de cuotas aceptadas"
@@ -160,7 +160,7 @@
 "Natural", "Natural"
 "Jurídica", "Jurídica"
 
-"==================== 3.3.1 - Basic Checkout Checkout FLOW =====================","================================================"
+"==================== 3.3.1 - Checkout ProCheckout FLOW =====================","================================================"
 
 "Quiero pagar con Mercado Pago sin costo Adicional.", "Quiero pagar con Mercado Pago sin costo Adicional."
 "Usa el medio de pago que prefieras","Usa el medio de pago que prefieras"

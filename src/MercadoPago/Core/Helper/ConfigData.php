@@ -46,6 +46,9 @@ class ConfigData
     const PATH_BASIC_BINARY_MODE = 'payment/mercadopago_basic/binary_mode';
     const PATH_BASIC_GATEWAY_MODE = 'payment/mercadopago_basic/gateway_mode';
 
+    //custom method ticket
+    const PATH_CUSTOM_PIX_ACTIVE = 'payment/mercadopago_customticket/active';
+
     //order configuration
     const PATH_ORDER_APPROVED = 'payment/mercadopago/order_status_approved';
     const PATH_ORDER_IN_PROCESS = 'payment/mercadopago/order_status_in_process';

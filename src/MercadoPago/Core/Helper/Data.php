@@ -341,7 +341,7 @@ class Data extends \Magento\Payment\Helper\Data
         $statusValues = explode('|', $data['status']);
         foreach ($amountValues as $key => $value) {
             $value = (float)str_replace(' ', '', $value);
-            if (str_replace(' ', '', $statusValues[$key]) == 'approved') {
+            if (str_replace(' ', '', $statusValues[$key]) === 'approved') {
                 $finalValue = $finalValue + $value;
             }
         }
@@ -400,6 +400,7 @@ class Data extends \Magento\Payment\Helper\Data
     public function getUrlStore()
     {
         try {
+            /** @var \Magento\Framework\App\ObjectManager $objectManager */
             $objectManager = ObjectManager::getInstance(); //instance of\Magento\Framework\App\ObjectManager
             $storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
             $currentStore = $storeManager->getStore();
