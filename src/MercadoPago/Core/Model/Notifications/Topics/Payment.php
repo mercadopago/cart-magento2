@@ -116,7 +116,7 @@ class Payment extends TopicsAbstract
             $responseInvoice = $this->createInvoice($order, $message);
             $this->addCardInCustomer($payment);
         }
-        $order->getPayment()->setAdditionalInformation("paymentResponse", $payment);
+        $order->getPayment()->setAdditionalInformation("paymentResponse", $payment['additional_info']);
         $order->save();
 
         $messageHttp = "Mercado Pago - Status successfully updated.";
