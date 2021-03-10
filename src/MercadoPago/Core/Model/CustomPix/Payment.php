@@ -2,6 +2,14 @@
 
 namespace MercadoPago\Core\Model\CustomPix;
 
+use Exception;
+use Magento\Framework\DataObject;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Quote\Api\Data\CartInterface;
+use Magento\Store\Model\ScopeInterface;
+use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Response;
+
 /**
  * Class Payment
  *
@@ -19,19 +27,15 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     protected $_code = self::CODE;
 
-    protected $fields_febraban = [
-        "firstName", "lastName", "docType", "docNumber", "address", "addressNumber", "addressCity", "addressState", "addressZipcode"
-    ];
-
     /**
-     * @param \Magento\Framework\DataObject $data
+     * @param DataObject $data
      * @return $this|\MercadoPago\Core\Model\Custom\Payment
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function assignData(\Magento\Framework\DataObject $data)
+    public function assignData(DataObject $data)
     {
-        if (!($data instanceof \Magento\Framework\DataObject)) {
-            $data = new \Magento\Framework\DataObject($data);
+        if (!($data instanceof DataObject)) {
+            $data = new DataObject($data);
         }
 
         $infoForm = $data->getData();
@@ -44,17 +48,11 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
             $info = $this->getInfoInstance();
             $info->setAdditionalInformation('method', $infoForm['method']);
-            $info->setAdditionalInformation('payment_method', $additionalData['payment_method_ticket']);
-            $info->setAdditionalInformation('payment_method_id', $additionalData['payment_method_ticket']);
+            $info->setAdditionalInformation('payment_method', $additionalData['payment_method_pix']);
+            $info->setAdditionalInformation('payment_method_id', $additionalData['payment_method_pix']);
 
             if (!empty($additionalData['coupon_code'])) {
                 $info->setAdditionalInformation('coupon_code', $additionalData['coupon_code']);
-            }
-
-            foreach ($this->fields_febraban as $key) {
-                if (isset($additionalData[$key])) {
-                    $info->setAdditionalInformation($key, $additionalData[$key]);
-                }
             }
         }
 
@@ -72,7 +70,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     public function initialize($paymentAction, $stateObject)
     {
         try {
-            $this->_helperData->log("CustomPaymentTicket::initialize - Ticket: init prepare post payment", self::LOG_NAME);
+            $this->_helperData->log("CustomPaymentPix::initialize - Ticket: init prepare post payment", self::LOG_NAME);
             $quote = $this->_getQuote();
             $order = $this->getInfoInstance()->getOrder();
             $payment = $order->getPayment();
@@ -121,16 +119,16 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation("addressZipcode");
             }
 
-            $this->_helperData->log("CustomPaymentTicket::initialize - Preference to POST", self::LOG_NAME, $preference);
-        } catch (\Exception $e) {
-            $this->_helperData->log("CustomPaymentTicket::initialize - There was an error retrieving the information to create the payment, more details: " . $e->getMessage());
-            throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
+            $this->_helperData->log("CustomPaymentPix::initialize - Preference to POST", self::LOG_NAME, $preference);
+        } catch (Exception $e) {
+            $this->_helperData->log("CustomPaymentPix::initialize - There was an error retrieving the information to create the payment, more details: " . $e->getMessage());
+            throw new LocalizedException(__(Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
             return $this;
         }
 
         // POST /v1/payments
         $response = $this->_coreModel->postPaymentV1($preference);
-        $this->_helperData->log("CustomPaymentTicket::initialize - POST /v1/payments RESPONSE", self::LOG_NAME, $response);
+        $this->_helperData->log("CustomPaymentPix::initialize - POST /v1/payments RESPONSE", self::LOG_NAME, $response);
 
         if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
             $payment = $response['response'];
@@ -146,9 +144,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 "message" => $messageErrorToClient
             ];
 
-            $this->_helperData->log("CustomPaymentTicket::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
+            $this->_helperData->log("CustomPaymentPix::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
 
-            throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
+            throw new LocalizedException(__($messageErrorToClient));
 
             return $this;
         }
@@ -211,35 +209,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         return $this->_coreModel->postPaymentV1($preference);
     }
 
-    /**
-     * Return tickets options availables
-     *
-     * @return array
-     */
-    public function getTicketsOptions()
-    {
-        $excludePaymentMethods = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        $listExclude = explode(",", $excludePaymentMethods);
-
-        $payment_methods = $this->_coreModel->getPaymentMethods();
-        $tickets = [];
-
-        //percorre todos os payments methods
-        foreach ($payment_methods['response'] as $pm) {
-
-            //filtra por tickets
-            if ($pm['payment_type_id'] == "ticket" || $pm['payment_type_id'] == "atm") {
-
-                //insert if not exist in list exclude payment method
-                if (!in_array($pm['id'], $listExclude)) {
-                    $tickets[] = $pm;
-                }
-            }
-        }
-
-        return $tickets;
-    }
-
     public function setOrderSubtotals($data)
     {
         $total = $data['transaction_details']['total_paid_amount'];
@@ -257,13 +226,13 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * is payment method available?
      *
-     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+     * @param CartInterface|null $quote
      *
      * @return bool
      */
-    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    public function isAvailable(CartInterface $quote = null)
     {
-        $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_TICKET_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $isActive = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_ACTIVE, ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {
             return false;
         }

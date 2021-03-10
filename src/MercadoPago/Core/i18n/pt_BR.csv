@@ -2,7 +2,7 @@
 "Credentials","Credenciais"
 "Get your credentials access_token and public_key, visit the country in which your account was created: <a href=""https://www.mercadopago.com/mla/account/credentials"" target=""_blank"">Argentina</a>, <a href=""https://www.mercadopago.com/mlb/account/credentials"" target=""_blank"">Brazil</a>, <a href=""https://www.mercadopago.com/mlc/account/credentials"" target=""_blank"">Chile</a>, <a href=""https://www.mercadopago.com/mco/account/credentials"" target=""_blank"">Colombia</a>, <a href=""https://www.mercadopago.com/mlm/account/credentials"" target=""_blank"">Mexico</a>, <a href=""https://www.mercadopago.com/mlu/account/credentials"" target=""_blank"">Uruguay</a> and <a href=""https://www.mercadopago.com/mpe/account/credentials"" target=""_blank"">Peru</a>.","Obtenha as credenciais access_token e public_key do Mercado Pago, acessando o link de acordo com o país onde a sua conta foi criada: <a href=""https://www.mercadopago.com/mla/account/credentials"" target=""_blank"">Argentina</a>, <a href=""https://www.mercadopago.com/mlb/account/credentials"" target=""_blank"">Brazil</a>, <a href=""https://www.mercadopago.com/mlc/account/credentials"" target=""_blank"">Chile</a>, <a href=""https://www.mercadopago.com/mco/account/credentials"" target=""_blank"">Colombia</a>, <a href=""https://www.mercadopago.com/mlm/account/credentials"" target=""_blank"">Mexico</a>, <a href=""https://www.mercadopago.com/mlu/account/credentials"" target=""_blank"">Uruguay</a> ou <a href=""https://www.mercadopago.com/mpe/account/credentials"" target=""_blank"">Peru</a>."
 "==================== ORDER MANAGEMENT CONFIGURATION PAGE =====================","================================================"
-"Order Management","Gerenciamento de Orden"
+"Order Management","Gerenciamento de Ordem"
 "Automatic update of Order Status (Webhooks)","Atualização automática do status do pedido (webhooks)"
 "Order status when payment is approved","Status do pedido quando o status do pagamento é approved"
 "Order status when payment is in_process","Status do pedido quando o status do pagamento é in_process"
@@ -39,6 +39,7 @@
 
 "==================== CUSTOM CHECKOUT OFFLINE CONFIGURATION PAGE =====================","================================================"
 "Custom Checkout - Offline Payments Methods (Ticket)","Custom Checkout - Métodos de Pagamento Offline (Boleto e PEC)"
+"Custom Checkout - Offline Payments Methods (Pix)","Custom Checkout - Métodos de Pagamento Offline (Pix)"
 "Enabled","Habilitado"
 "Payment Title","Titulo do Método de Pagamento"
 "Banner Checkout","Banner Checkout"

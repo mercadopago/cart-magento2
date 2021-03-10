@@ -17,7 +17,7 @@
                     MercadoPago\Core\Model\CustomBankTransferConfigProvider
                 </item>
                 <item name="mercadopago_core_customPix_provider" xsi:type="object">
-                    MercadoPago\Core\Model\CustomBankTransferConfigProvider
+                    MercadoPago\Core\Model\CustomPixConfigProvider
                 </item>
             </argument>
         </arguments>

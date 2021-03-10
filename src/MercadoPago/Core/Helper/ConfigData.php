@@ -47,7 +47,8 @@ class ConfigData
     const PATH_BASIC_GATEWAY_MODE = 'payment/mercadopago_basic/gateway_mode';
 
     //custom method ticket
-    const PATH_CUSTOM_PIX_ACTIVE = 'payment/mercadopago_customticket/active';
+    const PATH_CUSTOM_PIX_ACTIVE = 'payment/mercadopago_custom_pix/active';
+    const PATH_CUSTOM_PIX_BANNER = 'payment/mercadopago_custom_pix/banner_checkout';
 
     //order configuration
     const PATH_ORDER_APPROVED = 'payment/mercadopago/order_status_approved';

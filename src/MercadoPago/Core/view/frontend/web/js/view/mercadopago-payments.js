@@ -30,6 +30,12 @@ define(
         component: 'MercadoPago_Core/js/view/method-renderer/custom-method-bank-transfer'
       }
     );
+    rendererList.push(
+      {
+        type: 'mercadopago_custom_pix',
+        component: 'MercadoPago_Core/js/view/method-renderer/custom-method-pix'
+      }
+    );
     return Component.extend({});
   }
 );
