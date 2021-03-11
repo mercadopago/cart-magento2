@@ -125,7 +125,6 @@ define(
       changePaymentMethodSelector: function (paymentMethodSelected) {
       },
 
-
       updateSummaryOrder: function () {
         cartCache.set('totals', null);
         defaultTotal.estimateTotals();
