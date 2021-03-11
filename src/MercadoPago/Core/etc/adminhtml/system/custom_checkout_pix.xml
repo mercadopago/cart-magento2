@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
     <group id="custom_checkout_pix" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-        <label>Custom Checkout - Offline Payments Methods (Pix)</label>
+        <label>Custom Checkout - Payment via PIX</label>
 
         <field id="active" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Enabled</label>
@@ -18,6 +18,13 @@
             <label>Banner Checkout</label>
             <config_path>payment/mercadopago_custom_pix/banner_checkout</config_path>
             <comment>By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.</comment>
+        </field>
+
+        <field id="expiration_days" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Expiration of PIX</label>
+            <source_model>MercadoPago\Core\Model\System\Config\Source\PixExpirationDays</source_model>
+            <config_path>payment/mercadopago_custom_pix/expiration_days</config_path>
+            <comment>In how many days can your client make or pay?</comment>
         </field>
 
         <field id="sort_order" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
