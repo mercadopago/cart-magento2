@@ -19,7 +19,6 @@ use MercadoPago\Core\Helper\Data;
 
 /**
  * Class CustomBankTransferConfigProvider
- * @package MercadoPago\Core\Model
  */
 class CustomPixConfigProvider implements ConfigProviderInterface
 {
