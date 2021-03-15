@@ -125,6 +125,13 @@ define(
       changePaymentMethodSelector: function (paymentMethodSelected) {
       },
 
+      getPixLogo: function () {
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['pix_logo'];
+        }
+        return '';
+      },
+
       updateSummaryOrder: function () {
         cartCache.set('totals', null);
         defaultTotal.estimateTotals();

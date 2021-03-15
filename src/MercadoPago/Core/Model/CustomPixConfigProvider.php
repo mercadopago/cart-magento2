@@ -119,7 +119,8 @@ class CustomPixConfigProvider implements ConfigProviderInterface
                     'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
                     'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                     'platform_version' => $this->_productMetaData->getVersion(),
-                    'module_version' => $this->_coreHelper->getModuleVersion()
+                    'module_version' => $this->_coreHelper->getModuleVersion(),
+                    'pix_logo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/logo_pix.png"),
                 ]
             ]
         ];

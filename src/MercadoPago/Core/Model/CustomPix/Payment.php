@@ -44,16 +44,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             if (empty($infoForm['additional_data'])) {
                 return $this;
             }
-            $additionalData = $infoForm['additional_data'];
 
             $info = $this->getInfoInstance();
             $info->setAdditionalInformation('method', $infoForm['method']);
-            $info->setAdditionalInformation('payment_method', $additionalData['payment_method_pix']);
-            $info->setAdditionalInformation('payment_method_id', $additionalData['payment_method_pix']);
-
-            if (!empty($additionalData['coupon_code'])) {
-                $info->setAdditionalInformation('coupon_code', $additionalData['coupon_code']);
-            }
         }
 
         return $this;
@@ -83,7 +76,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
             $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
-            $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method");
+            $preference['payment_method_id'] = 'pix';
 
             if ($payment->getAdditionalInformation("firstName") != "") {
                 $preference['payer']['first_name'] = $payment->getAdditionalInformation("firstName");
