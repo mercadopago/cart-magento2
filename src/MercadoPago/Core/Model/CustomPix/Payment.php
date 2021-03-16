@@ -125,7 +125,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $response = $this->_coreModel->postPaymentV1($preference);
         $this->_helperData->log('CustomPaymentPix::initialize - POST /v1/payments RESPONSE', self::LOG_NAME, $response);
 
-        if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
+        if (isset($response['status']) && ((int) $response['status'] === 200 || (int) $response['status'] === 201)) {
             $payment = $response['response'];
 
             $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $payment);
