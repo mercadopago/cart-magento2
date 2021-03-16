@@ -569,9 +569,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Return response of api to a preference
      *
      * @param $preference
-     *
      * @return array
-     * @throws \MercadoPago\Core\Model\Api\V1\Exception
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postPaymentV1($preference)

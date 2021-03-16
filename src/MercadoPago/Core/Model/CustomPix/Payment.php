@@ -12,8 +12,6 @@ use MercadoPago\Core\Helper\Response;
 
 /**
  * Class Payment
- *
- * @package MercadoPago\Core\Model\CustomTicket
  */
 class Payment extends \MercadoPago\Core\Model\Custom\Payment
 {
@@ -28,7 +26,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     protected $_code = self::CODE;
 
     /**
-     * @param DataObject $data
+     * @param  DataObject $data
      * @return $this|\MercadoPago\Core\Model\Custom\Payment
      * @throws LocalizedException
      */
@@ -50,158 +48,169 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $this;
-    }
+    }//end assignData()
 
     /**
      * @param string $paymentAction
      * @param object $stateObject
      *
-     * @return bool
+     * @return boolean
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws LocalizedException
      */
     public function initialize($paymentAction, $stateObject)
     {
         try {
-            $this->_helperData->log("CustomPaymentPix::initialize - Ticket: init prepare post payment", self::LOG_NAME);
-            $quote = $this->_getQuote();
-            $order = $this->getInfoInstance()->getOrder();
+            $this->_helperData->log('CustomPaymentPix::initialize - Ticket: init prepare post payment', self::LOG_NAME);
+            $quote   = $this->_getQuote();
+            $order   = $this->getInfoInstance()->getOrder();
             $payment = $order->getPayment();
 
             $payment_info = [];
-
-            if ($payment->getAdditionalInformation("coupon_code") != "") {
-                $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
-            }
 
             $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
             $preference['payment_method_id'] = 'pix';
 
-            if ($payment->getAdditionalInformation("firstName") != "") {
-                $preference['payer']['first_name'] = $payment->getAdditionalInformation("firstName");
+            if ($payment->getAdditionalInformation('firstName') !== '') {
+                $preference['payer']['first_name'] = $payment->getAdditionalInformation('firstName');
             }
-            if ($payment->getAdditionalInformation("lastName") != "") {
-                $preference['payer']['last_name'] = $payment->getAdditionalInformation("lastName");
+
+            if ($payment->getAdditionalInformation('lastName') !== '') {
+                $preference['payer']['last_name'] = $payment->getAdditionalInformation('lastName');
             }
-            if ($payment->getAdditionalInformation("docType") != "") {
-                $preference['payer']['identification']['type'] = $payment->getAdditionalInformation("docType");
-                //remove last-name pessoa juridica
-                if ($preference['payer']['identification']['type'] == "CNPJ") {
-                    $preference['payer']['last_name'] = "";
+
+            if ($payment->getAdditionalInformation('docType') !== '') {
+                $preference['payer']['identification']['type'] = $payment->getAdditionalInformation('docType');
+                // remove last-name pessoa juridica
+                if ($preference['payer']['identification']['type'] === 'CNPJ') {
+                    $preference['payer']['last_name'] = '';
                 }
             }
 
-            if ($payment->getAdditionalInformation("docNumber") != "") {
-                $preference['payer']['identification']['number'] = $payment->getAdditionalInformation("docNumber");
-            }
-            if ($payment->getAdditionalInformation("address") != "") {
-                $preference['payer']['address']['street_name'] = $payment->getAdditionalInformation("address");
-            }
-            if ($payment->getAdditionalInformation("addressNumber") != "") {
-                $preference['payer']['address']['street_number'] = $payment->getAdditionalInformation("addressNumber");
-            }
-            if ($payment->getAdditionalInformation("addressCity") != "") {
-                $preference['payer']['address']['city'] = $payment->getAdditionalInformation("addressCity");
-                $preference['payer']['address']['neighborhood'] = $payment->getAdditionalInformation("addressCity");
-            }
-            if ($payment->getAdditionalInformation("addressState") != "") {
-                $preference['payer']['address']['federal_unit'] = $payment->getAdditionalInformation("addressState");
-            }
-            if ($payment->getAdditionalInformation("addressZipcode") != "") {
-                $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation("addressZipcode");
+            if ($payment->getAdditionalInformation('docNumber') !== '') {
+                $preference['payer']['identification']['number'] = $payment->getAdditionalInformation('docNumber');
             }
 
-            $this->_helperData->log("CustomPaymentPix::initialize - Preference to POST", self::LOG_NAME, $preference);
+            if ($payment->getAdditionalInformation('address') !== '') {
+                $preference['payer']['address']['street_name'] = $payment->getAdditionalInformation('address');
+            }
+
+            if ($payment->getAdditionalInformation('addressNumber') !== '') {
+                $preference['payer']['address']['street_number'] = $payment->getAdditionalInformation('addressNumber');
+            }
+
+            if ($payment->getAdditionalInformation('addressCity') !== '') {
+                $preference['payer']['address']['city']         = $payment->getAdditionalInformation('addressCity');
+                $preference['payer']['address']['neighborhood'] = $payment->getAdditionalInformation('addressCity');
+            }
+
+            if ($payment->getAdditionalInformation('addressState') !== '') {
+                $preference['payer']['address']['federal_unit'] = $payment->getAdditionalInformation('addressState');
+            }
+
+            if ($payment->getAdditionalInformation('addressZipcode') !== '') {
+                $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation('addressZipcode');
+            }
+
+            $this->_helperData->log('CustomPaymentPix::initialize - Preference to POST', self::LOG_NAME, $preference);
         } catch (Exception $e) {
-            $this->_helperData->log("CustomPaymentPix::initialize - There was an error retrieving the information to create the payment, more details: " . $e->getMessage());
+            $this->_helperData->log('CustomPaymentPix::initialize - There was an error retrieving the information to create the payment, more details: ' . $e->getMessage());
             throw new LocalizedException(__(Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
             return $this;
-        }
+        }//end try
 
         // POST /v1/payments
         $response = $this->_coreModel->postPaymentV1($preference);
-        $this->_helperData->log("CustomPaymentPix::initialize - POST /v1/payments RESPONSE", self::LOG_NAME, $response);
+        $this->_helperData->log('CustomPaymentPix::initialize - POST /v1/payments RESPONSE', self::LOG_NAME, $response);
 
         if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
             $payment = $response['response'];
 
-            $this->getInfoInstance()->setAdditionalInformation("paymentResponse", $payment);
+            $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $payment);
 
             return true;
         } else {
             $messageErrorToClient = $this->_coreModel->getMessageError($response);
 
             $arrayLog = [
-                "response" => $response,
-                "message" => $messageErrorToClient
+                'response' => $response,
+                'message'  => $messageErrorToClient,
             ];
 
-            $this->_helperData->log("CustomPaymentPix::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
+            $this->_helperData->log('CustomPaymentPix::initialize - The API returned an error while creating the payment, more details: ' . json_encode($arrayLog));
 
             throw new LocalizedException(__($messageErrorToClient));
-
-            return $this;
         }
-    }
+    }//end initialize()
 
-    public function preparePostPayment($usingSecondCardInfo = null)
+    /**
+     * @param  null $usingSecondCardInfo
+     * @return array
+     * @throws LocalizedException
+     * @throws \MercadoPago\Core\Model\Api\V1\Exception
+     */
+    public function preparePostPayment($usingSecondCardInfo=null)
     {
-        $this->_helperData->log("Ticket -> init prepare post payment", 'mercadopago-custom.log');
-        $quote = $this->_getQuote();
-        $order = $this->getInfoInstance()->getOrder();
-        $payment = $order->getPayment();
-
+        $this->_helperData->log('Pix -> init prepare post payment', 'mercadopago-pix.log');
+        $quote        = $this->_getQuote();
+        $order        = $this->getInfoInstance()->getOrder();
+        $payment      = $order->getPayment();
         $payment_info = [];
 
-        if ($payment->getAdditionalInformation("coupon_code") != "") {
-            $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
-        }
-
         $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
+        $preference['payment_method_id'] = $payment->getAdditionalInformation('payment_method');
 
-        $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method");
+        if ($payment->getAdditionalInformation('firstName') !== '') {
+            $preference['payer']['first_name'] = $payment->getAdditionalInformation('firstName');
+        }
 
-        if ($payment->getAdditionalInformation("firstName") != "") {
-            $preference['payer']['first_name'] = $payment->getAdditionalInformation("firstName");
+        if ($payment->getAdditionalInformation('lastName') !== '') {
+            $preference['payer']['last_name'] = $payment->getAdditionalInformation('lastName');
         }
-        if ($payment->getAdditionalInformation("lastName") != "") {
-            $preference['payer']['last_name'] = $payment->getAdditionalInformation("lastName");
-        }
-        if ($payment->getAdditionalInformation("docType") != "") {
-            $preference['payer']['identification']['type'] = $payment->getAdditionalInformation("docType");
-            //remove last-name pessoa juridica
-            if ($preference['payer']['identification']['type'] == "CNPJ") {
-                $preference['payer']['last_name'] = "";
+
+        if ($payment->getAdditionalInformation('docType') !== '') {
+            $preference['payer']['identification']['type'] = $payment->getAdditionalInformation('docType');
+            if ($preference['payer']['identification']['type'] === 'CNPJ') {
+                $preference['payer']['last_name'] = '';
             }
         }
 
-        if ($payment->getAdditionalInformation("docNumber") != "") {
-            $preference['payer']['identification']['number'] = $payment->getAdditionalInformation("docNumber");
-        }
-        if ($payment->getAdditionalInformation("address") != "") {
-            $preference['payer']['address']['street_name'] = $payment->getAdditionalInformation("address");
-        }
-        if ($payment->getAdditionalInformation("addressNumber") != "") {
-            $preference['payer']['address']['street_number'] = $payment->getAdditionalInformation("addressNumber");
-        }
-        if ($payment->getAdditionalInformation("addressCity") != "") {
-            $preference['payer']['address']['city'] = $payment->getAdditionalInformation("addressCity");
-            $preference['payer']['address']['neighborhood'] = $payment->getAdditionalInformation("addressCity");
-        }
-        if ($payment->getAdditionalInformation("addressState") != "") {
-            $preference['payer']['address']['federal_unit'] = $payment->getAdditionalInformation("addressState");
-        }
-        if ($payment->getAdditionalInformation("addressZipcode") != "") {
-            $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation("addressZipcode");
+        if ($payment->getAdditionalInformation('docNumber') !== '') {
+            $preference['payer']['identification']['number'] = $payment->getAdditionalInformation('docNumber');
         }
 
-        $this->_helperData->log("Ticket -> PREFERENCE to POST /v1/payments", 'mercadopago-custom.log', $preference);
+        if ($payment->getAdditionalInformation('address') !== '') {
+            $preference['payer']['address']['street_name'] = $payment->getAdditionalInformation('address');
+        }
 
-        /* POST /v1/payments */
+        if ($payment->getAdditionalInformation('addressNumber') !== '') {
+            $preference['payer']['address']['street_number'] = $payment->getAdditionalInformation('addressNumber');
+        }
+
+        if ($payment->getAdditionalInformation('addressCity') !== '') {
+            $preference['payer']['address']['city']         = $payment->getAdditionalInformation('addressCity');
+            $preference['payer']['address']['neighborhood'] = $payment->getAdditionalInformation('addressCity');
+        }
+
+        if ($payment->getAdditionalInformation('addressState') !== '') {
+            $preference['payer']['address']['federal_unit'] = $payment->getAdditionalInformation('addressState');
+        }
+
+        if ($payment->getAdditionalInformation('addressZipcode') !== '') {
+            $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation('addressZipcode');
+        }
+
+        $this->_helperData->log('Pix -> PREFERENCE to POST /v1/payments', 'mercadopago-pix.log', $preference);
+        // POST /v1/payments
         return $this->_coreModel->postPaymentV1($preference);
-    }
+    }//end preparePostPayment()
 
+    /**
+     * @param  $data
+     * @throws LocalizedException
+     */
     public function setOrderSubtotals($data)
     {
         $total = $data['transaction_details']['total_paid_amount'];
@@ -213,17 +222,18 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $order->setDiscountCouponAmount($couponAmount * -1);
             $order->setBaseDiscountCouponAmount($couponAmount * -1);
         }
+
         $this->getInfoInstance()->setOrder($order);
-    }
+    }//end setOrderSubtotals()
 
     /**
      * is payment method available?
      *
      * @param CartInterface|null $quote
      *
-     * @return bool
+     * @return boolean
      */
-    public function isAvailable(CartInterface $quote = null)
+    public function isAvailable(CartInterface $quote=null)
     {
         $isActive = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_ACTIVE, ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {
@@ -231,5 +241,5 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return parent::isAvailableMethod($quote);
-    }
-}
+    }//end isAvailable()
+}//end class
