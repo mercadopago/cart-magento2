@@ -404,6 +404,17 @@ define(
         cartCache.set('totals', null);
         defaultTotal.estimateTotals();
       },
+
+      /**
+       * Ticket Mini Logo
+       * @returns {string|*}
+       */
+      getTicketMini: function () {
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['ticket_mini'];
+        }
+        return '';
+      },
     });
   }
 );

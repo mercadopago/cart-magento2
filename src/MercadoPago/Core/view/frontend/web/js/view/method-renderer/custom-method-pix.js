@@ -119,15 +119,31 @@ define(
         return this.validateHandler();
       },
 
-      /*
+      /**
        * Events
+       * @param paymentMethodSelected
        */
       changePaymentMethodSelector: function (paymentMethodSelected) {
       },
 
+      /**
+       * Pix Big Logo
+       * @returns {string|*}
+       */
       getPixLogo: function () {
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
           return window.checkoutConfig.payment[this.getCode()]['pix_logo'];
+        }
+        return '';
+      },
+
+      /**
+       * Pix Mini Logo
+       * @returns {string|*}
+       */
+      getPixMini: function () {
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['pix_mini'];
         }
         return '';
       },

@@ -174,6 +174,7 @@ class CustomConfigProvider implements ConfigProviderInterface
                     'text-installment' => __('Enter the card number'),
                     'wallet_button_link' => $walletButtonLink,
                     'payment_methods' => $this->getPaymentMethods(),
+                    'creditcard_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/creditcard-mini.png"),
                 ],
             ],
         ];

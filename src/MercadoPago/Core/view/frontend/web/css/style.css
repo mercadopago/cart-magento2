@@ -425,6 +425,10 @@ input.has-error, select.has-error, textarea.has-error {
   vertical-align: middle;
 }
 
+.mercadopago-payment-icon {
+  width: 29px;
+}
+
 @media screen and (max-width: 900px) {
   #mercadopago_checkout_custom, #mercadopago_checkout_custom_second_card {
     margin: 0 0 15px;

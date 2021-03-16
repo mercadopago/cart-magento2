@@ -20,6 +20,8 @@ class CustomPixMessageNotification implements MessageInterface
 
     const PAYMENT_ID_METHOD_PIX = 'pix';
 
+    const PIX_INFORMATION_LINK = 'https://www.mercadopago.com.br/stop/pix?url=https%3A%2F%2Fwww.mercadopago.com.br%2Fadmin-pix-keys%2Fmy-keys&authentication_mode=required';
+
     /**
      * @var Core
      */
@@ -71,7 +73,12 @@ class CustomPixMessageNotification implements MessageInterface
      */
     public function getText()
     {
-        return __('Please note that to receive payments via Pix at our checkout, you must have a Pix key registered in your Mercado Pago account.');
+        return sprintf(
+            'Mercado Pago: %s <a href="%s" target="_blank">%s</a>.',
+            __('Please note that to receive payments via Pix at our checkout, you must have a Pix key registered in your Mercado Pago account.'),
+            self::PIX_INFORMATION_LINK,
+            __('Read more')
+        );
 
     }//end getText()
 

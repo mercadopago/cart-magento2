@@ -602,7 +602,18 @@ define(
         var $form = MPv1.getForm();
         var $span = $form.querySelector('#mp-error-' + code);
         $span.style.display = 'none';
-      }
+      },
+
+      /**
+       * Creditcard Mini Logo
+       * @returns {string|*}
+       */
+      getCreditcardMini: function () {
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['creditcard_mini'];
+        }
+        return '';
+      },
     });
   }
 );

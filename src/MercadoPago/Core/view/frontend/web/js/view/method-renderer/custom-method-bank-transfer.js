@@ -157,6 +157,17 @@ define(
       validate: function () {
         return this.validateHandler();
       },
+
+      /**
+       * Pix Mini Logo
+       * @returns {string|*}
+       */
+      getBankTransferMini: function () {
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['banktransfer_mini'];
+        }
+        return '';
+      },
     });
   }
 );

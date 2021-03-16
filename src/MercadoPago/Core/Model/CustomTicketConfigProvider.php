@@ -115,7 +115,8 @@ class CustomTicketConfigProvider
                     'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
                     'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                     'platform_version' => $this->_productMetaData->getVersion(),
-                    'module_version' => $this->_coreHelper->getModuleVersion()
+                    'module_version' => $this->_coreHelper->getModuleVersion(),
+                    'ticket_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/ticket-mini.png"),
                 ]
             ]
         ];

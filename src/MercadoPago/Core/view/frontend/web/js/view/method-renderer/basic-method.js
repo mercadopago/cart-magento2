@@ -123,6 +123,17 @@ define(
           return listPm;
         }
       },
+
+      /**
+       * Mercado Pago Mini Logo
+       * @returns {string|*}
+       */
+      getMercadopagoMini: function () {
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['mercadopago_mini'];
+        }
+        return '';
+      },
     });
   }
 );

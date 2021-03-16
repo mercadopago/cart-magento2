@@ -8,9 +8,9 @@
         />
         <label class="label" data-bind="attr: {'for': getCode()}">
             <!-- Mercado Pago Logo -->
-            <span data-bind="text: getTitle()"></span>
+            <img data-bind="attr: {alt: 'Mercado Pago',src:getTicketMini()}" class="payment-icon mercadopago-payment-icon" />
             <!-- Mercado Pago Logo -->
-            <img data-bind="attr: {alt: 'Mercado Pago',src:getLogoUrl()}" class="payment-icon" />
+            <span data-bind="text: getTitle()"></span>
         </label>
 
         <!-- ko if: (existBanner() == true)-->
