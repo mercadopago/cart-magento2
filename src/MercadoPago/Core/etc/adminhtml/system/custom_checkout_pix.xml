@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
     <group id="custom_checkout_pix" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+        <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
         <label>Custom Checkout - Payment via PIX</label>
 
         <field id="active" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
