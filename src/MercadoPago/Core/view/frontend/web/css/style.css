@@ -586,4 +586,5 @@ input.has-error, select.has-error, textarea.has-error {
 
 .pix-checkout p {
   font-size: 1.2em;
+  color: #787878;
 }
