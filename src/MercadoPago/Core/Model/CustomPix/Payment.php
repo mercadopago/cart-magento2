@@ -73,6 +73,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
             $preference['payment_method_id'] = 'pix';
 
+            $preference['date_of_expiration'] = $this->getDateOfExpiration();
+
             if ($payment->getAdditionalInformation('firstName') !== '') {
                 $preference['payer']['first_name'] = $payment->getAdditionalInformation('firstName');
             }
@@ -146,68 +148,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end initialize()
 
     /**
-     * @param  null $usingSecondCardInfo
-     * @return array
-     * @throws LocalizedException
-     * @throws \MercadoPago\Core\Model\Api\V1\Exception
-     */
-    public function preparePostPayment($usingSecondCardInfo=null)
-    {
-        $this->_helperData->log('Pix -> init prepare post payment', 'mercadopago-pix.log');
-        $quote        = $this->_getQuote();
-        $order        = $this->getInfoInstance()->getOrder();
-        $payment      = $order->getPayment();
-        $payment_info = [];
-
-        $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
-        $preference['payment_method_id'] = $payment->getAdditionalInformation('payment_method');
-
-        if ($payment->getAdditionalInformation('firstName') !== '') {
-            $preference['payer']['first_name'] = $payment->getAdditionalInformation('firstName');
-        }
-
-        if ($payment->getAdditionalInformation('lastName') !== '') {
-            $preference['payer']['last_name'] = $payment->getAdditionalInformation('lastName');
-        }
-
-        if ($payment->getAdditionalInformation('docType') !== '') {
-            $preference['payer']['identification']['type'] = $payment->getAdditionalInformation('docType');
-            if ($preference['payer']['identification']['type'] === 'CNPJ') {
-                $preference['payer']['last_name'] = '';
-            }
-        }
-
-        if ($payment->getAdditionalInformation('docNumber') !== '') {
-            $preference['payer']['identification']['number'] = $payment->getAdditionalInformation('docNumber');
-        }
-
-        if ($payment->getAdditionalInformation('address') !== '') {
-            $preference['payer']['address']['street_name'] = $payment->getAdditionalInformation('address');
-        }
-
-        if ($payment->getAdditionalInformation('addressNumber') !== '') {
-            $preference['payer']['address']['street_number'] = $payment->getAdditionalInformation('addressNumber');
-        }
-
-        if ($payment->getAdditionalInformation('addressCity') !== '') {
-            $preference['payer']['address']['city']         = $payment->getAdditionalInformation('addressCity');
-            $preference['payer']['address']['neighborhood'] = $payment->getAdditionalInformation('addressCity');
-        }
-
-        if ($payment->getAdditionalInformation('addressState') !== '') {
-            $preference['payer']['address']['federal_unit'] = $payment->getAdditionalInformation('addressState');
-        }
-
-        if ($payment->getAdditionalInformation('addressZipcode') !== '') {
-            $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation('addressZipcode');
-        }
-
-        $this->_helperData->log('Pix -> PREFERENCE to POST /v1/payments', 'mercadopago-pix.log', $preference);
-        // POST /v1/payments
-        return $this->_coreModel->postPaymentV1($preference);
-    }//end preparePostPayment()
-
-    /**
      * @param  $data
      * @throws LocalizedException
      */
@@ -242,4 +182,17 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         return parent::isAvailableMethod($quote);
     }//end isAvailable()
+
+    /**
+     * @return false|string
+     */
+    protected function getDateOfExpiration() {
+        $days = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_EXPIRATION_DAYS, ScopeInterface::SCOPE_STORE);
+
+        if (!$days || !is_numeric($days)) {
+            $days = 1;
+        }
+
+        return gmdate( 'Y-m-d\TH:i:s.000O', strtotime( '+' . (int) $days . ' days' ) );
+    }
 }//end class
