@@ -37,32 +37,6 @@
         >
             <div id="mercadopago_checkout_custom_ticket">
                 <!-- init formulario unico -->
-                <div id="mercadopago-form-coupon-ticket">
-                    <div class="form-row">
-                        <div class="form-col-8">
-                            <label><!-- ko i18n: 'Discount Coupon'--><!-- /ko --></label>
-                            <input
-                                type="text"
-                                id="couponCodeTicket"
-                                name="mercadopago_custom_ticket[coupon_code]"
-                                autocomplete="off"
-                                maxlength="24"
-                            />
-                        </div>
-
-                        <div class="form-col-4">
-                            <label></label>
-                            <input type="button" class="button" id="applyCouponTicket" data-bind="attr: {value: $t('Apply')}" />
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-col-12">
-                        <span class="mp-discount" id="mpCouponApplyedTicket"></span>
-                        <span class="mp-error" id="mpCouponErrorTicket"></span>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- ko if: (getCountTickets() == 0)-->
                 <!-- ko i18n: 'There are no payment methods available, please contact the seller.'--><!-- /ko -->
