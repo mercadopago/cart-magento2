@@ -11,12 +11,10 @@ define(
     'Magento_Checkout/js/action/set-payment-information',
     'Magento_Checkout/js/action/place-order',
     'Magento_Customer/js/model/customer',
-    'MercadoPago_Core/js/model/set-analytics-information',
     'mage/translate',
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'MPcustom',
-    'MPanalytics',
     'MPv1'
   ],
   function ($,
@@ -30,7 +28,6 @@ define(
     setPaymentInformationAction,
     placeOrderAction,
     customer,
-    setAnalyticsInformation,
     $t,
     defaultTotal,
     cartCache
@@ -300,7 +297,6 @@ define(
       },
 
       afterPlaceOrder: function () {
-        setAnalyticsInformation.afterPlaceOrder(this.getCode());
         window.location = this.getSuccessUrl();
       },
 
@@ -360,7 +356,6 @@ define(
 
       initialize: function () {
         this._super();
-        setAnalyticsInformation.beforePlaceOrder(this.getCode());
       },
 
       /*
@@ -607,7 +602,18 @@ define(
         var $form = MPv1.getForm();
         var $span = $form.querySelector('#mp-error-' + code);
         $span.style.display = 'none';
-      }
+      },
+
+      /**
+       * Creditcard Mini Logo
+       * @returns {string|*}
+       */
+      getCreditcardMini: function () {
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['creditcard_mini'];
+        }
+        return '';
+      },
     });
   }
 );

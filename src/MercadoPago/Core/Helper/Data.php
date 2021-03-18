@@ -341,7 +341,7 @@ class Data extends \Magento\Payment\Helper\Data
         $statusValues = explode('|', $data['status']);
         foreach ($amountValues as $key => $value) {
             $value = (float)str_replace(' ', '', $value);
-            if (str_replace(' ', '', $statusValues[$key]) == 'approved') {
+            if (str_replace(' ', '', $statusValues[$key]) === 'approved') {
                 $finalValue = $finalValue + $value;
             }
         }
@@ -400,6 +400,7 @@ class Data extends \Magento\Payment\Helper\Data
     public function getUrlStore()
     {
         try {
+            /** @var \Magento\Framework\App\ObjectManager $objectManager */
             $objectManager = ObjectManager::getInstance(); //instance of\Magento\Framework\App\ObjectManager
             $storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
             $currentStore = $storeManager->getStore();
@@ -437,48 +438,6 @@ class Data extends \Magento\Payment\Helper\Data
         }
 
         return '';
-    }
-
-    /**
-     * @param $order
-     * @return array
-     */
-    public function getAnalyticsData($order)
-    {
-        $analyticsData = [];
-
-        if (!empty($order->getPayment())) {
-            $additionalInfo = $order->getPayment()->getData('additional_information');
-
-            if ($order->getPayment()->getData('method')) {
-                $accessToken = $this->scopeConfig->getValue(
-                    \MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
-                    ScopeInterface::SCOPE_STORE
-                );
-
-                $publicKey = $this->scopeConfig->getValue(
-                    \MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY,
-                    ScopeInterface::SCOPE_STORE
-                );
-
-                $methodCode = $order->getPayment()->getData('method');
-                $paymenType = !empty($additionalInfo['payment_method_id']) ? $additionalInfo['payment_method_id'] : '';
-                $checkoutType= !empty($additionalInfo['method']) ? $additionalInfo['method'] : '';
-
-                $analyticsData = [
-                    'payment_id' => $this->getPaymentId($additionalInfo),
-                    'payment_type' => $paymenType,
-                    'checkout_type' => $checkoutType,
-                    'analytics_key' => $this->getClientIdFromAccessToken($accessToken)
-                ];
-
-                if ($methodCode == Payment::CODE) {
-                    $analyticsData['public_key'] = $publicKey;
-                }
-            }
-        }
-
-        return $analyticsData;
     }
 
     /**

@@ -2,6 +2,10 @@
 
 namespace MercadoPago\Core\Block;
 
+use Magento\Framework\View\Asset\Repository;
+use Magento\Store\Model\ScopeInterface;
+use MercadoPago\Core\Helper\ConfigData;
+
 /**
  * Class AbstractSuccess
  *
@@ -27,17 +31,21 @@ class AbstractSuccess
     protected $_checkoutSession;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var Magento\Store\Model\ScopeInterface
      */
     protected $_scopeConfig;
 
+      /**
+     * @var Repository
+     */
+    protected $_assetRepo;
 
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \MercadoPago\Core\Model\CoreFactory $coreFactory
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Store\Model\ScopeInterface $scopeConfig
      * @param array $data
      */
     public function __construct(
@@ -46,6 +54,7 @@ class AbstractSuccess
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        Repository $assetRepo,
         array $data = []
     )
     {
@@ -53,11 +62,33 @@ class AbstractSuccess
         $this->_orderFactory = $orderFactory;
         $this->_checkoutSession = $checkoutSession;
         $this->_scopeConfig = $scopeConfig;
+        $this->_assetRepo = $assetRepo;
         parent::__construct(
             $context,
             $data
         );
     }
+
+    /**
+     * @return string
+     */
+    public function getConfigExpirationDays()
+    {
+        $days = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_EXPIRATION_DAYS, ScopeInterface::SCOPE_STORE);
+
+        return $days;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPixImg()
+    {
+        $pixImg = $this->_assetRepo->getUrl("MercadoPago_Core::images/logo_pix.png");
+
+        return $pixImg;
+    }
+
 
     /**
      * @return \Magento\Sales\Model\Order\Payment
