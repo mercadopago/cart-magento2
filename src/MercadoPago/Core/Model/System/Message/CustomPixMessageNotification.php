@@ -3,7 +3,6 @@
 namespace MercadoPago\Core\Model\System\Message;
 
 use Magento\Framework\Notification\MessageInterface;
-use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Model\Core;
 
 /**
@@ -27,7 +26,6 @@ class CustomPixMessageNotification implements MessageInterface
      */
     protected $coreModel;
 
-
     /**
      * CustomPixMessageNotification constructor.
      *
@@ -36,9 +34,7 @@ class CustomPixMessageNotification implements MessageInterface
     public function __construct(Core $coreModel)
     {
         $this->coreModel = $coreModel;
-
     }//end __construct()
-
 
     /**
      * @return string
@@ -46,27 +42,27 @@ class CustomPixMessageNotification implements MessageInterface
     public function getIdentity()
     {
         return self::MESSAGE_IDENTITY;
-
     }//end getIdentity()
-
 
     /**
      * @return boolean
      */
     public function isDisplayed()
     {
-        if (false === $this->canConfigurePixGateway()) {
-            return false;
-        }
+        try {
+            if (false === $this->canConfigurePixGateway()) {
+                return false;
+            }
 
-        if (true === $this->pixAvalaiblePaymentPix()) {
+            if (true === $this->pixAvalaiblePaymentPix()) {
+                return false;
+            }
+        } catch (\Exception $exception) {
             return false;
         }
 
         return true;
-
     }//end isDisplayed()
-
 
     /**
      * @return \Magento\Framework\Phrase|string
@@ -79,9 +75,7 @@ class CustomPixMessageNotification implements MessageInterface
             self::PIX_INFORMATION_LINK,
             __('Read more')
         );
-
     }//end getText()
-
 
     /**
      * @inheritDoc
@@ -89,9 +83,7 @@ class CustomPixMessageNotification implements MessageInterface
     public function getSeverity()
     {
         self::SEVERITY_NOTICE;
-
     }//end getSeverity()
-
 
     /**
      * @return bool
@@ -107,9 +99,7 @@ class CustomPixMessageNotification implements MessageInterface
         }
 
         return false;
-
     }//end canConfigurePixGateway()
-
 
     /**
      * @return boolean
@@ -127,8 +117,5 @@ class CustomPixMessageNotification implements MessageInterface
         }
 
         return false;
-
     }//end pixAvalaiblePaymentPix()
-
-
 }//end class
