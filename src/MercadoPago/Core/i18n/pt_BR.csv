@@ -457,7 +457,7 @@ Cannot operate between users from different countries.", "Não é possível oper
 
 "==================== PIX GATEWAY =====================","================================================"
 "Custom Checkout - Payment via PIX","Custom Checkout - Pagamento via PIX"
-"In how many days can your client make or pay?", "Em até quantos dias seu cliente pode efetuar o pagamento?"
+"Set up to how many days your customers will be able to pay", "Defina em até quantos dias seus clientes poderão pagar"
 "Expiration of PIX", "Vencimento do PIX"
 "1 day", "1 dia"
 "2 days", "2 dias"
