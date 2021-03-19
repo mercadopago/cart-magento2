@@ -454,7 +454,7 @@
 
 "==================== PIX GATEWAY =====================","================================================"
 "Custom Checkout - Payment via PIX","Custom Checkout - Pago vía PIX"
-"In how many days can your client make or pay?", "¿En cuántos días puede realizar el pago su cliente?"
+"Set up to how many days your customers will be able to pay", "Configure cuántos días podrán pagar sus clientes"
 "Expiration of PIX", "Fecha de vencimiento PIX"
 "1 day", "1 día"
 "2 days", "2 días"
