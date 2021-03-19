@@ -157,11 +157,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $order = $this->getInfoInstance()->getOrder();
         $order->setGrandTotal($total);
         $order->setBaseGrandTotal($total);
-        $couponAmount = $data['coupon_amount'];
-        if ($couponAmount) {
-            $order->setDiscountCouponAmount($couponAmount * -1);
-            $order->setBaseDiscountCouponAmount($couponAmount * -1);
-        }
 
         $this->getInfoInstance()->setOrder($order);
     }//end setOrderSubtotals()

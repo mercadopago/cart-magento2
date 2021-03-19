@@ -48,10 +48,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $info = $this->getInfoInstance();
             $info->setAdditionalInformation('method', $additionalData['method']);
 
-            if (!empty($additionalData['coupon_code'])) {
-                $info->setAdditionalInformation('coupon_code', $additionalData['coupon_code']);
-            }
-
             foreach ($this->fields as $key) {
                 if (isset($additionalData[$key])) {
                     $info->setAdditionalInformation($key, $additionalData[$key]);
@@ -80,10 +76,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $payment = $order->getPayment();
 
             $payment_info = [];
-
-            if ($payment->getAdditionalInformation('coupon_code') != '') {
-                $payment_info['coupon_code'] = $payment->getAdditionalInformation('coupon_code');
-            }
 
             $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
@@ -183,10 +175,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $payment = $order->getPayment();
 
         $payment_info = [];
-
-        if ($payment->getAdditionalInformation('coupon_code') != '') {
-            $payment_info['coupon_code'] = $payment->getAdditionalInformation('coupon_code');
-        }
 
         $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
@@ -293,11 +281,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $order = $this->getInfoInstance()->getOrder();
         $order->setGrandTotal($total);
         $order->setBaseGrandTotal($total);
-        $couponAmount = $data['coupon_amount'];
-        if ($couponAmount) {
-            $order->setDiscountCouponAmount($couponAmount * -1);
-            $order->setBaseDiscountCouponAmount($couponAmount * -1);
-        }
 
         $this->getInfoInstance()->setOrder($order);
 

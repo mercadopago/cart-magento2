@@ -297,9 +297,6 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
                 $info->setAdditionalInformation('gateway_mode', $additionalData['gateway_mode']);
             }
 
-            if (!empty($additionalData['coupon_code'])) {
-                $info->setAdditionalInformation('coupon_code', $additionalData['coupon_code']);
-            }
         }
 
         return $this;
@@ -636,10 +633,6 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
     protected function getPaymentInfo($payment)
     {
         $payment_info = [];
-
-        if ($payment->getAdditionalInformation("coupon_code") != "") {
-            $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
-        }
 
         if ($payment->getAdditionalInformation("doc_number") != "") {
             $payment_info['identification_type'] = $payment->getAdditionalInformation("doc_type");
