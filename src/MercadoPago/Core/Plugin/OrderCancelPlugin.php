@@ -2,6 +2,17 @@
 
 namespace MercadoPago\Core\Plugin;
 
+use Closure;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\Phrase;
+use Magento\Sales\Model\Order;
+use Magento\Store\Model\ScopeInterface;
+use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Data;
+
 /**
  * Class OrderCancelPlugin
  *
@@ -11,26 +22,26 @@ class OrderCancelPlugin
 {
 
     /**
-     * @var \Magento\Sales\Model\Order
+     * @var Order
      */
     protected $order;
 
     /**
-     * @var \Magento\Framework\Message\ManagerInterface
+     * @var ManagerInterface
      */
     protected $messageManager;
 
     /**
-     * @var \MercadoPago\Core\Helper\Data
+     * @var Data
      */
     protected $dataHelper;
 
     protected $scopeConfig;
 
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \MercadoPago\Core\Helper\Data $dataHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        Context $context,
+        Data $dataHelper,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->messageManager = $context->getMessageManager();
         $this->dataHelper     = $dataHelper;
@@ -38,12 +49,12 @@ class OrderCancelPlugin
     }//end __construct()
 
     /**
-     * @param \Magento\Sales\Model\Order $order
-     * @param \Closure                   $proceed
+     * @param Order $order
+     * @param Closure                   $proceed
      *
      * @return mixed
      */
-    public function aroundCancel(\Magento\Sales\Model\Order $order, \Closure $proceed)
+    public function aroundCancel(Order $order, Closure $proceed)
     {
         $this->order = $order;
         $this->salesOrderBeforeCancel();
@@ -53,7 +64,7 @@ class OrderCancelPlugin
     }//end aroundCancel()
 
     /**
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     protected function salesOrderBeforeCancel()
     {
@@ -72,7 +83,7 @@ class OrderCancelPlugin
             return;
         }
 
-        $cancelAvailable = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ORDER_CANCEL_AVAILABLE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $cancelAvailable = $this->scopeConfig->getValue(ConfigData::PATH_ORDER_CANCEL_AVAILABLE, ScopeInterface::SCOPE_STORE);
 
         if (!$cancelAvailable) {
             $this->dataHelper->log('OrderCancelPlugin::salesOrderBeforeCancel - Cancellation not enabled', 'mercadopago-custom.log');
@@ -87,7 +98,7 @@ class OrderCancelPlugin
             return;
         }
 
-        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
 
         if (empty($accessToken)) {
             $this->throwCancelationException(__('Cancellation can not be performed because ACCESS_TOKEN has not been configured.'));
@@ -132,11 +143,11 @@ class OrderCancelPlugin
     }//end salesOrderBeforeCancel()
 
     /**
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     protected function throwCancelationException($message, $data=[])
     {
         $this->dataHelper->log('OrderCancelPlugin::salesOrderBeforeCancel - ' . $message, 'mercadopago-custom.log', $data);
-        throw new \Magento\Framework\Exception\LocalizedException(new \Magento\Framework\Phrase('Mercado Pago - ' . $message));
+        throw new LocalizedException(new Phrase('Mercado Pago - ' . $message));
     }
 }
