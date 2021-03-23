@@ -100,7 +100,7 @@ class OrderCancelPlugin
         if ($response['status'] == 200) {
 
             if ($response['response']['status'] == 'pending' || $response['response']['status'] == 'in_process') {
-                $data = ["status" => 'cancelled'];
+               $data = "{\"status\":\"cancelled\"}";
                 $response = $mp->put("/v1/payments/" . $paymentID, $data);
 
                 if ($response['status'] == 200) {
