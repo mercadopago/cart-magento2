@@ -106,8 +106,8 @@ class OrderCancelPlugin
 
         if ($response['status'] == 200) {
             if ($response['response']['status'] == 'pending' || $response['response']['status'] == 'in_process') {
-                $data     = ['status' => 'cancelled'];
-                $response = $mp->put('/v1/payments/' . $paymentID, $data);
+               $data = json_encode(['status' => 'cancelled']);
+                $response = $mp->put("/v1/payments/" . $paymentID, $data);
 
                 if ($response['status'] == 200) {
                     $this->dataHelper->log('OrderCancelPlugin::salesOrderBeforeCancel - Payment canceled', 'mercadopago-custom.log', $response);
@@ -138,5 +138,5 @@ class OrderCancelPlugin
     {
         $this->dataHelper->log('OrderCancelPlugin::salesOrderBeforeCancel - ' . $message, 'mercadopago-custom.log', $data);
         throw new \Magento\Framework\Exception\LocalizedException(new \Magento\Framework\Phrase('Mercado Pago - ' . $message));
-    }//end throwCancelationException()
-}//end class
+    }
+}
