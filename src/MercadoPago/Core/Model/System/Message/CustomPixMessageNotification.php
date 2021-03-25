@@ -4,6 +4,8 @@ namespace MercadoPago\Core\Model\System\Message;
 
 use Magento\Backend\Block\Store\Switcher;
 use Magento\Config\Model\ResourceModel\Config;
+use Magento\Framework\App\Cache\Frontend\Pool;
+use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Notification\MessageInterface;
 use Magento\Store\Model\ScopeInterface;
@@ -48,6 +50,16 @@ class CustomPixMessageNotification implements MessageInterface
      */
     protected $switcher;
 
+    /**
+     * @var TypeListInterface
+     */
+    protected $cacheTypeList;
+
+    /**
+     * @var Pool
+     */
+    protected $cacheFrontendPool;
+
 
     /**
      * CustomPixMessageNotification constructor.
@@ -56,17 +68,23 @@ class CustomPixMessageNotification implements MessageInterface
      * @param ScopeConfigInterface $scopeConfig
      * @param Config               $configResource
      * @param Switcher             $switcher
+     * @param TypeListInterface    $cacheTypeList
+     * @param Pool                 $cacheFrontendPool
      */
     public function __construct(
         Core $coreModel,
         ScopeConfigInterface $scopeConfig,
         Config $configResource,
-        Switcher $switcher
+        Switcher $switcher,
+        TypeListInterface $cacheTypeList,
+        Pool $cacheFrontendPool
     ) {
-        $this->coreModel      = $coreModel;
-        $this->scopeConfig    = $scopeConfig;
-        $this->configResource = $configResource;
-        $this->switcher       = $switcher;
+        $this->coreModel         = $coreModel;
+        $this->scopeConfig       = $scopeConfig;
+        $this->configResource    = $configResource;
+        $this->switcher          = $switcher;
+        $this->cacheTypeList     = $cacheTypeList;
+        $this->cacheFrontendPool = $cacheFrontendPool;
 
     }//end __construct()
 
@@ -198,8 +216,19 @@ class CustomPixMessageNotification implements MessageInterface
     protected function hidePix()
     {
         $this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
+        $this->cleanConfigCache();
 
     }//end hidePix()
+
+
+    protected function cleanConfigCache()
+    {
+        $this->cacheTypeList->cleanType('config');
+        foreach ($this->cacheFrontendPool as $cacheFrontend) {
+            $cacheFrontend->getBackend()->clean();
+        }
+
+    }//end cleanConfigCache()
 
 
 }//end class
