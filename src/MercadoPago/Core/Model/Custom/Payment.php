@@ -355,6 +355,9 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
             $preference['binary_mode'] = $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BINARY_MODE);
             $preference['statement_descriptor'] = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_STATEMENT_DESCRIPTOR);
 
+            $preference['metadata']['checkout'] = 'custom';
+            $preference['metadata']['checkout_type'] = 'credit_card';
+
             $this->_helperData->log("CustomPayment::initialize - Credit Card: Preference to POST /v1/payments", self::LOG_NAME, $preference);
             return $preference;
         } catch (\Exception $e) {

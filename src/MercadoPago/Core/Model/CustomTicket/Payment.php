@@ -118,6 +118,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation("addressZipcode");
             }
 
+            $preference['metadata']['checkout'] = 'custom';
+            $preference['metadata']['checkout_type'] = 'ticket';
+
             $this->_helperData->log("CustomPaymentTicket::initialize - Preference to POST", 'mercadopago-custom.log', $preference);
         } catch (\Exception $e) {
             $this->_helperData->log("CustomPaymentTicket::initialize - There was an error retrieving the information to create the payment, more details: " . $e->getMessage());
