@@ -2,7 +2,14 @@
 
 namespace MercadoPago\Core\Model\System\Message;
 
+use Magento\Backend\Block\Store\Switcher;
+use Magento\Config\Model\ResourceModel\Config;
+use Magento\Framework\App\Cache\Frontend\Pool;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Notification\MessageInterface;
+use Magento\Store\Model\ScopeInterface;
+use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Model\Core;
 
 /**
@@ -27,14 +34,60 @@ class CustomPixMessageNotification implements MessageInterface
     protected $coreModel;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
+     *
+     * @var Config
+     */
+    protected $configResource;
+
+    /**
+     *
+     * @var Switcher
+     */
+    protected $switcher;
+
+    /**
+     * @var TypeListInterface
+     */
+    protected $cacheTypeList;
+
+    /**
+     * @var Pool
+     */
+    protected $cacheFrontendPool;
+
+
+    /**
      * CustomPixMessageNotification constructor.
      *
-     * @param Core $coreModel
+     * @param Core                 $coreModel
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Config               $configResource
+     * @param Switcher             $switcher
+     * @param TypeListInterface    $cacheTypeList
+     * @param Pool                 $cacheFrontendPool
      */
-    public function __construct(Core $coreModel)
-    {
-        $this->coreModel = $coreModel;
+    public function __construct(
+        Core $coreModel,
+        ScopeConfigInterface $scopeConfig,
+        Config $configResource,
+        Switcher $switcher,
+        TypeListInterface $cacheTypeList,
+        Pool $cacheFrontendPool
+    ) {
+        $this->coreModel         = $coreModel;
+        $this->scopeConfig       = $scopeConfig;
+        $this->configResource    = $configResource;
+        $this->switcher          = $switcher;
+        $this->cacheTypeList     = $cacheTypeList;
+        $this->cacheFrontendPool = $cacheFrontendPool;
+
     }//end __construct()
+
 
     /**
      * @return string
@@ -42,7 +95,9 @@ class CustomPixMessageNotification implements MessageInterface
     public function getIdentity()
     {
         return self::MESSAGE_IDENTITY;
+
     }//end getIdentity()
+
 
     /**
      * @return boolean
@@ -61,8 +116,12 @@ class CustomPixMessageNotification implements MessageInterface
             return false;
         }
 
+        $this->hidePix();
+
         return true;
+
     }//end isDisplayed()
+
 
     /**
      * @return \Magento\Framework\Phrase|string
@@ -75,7 +134,9 @@ class CustomPixMessageNotification implements MessageInterface
             self::PIX_INFORMATION_LINK,
             __('Read more')
         );
+
     }//end getText()
+
 
     /**
      * @inheritDoc
@@ -83,10 +144,12 @@ class CustomPixMessageNotification implements MessageInterface
     public function getSeverity()
     {
         self::SEVERITY_NOTICE;
+
     }//end getSeverity()
 
+
     /**
-     * @return bool
+     * @return boolean
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function canConfigurePixGateway()
@@ -99,7 +162,9 @@ class CustomPixMessageNotification implements MessageInterface
         }
 
         return false;
+
     }//end canConfigurePixGateway()
+
 
     /**
      * @return boolean
@@ -117,5 +182,53 @@ class CustomPixMessageNotification implements MessageInterface
         }
 
         return false;
+
     }//end pixAvalaiblePaymentPix()
+
+
+    /**
+     * @param $paymentActivePath
+     */
+    protected function disablePayment($paymentActivePath)
+    {
+        $statusPaymentMethod = $this->scopeConfig->isSetFlag(
+            $paymentActivePath,
+            ScopeInterface::SCOPE_STORE
+        );
+        // check is active for disable
+        if ($statusPaymentMethod) {
+            $value = 0;
+            if ($this->switcher->getWebsiteId() == 0) {
+                $this->configResource->saveConfig($paymentActivePath, $value, 'default', 0);
+            } else {
+                $this->configResource->saveConfig(
+                    $paymentActivePath,
+                    $value,
+                    'websites',
+                    $this->switcher->getWebsiteId()
+                );
+            }
+        }
+
+    }//end disablePayment()
+
+
+    protected function hidePix()
+    {
+        $this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
+        $this->cleanConfigCache();
+
+    }//end hidePix()
+
+
+    protected function cleanConfigCache()
+    {
+        $this->cacheTypeList->cleanType('config');
+        foreach ($this->cacheFrontendPool as $cacheFrontend) {
+            $cacheFrontend->getBackend()->clean();
+        }
+
+    }//end cleanConfigCache()
+
+
 }//end class

@@ -24,7 +24,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         'entity_type',
     ];
 
-
     /**
      * @param  \Magento\Framework\DataObject $data
      * @return $this|\MercadoPago\Core\Model\Custom\Payment
@@ -58,7 +57,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         return $this;
 
     }//end assignData()
-
 
     /**
      * @param  string $paymentAction
@@ -101,6 +99,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $preference['additional_info']['ip_address'] = $this->getIpAddress();
             $preference['callback_url']                  = $this->_urlBuilder->getUrl('mercadopago/checkout/page?callback='.$preference['payment_method_id']);
 
+            $preference['metadata']['checkout'] = 'custom';
+            $preference['metadata']['checkout_type'] = 'pse';
+
             $this->_helperData->log('CustomPaymentTicket::initialize - Preference to POST', 'mercadopago-custom.log', $preference);
         } catch (\Exception $e) {
             $this->_helperData->log('CustomPaymentTicket::initialize - There was an error retrieving the information to create the payment, more details: '.$e->getMessage());
@@ -126,7 +127,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
     }//end initialize()
-
 
     /**
      * @return mixed|string
@@ -159,7 +159,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         return $ip;
 
     }//end getIpAddress()
-
 
     /**
      * @param  null $usingSecondCardInfo
@@ -228,7 +227,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     }//end preparePostPayment()
 
-
     /**
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -255,7 +253,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     }//end getPaymentOptions()
 
-
     /**
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -274,7 +271,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     }//end getIdentifcationTypes()
 
-
     public function setOrderSubtotals($data)
     {
         $total = $data['transaction_details']['total_paid_amount'];
@@ -285,7 +281,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $this->getInfoInstance()->setOrder($order);
 
     }//end setOrderSubtotals()
-
 
     /**
      * @param  \Magento\Quote\Api\Data\CartInterface|null $quote
@@ -302,6 +297,5 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         return parent::isAvailableMethod($quote);
 
     }//end isAvailable()
-
 
 }//end class

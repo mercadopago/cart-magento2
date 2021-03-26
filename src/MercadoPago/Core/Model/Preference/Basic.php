@@ -477,13 +477,14 @@ class Basic extends AbstractMethod
             $this->_version->afterLoad();
 
             $arr['metadata'] = [
+                "site" => $siteId,
                 "platform" => "Magento2",
                 "platform_version" => $this->_productMetaData->getVersion(),
                 "module_version" => $this->_version->getValue(),
-                "site" => $siteId,
-                "checkout" => "Pro",
                 "sponsor_id" => $sponsor_id,
-                "test_mode" => $test_mode
+                "test_mode" => $test_mode,
+                "checkout" => "pro",
+                "checkout_type" => "redirect"
             ];
 
             if (!empty($config['statement_descriptor'])) {

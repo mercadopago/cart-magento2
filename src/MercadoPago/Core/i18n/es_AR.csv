@@ -454,7 +454,7 @@
 
 "==================== PIX GATEWAY =====================","================================================"
 "Custom Checkout - Payment via PIX","Custom Checkout - Pago vía PIX"
-"In how many days can your client make or pay?", "¿En cuántos días puede realizar el pago su cliente?"
+"Set up to how many days your customers will be able to pay", "Configure cuántos días podrán pagar sus clientes"
 "Expiration of PIX", "Fecha de vencimiento PIX"
 "1 day", "1 día"
 "2 days", "2 días"
@@ -471,7 +471,7 @@
 "Read more", "Leer más"
 "Now you just need to pay with PIX to finalize your purchase", "Ahora sólo tienes que pagar con PIX para finalizar tu compra."
 "How to pay with PIX:", "Cómo pagar con PIX:"
-"Go to your bank\'s app or website", "Entra en la app o en la página web de tu banco"
+"Go to your bank's app or website", "Entra en la app o en la página web de tu banco"
 "Search for the option to pay with PIX", "Busca la opción de pagar con PIX"
 "Scan the QR code or PIX code", "Escanea el código QR o el código PIX"
 "Done! You will see the payment confirmation", "Listo. Verás la confirmación del pago"
@@ -483,3 +483,4 @@
 " days", " días"
 " day", " día"
 "Copy code", "Copiar código"
+"Pay with Pix", "Pagar con Pix"

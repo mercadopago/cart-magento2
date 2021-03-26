@@ -116,6 +116,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation('addressZipcode');
             }
 
+            $preference['metadata']['checkout'] = 'custom';
+            $preference['metadata']['checkout_type'] = 'pix';
+
             $this->_helperData->log('CustomPaymentPix::initialize - Preference to POST', self::LOG_NAME, $preference);
         } catch (Exception $e) {
             $this->_helperData->log('CustomPaymentPix::initialize - There was an error retrieving the information to create the payment, more details: ' . $e->getMessage());

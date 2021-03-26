@@ -60,7 +60,7 @@ $expirationDays = $this->getConfigExpirationDays();
 						<?php echo __( 'Value:' ); ?>
 					</span>
 					<span class="mp-details-pix-qr-value">
-					<?php echo __( ' R$ ' ); ?> <?php echo $paymentResponse['transaction_amount']; ?>
+					<?php echo __( ' R$ ' ); ?> <?php echo number_format($paymentResponse['transaction_amount'], 2, ',', '.'); ?>
 					</span>
 				</p>
 				<p class="mp-details-pix-qr-title">

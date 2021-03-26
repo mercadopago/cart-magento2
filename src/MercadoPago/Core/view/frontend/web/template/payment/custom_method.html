@@ -12,9 +12,19 @@
             <!-- Mercado Pago Logo -->
             <span data-bind="text: getTitle()"></span>
         </label>
+
+        <!-- ko if: (existBanner() == true)-->
+        <div class="class-custom-banner-checkout">
+            <img data-bind="attr: {alt: 'MercadoPago Banner', src: getBannerUrl()}"
+                 class="payment-banner-checkout"/>
+        </div>
+        <!--/ko-->
     </div>
 
     <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
         <!-- ko if: (getMpWalletButton() != 0)-->
         <div class="mp-wb-card">
             <div class="mp-wb-header">

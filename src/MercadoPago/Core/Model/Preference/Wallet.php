@@ -405,14 +405,15 @@ class Wallet
             'binary_mode' => $this->getBinaryMode(),
             'purpose' => self::PURPOSE_WALLET_PURCHASE,
             'metadata' => [
+                'site' => $this->getSiteId(),
                 'platform' => 'Magento2',
                 'platform_version' => $this->productMetadata->getVersion(),
                 'module_version' => $this->version->getValue(),
-                'site' => $this->getSiteId(),
-                'checkout' => 'Wallet',
                 'sponsor_id' => $this->getSiteId(),
                 'test_mode' => '',
                 'quote_id' => '',
+                'checkout' => 'pro',
+                'checkout_type' => 'wallet_button'
             ]
         ];
     }

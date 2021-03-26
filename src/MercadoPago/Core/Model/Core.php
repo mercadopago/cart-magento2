@@ -544,22 +544,25 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $this->_coreHelper->log("==> makeDefaultPreferencePaymentV1", 'mercadopago-standard.log', $paymentInfo);
 
         $sponsorId = $this->_scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
         $this->_coreHelper->log("Sponsor_id", 'mercadopago-standard.log', $sponsorId);
+
         $test_mode = false;
         if (!empty($sponsorId) && strpos($customerInfo['email'], "@testuser.com") === false) {
             $this->_coreHelper->log("Sponsor_id identificado", 'mercadopago-custom.log', $sponsorId);
             $preference['sponsor_id'] = (int)$sponsorId;
             $test_mode = true;
         }
+
         $this->_version->afterLoad();
+
         $preference['metadata'] = [
+            "site" => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_COUNTRY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
             "platform" => "Magento",
             "platform_version" => $this->_productMetaData->getVersion(),
             "module_version" => $this->_version->getValue(),
-            "site" => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_COUNTRY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-            "checkout" => "custom",
             "sponsor_id" => $sponsorId,
-            "test_mode" => $test_mode
+            "test_mode" => $test_mode,
         ];
 
         return $preference;
@@ -738,6 +741,4 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         }
         return $this->_coreHelper->getApiInstance($this->_accessToken);
     }
-
-
 }
