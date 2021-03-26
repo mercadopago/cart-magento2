@@ -347,7 +347,7 @@
                 }, MPv1.setInstallmentInfo);
             }
 
-            Mercadopago.getIssuers(payment_method_id, MPV1.getBin(), MPv1.showCardIssuers);
+            Mercadopago.getIssuers(payment_method_id, MPv1.getBin(), MPv1.showCardIssuers);
             MPv1.addListenerEvent(document.querySelector(MPv1.selectors.issuer), 'change', MPv1.setInstallmentsByIssuerId);
         }
     }
