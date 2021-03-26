@@ -245,7 +245,6 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function setOrderSubtotals($data, $order)
     {
-        $couponAmount = $this->_getMultiCardValue($data, 'coupon_amount');
         $transactionAmount = $this->_getMultiCardValue($data, 'transaction_amount');
 
         if (isset($data['total_paid_amount'])) {
@@ -257,16 +256,7 @@ class Data extends \Magento\Payment\Helper\Data
         $shippingCost = $this->_getMultiCardValue($data, 'shipping_cost');
         $originalAmount = $transactionAmount + $shippingCost;
 
-        if ($couponAmount
-            && $this->scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CONSIDER_DISCOUNT, ScopeInterface::SCOPE_STORE)) {
-            $order->setDiscountCouponAmount($couponAmount * -1);
-            $order->setBaseDiscountCouponAmount($couponAmount * -1);
-            $financingCost = $paidAmount + $couponAmount - $originalAmount;
-        } else {
-            //if a discount was applied and should not be considered
-            $paidAmount += $couponAmount;
-            $financingCost = $paidAmount - $originalAmount;
-        }
+        $financingCost = $paidAmount - $originalAmount;
 
         if ($shippingCost > 0) {
             $order->setBaseShippingAmount($shippingCost);

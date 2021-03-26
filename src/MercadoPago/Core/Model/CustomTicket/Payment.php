@@ -44,10 +44,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $info->setAdditionalInformation('payment_method', $additionalData['payment_method_ticket']);
             $info->setAdditionalInformation('payment_method_id', $additionalData['payment_method_ticket']);
 
-            if (!empty($additionalData['coupon_code'])) {
-                $info->setAdditionalInformation('coupon_code', $additionalData['coupon_code']);
-            }
-
             foreach ($this->fields_febraban as $key) {
                 if (isset($additionalData[$key])) {
                     $info->setAdditionalInformation($key, $additionalData[$key]);
@@ -75,10 +71,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $payment = $order->getPayment();
 
             $payment_info = [];
-
-            if ($payment->getAdditionalInformation("coupon_code") != "") {
-                $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
-            }
 
             $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
@@ -163,10 +155,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         $payment_info = [];
 
-        if ($payment->getAdditionalInformation("coupon_code") != "") {
-            $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
-        }
-
         $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
         $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method");
@@ -246,11 +234,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $order = $this->getInfoInstance()->getOrder();
         $order->setGrandTotal($total);
         $order->setBaseGrandTotal($total);
-        $couponAmount = $data['coupon_amount'];
-        if ($couponAmount) {
-            $order->setDiscountCouponAmount($couponAmount * -1);
-            $order->setBaseDiscountCouponAmount($couponAmount * -1);
-        }
         $this->getInfoInstance()->setOrder($order);
     }
 

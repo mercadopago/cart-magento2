@@ -78,23 +78,6 @@
             <p class="mp-custom-title"><!-- ko i18n: 'Or enter all your card details:'--><!-- /ko --></p>
             <!--/ko-->
 
-            <!-- START MPV1 -->
-            <div class="mp-box-inputs mp-line" id="mercadopago-form-coupon">
-                <label for="couponCode"> <!-- ko i18n: 'Discount Coupon'--><!-- /ko --> </label>
-                <div class="mp-box-inputs mp-col-70">
-                    <input type="text" id="couponCode" name="mercadopago_custom[coupon_code]" autocomplete="off" maxlength="24" />
-                </div>
-
-                <div class="mp-box-inputs mp-col-30">
-                    <input type="button" class="button" id="applyCouponCard" data-bind="attr: {value: $t('Apply')}" />
-                </div>
-
-                <div class="mp-box-inputs mp-col-100 mp-box-message">
-                    <span class="mp-discount" id="mpCouponApplyed"></span>
-                    <span class="mp-error" id="mpCouponError"></span>
-                </div>
-            </div>
-
             <div id="mercadopago-form-customer-and-card">
                 <div class="mp-box-inputs mp-line">
                     <label for="paymentMethodIdSelector">

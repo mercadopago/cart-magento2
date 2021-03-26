@@ -41,8 +41,6 @@ define(
       initializeMethod: function () {
         var self = this;
         var mercadopago_site_id = window.checkoutConfig.payment[this.getCode()]['country']
-        var mercadopago_coupon = window.checkoutConfig.payment[this.getCode()]['discount_coupon'];
-        var mercadopago_url = "/mercadopago/api/coupon";
         var payer_email = "";
 
         if (typeof quote == 'object' && typeof quote.guestEmail == 'string') {
@@ -51,7 +49,6 @@ define(
 
         MPv1Ticket.text.apply = $t('Apply');
         MPv1Ticket.text.remove = $t('Remove');
-        MPv1Ticket.text.coupon_empty = $t('Please, inform your coupon code');
 
         MPv1Ticket.actionsMLB = function () {
           if (document.querySelector(MPv1Ticket.selectors.docNumber)) {
@@ -70,19 +67,12 @@ define(
           this.setBillingAddress();
         }
 
-        //add actions coupon
-        MPv1Ticket = self.actionsCouponDiscount(MPv1Ticket);
-
         //change url loading
         MPv1Ticket.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
 
         //Initialize MPv1Ticket
-        MPv1Ticket.Initialize(mercadopago_site_id, mercadopago_coupon, mercadopago_url, payer_email);
+        MPv1Ticket.Initialize(mercadopago_site_id, payer_email);
 
-        //refresh cache coupon when page is reload by user
-        if (mercadopago_coupon) {
-          MPv1Ticket.removeCouponDiscount();
-        }
         //get action change payment method
         quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
       },
@@ -219,8 +209,7 @@ define(
           'additional_data': {
             'method': this.getCode(),
             'site_id': this.getCountryId(),
-            'payment_method_ticket': this.getPaymentSelected(),
-            'coupon_code': document.querySelector(MPv1Ticket.selectors.couponCode).value
+            'payment_method_ticket': this.getPaymentSelected()
           }
         };
 
@@ -253,151 +242,8 @@ define(
        */
       changePaymentMethodSelector: function (paymentMethodSelected) {
         if (paymentMethodSelected.method != 'mercadopago_customticket') {
-          if (MPv1Ticket.coupon_of_discounts.status) {
-            MPv1Ticket.removeCouponDiscount();
-          }
+          
         }
-      },
-
-      /*
-       * Customize MPV1
-       */
-      actionsCouponDiscount: function (MPv1Ticket) {
-        var self = this;
-
-        MPv1Ticket.text.apply = $t('Apply');
-        MPv1Ticket.text.remove = $t('Remove');
-        MPv1Ticket.text.coupon_empty = $t('Please, inform your coupon code');
-
-        MPv1Ticket.checkCouponEligibility = function () {
-          if (document.querySelector(MPv1Ticket.selectors.couponCode).value == "") {
-            document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).style.display = 'none';
-            document.querySelector(MPv1Ticket.selectors.mpCouponError).style.display = 'block';
-            document.querySelector(MPv1Ticket.selectors.mpCouponError).innerHTML = MPv1Ticket.text.coupon_empty;
-            MPv1Ticket.coupon_of_discounts.status = false;
-            document.querySelector(MPv1Ticket.selectors.couponCode).style.background = null;
-            document.querySelector(MPv1Ticket.selectors.applyCoupon).value = MPv1Ticket.text.apply;
-            document.querySelector(MPv1Ticket.selectors.discount).value = 0;
-          } else if (MPv1Ticket.coupon_of_discounts.status) {
-            MPv1Ticket.removeCouponDiscount();
-          } else {
-            // set loading
-            MPv1Ticket.setLoadingCouponDiscount();
-
-            // get url to call internal api
-            var url = MPv1Ticket.coupon_of_discounts.discount_action_url
-            var sp = "?";
-            //check if there are params in the url
-            if (url.indexOf("?") >= 0) {
-              sp = "&"
-            }
-
-            url += sp + "site_id=" + MPv1Ticket.site_id
-            url += "&coupon_id=" + document.querySelector(MPv1Ticket.selectors.couponCode).value
-            url += "&payer_email=" + MPv1Ticket.coupon_of_discounts.payer_email
-            url += "&action=check"
-
-            $.ajax({
-              showLoader: true,
-              url: url,
-              method: "GET",
-              timeout: 30000,
-              error: function () {
-                MPv1Ticket.removeLoadingCouponDiscount();
-                MPv1Ticket.couponUnidentifiedError();
-              },
-              success: function (response, status) {
-                MPv1Ticket.removeLoadingCouponDiscount();
-
-                if (response.status == 200) {
-                  //set values
-                  document.querySelector(MPv1Ticket.selectors.discount).value = response.response.coupon_amount;
-                  document.querySelector(MPv1Ticket.selectors.campaign_id).value = response.response.id;
-                  document.querySelector(MPv1Ticket.selectors.campaign).value = response.response.name;
-                  document.querySelector(MPv1Ticket.selectors.applyCoupon).value = MPv1Ticket.text.remove;
-                  MPv1Ticket.coupon_of_discounts.status = true;
-                  // message success
-                  document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).innerHTML = response.message_to_user;
-                  //edit styles
-                  document.querySelector(MPv1Ticket.selectors.mpCouponError).style.display = 'none';
-                  document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).style.display = 'block';
-                } else if (response.status == 400 || response.status == 404) {
-                  //set values
-                  document.querySelector(MPv1Ticket.selectors.applyCoupon).value = MPv1Ticket.text.apply;
-                  document.querySelector(MPv1Ticket.selectors.discount).value = 0;
-                  MPv1Ticket.coupon_of_discounts.status = false;
-                  //set styles
-                  document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).style.display = 'none';
-                  document.querySelector(MPv1Ticket.selectors.mpCouponError).style.display = 'block';
-                  // message error
-                  document.querySelector(MPv1Ticket.selectors.mpCouponError).innerHTML = response.response.message;
-                }
-
-                document.querySelector(MPv1Ticket.selectors.applyCoupon).disabled = false;
-                self.updateSummaryOrder();
-              }
-            });
-          }
-        }
-
-        MPv1Ticket.couponUnidentifiedError = function () {
-          document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).style.display = 'none';
-          document.querySelector(MPv1Ticket.selectors.mpCouponError).style.display = 'none';
-          MPv1Ticket.coupon_of_discounts.status = false;
-          document.querySelector(MPv1Ticket.selectors.applyCoupon).style.background = null;
-          document.querySelector(MPv1Ticket.selectors.applyCoupon).value = MPv1Ticket.text.apply;
-          document.querySelector(MPv1Ticket.selectors.couponCode).value = "";
-          document.querySelector(MPv1Ticket.selectors.discount).value = 0;
-        }
-
-        MPv1Ticket.removeCouponDiscount = function () {
-          var url = MPv1Ticket.coupon_of_discounts.discount_action_url
-          var sp = "?";
-          //check if there are params in the url
-          if (url.indexOf("?") >= 0) {
-            sp = "&"
-          }
-
-          url += sp + "action=remove"
-
-          $.ajax({
-            showLoader: true,
-            url: url,
-            method: "GET",
-            timeout: 30000,
-            error: function () {
-              MPv1Ticket.couponUnidentifiedError();
-            },
-
-            success: function (response, status) {
-              MPv1Ticket.removeLoadingCouponDiscount();
-              // we already have a coupon set, so we remove it
-              document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).style.display = 'none';
-              document.querySelector(MPv1Ticket.selectors.mpCouponError).style.display = 'none';
-              MPv1Ticket.coupon_of_discounts.status = false;
-              document.querySelector(MPv1Ticket.selectors.applyCoupon).style.background = null;
-              document.querySelector(MPv1Ticket.selectors.applyCoupon).value = MPv1Ticket.text.apply;
-              document.querySelector(MPv1Ticket.selectors.couponCode).value = "";
-              document.querySelector(MPv1Ticket.selectors.discount).value = 0;
-
-              self.updateSummaryOrder();
-            }
-          });
-        }
-
-        MPv1Ticket.setLoadingCouponDiscount = function () {
-          document.querySelector(MPv1Ticket.selectors.mpCouponApplyed).style.display = 'none';
-          document.querySelector(MPv1Ticket.selectors.mpCouponError).style.display = 'none';
-          document.querySelector(MPv1Ticket.selectors.couponCode).style.background = "url(" + MPv1Ticket.paths.loading + ") 98% 50% no-repeat #fff";
-          document.querySelector(MPv1Ticket.selectors.applyCoupon).disabled = true;
-        }
-
-        MPv1Ticket.removeLoadingCouponDiscount = function () {
-          document.querySelector(MPv1Ticket.selectors.couponCode).style.background = null;
-          document.querySelector(MPv1Ticket.selectors.applyCoupon).disabled = false;
-        }
-
-        return MPv1Ticket;
       },
 
       updateSummaryOrder: function () {

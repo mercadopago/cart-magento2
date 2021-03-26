@@ -105,7 +105,6 @@ class CustomTicketConfigProvider
                 $this->methodCode => [
                     'country' => strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
                     'bannerUrl' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_TICKET_BANNER, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
-                    'discount_coupon' => $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_TICKET_COUPON, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                     'logEnabled' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                     'options' => $paymentMethods,
                     'grand_total' => $this->_checkoutSession->getQuote()->getGrandTotal(),
