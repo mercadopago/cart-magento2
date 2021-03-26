@@ -57,8 +57,7 @@
                         data-bind="
                          attr: {title: $t('Place Order')},
                          enable: (getCode() == isChecked()),
-                         click: placeOrder,
-                         css: {disabled: !isPlaceOrderActionAllowed()}
+                         click: placeOrder
                          "
                         class="action primary checkout"
                         disabled>
