@@ -22,6 +22,7 @@
     <div class="payment-method-content">
         <!-- ko foreach: getRegion('messages') -->
         <!-- ko template: getTemplate() --><!-- /ko -->
+        <!-- /ko -->
         <form class="form"
               id="mercadopago-form-pix"
               action="#"
@@ -56,8 +57,7 @@
                         data-bind="
                          attr: {title: $t('Place Order')},
                          enable: (getCode() == isChecked()),
-                         click: placeOrder,
-                         css: {disabled: !isPlaceOrderActionAllowed()}
+                         click: placeOrder
                          "
                         class="action primary checkout"
                         disabled>
