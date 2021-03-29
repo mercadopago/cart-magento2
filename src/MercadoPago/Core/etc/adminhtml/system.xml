@@ -9,6 +9,7 @@
                 <include path="MercadoPago_Core::system/custom_checkout_ticket.xml"/>
                 <include path="MercadoPago_Core::system/basic_checkout.xml"/>
                 <include path="MercadoPago_Core::system/custom_checkout_bank_transfer.xml"/>
+                <include path="MercadoPago_Core::system/custom_checkout_pix.xml"/>
                 <include path="MercadoPago_Core::system/advanced.xml"/>
             </group>
         </section>

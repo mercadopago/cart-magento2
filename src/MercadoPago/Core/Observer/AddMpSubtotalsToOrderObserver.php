@@ -19,17 +19,9 @@ class AddMpSubtotalsToOrderObserver implements ObserverInterface
         $order = $observer->getOrder();
         $quote = $observer->getQuote();
 
-        $discountCoupon = $quote->getShippingAddress()->getDiscountCouponAmount();
-        $baseDiscountCoupon = $quote->getShippingAddress()->getBaseDiscountCouponAmount();
 
         $financeCost = $quote->getShippingAddress()->getFinanceCostAmount();
         $baseFinanceCost = $quote->getShippingAddress()->getBaseFinanceCostAmount();
-
-
-        if (!empty($discountCoupon)) {
-            $order->setDiscountCouponAmount($discountCoupon);
-            $order->setBaseDiscountCouponAmount($baseDiscountCoupon);
-        }
 
         if (!empty($financeCost)) {
             $order->setFinanceCostAmount($financeCost);

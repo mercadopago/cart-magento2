@@ -10,8 +10,5 @@
         <referenceContainer name="content">
             <block class="MercadoPago\Core\Block\Custom\Success" name="mercadopago_custom_success" cacheable="false"/>
         </referenceContainer>
-        <referenceContainer name="after.body.start">
-            <block class="MercadoPago\Core\Block\Analytics\AfterCheckout" name="mp_analytics" as="mp_analytics" template="mp_analytics.phtml"/>
-        </referenceContainer>
     </body>
 </page>

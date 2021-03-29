@@ -297,9 +297,6 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
                 $info->setAdditionalInformation('gateway_mode', $additionalData['gateway_mode']);
             }
 
-            if (!empty($additionalData['coupon_code'])) {
-                $info->setAdditionalInformation('coupon_code', $additionalData['coupon_code']);
-            }
         }
 
         return $this;
@@ -354,6 +351,9 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
 
             $preference['binary_mode'] = $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BINARY_MODE);
             $preference['statement_descriptor'] = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_STATEMENT_DESCRIPTOR);
+
+            $preference['metadata']['checkout'] = 'custom';
+            $preference['metadata']['checkout_type'] = 'credit_card';
 
             $this->_helperData->log("CustomPayment::initialize - Credit Card: Preference to POST /v1/payments", self::LOG_NAME, $preference);
             return $preference;
@@ -636,10 +636,6 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
     protected function getPaymentInfo($payment)
     {
         $payment_info = [];
-
-        if ($payment->getAdditionalInformation("coupon_code") != "") {
-            $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
-        }
 
         if ($payment->getAdditionalInformation("doc_number") != "") {
             $payment_info['identification_type'] = $payment->getAdditionalInformation("doc_type");

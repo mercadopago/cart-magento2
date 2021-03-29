@@ -3,7 +3,19 @@
 namespace MercadoPago\Core\Model;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\UrlInterface;
+use Magento\Framework\View\Asset\Repository;
 use Magento\Payment\Helper\Data as PaymentHelper;
+use Magento\Payment\Model\MethodInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Data;
 
 /**
  * Return configs to Standard Method
@@ -16,7 +28,7 @@ class CustomBankTransferConfigProvider
     implements ConfigProviderInterface
 {
     /**
-     * @var \Magento\Payment\Model\MethodInterface
+     * @var MethodInterface
      */
     protected $methodInstance;
 
@@ -26,33 +38,33 @@ class CustomBankTransferConfigProvider
     protected $methodCode = CustomBankTransfer\Payment::CODE;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $_checkoutSession;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $_scopeConfig;
 
     /**
      * Store manager
      *
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     protected $_storeManager;
 
     /**
-     * @var \Magento\Framework\App\RequestInterface
+     * @var RequestInterface
      */
     protected $_request;
 
     /**
-     * @var \Magento\Framework\View\Asset\Repository
+     * @var Repository
      */
     protected $_assetRepo;
     /**
-     * @var \Magento\Framework\UrlInterface
+     * @var UrlInterface
      */
     protected $_urlBuilder;
     protected $_coreHelper;
@@ -62,14 +74,14 @@ class CustomBankTransferConfigProvider
      * @param PaymentHelper $paymentHelper
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
+        Context $context,
         PaymentHelper $paymentHelper,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\View\Asset\Repository $assetRepo,
-        \MercadoPago\Core\Helper\Data $coreHelper,
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata
+        Session $checkoutSession,
+        ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager,
+        Repository $assetRepo,
+        Data $coreHelper,
+        ProductMetadataInterface $productMetadata
     )
     {
         $this->_request = $context->getRequest();
@@ -103,18 +115,18 @@ class CustomBankTransferConfigProvider
         $data = [
             'payment' => [
                 $this->methodCode => [
-                    'analytics_key' => $this->_coreHelper->getClientIdFromAccessToken($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
-                    'country' => strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
-                    'bannerUrl' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANK_TRANSFER_BANNER, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+                    'country' => strtoupper($this->_scopeConfig->getValue(ConfigData::PATH_SITE_ID, ScopeInterface::SCOPE_STORE)),
+                    'bannerUrl' => $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_BANK_TRANSFER_BANNER, ScopeInterface::SCOPE_STORE),
                     'payment_method_options' => $paymentMethods,
                     'identification_types' => $identificationTypes,
                     'success_url' => $this->methodInstance->getConfigData('order_place_redirect_url'),
                     'route' => $this->_request->getRouteName(),
-                    'base_url' => $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
+                    'base_url' => $this->_storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK),
                     'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
                     'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                     'platform_version' => $this->_productMetaData->getVersion(),
-                    'module_version' => $this->_coreHelper->getModuleVersion()
+                    'module_version' => $this->_coreHelper->getModuleVersion(),
+                    'banktransfer_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/ticket-mini.png"),
                 ]
             ]
         ];

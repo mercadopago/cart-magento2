@@ -41,13 +41,6 @@
             <comment>This setting will be the position in which the payment method will be available to the buyer.</comment>
         </field>
 
-        <field id="coupon_mercadopago" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
-            <label>Discount Coupons (Mercado Pago)</label>
-            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-            <config_path>payment/mercadopago_custom/coupon_mercadopago</config_path>
-            <comment>When enabling the option will appear a discount field for the buyer to use a discount coupon of the Mercado Pago on the payment form.</comment>
-        </field>
-
         <field id="gateway_mode" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Gateway Mode</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
