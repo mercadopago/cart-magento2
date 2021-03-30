@@ -230,8 +230,6 @@ class ConfigObserver
             $this->_scopeCode
         );
 
-        $this->coreHelper->log("Get access_token: " . $accessToken, self::LOG_NAME);
-
         if (!$accessToken) {
             return;
         }
