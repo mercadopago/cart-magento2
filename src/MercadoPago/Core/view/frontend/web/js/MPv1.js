@@ -200,12 +200,8 @@
                 }
             }
 
-            if (issuerMandatory) {
-                var payment_method_id = response[0].id;
-                MPv1.getIssuersPaymentMethod(payment_method_id);
-            } else {
-                MPv1.hideIssuer();
-            }
+            var payment_method_id = response[0].id;
+            MPv1.getIssuersPaymentMethod(payment_method_id);
         }
     }
 
