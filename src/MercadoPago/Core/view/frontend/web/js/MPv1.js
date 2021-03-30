@@ -334,7 +334,7 @@
                     var installments = response[x];
                     if (installments.processing_mode == 'gateway') {
                         payerCosts = installments.payer_costs
-                        document.querySelector(MPv1.selectors.gateway_mode).value = installments.merchant_account_id;
+                        document.querySelector(MPv1.selectors.MpGatewayMode).value = installments.merchant_account_id;
                     }
                 }
             }
