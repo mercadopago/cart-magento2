@@ -54,21 +54,20 @@ define(
             payer_email = quote.guestEmail
           }
 
-          MPv1.text.choose = $t('Choose');
-          MPv1.text.other_bank = $t('Other Bank');
-          MPv1.gateway_mode = window.checkoutConfig.payment[this.getCode()]['gateway_mode'];
-
-          //add actions 
+          //add actions
           self.initializeInstallmentsAndIssuer();
-
-          //change url loading
-          MPv1.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
-          MPv1.customer_and_card.default = false;
 
           //Initialize MPv1
           MPv1.Initialize(mercadopago_site_id, mercadopago_public_key, payer_email);
 
-      
+          //change url loading for MPv1
+          MPv1.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
+          MPv1.customer_and_card.default = false;
+
+          // update MPv1 params
+          MPv1.text.choose = $t('Choose');
+          MPv1.text.other_bank = $t('Other Bank');
+          MPv1.gateway_mode = window.checkoutConfig.payment[this.getCode()]['mp_gateway_mode'];
 
           //get action change payment method
           quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
