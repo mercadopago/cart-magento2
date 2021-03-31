@@ -143,11 +143,12 @@
             MPv1.hideIssuer();
 
             var selectorInstallments = document.querySelector(MPv1.selectors.installments),
-                fragment = document.createDocumentFragment(),
-                option = new Option(MPv1.text.choose + "...", '-1');
-
+            option = new Option(MPv1.text.choose + "...", '-1');
             selectorInstallments.options.length = 0;
+
+            fragment = document.createDocumentFragment(),
             fragment.appendChild(option);
+
             selectorInstallments.appendChild(fragment);
             selectorInstallments.setAttribute('disabled', 'disabled');
         }
@@ -254,11 +255,11 @@
             }
             /** END Gateway Mode **/
 
-            var issuersSelector = document.querySelector(MPv1.selectors.issuer),
-                fragment = document.createDocumentFragment();
-
+            var issuersSelector = document.querySelector(MPv1.selectors.issuer);
             issuersSelector.options.length = 0;
             var option = new Option(MPv1.text.choose + "...", '-1');
+
+            fragment = document.createDocumentFragment();
             fragment.appendChild(option);
 
             for (var i = 0; i < issuers.length; i++) {
@@ -269,9 +270,14 @@
                 }
                 fragment.appendChild(option);
             }
+
             issuersSelector.appendChild(fragment);
             issuersSelector.removeAttribute('disabled');
-            //document.querySelector(MPv1.selectors.issuer).removeAttribute('style');
+
+            if (issuersSelector.options.length <= 1) {
+                MPv1.hideIssuer();
+            }
+
         } else {
             MPv1.hideIssuer();
         }
