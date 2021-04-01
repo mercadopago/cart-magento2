@@ -12,12 +12,6 @@
         add_truncated_card: true,
         site_id: '',
         public_key: '',
-        coupon_of_discounts: {
-            discount_action_url: '',
-            payer_email: '',
-            default: true,
-            status: true
-        },
         customer_and_card: {
             default: false,
             status: false
@@ -27,11 +21,6 @@
             keyup: false,
             paste: true,
         },
-
-        inputs_to_create_discount: [
-            "couponCode",
-            "applyCoupon"
-        ],
 
         inputs_to_create_token: [
             "cardNumber",
@@ -49,11 +38,6 @@
         ],
 
         selectors: {
-
-            couponCode: "#couponCode",
-            applyCoupon: "#applyCouponCard",
-            mpCouponApplyed: "#mpCouponApplyed",
-            mpCouponError: "#mpCouponError",
 
             paymentMethodSelector: "#paymentMethodSelector",
             pmCustomerAndCards: "#payment-methods-for-customer-and-cards",
@@ -97,7 +81,6 @@
             submit: "#btnSubmit",
             form: '#mercadopago-form',
             formDiv: '#mercadopago-form',
-            formCoupon: '#mercadopago-form-coupon',
             formCustomerAndCard: '#mercadopago-form-customer-and-card',
             utilities_fields: "#mercadopago-utilities"
         },
@@ -110,7 +93,6 @@
             discount_info4: "Total of your purchase with discount:",
             discount_info5: "*Uppon payment approval",
             discount_info6: "Terms and Conditions of Use",
-            coupon_empty: "Please, inform your coupon code",
             apply: "Apply",
             remove: "Remove"
         },
@@ -138,105 +120,6 @@
             return 'S/';
         } else {
             return '$';
-        }
-    }
-
-    MPv1.checkCouponEligibility = function () {
-        if (document.querySelector(MPv1.selectors.couponCode).value == "") {
-            // coupon code is empty
-            document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
-            document.querySelector(MPv1.selectors.mpCouponError).style.display = 'block';
-            document.querySelector(MPv1.selectors.mpCouponError).innerHTML = MPv1.text.coupon_empty;
-            MPv1.coupon_of_discounts.status = false;
-            document.querySelector(MPv1.selectors.couponCode).style.background = null;
-            document.querySelector(MPv1.selectors.applyCoupon).value = MPv1.text.apply;
-            document.querySelector(MPv1.selectors.discount).value = 0;
-            MPv1.cardsHandler();
-        } else if (MPv1.coupon_of_discounts.status) {
-            // we already have a coupon set, so we remove it
-            document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
-            document.querySelector(MPv1.selectors.mpCouponError).style.display = 'none';
-            MPv1.coupon_of_discounts.status = false;
-            document.querySelector(MPv1.selectors.applyCoupon).style.background = null;
-            document.querySelector(MPv1.selectors.applyCoupon).value = MPv1.text.apply;
-            document.querySelector(MPv1.selectors.couponCode).value = "";
-            document.querySelector(MPv1.selectors.couponCode).style.background = null;
-            document.querySelector(MPv1.selectors.discount).value = 0;
-            MPv1.cardsHandler();
-        } else {
-            // set loading
-            document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
-            document.querySelector(MPv1.selectors.mpCouponError).style.display = 'none';
-            document.querySelector(MPv1.selectors.couponCode).style.background = "url(" + MPv1.paths.loading + ") 98% 50% no-repeat #fff";
-            document.querySelector(MPv1.selectors.applyCoupon).disabled = true;
-
-            var url = MPv1.coupon_of_discounts.discount_action_url
-            var sp = "?";
-
-            //check if there are params in the url
-            if (url.indexOf("?") >= 0) {
-                sp = "&"
-            }
-
-            url += sp + "site_id=" + MPv1.site_id
-            url += "&coupon_id=" + document.querySelector(MPv1.selectors.couponCode).value
-            url += "&amount=" + document.querySelector(MPv1.selectors.amount).value
-            url += "&payer=" + MPv1.coupon_of_discounts.payer_email
-
-            MPv1.AJAX({
-                url: url,
-                method: "GET",
-                timeout: 30000,
-                error: function () {
-                    // request failed
-                    document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
-                    document.querySelector(MPv1.selectors.mpCouponError).style.display = 'none';
-                    MPv1.coupon_of_discounts.status = false;
-                    document.querySelector(MPv1.selectors.applyCoupon).style.background = null;
-                    document.querySelector(MPv1.selectors.applyCoupon).value = MPv1.text.apply;
-                    document.querySelector(MPv1.selectors.couponCode).value = "";
-                    document.querySelector(MPv1.selectors.couponCode).style.background = null;
-                    document.querySelector(MPv1.selectors.discount).value = 0;
-                    document.querySelector(MPv1.selectors.applyCoupon).disabled = false;
-                    MPv1.cardsHandler();
-                },
-                success: function (status, response) {
-                    if (response.status == 200) {
-                        document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'block';
-                        document.querySelector(MPv1.selectors.discount).value = response.response.coupon_amount;
-                        document.querySelector(MPv1.selectors.mpCouponApplyed).innerHTML =
-                            MPv1.text.discount_info1 + " <strong>" + MPv1.currencyIdToCurrency(response.response.currency_id) + " " +
-                            Math.round(response.response.coupon_amount * 100) / 100 + "</strong> " + MPv1.text.discount_info2 + " " + response.response.name + ".<br>" +
-                            MPv1.text.discount_info3 + " <strong>" + MPv1.currencyIdToCurrency(response.response.currency_id) +
-                            " " + Math.round(MPv1.getAmountWithoutDiscount() * 100) / 100 + "</strong><br>" +
-                            MPv1.text.discount_info4 + " <strong>" + MPv1.currencyIdToCurrency(response.response.currency_id) +
-                            " " + Math.round(MPv1.getAmount() * 100) / 100 + "*</strong><br>" +
-                            "<i>" + MPv1.text.discount_info5 + "</i><br>" +
-                            "<a href='https://api.mercadolibre.com/campaigns/" + response.response.id + "/terms_and_conditions?format_type=html' target='_blank'>" +
-                            MPv1.text.discount_info6 + "</a>";
-                        document.querySelector(MPv1.selectors.mpCouponError).style.display = 'none';
-                        MPv1.coupon_of_discounts.status = true;
-                        document.querySelector(MPv1.selectors.couponCode).style.background = null;
-                        document.querySelector(MPv1.selectors.couponCode).style.background = "url(" + MPv1.paths.check + ") 98% 50% no-repeat #fff";
-                        document.querySelector(MPv1.selectors.applyCoupon).value = MPv1.text.remove;
-                        MPv1.cardsHandler();
-                        document.querySelector(MPv1.selectors.campaign_id).value = response.response.id;
-                        document.querySelector(MPv1.selectors.campaign).value = response.response.name;
-                    } else if (response.status == 400 || response.status == 404) {
-                        document.querySelector(MPv1.selectors.mpCouponApplyed).style.display = 'none';
-                        document.querySelector(MPv1.selectors.mpCouponError).style.display = 'block';
-                        document.querySelector(MPv1.selectors.mpCouponError).innerHTML = response.response.message;
-                        MPv1.coupon_of_discounts.status = false;
-                        document.querySelector(MPv1.selectors.couponCode).style.background = null;
-                        document.querySelector(MPv1.selectors.couponCode).style.background = "url(" + MPv1.paths.error + ") 98% 50% no-repeat #fff";
-                        document.querySelector(MPv1.selectors.applyCoupon).value = MPv1.text.apply;
-                        document.querySelector(MPv1.selectors.discount).value = 0;
-                        MPv1.cardsHandler();
-                    }
-
-                    document.querySelector(MPv1.selectors.applyCoupon).disabled = false;
-                }
-            });
         }
     }
 
@@ -347,7 +230,7 @@
                 }, MPv1.setInstallmentInfo);
             }
 
-            Mercadopago.getIssuers(payment_method_id, MPv1.showCardIssuers);
+            Mercadopago.getIssuers(payment_method_id, MPv1.getBin(), MPv1.showCardIssuers);
             MPv1.addListenerEvent(document.querySelector(MPv1.selectors.issuer), 'change', MPv1.setInstallmentsByIssuerId);
         }
     }
@@ -891,25 +774,15 @@
     * Initialization function
     */
 
-    MPv1.Initialize = function (site_id, public_key, coupon_mode, discount_action_url, payer_email) {
+    MPv1.Initialize = function (site_id, public_key, payer_email) {
         //sets
         MPv1.site_id = site_id
         MPv1.public_key = public_key
-        MPv1.coupon_of_discounts.default = coupon_mode
-        MPv1.coupon_of_discounts.discount_action_url = discount_action_url
-        MPv1.coupon_of_discounts.payer_email = payer_email
 
         Mercadopago.setPublishableKey(MPv1.public_key);
 
         //Initialize events
         MPv1.InitializeEvents();
-
-        // flow coupon of discounts
-        if (MPv1.coupon_of_discounts.default) {
-            MPv1.addListenerEvent(document.querySelector(MPv1.selectors.applyCoupon), 'click', MPv1.checkCouponEligibility);
-        } else {
-            document.querySelector(MPv1.selectors.formCoupon).style.display = 'none';
-        }
 
         //flow: customer & cards
         var selectorPmCustomerAndCards = document.querySelector(MPv1.selectors.pmCustomerAndCards);

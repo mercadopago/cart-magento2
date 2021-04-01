@@ -7,7 +7,6 @@ define(
     'Magento_Checkout/js/action/get-totals',
     'jquery',
     'Magento_Checkout/js/model/full-screen-loader',
-    'MercadoPago_Core/js/model/set-analytics-information',
     'mage/translate',
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
@@ -23,7 +22,6 @@ define(
     getTotalsAction,
     $,
     fullScreenLoader,
-    setAnalyticsInformation,
     $t,
     defaultTotal,
     cartCache
@@ -158,6 +156,17 @@ define(
 
       validate: function () {
         return this.validateHandler();
+      },
+
+      /**
+       * Pix Mini Logo
+       * @returns {string|*}
+       */
+      getBankTransferMini: function () {
+        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+          return window.checkoutConfig.payment[this.getCode()]['banktransfer_mini'];
+        }
+        return '';
       },
     });
   }

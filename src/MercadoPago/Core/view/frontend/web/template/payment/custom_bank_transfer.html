@@ -4,10 +4,10 @@
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
         <label class="label" data-bind="attr: {'for': getCode()}">
             <!-- Mercado Pago Logo -->
-            <span data-bind="text: getTitle()"></span>
+            <img data-bind="attr: {alt: 'Mercado Pago',src:getBankTransferMini()}"
+            class="payment-icon mercadopago-payment-icon" />
             <!-- Mercado Pago Logo -->
-            <img data-bind="attr: {alt: 'Mercado Pago',src:getLogoUrl()}"
-                 class="payment-icon"/>
+            <span data-bind="text: getTitle()"></span>
         </label>
 
         <!-- ko if: (existBanner() == true)-->
@@ -86,7 +86,7 @@
                         <select id="identificationType"
                                 name="mercadopago_custom_bank_transfer[identification_type]"
                                 data-bind="attr: {
-                               'data-container': getCode() + '-identification-type', 
+                               'data-container': getCode() + '-identification-type',
                                'data-validate': JSON.stringify({required:true})
                                },
                                enable: true,
@@ -117,7 +117,7 @@
                         <select id="financialInstitutions"
                                 name="mercadopago_custom_bank_transfer[financial_institution]"
                                 data-bind="attr: {
-                               'data-container': getCode() + '-financial-institution', 
+                               'data-container': getCode() + '-financial-institution',
                                'data-validate': JSON.stringify({required:true})
                                },
                                enable: true,
@@ -131,7 +131,7 @@
                         <select id="entityType"
                                 name="mercadopago_custom_bank_transfer[entity_type]"
                                 data-bind="attr: {
-                               'data-container': getCode() + '-entity-type', 
+                               'data-container': getCode() + '-entity-type',
                                'data-validate': JSON.stringify({required:true})
                                },
                                enable: true,

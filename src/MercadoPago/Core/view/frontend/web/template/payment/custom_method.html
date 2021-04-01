@@ -1,20 +1,30 @@
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
         <input
-        type="radio"
-        name="payment[method]"
-        class="radio"
-        data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"
+            type="radio"
+            name="payment[method]"
+            class="radio"
+            data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"
         />
         <label class="label" data-bind="attr: {'for': getCode()}">
             <!-- Mercado Pago Logo -->
-            <span data-bind="text: getTitle()"></span>
+            <img data-bind="attr: {alt: 'Mercado Pago',src:getCreditcardMini()}" class="payment-icon mercadopago-payment-icon" />
             <!-- Mercado Pago Logo -->
-            <img data-bind="attr: {alt: 'Mercado Pago',src:getLogoUrl()}" class="payment-icon" />
+            <span data-bind="text: getTitle()"></span>
         </label>
+
+        <!-- ko if: (existBanner() == true)-->
+        <div class="class-custom-banner-checkout">
+            <img data-bind="attr: {alt: 'MercadoPago Banner', src: getBannerUrl()}"
+                 class="payment-banner-checkout"/>
+        </div>
+        <!--/ko-->
     </div>
 
     <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
         <!-- ko if: (getMpWalletButton() != 0)-->
         <div class="mp-wb-card">
             <div class="mp-wb-header">
@@ -67,23 +77,6 @@
             <!-- ko if: (getMpWalletButton() != 0)-->
             <p class="mp-custom-title"><!-- ko i18n: 'Or enter all your card details:'--><!-- /ko --></p>
             <!--/ko-->
-
-            <!-- START MPV1 -->
-            <div class="mp-box-inputs mp-line" id="mercadopago-form-coupon">
-                <label for="couponCode"> <!-- ko i18n: 'Discount Coupon'--><!-- /ko --> </label>
-                <div class="mp-box-inputs mp-col-70">
-                    <input type="text" id="couponCode" name="mercadopago_custom[coupon_code]" autocomplete="off" maxlength="24" />
-                </div>
-
-                <div class="mp-box-inputs mp-col-30">
-                    <input type="button" class="button" id="applyCouponCard" data-bind="attr: {value: $t('Apply')}" />
-                </div>
-
-                <div class="mp-box-inputs mp-col-100 mp-box-message">
-                    <span class="mp-discount" id="mpCouponApplyed"></span>
-                    <span class="mp-error" id="mpCouponError"></span>
-                </div>
-            </div>
 
             <div id="mercadopago-form-customer-and-card">
                 <div class="mp-box-inputs mp-line">

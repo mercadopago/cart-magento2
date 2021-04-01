@@ -144,10 +144,6 @@ class CustomConfigProvider implements ConfigProviderInterface
                         ConfigData::PATH_ADVANCED_LOG,
                         ScopeInterface::SCOPE_STORE
                     ),
-                    'discount_coupon' => $this->_scopeConfig->isSetFlag(
-                        ConfigData::PATH_CUSTOM_COUPON,
-                        ScopeInterface::SCOPE_STORE
-                    ),
                     'mp_gateway_mode' => $this->_scopeConfig->getValue(
                         ConfigData::PATH_CUSTOM_GATEWAY_MODE,
                         ScopeInterface::SCOPE_STORE
@@ -174,6 +170,7 @@ class CustomConfigProvider implements ConfigProviderInterface
                     'text-installment' => __('Enter the card number'),
                     'wallet_button_link' => $walletButtonLink,
                     'payment_methods' => $this->getPaymentMethods(),
+                    'creditcard_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/creditcard-mini.png"),
                 ],
             ],
         ];

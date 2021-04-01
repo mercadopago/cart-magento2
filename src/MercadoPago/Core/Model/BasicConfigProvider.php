@@ -81,7 +81,7 @@ class BasicConfigProvider implements ConfigProviderInterface
                             ScopeInterface::SCOPE_STORE
                         ),
                         'logEnabled' => $this->_scopeConfig->getValue(
-                            ConfigData::PATH_ADVANCED_LOG, 
+                            ConfigData::PATH_ADVANCED_LOG,
                             ScopeInterface::SCOPE_STORE
                         ),
                         'max_installments' => $this->_scopeConfig->getValue(
@@ -107,6 +107,7 @@ class BasicConfigProvider implements ConfigProviderInterface
                         'redirect_image' => $this->_assetRepo->getUrl("MercadoPago_Core::images/redirect_checkout.png"),
                         'module_version' => $this->_coreHelper->getModuleVersion(),
                         'platform_version' => $this->_productMetaData->getVersion(),
+                        'mercadopago_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mercado-pago-mini.png"),
                     ],
                 ],
             ];
@@ -174,7 +175,7 @@ class BasicConfigProvider implements ConfigProviderInterface
             );
 
             return $parameters;
-            
+
         } catch (\Exception $e) {
             $this->_coreHelper->log(
                 "makeBannerCheckout:: An error occurred at the time of obtaining the payment methods banner: " . $e

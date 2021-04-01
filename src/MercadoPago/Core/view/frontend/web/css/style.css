@@ -425,6 +425,10 @@ input.has-error, select.has-error, textarea.has-error {
   vertical-align: middle;
 }
 
+.mercadopago-payment-icon {
+  width: 29px;
+}
+
 @media screen and (max-width: 900px) {
   #mercadopago_checkout_custom, #mercadopago_checkout_custom_second_card {
     margin: 0 0 15px;
@@ -455,7 +459,7 @@ input.has-error, select.has-error, textarea.has-error {
 
 /*
 *
-* Basic Checkout
+* Checkout Pro
 *
 */
 
@@ -561,4 +565,26 @@ input.has-error, select.has-error, textarea.has-error {
 
 .mp-mt-16 {
   margin-top: 16px !important;
+}
+
+.class-custom-new-label-checkout {
+  background-color: rgba(65, 137, 230, 0.1);
+  padding: 5px 8px;
+  border-radius: 10px;
+  color: #3483FA;
+  font-size: 0.8em;
+  float: right;
+}
+
+.pix-checkout {
+  text-align: center;
+}
+
+.pix-checkout img {
+  padding: 20px;
+}
+
+.pix-checkout p {
+  font-size: 1.2em;
+  color: #787878;
 }
