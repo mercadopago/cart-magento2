@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Block;
 
 /**
@@ -24,7 +25,7 @@ class AbstractSuccess
      * @var \Magento\Checkout\Model\Session
      */
     protected $_checkoutSession;
-  
+
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
@@ -33,11 +34,11 @@ class AbstractSuccess
 
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \MercadoPago\Core\Model\CoreFactory              $coreFactory
-     * @param \Magento\Sales\Model\OrderFactory                $orderFactory
-     * @param \Magento\Checkout\Model\Session                  $checkoutSession
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface   $scopeConfig
-     * @param array                                            $data
+     * @param \MercadoPago\Core\Model\CoreFactory $coreFactory
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
@@ -130,19 +131,19 @@ class AbstractSuccess
     /**
      * Return a message to show in success page
      *
-     * @param object  $payment
+     * @param object $payment
      *
      * @return string
      */
     public function getMessageByStatus($payment)
     {
-      $status = $payment['status'] != "" ? $payment['status'] : '';
-      $status_detail = $payment['status_detail'] != "" ? $payment['status_detail'] : '';
-      $payment_method = $payment['payment_method_id'] != "" ? $payment['payment_method_id'] : '';
-      $amount = $payment['transaction_amount'] != "" ? $payment['transaction_amount'] : '';
-      $installments = $payment['installments'] != "" ? $payment['installments'] : '';
+        $status = $payment['status'] != "" ? $payment['status'] : '';
+        $status_detail = $payment['status_detail'] != "" ? $payment['status_detail'] : '';
+        $payment_method = $payment['payment_method_id'] != "" ? $payment['payment_method_id'] : '';
+        $amount = $payment['transaction_amount'] != "" ? $payment['transaction_amount'] : '';
+        $installments = $payment['installments'] != "" ? $payment['installments'] : '';
 
-      return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $installments, $amount);
+        return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $installments, $amount);
     }
 
     /**
@@ -158,7 +159,8 @@ class AbstractSuccess
         return $url;
     }
 
-    public function getReOrderUrl(){
+    public function getReOrderUrl()
+    {
         $params = ['order_id' => $this->_checkoutSession->getLastRealOrder()->getId()];
         $url = $this->_urlBuilder->getUrl('sales/order/reorder', $params);
         return $url;

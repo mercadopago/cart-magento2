@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Block\Adminhtml\System\Config;
 /**
  * Config backend model for version display.
@@ -29,7 +30,8 @@ class Version extends \Magento\Framework\App\Config\Value
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
-    ) {
+    )
+    {
         $this->moduleResource = $moduleResource;
 
         parent::__construct(

@@ -12,7 +12,7 @@ define(
                 template: 'MercadoPago_Core/checkout/summary/finance_cost'
             },
             totals: quote.getTotals(),
-            isDisplayed: function() {
+            isDisplayed: function () {
                 return this.isFullMode();
             },
 
@@ -24,7 +24,7 @@ define(
                 return price;
             },
 
-            getValue: function() {
+            getValue: function () {
                 var price = this.getRawValue();
                 return this.getFormattedPrice(price);
             },

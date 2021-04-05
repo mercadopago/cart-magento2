@@ -21,9 +21,9 @@
     -ms-border-radius: 5px;
     -o-border-radius: 5px;
     border-radius: 5px;
-    -webkit-box-shadow: 0 0 5px 0 rgba(0,0,0,0.5);
-    -moz-box-shadow: 0 0 5px 0 rgba(0,0,0,0.5);
-    box-shadow: 0 0 5px 0 rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
     left: 50%;
     max-height: 80%;
     overflow: auto;
@@ -116,7 +116,8 @@
     vertical-align: middle;
 }
 
-#paymentCost {}
+#paymentCost {
+}
 
 #paymentCost label {
     display: inline-block;
@@ -281,20 +282,20 @@
     }
 }
 
-#selectPayment{
+#selectPayment {
     border-radius: 3px;
 }
 
-#op-payment-cards-list{
+#op-payment-cards-list {
     padding-left: 0px;
     margin-bottom: 0px;
 }
 
-.payment-titles .title-border-line{
+.payment-titles .title-border-line {
     margin-top: 0px;
     margin-bottom: 0.5em;
 }
 
-#title-payment-cards{
+#title-payment-cards {
     margin-top: 0px;
 }

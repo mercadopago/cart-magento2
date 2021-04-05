@@ -4,11 +4,11 @@
   "authors": [
     {
       "name": "Mercado Pago",
-      "email": "info@mercadopago.com"
+      "email": "plugins.dev@mercadopago.com"
     }
   ],
   "type": "magento2-component",
-  "version": "3.3.8",
+  "version": "3.6.0",
   "license": [
     "OSL-3.0",
     "AFL-3.0"

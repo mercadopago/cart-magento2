@@ -13,16 +13,16 @@ define(
     function ($, customer, paymentService) {
         return {
             beforePlaceOrder: function (code) {
-                if (window.checkoutConfig.payment[code] !== undefined) {
+                if (window.checkoutConfig.payment[code] != null) {
                     var MA = ModuleAnalytics;
-                    if (window.checkoutConfig.payment[code]['public_key'] !== undefined) {
+                    if (window.checkoutConfig.payment[code]['public_key'] != null) {
                         MA.setPublicKey(window.checkoutConfig.payment[code]['public_key']);
                         MA.setToken(null);
                     } else {
                         MA.setToken(window.checkoutConfig.payment[code]['analytics_key']);
                         MA.setPublicKey(null);
                     }
-                    MA.setPlatform("Magento");
+                    MA.setPlatform("Magento2");
                     MA.setPlatformVersion(window.checkoutConfig.payment[code]['platform_version']);
                     MA.setModuleVersion(window.checkoutConfig.payment[code]['module_version']);
                     MA.setPayerEmail(customer.isLoggedIn() ? customer.customerData.email : '');

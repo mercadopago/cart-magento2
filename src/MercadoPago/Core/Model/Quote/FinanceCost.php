@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Model\Quote;
 
 /**
@@ -75,7 +76,7 @@ class FinanceCost
 
         return $subtotal;
     }
-    
+
     /**
      * Return subtotal quote
      *
@@ -121,7 +122,7 @@ class FinanceCost
         $initAmount = $this->_getSubtotalAmount();
         $discountAmount = $this->_getDiscountAmount();
         $taxAmount = $this->_getTaxAmount();
-        
+
         $balance = $totalAmount - $initAmount - $discountAmount - $taxAmount;
 
         return $balance;
@@ -131,9 +132,9 @@ class FinanceCost
     /**
      * Collect address discount amount
      *
-     * @param \Magento\Quote\Model\Quote                          $quote
+     * @param \Magento\Quote\Model\Quote $quote
      * @param \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment
-     * @param \Magento\Quote\Model\Quote\Address\Total            $total
+     * @param \Magento\Quote\Model\Quote\Address\Total $total
      *
      * @return $this
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -167,7 +168,7 @@ class FinanceCost
     }
 
     /**
-     * @param \Magento\Quote\Model\Quote               $quote
+     * @param \Magento\Quote\Model\Quote $quote
      * @param \Magento\Quote\Model\Quote\Address\Total $total
      *
      * @return array|null
@@ -178,7 +179,7 @@ class FinanceCost
         $amount = $total->getFinanceCostAmount();
 
         $result = [
-            'code'  => $this->getCode(),
+            'code' => $this->getCode(),
             'title' => __('Financing Cost'),
             'value' => $amount
         ];
