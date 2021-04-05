@@ -1,4 +1,5 @@
 <?php
+
 namespace MercadoPago\Core\Model\Quote;
 
 /**
@@ -16,9 +17,9 @@ class DiscountCoupon
     protected $_registry;
 
     protected $scopeConfig;
-  
+
     protected $checkoutSession;
-  
+
     /**
      * DiscountCoupon constructor.
      *
@@ -29,9 +30,9 @@ class DiscountCoupon
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     )
     {
-      $this->setCode('discount_coupon');
-      $this->scopeConfig = $scopeConfig;
-      $this->checkoutSession = $checkoutSession;
+        $this->setCode('discount_coupon');
+        $this->scopeConfig = $scopeConfig;
+        $this->checkoutSession = $checkoutSession;
     }
 
     /**
@@ -45,19 +46,19 @@ class DiscountCoupon
     protected function _getDiscountCondition($address, $shippingAssignment)
     {
 
-      $condition = true;
-      
-      $showDiscountAvailable = $this->scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CONSIDER_DISCOUNT, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-      
-      if($showDiscountAvailable === false){
-        $condition = false;
-      }
+        $condition = true;
 
-      if($address->getAddressType() != \Magento\Customer\Helper\Address::TYPE_SHIPPING){
-        $condition = false;
-      }
-      
-      return $condition;
+        $showDiscountAvailable = $this->scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CONSIDER_DISCOUNT, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+        if ($showDiscountAvailable === false) {
+            $condition = false;
+        }
+
+        if ($address->getAddressType() != \Magento\Customer\Helper\Address::TYPE_SHIPPING) {
+            $condition = false;
+        }
+
+        return $condition;
     }
 
     /**
@@ -67,16 +68,16 @@ class DiscountCoupon
      */
     protected function _getDiscountAmount()
     {
-      $amount = $this->checkoutSession->getData("mercadopago_discount_amount");
-      return $amount * -1;
+        $amount = $this->checkoutSession->getData("mercadopago_discount_amount");
+        return $amount * -1;
     }
 
     /**
      * Collect address discount amount
      *
-     * @param \Magento\Quote\Model\Quote                          $quote
+     * @param \Magento\Quote\Model\Quote $quote
      * @param \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment
-     * @param \Magento\Quote\Model\Quote\Address\Total            $total
+     * @param \Magento\Quote\Model\Quote\Address\Total $total
      *
      * @return $this
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -87,35 +88,35 @@ class DiscountCoupon
         \Magento\Quote\Model\Quote\Address\Total $total
     )
     {
-      $address = $shippingAssignment->getShipping()->getAddress();
-      
-      $balance = 0;
+        $address = $shippingAssignment->getShipping()->getAddress();
 
-      if ($this->_getDiscountCondition($address, $shippingAssignment)) {
+        $balance = 0;
 
-        parent::collect($quote, $shippingAssignment, $total);
-        $balance = $this->_getDiscountAmount();
+        if ($this->_getDiscountCondition($address, $shippingAssignment)) {
 
-      }
-  
-      //sets
-      $address->setDiscountCouponAmount($balance);
-      $address->setBaseDiscountCouponAmount($balance);
+            parent::collect($quote, $shippingAssignment, $total);
+            $balance = $this->_getDiscountAmount();
 
-      //sets totals
-      $total->setDiscountCouponDescription($this->getCode());
-      $total->setDiscountCouponAmount($balance);
-      $total->setBaseDiscountCouponAmount($balance);
+        }
+
+        //sets
+        $address->setDiscountCouponAmount($balance);
+        $address->setBaseDiscountCouponAmount($balance);
+
+        //sets totals
+        $total->setDiscountCouponDescription($this->getCode());
+        $total->setDiscountCouponAmount($balance);
+        $total->setBaseDiscountCouponAmount($balance);
 
 
-      $total->addTotalAmount($this->getCode(), $address->getDiscountCouponAmount());
-      $total->addBaseTotalAmount($this->getCode(), $address->getBaseDiscountCouponAmount());
+        $total->addTotalAmount($this->getCode(), $address->getDiscountCouponAmount());
+        $total->addBaseTotalAmount($this->getCode(), $address->getBaseDiscountCouponAmount());
 
-      return $this;
+        return $this;
     }
 
     /**
-     * @param \Magento\Quote\Model\Quote               $quote
+     * @param \Magento\Quote\Model\Quote $quote
      * @param \Magento\Quote\Model\Quote\Address\Total $total
      *
      * @return array|null
@@ -123,22 +124,22 @@ class DiscountCoupon
     public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
     {
 
-      $showDiscountAvailable = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CONSIDER_DISCOUNT, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-      $result = null;
-      
-      if($showDiscountAvailable){
-        
-        $amount = $total->getDiscountCouponAmount();
+        $showDiscountAvailable = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CONSIDER_DISCOUNT, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $result = null;
 
-        $result = [
-          'code'  => $this->getCode(),
-          'title' => __('Coupon discount of the Mercado Pago'),
-          'value' => $amount
-        ];
+        if ($showDiscountAvailable) {
 
-      }
-      
-      return $result;
-        
+            $amount = $total->getDiscountCouponAmount();
+
+            $result = [
+                'code' => $this->getCode(),
+                'title' => __('Coupon discount of the Mercado Pago'),
+                'value' => $amount
+            ];
+
+        }
+
+        return $result;
+
     }
 }

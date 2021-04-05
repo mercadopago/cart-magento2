@@ -22,7 +22,7 @@ define(
                         MA.setToken(window.checkoutConfig.payment[code]['analytics_key']);
                         MA.setPublicKey(null);
                     }
-                    MA.setPlatform("Magento");
+                    MA.setPlatform("Magento2");
                     MA.setPlatformVersion(window.checkoutConfig.payment[code]['platform_version']);
                     MA.setModuleVersion(window.checkoutConfig.payment[code]['module_version']);
                     MA.setPayerEmail(customer.isLoggedIn() ? customer.customerData.email : '');

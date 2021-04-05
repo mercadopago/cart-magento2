@@ -14,7 +14,8 @@ class AfterCheckout extends \Magento\Framework\View\Element\Template
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Catalog\Model\Session $catalogSession,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct($context, $data);
         $this->_catalogSession = $catalogSession;
     }

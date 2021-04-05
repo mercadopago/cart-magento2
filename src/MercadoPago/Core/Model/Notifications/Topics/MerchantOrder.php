@@ -58,7 +58,8 @@ class MerchantOrder extends TopicsAbstract
         InvoiceSender $invoiceSender,
         InvoiceService $invoiceService
 
-    ) {
+    )
+    {
         $this->_mpHelper = $mpHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_coreModel = $coreModel;
@@ -93,7 +94,7 @@ class MerchantOrder extends TopicsAbstract
                 throw new Exception(__('MP API Payments Not Found'), 400);
             }
 
-            if($merchantOrder['status'] != 'closed'){
+            if ($merchantOrder['status'] != 'closed') {
                 throw new Exception(__('Payments Not Finalized'), 400);
             }
 
@@ -132,60 +133,59 @@ class MerchantOrder extends TopicsAbstract
      */
     public function getStatusFinal($payments, $merchantOrder)
     {
- 
-      if(isset($merchantOrder['payments']) && count($merchantOrder['payments']) == 1){
-        return ['key' => "0", 'status' => $merchantOrder['payments'][0]['status'], 'final' => false];
-      }
-      
-      $totalApproved = 0;
-      $totalPending = 0;
-      $payments = $merchantOrder['payments'];
-      $totalOrder = $merchantOrder['total_amount'];
-      foreach($payments as $payment){
-        $status = $payment['status'];
-        
-        if($status == 'approved'){
-          $totalApproved += $payment['transaction_amount'];
-        }elseif ($status == 'in_process' || $status == 'pending' || $status == 'authorized') {
-          $totalPending += $payment['transaction_amount'];
+
+        if (isset($merchantOrder['payments']) && count($merchantOrder['payments']) == 1) {
+            return ['key' => "0", 'status' => $merchantOrder['payments'][0]['status'], 'final' => false];
         }
-      }
-      
-      $arrayLog =  array(
-        "totalApproved" => $totalApproved,
-        "totalOrder" => $totalOrder,
-        "totalPending" => $totalPending
-      );
 
-      $response = [];
-      //validate order state
-      if ($totalApproved >= $totalOrder) {
-        $statusList = ['approved'];
-        $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
+        $totalApproved = 0;
+        $totalPending = 0;
+        $payments = $merchantOrder['payments'];
+        $totalOrder = $merchantOrder['total_amount'];
+        foreach ($payments as $payment) {
+            $status = $payment['status'];
+
+            if ($status == 'approved') {
+                $totalApproved += $payment['transaction_amount'];
+            } elseif ($status == 'in_process' || $status == 'pending' || $status == 'authorized') {
+                $totalPending += $payment['transaction_amount'];
+            }
+        }
+
+        $arrayLog = array(
+            "totalApproved" => $totalApproved,
+            "totalOrder" => $totalOrder,
+            "totalPending" => $totalPending
+        );
+
+        $response = [];
+        //validate order state
+        if ($totalApproved >= $totalOrder) {
+            $statusList = ['approved'];
+            $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
 
 
-        $response = ['key' => $lastPaymentIndex, 'status' => 'approved', 'final' => true];
-        $this->_dataHelper->log("Order Setted Approved: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
+            $response = ['key' => $lastPaymentIndex, 'status' => 'approved', 'final' => true];
+            $this->_dataHelper->log("Order Setted Approved: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
 
-      }
-      elseif ($totalPending >= $totalOrder) {
-        // return last status inserted 
-        $statusList = ['pending', 'in_process'];
-        $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
+        } elseif ($totalPending >= $totalOrder) {
+            // return last status inserted
+            $statusList = ['pending', 'in_process'];
+            $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
 
-        $response = ['key' => $lastPaymentIndex, 'status' => 'pending', 'final' => false];
-        $this->_dataHelper->log("Order Setted Pending: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
-      }else {
-        // return last status inserted 
-        $statusList = ['cancelled', 'refunded', 'charged_back', 'in_mediation', 'rejected'];
-        $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
-        $statusReturned = $payments[$lastPaymentIndex]['status'];
+            $response = ['key' => $lastPaymentIndex, 'status' => 'pending', 'final' => false];
+            $this->_dataHelper->log("Order Setted Pending: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
+        } else {
+            // return last status inserted
+            $statusList = ['cancelled', 'refunded', 'charged_back', 'in_mediation', 'rejected'];
+            $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
+            $statusReturned = $payments[$lastPaymentIndex]['status'];
 
-        $response = ['key' => $lastPaymentIndex, 'status' => $payments[$lastPaymentIndex]['status'], 'final' => true];
-        $this->_dataHelper->log("Order Setted Other Status: " . $statusReturned, 'mercadopago-basic.log', $response);
-      }
-      
-      return $response;
+            $response = ['key' => $lastPaymentIndex, 'status' => $payments[$lastPaymentIndex]['status'], 'final' => true];
+            $this->_dataHelper->log("Order Setted Other Status: " . $statusReturned, 'mercadopago-basic.log', $response);
+        }
+
+        return $response;
     }
 
     /**
@@ -195,21 +195,21 @@ class MerchantOrder extends TopicsAbstract
      */
     protected function _getLastPaymentIndex($payments, $status)
     {
-      $class = 'MercadoPago\Core\Model\Notifications\Topics\MerchantOrder';
-      $dates = [];
-      foreach ($payments as $key => $payment) {
-        
-        if (in_array($payment['status'], $status)) {
-          $dates[] = ['key' => $key, 'value' => $payment['last_modified']];
-        }
-      }
-      usort($dates, [$class, "_dateCompare"]);
-      if ($dates) {
-        $lastModified = array_pop($dates);
-        return $lastModified['key'];
-      }
+        $class = 'MercadoPago\Core\Model\Notifications\Topics\MerchantOrder';
+        $dates = [];
+        foreach ($payments as $key => $payment) {
 
-      return 0;
+            if (in_array($payment['status'], $status)) {
+                $dates[] = ['key' => $key, 'value' => $payment['last_modified']];
+            }
+        }
+        usort($dates, [$class, "_dateCompare"]);
+        if ($dates) {
+            $lastModified = array_pop($dates);
+            return $lastModified['key'];
+        }
+
+        return 0;
     }
 
     /**
@@ -224,22 +224,22 @@ class MerchantOrder extends TopicsAbstract
         $orderPayment = $order->getPayment();
         $orderPayment->setAdditionalInformation("paymentResponse", $payment);
         $orderPayment->save();
-      
+
         if ($this->checkStatusAlreadyUpdated($order, $data)) {
-          $message = "[Already updated] " . $this->getMessage($payment);
-          $this->_dataHelper->log($message, 'mercadopago-basic.log');
-          return ['text' => $message, 'code' => Response::HTTP_OK];;
+            $message = "[Already updated] " . $this->getMessage($payment);
+            $this->_dataHelper->log($message, 'mercadopago-basic.log');
+            return ['text' => $message, 'code' => Response::HTTP_OK];
         }
 
         $this->updatePaymentInfo($order, $data);
         $statusResponse = $this->changeStatusOrder($order, $data);
         return $statusResponse;
     }
-  
+
     public function checkStatusAlreadyUpdated($order, $data)
     {
-      $paymentResponse = $data['payments'][$data['statusFinal']['key']];
-      return parent::checkStatusAlreadyUpdated($paymentResponse, $order);
+        $paymentResponse = $data['payments'][$data['statusFinal']['key']];
+        return parent::checkStatusAlreadyUpdated($paymentResponse, $order);
     }
 
     /**

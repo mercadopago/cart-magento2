@@ -44,8 +44,8 @@ class Notifications
     public function validateRequest($request)
     {
         $this->_mpHelper->log("Received notification", self::LOG_NAME, $request->getParams());
-      
-        if( !is_null($request->getParam('topic')) && $request->getParam('topic') == 'payment' ){
+
+        if (!is_null($request->getParam('topic')) && $request->getParam('topic') == 'payment') {
             throw new Exception(__('Is accepted only Topic Merchant Order (IPN) and Payment Type (Webhook).'), Response::HTTP_BAD_REQUEST);
         }
 
@@ -72,14 +72,14 @@ class Notifications
      */
     public function getTopicClass($request)
     {
-      
-      $class = $this->merchant_order;
-      
-      if( !is_null ($request->getParam('type')) && $request->getParam('type') == 'payment'){
-        $class = $this->payment;
-      }
-      
-      return $class;
+
+        $class = $this->merchant_order;
+
+        if (!is_null($request->getParam('type')) && $request->getParam('type') == 'payment') {
+            $class = $this->payment;
+        }
+
+        return $class;
     }
 
     /**
