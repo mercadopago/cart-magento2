@@ -57,7 +57,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @return boolean
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @throws LocalizedException
+     * @throws                                        LocalizedException
      */
     public function initialize($paymentAction, $stateObject)
     {
@@ -116,7 +116,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation('addressZipcode');
             }
 
-            $preference['metadata']['checkout'] = 'custom';
+            $preference['metadata']['checkout']      = 'custom';
             $preference['metadata']['checkout_type'] = 'pix';
 
             $this->_helperData->log('CustomPaymentPix::initialize - Preference to POST', self::LOG_NAME, $preference);
@@ -184,13 +184,14 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * @return false|string
      */
-    protected function getDateOfExpiration() {
+    protected function getDateOfExpiration()
+    {
         $days = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_EXPIRATION_DAYS, ScopeInterface::SCOPE_STORE);
 
         if (!$days || !is_numeric($days)) {
             $days = 1;
         }
 
-        return gmdate( 'Y-m-d\TH:i:s.000O', strtotime( '+' . (int) $days . ' days' ) );
-    }
+        return gmdate('Y-m-d\TH:i:s.000O', strtotime('+' . (int) $days . ' days'));
+    }//end getDateOfExpiration()
 }//end class

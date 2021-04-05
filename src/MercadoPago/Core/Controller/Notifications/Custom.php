@@ -95,8 +95,6 @@ class Custom extends NotificationBase
         $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
         $this->getResponse()->setBody(json_encode($response));
         $this->getResponse()->setHttpResponseCode($httpStatus);
-
-        return;
     }
 
 }
