@@ -444,8 +444,20 @@ class Payment
             return false;
         }
 
+        $publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if (empty($publicKey)) {
+            $this->_helperData->log("CustomPayment::isAvailable - Module not available because public_key has not been configured.");
+            return false;
+        }
+
+        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if (empty($accessToken)) {
+            $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token has not been configured.");
+            return false;
+        }
+
         $secure = $this->_request->isSecure();
-        if ($secure === FALSE) {
+        if ($secure === FALSE && substr($publicKey, 0, 5) !== 'TEST-' && substr($accessToken, 0, 5) !== 'TEST-') {
             $this->_helperData->log("CustomPayment::isAvailable - Module not available because it has production credentials in non HTTPS environment.");
             return false;
         }
