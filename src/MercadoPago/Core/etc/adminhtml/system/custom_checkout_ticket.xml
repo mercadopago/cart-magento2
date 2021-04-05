@@ -8,37 +8,31 @@
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago_customticket/active</config_path>
         </field>
+        
         <field id="title" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Payment Title</label>
             <config_path>payment/mercadopago_customticket/title</config_path>
         </field>
+        
         <field id="banner_checkout" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Banner Checkout</label>
             <config_path>payment/mercadopago_customticket/banner_checkout</config_path>
-            <comment>By default the module of Mercado Pago will configure a banner with the methods available according
-                to your country, in case you want to customize it simply change the url of the image.
-            </comment>
+            <comment>By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.</comment>
         </field>
+        
         <field id="excluded_payment_methods" translate="label comment" type="multiselect" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Exclude Payment Methods</label>
             <source_model>MercadoPago\Core\Model\System\Config\Source\PaymentMethods\PaymentMethodsTicket</source_model>
             <config_path>payment/mercadopago_customticket/excluded_payment_methods</config_path>
             <comment>Select the payment methods you do NOT want to accept.</comment>
         </field>
+        
         <field id="sort_order" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Checkout Position</label>
             <frontend_class>validate-number</frontend_class>
             <config_path>payment/mercadopago_customticket/sort_order</config_path>
-            <comment>This setting will be the position in which the payment method will be available to the buyer.
-            </comment>
+            <comment>This setting will be the position in which the payment method will be available to the buyer.</comment>
         </field>
-        <field id="coupon_mercadopago" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
-            <label>Discount Coupons (Mercado Pago)</label>
-            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-            <config_path>payment/mercadopago_customticket/coupon_mercadopago</config_path>
-            <comment>When enabling the option will appear a discount field for the buyer to use a discount coupon of the
-                Mercado Pago on the payment form.
-            </comment>
-        </field>
+        
     </group>
 </include>

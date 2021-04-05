@@ -4,19 +4,19 @@ namespace MercadoPago\Core\Model\Notifications\Topics;
 
 use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DB\TransactionFactory;
 use Magento\Sales\Model\Order\CreditmemoFactory;
 use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\ResourceModel\Status\Collection as StatusFactory;
+use Magento\Sales\Model\Service\InvoiceService;
 use MercadoPago\Core\Helper\Data as mpHelper;
 use MercadoPago\Core\Helper\Message\MessageInterface;
+use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
-use Magento\Framework\DB\TransactionFactory;
-use Magento\Sales\Model\Service\InvoiceService;
-use MercadoPago\Core\Helper\Response;
 
 class MerchantOrder extends TopicsAbstract
 {
@@ -57,9 +57,7 @@ class MerchantOrder extends TopicsAbstract
         TransactionFactory $transactionFactory,
         InvoiceSender $invoiceSender,
         InvoiceService $invoiceService
-
-    )
-    {
+    ) {
         $this->_mpHelper = $mpHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_coreModel = $coreModel;
@@ -133,7 +131,6 @@ class MerchantOrder extends TopicsAbstract
      */
     public function getStatusFinal($payments, $merchantOrder)
     {
-
         if (isset($merchantOrder['payments']) && count($merchantOrder['payments']) == 1) {
             return ['key' => "0", 'status' => $merchantOrder['payments'][0]['status'], 'final' => false];
         }
@@ -152,11 +149,11 @@ class MerchantOrder extends TopicsAbstract
             }
         }
 
-        $arrayLog = array(
+        $arrayLog = [
             "totalApproved" => $totalApproved,
             "totalOrder" => $totalOrder,
             "totalPending" => $totalPending
-        );
+        ];
 
         $response = [];
         //validate order state
@@ -164,10 +161,8 @@ class MerchantOrder extends TopicsAbstract
             $statusList = ['approved'];
             $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
 
-
             $response = ['key' => $lastPaymentIndex, 'status' => 'approved', 'final' => true];
             $this->_dataHelper->log("Order Setted Approved: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
-
         } elseif ($totalPending >= $totalOrder) {
             // return last status inserted
             $statusList = ['pending', 'in_process'];
@@ -198,7 +193,6 @@ class MerchantOrder extends TopicsAbstract
         $class = 'MercadoPago\Core\Model\Notifications\Topics\MerchantOrder';
         $dates = [];
         foreach ($payments as $key => $payment) {
-
             if (in_array($payment['status'], $status)) {
                 $dates[] = ['key' => $key, 'value' => $payment['last_modified']];
             }

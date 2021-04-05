@@ -1,0 +1,108 @@
+<?php
+/**
+ * @var MercadoPago\Core\Block\CustomPix\Success $block
+ */
+$order = $this->getOrder();
+$total = $this->getTotal();
+$payment = $this->getPayment();
+$paymentResponse = $payment->getAdditionalInformation("paymentResponse");
+$payment_method = $this->getPaymentMethod();
+$pixImg = $this->getPixImg();
+$expirationDays = $this->getConfigExpirationDays();
+?>
+
+<div id="box-mercadopago">
+		<?php if ($payment_method == 'mercadopago_custom_pix') { ?>
+
+			<p class="mp-details-title">
+				<?php echo __('Now you just need to pay with PIX to finalize your purchase'); ?>
+			</p>
+
+			<div class="mp-details-pix">
+
+			<div class="mp-col-md-4">
+
+				<img src="<?php echo $pixImg; ?> " class="mp-details-pix-img" />
+
+				<p class="mp-details-pix-title">
+					<?php echo __( 'How to pay with PIX:' ); ?>
+				</p>
+				<ul class="mp-steps-congrats mp-pix-left">
+					<li class="mp-details-list">
+						<p class="mp-details-pix-number-p">1</p>
+						<p class="mp-details-list-description"><?php echo __( 'Go to your bank\'s app or website' ); ?></p>
+					</li>
+					<li class="mp-details-list">
+						<p class="mp-details-pix-number-p">
+							2
+						</p>
+						<p class="mp-details-list-description"><?php echo __( 'Search for the option to pay with PIX' ); ?></p>
+					</li>
+					<li class="mp-details-list">
+						<p class="mp-details-pix-number-p">
+							3
+						</p>
+						<p class="mp-details-list-description"><?php echo __( 'Scan the QR code or PIX code' ); ?></p>
+					</li>
+					<li class="mp-details-list">
+						<p class="mp-details-pix-number-p">
+							4
+						</p>
+						<p class="mp-details-list-description"><?php echo __( 'Done! You will see the payment confirmation' ); ?></p>
+					</li>
+				</ul>
+
+			</div>
+
+			<div class="mp-col-md-8 mp-text-center mp-pix-right">
+				<p class="mp-details-pix-amount">
+					<span class="mp-details-pix-qr">
+						<?php echo __( 'Value:' ); ?>
+					</span>
+					<span class="mp-details-pix-qr-value">
+					<?php echo __( ' R$ ' ); ?> <?php echo number_format($paymentResponse['transaction_amount'], 2, ',', '.'); ?>
+					</span>
+				</p>
+				<p class="mp-details-pix-qr-title">
+					<?php echo __( 'Scan the QR code:' ); ?>
+				</p>
+				<?php if (isset($paymentResponse['point_of_interaction']) && $paymentResponse['point_of_interaction']['transaction_data']['qr_code_base64']) { ?>
+				<img class="mp-details-pix-qr-img" src="data:image/jpeg;base64,<?php echo $paymentResponse['point_of_interaction']['transaction_data']['qr_code_base64']; ?>" />
+				<?php } ?>
+				<p class="mp-details-pix-qr-subtitle">
+					<?php echo __( 'Code valid for ' ); ?><?php echo $expirationDays; ?>
+					<?php echo $expirationDays > 1 ?  __( ' days' ) : __( ' day' ) ?>
+				</p>
+				<div class="mp-details-pix-container">
+					<p class="mp-details-pix-qr-description">
+						<?php echo __( 'If you prefer, you can pay by copying and pasting the following code' ); ?>
+					</p>
+					<div class="mp-row-checkout-pix-container">
+						<input id="mp-qr-code" value="<?php echo $paymentResponse['point_of_interaction']['transaction_data']['qr_code']; ?>" class="mp-qr-input"></input>
+						<button onclick="copy_qr_code()" class="mp-details-pix-button" onclick="true"><?php echo __( 'Copy code' ); ?></button>
+						<script>
+							function copy_qr_code() {
+								var copyText = document.getElementById("mp-qr-code");
+								copyText.select();
+								copyText.setSelectionRange(0, 99999)
+								document.execCommand("copy");
+							}
+						</script>
+					</div>
+				</div>
+			</div>
+	</div>
+
+	<?php } ?>
+</div>
+
+
+	<div id="logo-mercadopago">
+		<img src="https://secure.mlstatic.com/components/resources/mp/desktop/css/assets/desktop-logo-mercadopago.png"/>
+	</div>
+
+	<div class="primary button-success">
+		<a class="action primary continue"
+		href="<?php echo $block->escapeUrl($block->getUrl()) ?>"><span><?php /* @escapeNotVerified */
+				echo __('Continue Shopping') ?></span></a>
+	</div>

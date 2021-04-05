@@ -40,6 +40,11 @@
                                                                                 true
                                                                             </item>
                                                                         </item>
+                                                                         <item name="mercadopago_custom_pix" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">
+                                                                                true
+                                                                            </item>
+                                                                        </item>
                                                                         <item name="mercadopago_custom_bank_transfer" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">
                                                                                 true

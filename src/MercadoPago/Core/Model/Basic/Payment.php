@@ -95,8 +95,7 @@ class Payment extends AbstractMethod
         Logger $logger,
         Basic $basic,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct(
             $context,
             $registry,
@@ -157,7 +156,6 @@ class Payment extends AbstractMethod
             $this->_helperData->log('Fatal Error: Model Basic Payment PostPago:' . $e->getMessage(), 'mercadopago-basic.log');
             return [];
         }
-
     }
 
     /**

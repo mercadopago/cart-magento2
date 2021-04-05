@@ -243,7 +243,7 @@ define(
        */
       changePaymentMethodSelector: function (paymentMethodSelected) {
         if (paymentMethodSelected.method != 'mercadopago_customticket') {
-          
+
         }
       },
 

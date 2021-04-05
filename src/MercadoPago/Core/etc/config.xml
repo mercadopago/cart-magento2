@@ -1,6 +1,18 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <payment>
+            <mercadopago_basic>
+                <active>1</active>
+                <model>MercadoPago\Core\Model\Basic\Payment</model>
+                <title translate="label">Quiero pagar con Mercado Pago sin costo Adicional.</title>
+                <order_status>pending</order_status>
+                <max_installments>12</max_installments>
+                <auto_return>1</auto_return>
+                <binary_mode>0</binary_mode>
+                <sort_order>-4</sort_order>
+                <payment_action>authorize</payment_action>
+                <gateway_mode>0</gateway_mode>
+            </mercadopago_basic>
             <mercadopago_custom>
                 <active>1</active>
                 <coupon_mercadopago>0</coupon_mercadopago>
@@ -10,18 +22,19 @@
                 <model>MercadoPago\Core\Model\Custom\Payment</model>
                 <title translate="label">Credit Card - Mercado Pago</title>
                 <allowspecific>0</allowspecific>
-                <banner_checkout>http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg</banner_checkout>
-                <sort_order>-2</sort_order>
+                <banner_checkout></banner_checkout>
+                <sort_order>-3</sort_order>
                 <payment_action>authorize</payment_action>
                 <binary_mode>0</binary_mode>
                 <gateway_mode>0</gateway_mode>
+                <wallet_button>0</wallet_button>
             </mercadopago_custom>
             <mercadopago_customticket>
                 <active>1</active>
                 <model>MercadoPago\Core\Model\CustomTicket\Payment</model>
                 <title translate="label">Ticket - Mercado Pago</title>
                 <allowspecific>0</allowspecific>
-                <sort_order>-1</sort_order>
+                <sort_order>-2</sort_order>
                 <payment_action>authorize</payment_action>
                 <coupon_mercadopago>0</coupon_mercadopago>
                 <cctypes>AE,VI,MC,DI,JCB</cctypes>
@@ -31,23 +44,20 @@
                 <model>MercadoPago\Core\Model\CustomBankTransfer\Payment</model>
                 <title translate="label">Bank Transfer - Mercado Pago</title>
                 <allowspecific>0</allowspecific>
-                <sort_order>-2</sort_order>
+                <sort_order>-1</sort_order>
                 <payment_action>authorize</payment_action>
                 <cctypes>AE,VI,MC,DI,JCB</cctypes>
                 <redirect_payer>1</redirect_payer>
             </mercadopago_custom_bank_transfer>
-            <mercadopago_basic>
-                <active>1</active>
-                <model>MercadoPago\Core\Model\Basic\Payment</model>
-                <title translate="label">Quiero pagar con Mercado Pago sin costo Adicional.</title>
-                <order_status>pending</order_status>
-                <max_installments>12</max_installments>
-                <auto_return>1</auto_return>
-                <binary_mode>0</binary_mode>
-                <sort_order>-3</sort_order>
+            <mercadopago_custom_pix>
+                <active>0</active>
+                <model>MercadoPago\Core\Model\CustomPix\Payment</model>
+                <title translate="label">Pay with Pix</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>-1</sort_order>
                 <payment_action>authorize</payment_action>
-                <gateway_mode>0</gateway_mode>
-            </mercadopago_basic>
+                <cctypes>AE,VI,MC,DI,JCB</cctypes>
+            </mercadopago_custom_pix>
             <mercadopago>
                 <order_status_approved>processing</order_status_approved>
                 <order_status_in_process>pending</order_status_in_process>

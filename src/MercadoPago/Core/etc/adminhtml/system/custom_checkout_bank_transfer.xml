@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
     <group id="custom_checkout_bank_transfer" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-
         <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
 
         <label>Custom Checkout - Bank Transfer</label>
@@ -11,31 +10,30 @@
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago_custom_bank_transfer/active</config_path>
         </field>
+
         <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Payment Title</label>
             <config_path>payment/mercadopago_custom_bank_transfer/title</config_path>
         </field>
+        
         <field id="banner_checkout" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Banner Checkout</label>
             <config_path>payment/mercadopago_custom_bank_transfer/banner_checkout</config_path>
-            <comment>By default the module of Mercado Pago will configure a banner with the methods available according
-                to your country, in case you want to customize it simply change the url of the image.
-            </comment>
+            <comment>By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.</comment>
         </field>
+
         <field id="sort_order" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Checkout Position</label>
             <frontend_class>validate-number</frontend_class>
             <config_path>payment/mercadopago_custom_bank_transfer/sort_order</config_path>
-            <comment>This setting will be the position in which the payment method will be available to the buyer.
-            </comment>
+            <comment>This setting will be the position in which the payment method will be available to the buyer.</comment>
         </field>
+
         <field id="redirect_payer" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Redirect Payer</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago_custom_bank_transfer/redirect_payer</config_path>
-            <comment>By enabling this option the buyer will be automatically redirected to the payment page of the bank,
-                it will not go through an intermediate page of your store.
-            </comment>
+            <comment>By enabling this option the buyer will be automatically redirected to the payment page of the bank, it will not go through an intermediate page of your store.</comment>
         </field>
     </group>
 </include>

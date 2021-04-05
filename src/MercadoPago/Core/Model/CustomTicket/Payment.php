@@ -7,8 +7,7 @@ namespace MercadoPago\Core\Model\CustomTicket;
  *
  * @package MercadoPago\Core\Model\CustomTicket
  */
-class Payment
-    extends \MercadoPago\Core\Model\Custom\Payment
+class Payment extends \MercadoPago\Core\Model\Custom\Payment
 {
     /**
      * Define payment method code
@@ -17,9 +16,9 @@ class Payment
 
     protected $_code = self::CODE;
 
-    protected $fields_febraban = array(
+    protected $fields_febraban = [
         "firstName", "lastName", "docType", "docNumber", "address", "addressNumber", "addressCity", "addressState", "addressZipcode"
-    );
+    ];
 
     /**
      * @param \Magento\Framework\DataObject $data
@@ -44,10 +43,6 @@ class Payment
             $info->setAdditionalInformation('method', $infoForm['method']);
             $info->setAdditionalInformation('payment_method', $additionalData['payment_method_ticket']);
             $info->setAdditionalInformation('payment_method_id', $additionalData['payment_method_ticket']);
-
-            if (!empty($additionalData['coupon_code'])) {
-                $info->setAdditionalInformation('coupon_code', $additionalData['coupon_code']);
-            }
 
             foreach ($this->fields_febraban as $key) {
                 if (isset($additionalData[$key])) {
@@ -75,11 +70,7 @@ class Payment
             $order = $this->getInfoInstance()->getOrder();
             $payment = $order->getPayment();
 
-            $payment_info = array();
-
-            if ($payment->getAdditionalInformation("coupon_code") != "") {
-                $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
-            }
+            $payment_info = [];
 
             $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
@@ -119,6 +110,9 @@ class Payment
                 $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation("addressZipcode");
             }
 
+            $preference['metadata']['checkout'] = 'custom';
+            $preference['metadata']['checkout_type'] = 'ticket';
+
             $this->_helperData->log("CustomPaymentTicket::initialize - Preference to POST", 'mercadopago-custom.log', $preference);
         } catch (\Exception $e) {
             $this->_helperData->log("CustomPaymentTicket::initialize - There was an error retrieving the information to create the payment, more details: " . $e->getMessage());
@@ -131,21 +125,18 @@ class Payment
         $this->_helperData->log("CustomPaymentTicket::initialize - POST /v1/payments RESPONSE", self::LOG_NAME, $response);
 
         if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
-
             $payment = $response['response'];
 
             $this->getInfoInstance()->setAdditionalInformation("paymentResponse", $payment);
 
             return true;
-
         } else {
-
             $messageErrorToClient = $this->_coreModel->getMessageError($response);
 
-            $arrayLog = array(
+            $arrayLog = [
                 "response" => $response,
                 "message" => $messageErrorToClient
-            );
+            ];
 
             $this->_helperData->log("CustomPaymentTicket::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
 
@@ -155,7 +146,6 @@ class Payment
         }
     }
 
-
     public function preparePostPayment($usingSecondCardInfo = null)
     {
         $this->_helperData->log("Ticket -> init prepare post payment", 'mercadopago-custom.log');
@@ -163,16 +153,11 @@ class Payment
         $order = $this->getInfoInstance()->getOrder();
         $payment = $order->getPayment();
 
-        $payment_info = array();
-
-        if ($payment->getAdditionalInformation("coupon_code") != "") {
-            $payment_info['coupon_code'] = $payment->getAdditionalInformation("coupon_code");
-        }
+        $payment_info = [];
 
         $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
         $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method");
-
 
         if ($payment->getAdditionalInformation("firstName") != "") {
             $preference['payer']['first_name'] = $payment->getAdditionalInformation("firstName");
@@ -214,7 +199,6 @@ class Payment
         return $this->_coreModel->postPaymentV1($preference);
     }
 
-
     /**
      * Return tickets options availables
      *
@@ -222,12 +206,11 @@ class Payment
      */
     public function getTicketsOptions()
     {
-
         $excludePaymentMethods = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         $listExclude = explode(",", $excludePaymentMethods);
 
         $payment_methods = $this->_coreModel->getPaymentMethods();
-        $tickets = array();
+        $tickets = [];
 
         //percorre todos os payments methods
         foreach ($payment_methods['response'] as $pm) {
@@ -245,17 +228,12 @@ class Payment
         return $tickets;
     }
 
-    function setOrderSubtotals($data)
+    public function setOrderSubtotals($data)
     {
         $total = $data['transaction_details']['total_paid_amount'];
         $order = $this->getInfoInstance()->getOrder();
         $order->setGrandTotal($total);
         $order->setBaseGrandTotal($total);
-        $couponAmount = $data['coupon_amount'];
-        if ($couponAmount) {
-            $order->setDiscountCouponAmount($couponAmount * -1);
-            $order->setBaseDiscountCouponAmount($couponAmount * -1);
-        }
         $this->getInfoInstance()->setOrder($order);
     }
 
@@ -268,7 +246,6 @@ class Payment
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
-
         $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_TICKET_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {
             return false;

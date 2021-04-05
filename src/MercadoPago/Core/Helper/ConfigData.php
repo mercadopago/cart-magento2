@@ -19,6 +19,7 @@ class ConfigData
     const PATH_CUSTOM_BANNER = 'payment/mercadopago_custom/banner_checkout';
     const PATH_CUSTOM_COUPON = 'payment/mercadopago_custom/coupon_mercadopago';
     const PATH_CUSTOM_GATEWAY_MODE = 'payment/mercadopago_custom/gateway_mode';
+    const PATH_CUSTOM_WALLET_BUTTON = 'payment/mercadopago_custom/wallet_button';
 
     //custom method ticket
     const PATH_CUSTOM_TICKET_ACTIVE = 'payment/mercadopago_customticket/active';
@@ -44,6 +45,11 @@ class ConfigData
     const PATH_BASIC_ORDER_STATUS = 'payment/mercadopago_basic/order_status';
     const PATH_BASIC_BINARY_MODE = 'payment/mercadopago_basic/binary_mode';
     const PATH_BASIC_GATEWAY_MODE = 'payment/mercadopago_basic/gateway_mode';
+
+    //custom method ticket
+    const PATH_CUSTOM_PIX_ACTIVE = 'payment/mercadopago_custom_pix/active';
+    const PATH_CUSTOM_PIX_BANNER = 'payment/mercadopago_custom_pix/banner_checkout';
+    const PATH_CUSTOM_PIX_EXPIRATION_DAYS = 'payment/mercadopago_custom_pix/expiration_days';
 
     //order configuration
     const PATH_ORDER_APPROVED = 'payment/mercadopago/order_status_approved';

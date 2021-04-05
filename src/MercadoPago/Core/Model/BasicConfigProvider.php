@@ -42,22 +42,22 @@ class BasicConfigProvider implements ConfigProviderInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function __construct(
+        Data $coreHelper,
         Context $context,
+        Repository $assetRepo,
+        Session $checkoutSession,
         PaymentHelper $paymentHelper,
         ScopeConfigInterface $scopeConfig,
-        Session $checkoutSession,
-        Repository $assetRepo,
-        ProductMetadataInterface $productMetadata,
-        Data $coreHelper
+        ProductMetadataInterface $productMetadata
     )
     {
-        $this->_methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
-        $this->_scopeConfig = $scopeConfig;
-        $this->_checkoutSession = $checkoutSession;
-        $this->_assetRepo = $assetRepo;
-        $this->_productMetaData = $productMetadata;
-        $this->_coreHelper = $coreHelper;
         $this->_context = $context;
+        $this->_assetRepo = $assetRepo;
+        $this->_coreHelper = $coreHelper;
+        $this->_scopeConfig = $scopeConfig;
+        $this->_methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
+        $this->_checkoutSession = $checkoutSession;
+        $this->_productMetaData = $productMetadata;
 
     }
 
@@ -76,19 +76,38 @@ class BasicConfigProvider implements ConfigProviderInterface
             $data = [
                 'payment' => [
                     $this->methodCode => [
-                        'active' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_ACTIVE, ScopeInterface::SCOPE_STORE),
+                        'active' => $this->_scopeConfig->getValue(
+                            ConfigData::PATH_BASIC_ACTIVE,
+                            ScopeInterface::SCOPE_STORE
+                        ),
+                        'logEnabled' => $this->_scopeConfig->getValue(
+                            ConfigData::PATH_ADVANCED_LOG,
+                            ScopeInterface::SCOPE_STORE
+                        ),
+                        'max_installments' => $this->_scopeConfig->getValue(
+                            ConfigData::PATH_BASIC_MAX_INSTALLMENTS,
+                            ScopeInterface::SCOPE_STORE
+                        ),
+                        'auto_return' => $this->_scopeConfig->getValue(
+                            ConfigData::PATH_BASIC_AUTO_RETURN,
+                            ScopeInterface::SCOPE_STORE
+                        ),
+                        'exclude_payments' => $this->_scopeConfig->getValue(
+                            ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS,
+                            ScopeInterface::SCOPE_STORE
+                        ),
+                        'order_status' => $this->_scopeConfig->getValue(
+                            ConfigData::PATH_BASIC_ORDER_STATUS,
+                            ScopeInterface::SCOPE_STORE
+                        ),
+                        'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                         'actionUrl' => $this->_context->getUrl()->getUrl(Basic\Payment::ACTION_URL),
                         'banner_info' => $bannerInfo,
-                        'logEnabled' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_LOG, ScopeInterface::SCOPE_STORE),
-                        'max_installments' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_MAX_INSTALLMENTS, ScopeInterface::SCOPE_STORE),
-                        'auto_return' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_AUTO_RETURN, ScopeInterface::SCOPE_STORE),
-                        'exclude_payments' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE),
-                        'order_status' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_ORDER_STATUS, ScopeInterface::SCOPE_STORE),
                         'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
-                        'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                         'redirect_image' => $this->_assetRepo->getUrl("MercadoPago_Core::images/redirect_checkout.png"),
+                        'module_version' => $this->_coreHelper->getModuleVersion(),
                         'platform_version' => $this->_productMetaData->getVersion(),
-                        'module_version' => $this->_coreHelper->getModuleVersion()
+                        'mercadopago_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mercado-pago-mini.png"),
                     ],
                 ],
             ];
@@ -100,16 +119,32 @@ class BasicConfigProvider implements ConfigProviderInterface
         }
     }
 
+    /**
+     * Make payment methods banner
+     *
+     * @return void
+     */
     public function makeBannerCheckout()
     {
+        $accessToken = $this->_scopeConfig->getValue(
+            ConfigData::PATH_ACCESS_TOKEN,
+            ScopeInterface::SCOPE_WEBSITE)
+        ;
 
-        $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_WEBSITE);
-        $maxInstallments = $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_MAX_INSTALLMENTS, ScopeInterface::SCOPE_STORE);
-        $excludePaymentMethods = $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE);
+        $maxInstallments = $this->_scopeConfig->getValue(
+            ConfigData::PATH_BASIC_MAX_INSTALLMENTS,
+            ScopeInterface::SCOPE_STORE)
+        ;
+
+        $excludePaymentMethods = $this->_scopeConfig->getValue(
+            ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS,
+            ScopeInterface::SCOPE_STORE)
+        ;
 
         $excludePaymentMethods = explode(",", $excludePaymentMethods);
 
         try {
+
             $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
 
             //validate active payments methods
@@ -119,7 +154,6 @@ class BasicConfigProvider implements ConfigProviderInterface
             $choMethods = array();
 
             foreach ($paymentMethods['response'] as $pm) {
-
                 if (!in_array($pm['id'], $excludePaymentMethods)) {
                     $choMethods[] = $pm;
                     if ($pm['payment_type_id'] == 'credit_card') {
@@ -143,7 +177,9 @@ class BasicConfigProvider implements ConfigProviderInterface
             return $parameters;
 
         } catch (\Exception $e) {
-            $this->_coreHelper->log("makeBannerCheckout:: An error occurred at the time of obtaining the ticket payment methods: " . $e);
+            $this->_coreHelper->log(
+                "makeBannerCheckout:: An error occurred at the time of obtaining the payment methods banner: " . $e
+            );
         }
     }
 }

@@ -46,7 +46,7 @@ class Notifications
         $this->_mpHelper->log("Received notification", self::LOG_NAME, $request->getParams());
 
         if (!is_null($request->getParam('topic')) && $request->getParam('topic') == 'payment') {
-            throw new Exception(__('Is accepted only Topic Merchant Order (IPN) and Payment Type (Webhook).'), Response::HTTP_BAD_REQUEST);
+            throw new Exception(__('Is accepted only Topic Merchant Order (IPN) and Payment Type (Webhook).'), Response::HTTP_OK);
         }
 
         empty($request->getParam('topic')) ? $topic = $request->getParam('type') : $topic = $request->getParam('topic');

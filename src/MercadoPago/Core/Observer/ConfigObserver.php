@@ -127,8 +127,6 @@ class ConfigObserver
 
         $this->availableCheckout();
 
-        $this->checkAnalyticsData();
-
         $this->checkBanner('mercadopago_custom');
 
         $this->checkBanner('mercadopago_customticket');
@@ -232,8 +230,6 @@ class ConfigObserver
             $this->_scopeCode
         );
 
-        $this->coreHelper->log("Get access_token: " . $accessToken, self::LOG_NAME);
-
         if (!$accessToken) {
             return;
         }
@@ -243,22 +239,20 @@ class ConfigObserver
         $this->coreHelper->log("API Users response", self::LOG_NAME, $user);
 
         if ($user['status'] == 200) {
-
             $siteId = $user['response']['site_id'];
 
             if (!in_array("test_user", $user['response']['tags'])) {
-
+                $countryCode = $user['response']['site_id'];
                 $sponsors = [
                     'MLA' => 222568987,
                     'MLB' => 222567845,
-                    'MLM' => 222568246,
-                    'MCO' => 222570694,
                     'MLC' => 222570571,
-                    'MLV' => 222569730,
+                    'MCO' => 222570694,
+                    'MLM' => 222568246,
                     'MPE' => 222568315,
+                    'MLV' => 222569730,
                     'MLU' => 247030424,
                 ];
-                $countryCode = $user['response']['site_id'];
 
                 if (isset($sponsors[$countryCode])) {
                     $sponsorId = $sponsors[$countryCode];
@@ -305,52 +299,6 @@ class ConfigObserver
         } else {
             $this->configResource->saveConfig($path, $value, 'websites', $this->_switcher->getWebsiteId());
         }
-
-    }
-
-    protected function checkAnalyticsData()
-    {
-        $accessToken = $this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_scopeCode
-        );
-
-        $this->sendAnalyticsData($this->coreHelper->getApiInstance($accessToken));
-    }
-
-    protected function sendAnalyticsData($api)
-    {
-        $request = [
-            "data" => [
-                "platform" => "Magento",
-                "platform_version" => $this->_productMetaData->getVersion(),
-                "module_version" => $this->coreHelper->getModuleVersion(),
-                "code_version" => phpversion()
-            ],
-        ];
-
-        $custom = $this->_scopeConfig->getValue('payment/mercadopago_custom/active',
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_scopeCode);
-        $customTicket = $this->_scopeConfig->getValue('payment/mercadopago_customticket/active',
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_scopeCode);
-        $customCoupon = $this->_scopeConfig->getValue('payment/mercadopago_custom/coupon_mercadopago',
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_scopeCode);
-        $customTicketCoupon = $this->_scopeConfig->getValue('payment/mercadopago_customticket/coupon_mercadopago',
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_scopeCode);
-
-        $request['data']['checkout_custom_credit_card'] = $custom == 1 ? 'true' : 'false';
-        $request['data']['checkout_custom_ticket'] = $customTicket == 1 ? 'true' : 'false';
-        $request['data']['checkout_custom_credit_card_coupon'] = $customCoupon == 1 ? 'true' : 'false';
-        $request['data']['checkout_custom_ticket_coupon'] = $customTicketCoupon == 1 ? 'true' : 'false';
-
-        $this->coreHelper->log("Analytics settings request sent /modules/tracking/settings", self::LOG_NAME, $request);
-        $response = $api->post("/modules/tracking/settings", $request['data']);
-        $this->coreHelper->log("Analytics settings response", self::LOG_NAME, $response);
 
     }
 }

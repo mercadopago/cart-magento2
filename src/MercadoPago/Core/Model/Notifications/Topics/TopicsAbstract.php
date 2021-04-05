@@ -139,7 +139,7 @@ abstract class TopicsAbstract
      * @param $order
      * @param $newStatusOrder
      * @param $message
-     * @return mixed
+     * @return Order
      */
     public function setStatusAndComment($order, $newStatusOrder, $message)
     {
@@ -381,6 +381,12 @@ abstract class TopicsAbstract
     {
         if ($order->getState() !== Order::STATE_COMPLETE) {
             $statusOrder = $this->getConfigStatus($payment, $order->canCreditmemo());
+
+            if ($order->getGrandTotal() > $payment['transaction_details']['total_paid_amount']) {
+                $statusOrder = 'fraud';
+                $message .= __('<br/> Order total: %s', $order->getGrandTotal());
+                $message .= __('<br/> Paid: %s', $payment['transaction_details']['total_paid_amount']);
+            }
 
             $emailAlreadySent = false;
             $emailOrderCreate = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_CREATE, ScopeInterface::SCOPE_STORE);

@@ -3,53 +3,54 @@
 namespace MercadoPago\Core\Controller\Checkout;
 
 use Exception;
-use Psr\Log\LoggerInterface;
-use Magento\Framework\App\Action\Context;
-use Magento\Checkout\Model\Session;
-use Magento\Sales\Model\OrderFactory;
-use Magento\Sales\Model\Order\Email\Sender\OrderSender;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Catalog\Model\Session as CatalogSession;
-use MercadoPago\Core\Model\Core;
+use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Registry;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
+use Magento\Sales\Model\OrderFactory;
+use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
-use Magento\Store\Model\ScopeInterface;
+use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Topics\Payment;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Page
  * @package MercadoPago\Core\Controller\Checkout
  */
-class Page
-    extends \Magento\Framework\App\Action\Action
+class Page extends Action
 {
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $_checkoutSession;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var OrderFactory
      */
     protected $_orderFactory;
 
     /**
-     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     * @var OrderSender
      */
     protected $_orderSender;
 
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     protected $_logger;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $_scopeConfig;
 
     /**
-     * @var \MercadoPago\Core\Helper\Data
+     * @var Data
      */
     protected $_helperData;
 
@@ -59,7 +60,7 @@ class Page
     protected $_core;
 
     /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     protected $_catalogSession;
 
@@ -69,10 +70,9 @@ class Page
     protected $_configData;
 
     /**
-     * @var
+     * @var Payment
      */
     protected $_paymentNotification;
-
 
     /**
      * Page constructor.
@@ -99,8 +99,7 @@ class Page
         Core $core,
         CatalogSession $catalogSession,
         Payment $paymentNotification
-    )
-    {
+    ) {
         $this->_checkoutSession = $checkoutSession;
         $this->_orderFactory = $orderFactory;
         $this->_orderSender = $orderSender;
@@ -137,10 +136,7 @@ class Page
                 } else {
                     $this->_redirect('checkout/onepage/failure/');
                 }
-
             } else {
-                //set data for mp analytics
-                $this->_catalogSession->setPaymentData($this->_helperData->getAnalyticsData($this->_getOrder()));
                 $checkoutTypeHandle = $this->getCheckoutHandle();
                 $this->_view->loadLayout(['default', $checkoutTypeHandle]);
                 $this->dispatchSuccessActionObserver();
