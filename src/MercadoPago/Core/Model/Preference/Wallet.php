@@ -408,7 +408,7 @@ class Wallet
                 'platform'         => 'Magento',
                 'platform_version' => $this->productMetadata->getVersion(),
                 'module_version'   => $this->version->getValue(),
-                'sponsor_id'       => $this->getSiteId(),
+                'sponsor_id'       => $this->getSponsorId(),
                 'test_mode'        => '',
                 'quote_id'         => '',
                 'checkout'         => 'pro',
