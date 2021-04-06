@@ -2,18 +2,41 @@
 
 namespace MercadoPago\Core\Model\Custom;
 
+use Magento\Customer\Model\Session;
+use Magento\Framework\Api\AttributeValueFactory;
+use Magento\Framework\Api\ExtensionAttributesFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\DataObject;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Module\ModuleListInterface;
+use Magento\Framework\Registry;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Framework\UrlInterface;
+use Magento\Payment\Helper\Data;
+use Magento\Payment\Model\Method\AbstractMethod;
+use Magento\Payment\Model\Method\Cc;
 use Magento\Payment\Model\Method\ConfigInterface;
+use Magento\Payment\Model\Method\Logger;
 use Magento\Payment\Model\Method\Online\GatewayInterface;
+use Magento\Quote\Api\Data\CartInterface;
+use Magento\Quote\Model\Quote;
+use Magento\Sales\Model\OrderFactory;
+use Magento\Store\Model\ScopeInterface;
+use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Response;
+use MercadoPago\Core\Model\Api\V1\Exception;
+use MercadoPago\Core\Model\Core;
 
 /**
  * Class Payment
  *
- * @package MercadoPago\Core\Model\Custom
+ * @package                                        MercadoPago\Core\Model\Custom
  * @SuppressWarnings(PHPMD.TooManyFields)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterface
+class Payment extends Cc implements GatewayInterface
 {
     /**
      * Define payment method code
@@ -28,103 +51,103 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_isGateway = true;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canAuthorize = true;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canCapture = true;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canCapturePartial = true;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canRefund = true;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canRefundInvoicePartial = true;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canVoid = true;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canUseInternal = false;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canUseCheckout = true;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canSaveCc = false;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_isProxy = false;
 
     /**
      * Availability option
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canFetchTransactionInfo = true;
 
     /**
      * Payment Method feature
      *
-     * @var bool
+     * @var boolean
      */
     protected $_canReviewPayment = true;
 
     /**
      * Payment Method feature
      *
-     * @var bool
+     * @var boolean
      */
     protected $_isInitializeNeeded = true;
 
     /**
-     * @var \MercadoPago\Core\Model\Core
+     * @var Core
      */
     protected $_coreModel;
 
@@ -134,17 +157,17 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
     protected $_checkoutSession;
 
     /**
-     * @var \Magento\Customer\Model\Session
+     * @var Session
      */
     protected $_customerSession;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var OrderFactory
      */
     protected $_orderFactory;
 
     /**
-     * @var \Magento\Framework\UrlInterface
+     * @var UrlInterface
      */
     protected $_urlBuilder;
 
@@ -171,7 +194,14 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
     /**
      * @var array
      */
-    public static $_excludeInputsOpc = ['issuer_id', 'card_expiration_month', 'card_expiration_year', 'card_holder_name', 'doc_type', 'doc_number'];
+    public static $_excludeInputsOpc = [
+        'issuer_id',
+        'card_expiration_month',
+        'card_expiration_year',
+        'card_holder_name',
+        'doc_type',
+        'doc_number',
+    ];
 
     /**
      * @var string
@@ -181,47 +211,46 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
     /**
      * Request object
      *
-     * @var \Magento\Framework\App\RequestInterface
+     * @var RequestInterface
      */
     protected $_request;
 
     /**
-     * @param \MercadoPago\Core\Helper\Data $helperData
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Magento\Customer\Model\Session $customerSession
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
-     * @param \Magento\Framework\UrlInterface $urlBuilder
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
-     * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
-     * @param \Magento\Payment\Helper\Data $paymentData
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Payment\Model\Method\Logger $logger
-     * @param \Magento\Framework\Module\ModuleListInterface $moduleList
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
-     * @param \MercadoPago\Core\Model\Core $coreModel
+     * @param                                          \MercadoPago\Core\Helper\Data   $helperData
+     * @param                                          \Magento\Checkout\Model\Session $checkoutSession
+     * @param                                          Session                         $customerSession
+     * @param                                          OrderFactory                    $orderFactory
+     * @param                                          UrlInterface                    $urlBuilder
+     * @param                                          Context                         $context
+     * @param                                          Registry                        $registry
+     * @param                                          ExtensionAttributesFactory      $extensionFactory
+     * @param                                          AttributeValueFactory           $customAttributeFactory
+     * @param                                          Data                            $paymentData
+     * @param                                          ScopeConfigInterface            $scopeConfig
+     * @param                                          Logger                          $logger
+     * @param                                          ModuleListInterface             $moduleList
+     * @param                                          TimezoneInterface               $localeDate
+     * @param                                          Core                            $coreModel
+     * @param                                          RequestInterface                $request
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \MercadoPago\Core\Helper\Data $helperData,
         \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Customer\Model\Session $customerSession,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Framework\UrlInterface $urlBuilder,
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-        \Magento\Payment\Helper\Data $paymentData,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Payment\Model\Method\Logger $logger,
-        \Magento\Framework\Module\ModuleListInterface $moduleList,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-        \MercadoPago\Core\Model\Core $coreModel,
-        \Magento\Framework\App\RequestInterface $request
+        Session $customerSession,
+        OrderFactory $orderFactory,
+        UrlInterface $urlBuilder,
+        Context $context,
+        Registry $registry,
+        ExtensionAttributesFactory $extensionFactory,
+        AttributeValueFactory $customAttributeFactory,
+        Data $paymentData,
+        ScopeConfigInterface $scopeConfig,
+        Logger $logger,
+        ModuleListInterface $moduleList,
+        TimezoneInterface $localeDate,
+        Core $coreModel,
+        RequestInterface $request
     ) {
         parent::__construct(
             $context,
@@ -235,15 +264,15 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
             $localeDate
         );
 
-        $this->_helperData = $helperData;
-        $this->_coreModel = $coreModel;
+        $this->_helperData      = $helperData;
+        $this->_coreModel       = $coreModel;
         $this->_checkoutSession = $checkoutSession;
         $this->_customerSession = $customerSession;
-        $this->_orderFactory = $orderFactory;
-        $this->_urlBuilder = $urlBuilder;
-        $this->_request = $request;
-        $this->_scopeConfig = $scopeConfig;
-    }
+        $this->_orderFactory    = $orderFactory;
+        $this->_urlBuilder      = $urlBuilder;
+        $this->_request         = $request;
+        $this->_scopeConfig     = $scopeConfig;
+    }//end __construct()
 
     /**
      * {inheritdoc}
@@ -251,12 +280,12 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
     public function postRequest(DataObject $request, ConfigInterface $config)
     {
         return '';
-    }
+    }//end postRequest()
 
     /**
-     * @param DataObject $data
-     * @return $this|\Magento\Payment\Model\Method\Cc
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @param  DataObject $data
+     * @return $this|Cc
+     * @throws LocalizedException
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
@@ -270,6 +299,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
             if (empty($infoForm['additional_data'])) {
                 return $this;
             }
+
             $additionalData = $infoForm['additional_data'];
 
             if (isset($additionalData['one_click_pay']) && $additionalData['one_click_pay'] == 1) {
@@ -277,134 +307,134 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
             }
 
             if (empty($additionalData['token'])) {
-                $this->_helperData->log("CustomPayment::assignData - Token for payment creation was not generated, therefore it is not possible to continue the transaction");
-                throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['TOKEN_EMPTY']));
+                $this->_helperData->log('CustomPayment::assignData - Token for payment creation was not generated, therefore it is not possible to continue the transaction');
+                throw new LocalizedException(__(Response::PAYMENT_CREATION_ERRORS['TOKEN_EMPTY']));
             }
 
             $info = $this->getInfoInstance();
 
             $info->setAdditionalInformation($additionalData);
             $info->setAdditionalInformation('method', $infoForm['method']);
-            $info->setAdditionalInformation('payment_type_id', "credit_card");
+            $info->setAdditionalInformation('payment_type_id', 'credit_card');
             $info->setAdditionalInformation('payment_method', $additionalData['payment_method_id']);
             $info->setAdditionalInformation('cardholderName', $additionalData['card_holder_name']);
 
             if (!empty($additionalData['card_expiration_month']) && !empty($additionalData['card_expiration_year'])) {
-                $info->setAdditionalInformation('expiration_date', $additionalData['card_expiration_month'] . "/" . $additionalData['card_expiration_year']);
+                $info->setAdditionalInformation('expiration_date', $additionalData['card_expiration_month'] . '/' . $additionalData['card_expiration_year']);
             }
 
             if (isset($additionalData['gateway_mode'])) {
                 $info->setAdditionalInformation('gateway_mode', $additionalData['gateway_mode']);
             }
-
-        }
+        }//end if
 
         return $this;
-    }
+    }//end assignData()
 
     /**
-     * @param string $paymentAction
-     * @param object $stateObject
-     * @return $this|bool|\Magento\Payment\Model\Method\Cc
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \MercadoPago\Core\Model\Api\V1\Exception
+     * @param  string $paymentAction
+     * @param  object $stateObject
+     * @return $this|bool|Cc
+     * @throws LocalizedException
+     * @throws Exception
      */
     public function initialize($paymentAction, $stateObject)
     {
-        if ($this->getInfoInstance()->getAdditionalInformation('token') == "") {
-            $this->_helperData->log("CustomPayment::initialize - Token for payment creation was not generated, therefore it is not possible to continue the transaction");
-            throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['TOKEN_EMPTY']));
+        if ($this->getInfoInstance()->getAdditionalInformation('token') == '') {
+            $this->_helperData->log('CustomPayment::initialize - Token for payment creation was not generated, therefore it is not possible to continue the transaction');
+            throw new LocalizedException(__(Response::PAYMENT_CREATION_ERRORS['TOKEN_EMPTY']));
         }
 
         $preference = $this->createCustomPreference();
         return $this->createCustomPayment($preference);
-    }
+    }//end initialize()
 
     /**
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function createCustomPreference()
     {
         try {
-            $order = $this->getInfoInstance()->getOrder();
-            $payment = $order->getPayment();
+            $order       = $this->getInfoInstance()->getOrder();
+            $payment     = $order->getPayment();
             $paymentInfo = $this->getPaymentInfo($payment);
 
-            $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($paymentInfo, $this->_getQuote(), $order);
-            $preference['installments'] = (int)$payment->getAdditionalInformation("installments");
-            $paymentMethod = $payment->getAdditionalInformation("payment_method_id");
-            if ($paymentMethod == "") {
-                $paymentMethod = $payment->getAdditionalInformation("payment_method_selector");
+            $preference                 = $this->_coreModel->makeDefaultPreferencePaymentV1($paymentInfo, $this->_getQuote(), $order);
+            $preference['installments'] = (int) $payment->getAdditionalInformation('installments');
+            $paymentMethod              = $payment->getAdditionalInformation('payment_method_id');
+            if ($paymentMethod == '') {
+                $paymentMethod = $payment->getAdditionalInformation('payment_method_selector');
             }
 
             $preference['payment_method_id'] = $paymentMethod;
-            $preference['token'] = $payment->getAdditionalInformation("token");
-            $preference['metadata']['token'] = $payment->getAdditionalInformation("token");
+            $preference['token']             = $payment->getAdditionalInformation('token');
+            $preference['metadata']['token'] = $payment->getAdditionalInformation('token');
 
-            if ($payment->getAdditionalInformation("issuer_id") != "" && $payment->getAdditionalInformation("issuer_id") > -1) {
-                $preference['issuer_id'] = (int)$payment->getAdditionalInformation("issuer_id");
+            if ($payment->getAdditionalInformation('issuer_id') != '' && $payment->getAdditionalInformation('issuer_id') > -1) {
+                $preference['issuer_id'] = (int) $payment->getAdditionalInformation('issuer_id');
             }
 
-            if ($payment->getAdditionalInformation("gateway_mode")) {
+            if ($payment->getAdditionalInformation('gateway_mode')) {
                 $preference['processing_mode'] = 'gateway';
             }
 
-            $preference['binary_mode'] = $this->_scopeConfig->isSetFlag(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BINARY_MODE);
-            $preference['statement_descriptor'] = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_STATEMENT_DESCRIPTOR);
+            $preference['binary_mode']          = $this->_scopeConfig->isSetFlag(ConfigData::PATH_CUSTOM_BINARY_MODE);
+            $preference['statement_descriptor'] = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_STATEMENT_DESCRIPTOR);
 
-            $preference['metadata']['checkout'] = 'custom';
+            $preference['metadata']['checkout']      = 'custom';
             $preference['metadata']['checkout_type'] = 'credit_card';
 
-            $this->_helperData->log("CustomPayment::initialize - Credit Card: Preference to POST /v1/payments", self::LOG_NAME, $preference);
+            $this->_helperData->log('CustomPayment::initialize - Credit Card: Preference to POST /v1/payments', self::LOG_NAME, $preference);
             return $preference;
         } catch (\Exception $e) {
-            $this->_helperData->log("CustomPayment::initialize - There was an error retrieving the information to create the payment, more details: " . $e->getMessage());
-            throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
-        }
-    }
+            $this->_helperData->log('CustomPayment::initialize - There was an error retrieving the information to create the payment, more details: ' . $e->getMessage());
+            throw new LocalizedException(__(Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
+        }//end try
+    }//end createCustomPreference()
 
     /**
-     * @param $preference
+     * @param  $preference
      * @return $this|bool
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \MercadoPago\Core\Model\Api\V1\Exception
+     * @throws LocalizedException
+     * @throws Exception
      */
     public function createCustomPayment($preference)
     {
         $response = $this->_coreModel->postPaymentV1($preference);
         if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
-            $this->getInfoInstance()->setAdditionalInformation("paymentResponse", $response['response']);
+            $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $response['response']);
             return true;
         }
+
         $messageErrorToClient = $this->_coreModel->getMessageError($response);
-        $arrayLog = [
-            "response" => $response,
-            "message" => $messageErrorToClient
+        $arrayLog             = [
+            'response' => $response,
+            'message'  => $messageErrorToClient,
         ];
-        $this->_helperData->log("CustomPayment::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
-        throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
-    }
+        $this->_helperData->log('CustomPayment::initialize - The API returned an error while creating the payment, more details: ' . json_encode($arrayLog));
+        throw new LocalizedException(__($messageErrorToClient));
+    }//end createCustomPayment()
 
     /**
      * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function validate()
     {
-        \Magento\Payment\Model\Method\AbstractMethod::validate();
+        AbstractMethod::validate();
 
         return $this;
-    }
+    }//end validate()
 
     /**
      * Retrieves quote
      *
-     * @return \Magento\Quote\Model\Quote
+     * @return Quote
      */
     protected function _getQuote()
     {
         return $this->_checkoutSession->getQuote();
-    }
+    }//end _getQuote()
 
     /**
      * Retrieves Order
@@ -416,7 +446,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
     protected function _getOrder($incrementId)
     {
         return $this->_orderFactory->create()->loadByIncrementId($incrementId);
-    }
+    }//end _getOrder()
 
     /**
      * Return success page url
@@ -427,83 +457,83 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
     {
         $url = 'mercadopago/checkout/page';
         return $this->_urlBuilder->getUrl($url, ['_secure' => true]);
-    }
+    }//end getOrderPlaceRedirectUrl()
 
     /**
-     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
-     * @return bool
+     * @param  CartInterface|null $quote
+     * @return boolean
      */
-    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    public function isAvailable(CartInterface $quote=null)
     {
-        $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $isActive = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_ACTIVE, ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {
             return false;
         }
 
-        $publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $publicKey = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
         if (empty($publicKey)) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because public_key has not been configured.");
+            $this->_helperData->log('CustomPayment::isAvailable - Module not available because public_key has not been configured.');
             return false;
         }
 
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
         if (empty($accessToken)) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token has not been configured.");
+            $this->_helperData->log('CustomPayment::isAvailable - Module not available because access_token has not been configured.');
             return false;
         }
 
         $secure = $this->_request->isSecure();
-        if ($secure === FALSE && substr($publicKey, 0, 5) !== 'TEST-' && substr($accessToken, 0, 5) !== 'TEST-') {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because it has production credentials in non HTTPS environment.");
+        if ($secure === false && substr($publicKey, 0, 5) !== 'TEST-' && substr($accessToken, 0, 5) !== 'TEST-') {
+            $this->_helperData->log('CustomPayment::isAvailable - Module not available because it has production credentials in non HTTPS environment.');
             return false;
         }
 
         return $this->available($quote);
-    }
+    }//end isAvailable()
 
     /**
-     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
-     * @return bool
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @param  CartInterface|null $quote
+     * @return boolean
+     * @throws LocalizedException
      */
-    public function isAvailableMethod(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    public function isAvailableMethod(CartInterface $quote=null)
     {
         return $this->available($quote);
-    }
+    }//end isAvailableMethod()
 
     /**
-     * @return bool
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return boolean
+     * @throws LocalizedException
      */
-    public function available(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    public function available(CartInterface $quote=null)
     {
         $parent = parent::isAvailable($quote);
         $status = true;
 
         if (!$parent) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available due to magento rules.");
+            $this->_helperData->log('CustomPayment::isAvailable - Module not available due to magento rules.');
             $status = false;
         }
 
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
         if (empty($accessToken)) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token has not been configured.");
+            $this->_helperData->log('CustomPayment::isAvailable - Module not available because access_token has not been configured.');
             return false;
         }
 
-        $public_key = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $public_key = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
         if (empty($public_key)) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because public_key has not been configured.");
+            $this->_helperData->log('CustomPayment::isAvailable - Module not available because public_key has not been configured.');
             return false;
         }
 
         if (!$this->_helperData->isValidAccessToken($accessToken)) {
-            $this->_helperData->log("CustomPayment::isAvailable - Module not available because access_token is not valid.");
+            $this->_helperData->log('CustomPayment::isAvailable - Module not available because access_token is not valid.');
             return false;
         }
 
         return $status;
-    }
+    }//end available()
 
     /**
      * Get stored customers and cards from api
@@ -517,7 +547,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
         $customer = $this->getOrCreateCustomer($email);
 
         return $customer;
-    }
+    }//end getCustomerAndCards()
 
     /**
      * Saves customer and its corresponding card
@@ -532,7 +562,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
         if ($customer !== false) {
             $this->checkAndcreateCard($customer, $token, $payment_created);
         }
-    }
+    }//end customerAndCards()
 
     /**
      * Saves customer tokenized card to be used later by OCP
@@ -541,12 +571,12 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
      * @param $token
      * @param $payment
      *
-     * @return array|bool
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return array|boolean
+     * @throws LocalizedException
      */
     public function checkAndcreateCard($customer, $token, $payment)
     {
-        $accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
 
         $mp = $this->_helperData->getApiInstance($accessToken);
 
@@ -556,62 +586,66 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
                 && $card['expiration_month'] == $payment['card']['expiration_month']
                 && $card['expiration_year'] == $payment['card']['expiration_year']
             ) {
-                $this->_helperData->log("Card already exists", self::LOG_NAME, $card);
+                $this->_helperData->log('Card already exists', self::LOG_NAME, $card);
 
                 return $card;
             }
         }
-        $params = ["token" => $token];
+
+        $params = ['token' => $token];
         if (isset($payment['issuer_id'])) {
-            $params['issuer_id'] = (int)$payment['issuer_id'];
+            $params['issuer_id'] = (int) $payment['issuer_id'];
         }
+
         if (isset($payment['payment_method_id'])) {
             $params['payment_method_id'] = $payment['payment_method_id'];
         }
-        $card = $mp->post("/v1/customers/" . $customer['id'] . "/cards", $params);
 
-        $this->_helperData->log("Response create card", self::LOG_NAME, $card);
+        $card = $mp->post('/v1/customers/' . $customer['id'] . '/cards', $params);
+
+        $this->_helperData->log('Response create card', self::LOG_NAME, $card);
 
         if ($card['status'] == 201) {
             return $card['response'];
         }
 
         return false;
-    }
+    }//end checkAndcreateCard()
 
     /**
      * Saves to be used later by OCP
      *
      * @param $email
      *
-     * @return bool|array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return boolean|array
+     * @throws LocalizedException
      */
     public function getOrCreateCustomer($email)
     {
         if (empty($email)) {
             return false;
         }
-        //get access_token
+
+        // get access_token
         if (!$this->_accessToken) {
-            $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+            $this->_accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
         }
 
         $mp = $this->_helperData->getApiInstance($this->_accessToken);
 
-        $customer = $mp->get("/v1/customers/search", ["email" => $email]);
+        $customer = $mp->get('/v1/customers/search', ['email' => $email]);
 
-        $this->_helperData->log("Response search customer", self::LOG_NAME, $customer);
+        $this->_helperData->log('Response search customer', self::LOG_NAME, $customer);
 
         if ($customer['status'] == 200) {
             if ($customer['response']['paging']['total'] > 0) {
                 return $customer['response']['results'][0];
             } else {
-                $this->_helperData->log("Customer not found: " . $email, self::LOG_NAME);
+                $this->_helperData->log('Customer not found: ' . $email, self::LOG_NAME);
 
-                $customer = $mp->post("/v1/customers", ["email" => $email]);
+                $customer = $mp->post('/v1/customers', ['email' => $email]);
 
-                $this->_helperData->log("Response create customer", self::LOG_NAME, $customer);
+                $this->_helperData->log('Response create customer', self::LOG_NAME, $customer);
 
                 if ($customer['status'] == 201) {
                     return $customer['response'];
@@ -622,7 +656,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
         } else {
             return false;
         }
-    }
+    }//end getOrCreateCustomer()
 
     /**
      * @param $info
@@ -636,7 +670,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
         }
 
         return $info;
-    }
+    }//end cleanFieldsOcp()
 
     /**
      * Set info to payment object
@@ -649,11 +683,11 @@ class Payment extends \Magento\Payment\Model\Method\Cc implements GatewayInterfa
     {
         $payment_info = [];
 
-        if ($payment->getAdditionalInformation("doc_number") != "") {
-            $payment_info['identification_type'] = $payment->getAdditionalInformation("doc_type");
-            $payment_info['identification_number'] = $payment->getAdditionalInformation("doc_number");
+        if ($payment->getAdditionalInformation('doc_number') != '') {
+            $payment_info['identification_type']   = $payment->getAdditionalInformation('doc_type');
+            $payment_info['identification_number'] = $payment->getAdditionalInformation('doc_number');
         }
 
         return $payment_info;
-    }
-}
+    }//end getPaymentInfo()
+}//end class
