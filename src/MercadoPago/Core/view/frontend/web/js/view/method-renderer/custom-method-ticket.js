@@ -99,6 +99,7 @@ define(
           document.querySelector(MPv1Ticket.selectors.city).value = "city" in billingAddress ? billingAddress.city : '';
           document.querySelector(MPv1Ticket.selectors.state).value = "regionCode" in billingAddress ? billingAddress.regionCode : '';
           document.querySelector(MPv1Ticket.selectors.zipcode).value = "postcode" in billingAddress ? billingAddress.postcode : '';
+          document.querySelector(MPv1Ticket.selectors.docNumber).value  = "vatId" in billingAddress ? billingAddress.vatId : '';
         }
       },
 
@@ -242,7 +243,7 @@ define(
        */
       changePaymentMethodSelector: function (paymentMethodSelected) {
         if (paymentMethodSelected.method != 'mercadopago_customticket') {
-          
+
         }
       },
 
