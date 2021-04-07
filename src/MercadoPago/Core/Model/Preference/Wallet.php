@@ -514,13 +514,13 @@ class Wallet
         $discount = $this->getDiscountAmount($quote, $siteId);
 
         if ($discount < 0) {
-            $items[] = $this->getItemDiscountTax('Discount', $discount, $siteId);
+            $items[] = $this->getItemDiscountTax(__('Discount'), $discount, $siteId);
         }
 
         $tax = $this->getTaxAmount($quote, $siteId);
 
         if ($tax > 0) {
-            $items[] = $this->getItemDiscountTax('Tax', $tax, $siteId);
+            $items[] = $this->getItemDiscountTax(__('Tax'), $tax, $siteId);
         }
 
         return $items;
