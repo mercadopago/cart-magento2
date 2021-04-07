@@ -18,7 +18,9 @@ class PaymentMethodsBasic extends PaymentMethodsAbstract implements \Magento\Fra
 
         if (isset($response['success'])) {
             foreach ($response['success'] as $pm) {
-                $methods[] = ['value' => $pm['id'], 'label' => __($pm['name'])];
+                if (isset($pm['id'], $pm['name'])) {
+                    $methods[] = ['value' => $pm['id'], 'label' => __($pm['name'])];
+                }
             }
         }
         $this->coreHelper->log("PaymentMethodsBasic:: Displayed", 'mercadopago', $methods);
