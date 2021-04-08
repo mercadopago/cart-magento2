@@ -7,7 +7,7 @@
             "email": "plugins.dev@mercadopago.com"
         }
     ],
-    "type": "magento2-component",
+    "type": "magento2-module",
     "version": "3.8.2",
     "license": [
         "OSL-3.0",
