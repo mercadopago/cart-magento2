@@ -78,7 +78,7 @@ $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
             <p><?php echo __('Payment Status: %1', ucfirst($paymentResponse['status'])); ?></p>
         <?php } ?>
 
-        <?php if (isset($paymentResponse['id'])) { ?>
+        <?php if (isset($paymentResponse['status_detail'])) { ?>
             <p><?php echo __('Payment Status Detail: %1', ucfirst($paymentResponse['status_detail'])); ?></p>
         <?php } ?>
 

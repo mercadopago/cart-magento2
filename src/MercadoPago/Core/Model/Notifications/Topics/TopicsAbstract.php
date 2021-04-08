@@ -139,7 +139,7 @@ abstract class TopicsAbstract
      * @param $order
      * @param $newStatusOrder
      * @param $message
-     * @return mixed
+     * @return Order
      */
     public function setStatusAndComment($order, $newStatusOrder, $message)
     {

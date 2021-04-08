@@ -526,19 +526,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             ];
         }
 
-        if (!empty($paymentInfo['coupon_code'])) {
-            $couponCode = $paymentInfo['coupon_code'];
-            $this->_coreHelper->log("Validating coupon_code: " . $couponCode, 'mercadopago-custom.log');
-
-            $coupon = $this->validCoupon($couponCode);
-            $this->_coreHelper->log("Response API Coupon: ", 'mercadopago-custom.log', $coupon);
-
-            $couponInfo = $this->getCouponInfo($coupon, $couponCode);
-            $preference['coupon_amount'] = $couponInfo['coupon_amount'];
-            $preference['coupon_code'] = $couponInfo['coupon_code'];
-            $preference['campaign_id'] = $couponInfo['campaign_id'];
-        }
-
         $this->_coreHelper->log("==> makeDefaultPreferencePaymentV1 -> preference", 'mercadopago-standard.log', $preference);
 
         $this->_coreHelper->log("==> makeDefaultPreferencePaymentV1", 'mercadopago-standard.log', $paymentInfo);

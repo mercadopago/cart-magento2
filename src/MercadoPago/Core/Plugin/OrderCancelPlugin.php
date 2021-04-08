@@ -38,6 +38,12 @@ class OrderCancelPlugin
 
     protected $scopeConfig;
 
+    /**
+     * OrderCancelPlugin constructor.
+     * @param Context $context
+     * @param Data $dataHelper
+     * @param ScopeConfigInterface $scopeConfig
+     */
     public function __construct(
         Context $context,
         Data $dataHelper,
