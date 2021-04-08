@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.8.2] - 2021-04-08
+
+### Fixed
+- Wallet purchase - Using discount and taxes to made final price
+- Wallet purchase - Adjusted JS to clean and use new instance
+- Pix - Change word PIX (uppercase) to Pix (capitalize)
+- SSL Check - Not check when using test credentials
+- Javascript - Custom checkout check undefined or null
+- Notification - Update paymente status and status description, not clear all data
+
+### Removed
+- Removed unused Mercado Pago API's
+
 ## [3.8.1] - 2021-04-01
 
 ### Fixed

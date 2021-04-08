@@ -41,7 +41,6 @@ define(
       validateHandler: null,
       redirectAfterPlaceOrder: false,
       initialGrandTotal: null,
-      walletButtonScript: document.createElement("script"),
 
       initApp: function () {
         var self = this;
@@ -71,11 +70,31 @@ define(
 
           //get action change payment method
           quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
-
-          //insert wallet button on form
-          var wb_button = document.querySelector("body");
-          wb_button.appendChild(this.walletButtonScript);
         }
+      },
+
+      toogleWalletButton: function () {
+        var existsScriptTag = document.querySelector('#wallet_purchase');
+        var existsSubmit = document.querySelector('.mercadopago-button');
+        var existsCheckoutWrapper = document.querySelector('.mp-mercadopago-checkout-wrapper');
+        var scriptTag = document.createElement("script");
+        scriptTag.setAttribute('id', 'wallet_purchase');
+
+        if (existsScriptTag) {
+          existsScriptTag.remove();
+        }
+
+        if (existsSubmit) {
+          existsSubmit.remove();
+        }
+
+        if (existsCheckoutWrapper) {
+          existsCheckoutWrapper.remove();
+        }
+
+        //insert wallet button on form
+        var wb_button = document.querySelector("body");
+        wb_button.appendChild(scriptTag);
       },
 
       setPlaceOrderHandler: function (handler) {
@@ -206,16 +225,18 @@ define(
         setPaymentInformationAction(this.messageContainer, {method: 'mercadopago_custom'}).done(() => {
           $.getJSON('/mercadopago/wallet/preference').done(function (response){
             var preferenceId = response.preference.id
+            self.toogleWalletButton();
             if (window.checkoutConfig.payment[self.getCode()] != undefined) {
               var wb_link = window.checkoutConfig.payment[self.getCode()]['wallet_button_link'];
               var mp_public_key = window.checkoutConfig.payment[self.getCode()]['public_key'];
+              var scriptTag = document.querySelector('#wallet_purchase');
 
-              self.walletButtonScript.src = wb_link;
-              self.walletButtonScript.setAttribute('data-public-key', mp_public_key);
-              self.walletButtonScript.setAttribute('data-preference-id', preferenceId);
-              self.walletButtonScript.setAttribute('data-open', 'false');
-              self.walletButtonScript.async = true;
-              self.walletButtonScript.onload = function () {
+              scriptTag.src = wb_link;
+              scriptTag.setAttribute('data-public-key', mp_public_key);
+              scriptTag.setAttribute('data-preference-id', preferenceId);
+              scriptTag.setAttribute('data-open', 'false');
+              scriptTag.async = true;
+              scriptTag.onload = function () {
                 var mecadopagoButton = document.querySelector('.mercadopago-button');
                 mecadopagoButton.style.display = 'none';
                 mecadopagoButton.click();

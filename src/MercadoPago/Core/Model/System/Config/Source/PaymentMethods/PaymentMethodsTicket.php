@@ -18,7 +18,11 @@ class PaymentMethodsTicket extends PaymentMethodsAbstract implements \Magento\Fr
 
         if (isset($response['success'])) {
             foreach ($response['success'] as $pm) {
-                if (isset($pm['payment_type_id']) && !empty($pm['payment_type_id']) && $pm['payment_type_id'] == "ticket" || $pm['payment_type_id'] == "atm") {
+                if (
+                    isset($pm['id'], $pm['name'], $pm['payment_type_id'])
+                    && !empty($pm['payment_type_id'])
+                    && ($pm['payment_type_id'] === "ticket" || $pm['payment_type_id'] === "atm")
+                ) {
                     $methods[] = ['value' => $pm['id'], 'label' => __($pm['name'])];
                 }
             }
