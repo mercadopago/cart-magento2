@@ -121,64 +121,6 @@ class RestClient
             "response" => json_decode($api_result, true)
         );
 
-        /*if ($response['status'] >= 400) {
-            $message = $response['response']['message'];
-            if (isset ($response['response']['cause'])) {
-                if (isset ($response['response']['cause']['code']) && isset ($response['response']['cause']['description'])) {
-                    $message .= " - ".$response['response']['cause']['code'].': '.$response['response']['cause']['description'];
-                } else if (is_array ($response['response']['cause'])) {
-                    foreach ($response['response']['cause'] as $cause) {
-                        $message .= " - ".$cause['code'].': '.$cause['description'];
-                    }
-                }
-            }
-
-            throw new Exception ($message, $response['status']);
-        }*/
-
-        if ($response != null && $response['status'] >= 400 && self::$check_loop == 0) {
-            try {
-                self::$check_loop = 1;
-                $message = null;
-                $payloads = null;
-                $endpoint = null;
-                $errors = array();
-                if (isset($response['response'])) {
-                    if (isset($response['response']['message'])) {
-                        $message = $response['response']['message'];
-                    }
-                    if (isset($response['response']['cause'])) {
-                        if (isset($response['response']['cause']['code']) && isset($response['response']['cause']['description'])) {
-                            $message .= " - " . $response['response']['cause']['code'] . ': ' . $response['response']['cause']['description'];
-                        } else if (is_array($response['response']['cause'])) {
-                            foreach ($response['response']['cause'] as $cause) {
-                                $message .= " - " . $cause['code'] . ': ' . $cause['description'];
-                            }
-                        }
-                    }
-                }
-
-                //add data
-                if (isset($data) && $data != null) {
-                    $payloads = json_encode($data);
-                }
-                //add uri
-                if (isset($uri) && $uri != null) {
-                    $endpoint = $uri;
-                }
-
-                $errors[] = array(
-                    "endpoint" => $endpoint,
-                    "message" => $message,
-                    "payloads" => $payloads
-                );
-
-                self::sendErrorLog($response['status'], $errors);
-
-            } catch (\Exception $e) {
-                error_log("error to call API LOGS" . $e);
-            }
-        }
         self::$check_loop = 0;
 
         curl_close($connect);
@@ -278,25 +220,4 @@ class RestClient
     {
         self::$country_initial = $country_initial;
     }
-
-    public static function sendErrorLog($code, $errors)
-    {
-        $server_version = php_uname();
-        $php_version = phpversion();
-
-        $data = array(
-            "code" => $code,
-            "errors" => $errors,
-            "module" => self::PLATAFORM_ID,
-            "module_version" => self::$module_version,
-            "url_store" => self::$url_store,
-            "email_admin" => self::$email_admin,
-            "country_initial" => self::$country_initial,
-            "server_version" => $server_version,
-            "code_lang" => "PHP " . $php_version
-        );
-
-        return self::post("/modules/log", $data);
-    }
-
 }
