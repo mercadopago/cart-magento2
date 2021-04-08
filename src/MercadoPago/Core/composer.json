@@ -20,10 +20,6 @@
         }
     ],
     "require": {
-        "magento/magento-composer-installer": "*",
-        "magento/module-payment": "*",
-        "magento/module-checkout": "*",
-        "magento/module-sales": "*",
         "ext-json": "*"
     },
     "require-dev": {
@@ -38,10 +34,10 @@
     },
     "autoload": {
         "psr-4": {
-            "MercadoPago\\Core\\": ""
+            "MercadoPago\\Core\\": "src/MercadoPago/Core"
         },
         "files": [
-            "registration.php"
+            "src/MercadoPago/Core/registration.php"
         ]
     }
 }
