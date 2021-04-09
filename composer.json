@@ -7,8 +7,8 @@
             "email": "plugins.dev@mercadopago.com"
         }
     ],
-    "type": "magento2-component",
-    "version": "3.8.1",
+    "type": "magento2-module",
+    "version": "3.8.2",
     "license": [
         "OSL-3.0",
         "AFL-3.0"
@@ -20,10 +20,6 @@
         }
     ],
     "require": {
-        "magento/magento-composer-installer": "*",
-        "magento/module-payment": "*",
-        "magento/module-checkout": "*",
-        "magento/module-sales": "*",
         "ext-json": "*"
     },
     "require-dev": {
