@@ -444,7 +444,14 @@ class Basic extends AbstractMethod
             $arr['back_urls']['pending'] = $backUrls['pending'];
             $arr['back_urls']['failure'] = $backUrls['failure'];
 
-            $arr['notification_url'] = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL, ['source_news' => 'ipn']);
+            $notification_params = array(
+                '_query' => array(
+                    'source_news' => 'ipn'
+                )
+            );
+
+            $arr['notification_url'] = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL, $notification_params);
+
             $arr['payment_methods']['excluded_payment_methods'] = $this->getExcludedPaymentsMethods($config);
             $arr['payment_methods']['installments'] = (int)$config['installments'];
 

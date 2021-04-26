@@ -381,6 +381,12 @@ class Wallet
     {
         $this->version->afterLoad();
 
+        $notification_params = array(
+            '_query' => array(
+                'source_news' => 'ipn'
+            )
+        );
+
         return [
             'items'                => [],
             'payer'                => [],
@@ -398,7 +404,7 @@ class Wallet
                 'mode' => 'not_specified',
                 'cost' => 0.00,
             ],
-            'notification_url'     => $this->urlBuilder->getUrl(self::NOTIFICATION_PATH, ['source_news' => 'ipn']),
+            'notification_url'     => $this->urlBuilder->getUrl(self::NOTIFICATION_PATH, $notification_params),
             'statement_descriptor' => $this->getStateDescriptor(),
             'external_reference'   => '',
             'binary_mode'          => $this->getBinaryMode(),

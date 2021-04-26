@@ -477,11 +477,14 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         /* INIT PREFERENCE */
         $preference = [];
 
-        // Check if notification URL contains localhost
-        $notification_url = $this->_urlBuilder->getUrl(
-            'mercadopago/notifications/custom',
-            ['source_news' => 'webhooks']
+        $notification_params = array(
+            '_query' => array(
+                'source_news' => 'webhooks'
+            )
         );
+
+        // Check if notification URL contains localhost
+        $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom', $notification_params);
 
         if (isset($notification_url) && !strrpos($notification_url, 'localhost')) {
             $preference['notification_url'] = $notification_url;
