@@ -36,7 +36,7 @@ class Wallet
 {
     const PURPOSE_WALLET_PURCHASE = 'wallet_purchase';
 
-    const NOTIFICATION_PATH = 'mercadopago/wallet/notification';
+    const NOTIFICATION_PATH = 'mercadopago/wallet/notification?source_news=ipn';
 
     const SUCCESS_PATH = 'mercadopago/wallet/success';
 

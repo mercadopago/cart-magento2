@@ -24,7 +24,8 @@ use MercadoPago\Core\Helper\Data as dataHelper;
 class Basic extends AbstractMethod
 {
     const FAILURE_URL = 'mercadopago/basic/failure';
-    const NOTIFICATION_URL = 'mercadopago/notifications/basic';
+
+    const NOTIFICATION_URL = 'mercadopago/notifications/basic?source_news=ipn';
 
     protected $_orderFactory;
     protected $_checkoutSession;

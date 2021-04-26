@@ -478,7 +478,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $preference = [];
 
         // Check if notification URL contains localhost
-        $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom');
+        $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom?source_news=webhooks');
         if (isset($notification_url) && !strrpos($notification_url, 'localhost')) {
             $preference['notification_url'] = $notification_url;
         }
