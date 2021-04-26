@@ -36,7 +36,7 @@ class Wallet
 {
     const PURPOSE_WALLET_PURCHASE = 'wallet_purchase';
 
-    const NOTIFICATION_PATH = 'mercadopago/wallet/notification?source_news=ipn';
+    const NOTIFICATION_PATH = 'mercadopago/wallet/notification';
 
     const SUCCESS_PATH = 'mercadopago/wallet/success';
 
@@ -398,7 +398,7 @@ class Wallet
                 'mode' => 'not_specified',
                 'cost' => 0.00,
             ],
-            'notification_url'     => $this->urlBuilder->getUrl(self::NOTIFICATION_PATH),
+            'notification_url'     => $this->urlBuilder->getUrl(self::NOTIFICATION_PATH) . '?source_news=ipn',
             'statement_descriptor' => $this->getStateDescriptor(),
             'external_reference'   => '',
             'binary_mode'          => $this->getBinaryMode(),

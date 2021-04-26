@@ -25,7 +25,7 @@ class Basic extends AbstractMethod
 {
     const FAILURE_URL = 'mercadopago/basic/failure';
 
-    const NOTIFICATION_URL = 'mercadopago/notifications/basic?source_news=ipn';
+    const NOTIFICATION_URL = 'mercadopago/notifications/basic';
 
     protected $_orderFactory;
     protected $_checkoutSession;
@@ -444,7 +444,7 @@ class Basic extends AbstractMethod
             $arr['back_urls']['pending'] = $backUrls['pending'];
             $arr['back_urls']['failure'] = $backUrls['failure'];
 
-            $arr['notification_url'] = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL);
+            $arr['notification_url'] = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL) . '?source_news=ipn';
             $arr['payment_methods']['excluded_payment_methods'] = $this->getExcludedPaymentsMethods($config);
             $arr['payment_methods']['installments'] = (int)$config['installments'];
 
