@@ -398,7 +398,7 @@ class Wallet
                 'mode' => 'not_specified',
                 'cost' => 0.00,
             ],
-            'notification_url'     => $this->urlBuilder->getUrl(self::NOTIFICATION_PATH, ['source_news' => 'webhooks']),
+            'notification_url'     => $this->urlBuilder->getUrl(self::NOTIFICATION_PATH, ['source_news' => 'ipn']),
             'statement_descriptor' => $this->getStateDescriptor(),
             'external_reference'   => '',
             'binary_mode'          => $this->getBinaryMode(),
