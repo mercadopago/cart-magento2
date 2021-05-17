@@ -551,7 +551,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $this->_version->afterLoad();
 
         $preference['metadata'] = [
-            "site" => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_COUNTRY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
+            "site" => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
             "platform" => "Magento",
             "platform_version" => $this->_productMetaData->getVersion(),
             "module_version" => $this->_version->getValue(),
