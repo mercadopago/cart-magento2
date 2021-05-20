@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Adjusted to use path site instead advanced country
 - Adjusted the total value of the installments presented at checkout
+
 ## [3.8.4] - 2021-04-30
 
 ### Added
