@@ -143,7 +143,7 @@ define(
       },
 
       getInitialGrandTotal: function () {
-        var initialTotal = quote.totals().grand_total;
+        var initialTotal = quote.totals().base_grand_total;
         return initialTotal;
       },
 

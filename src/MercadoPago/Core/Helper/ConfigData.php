@@ -67,7 +67,6 @@ class ConfigData
 
     //advanced configuration
     const PATH_ADVANCED_LOG = 'payment/mercadopago/logs';
-    const PATH_ADVANCED_COUNTRY = 'payment/mercadopago/country';
     const PATH_ADVANCED_CATEGORY = 'payment/mercadopago/category_id';
     const PATH_ADVANCED_SUCCESS_PAGE = 'payment/mercadopago/use_successpage_mp';
     const PATH_ADVANCED_CONSIDER_DISCOUNT = 'payment/mercadopago/consider_discount';
