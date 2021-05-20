@@ -26,6 +26,11 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     protected $_code = self::CODE;
 
     /**
+     * @var string
+     */
+    protected $_infoBlockType = 'MercadoPago\Core\Block\CustomPix\Info';
+
+    /**
      * @param  DataObject $data
      * @return $this|\MercadoPago\Core\Model\Custom\Payment
      * @throws LocalizedException

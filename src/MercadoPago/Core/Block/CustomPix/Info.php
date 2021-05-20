@@ -1,6 +1,6 @@
 <?php
 
-namespace MercadoPago\Core\Block;
+namespace MercadoPago\Core\Block\CustomPix;
 
 /**
  * Class Info
@@ -15,6 +15,10 @@ class Info extends \Magento\Payment\Block\Info
      */
     protected $_orderFactory;
 
+    /**
+     * @var string
+     */
+    protected $_template = 'MercadoPago_Core::custom_pix/info.phtml';
 
     /**
      * Constructor
