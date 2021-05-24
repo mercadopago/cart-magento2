@@ -14,17 +14,16 @@ $paymentTitle = $block->getMethod()->getConfigData('title', $block->getInfo()->g
 <?= $block->escapeHtml($paymentTitle) ?>
 
 <?php if ($specificInfo) : ?>
-    <h1>Pix Test! Admin</h1>
     <table class="data-table admin__table-secondary">
         <?php foreach ($specificInfo as $label => $value) : ?>
             <?php
-                if ($label === 'qrcode_url') :
+                if ($label === 'QR Code') :
                     continue;
                 endif;
             ?>
             <tr>
                 <th><?= $block->escapeHtml($label) ?>:</th>
-                <td>
+                <td style="word-break: break-word;">
                     <?php if ($label === 'QR Code do Pix' || $label === 'Pix QR Code') : ?>
                         <img src="data:image/jpg;base64,<?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray($value, true)))) ?>" width="276" style="" />
                     <?php else : ?>

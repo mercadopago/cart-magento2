@@ -12,7 +12,6 @@ $specificInfo = $block->getSpecificInformation();
 $title = $block->escapeHtml($block->getMethod()->getTitle());
 ?>
 <dl class="payment-method">
-    <h1>PIX TEST USER</h1>
     <dt class="title"><?= /* @noEscape */ $title ?></dt>
     <?php if ($specificInfo) : ?>
         <dd class="content">
@@ -26,8 +25,8 @@ $title = $block->escapeHtml($block->getMethod()->getTitle());
                     ?>
                     <tr>
                         <th scope="row"><?= $block->escapeHtml($label) ?></th>
-                        <td>
-                            <?php if ($label === 'qrcode_url') : ?>
+                        <td style="word-break: break-word;">
+                            <?php if ($label === 'QR Code') : ?>
                                 <img src="<?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray($value, true)))) ?>" width="276" style="" />
                             <?php else : ?>
                                 <?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray($value, true)))) ?>

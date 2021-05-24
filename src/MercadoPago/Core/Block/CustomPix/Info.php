@@ -59,6 +59,11 @@ class Info extends \Magento\Payment\Block\Info
             $data[$title->__toString()] = $paymentResponse['id'];
         }
 
+        $data['QR Code'] = $this->_urlBuilder->getRouteUrl('mercadopago/custompix/qrcode', [
+            'order' => $paymentResponse['external_reference'],
+            'payment' => $paymentResponse['id']
+        ]);
+
         if (isset($paymentResponse['point_of_interaction'])
             && isset($paymentResponse['point_of_interaction']['transaction_data'])
         ) {
@@ -99,11 +104,6 @@ class Info extends \Magento\Payment\Block\Info
             $title = __('Payment Status Detail');
             $data[$title->__toString()] = ucwords(preg_replace('/_/',' ', $paymentResponse['status_detail']));
         }
-
-        $data['qrcode_url'] = $this->_urlBuilder->getRouteUrl('mercadopago/custompix/qrcode', [
-            'order' => $paymentResponse['external_reference'],
-            'payment' => $paymentResponse['id']
-        ]);
 
         return $transport->setData(array_merge($data, $transport->getData()));
 
