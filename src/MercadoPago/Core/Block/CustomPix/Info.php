@@ -2,16 +2,18 @@
 
 namespace MercadoPago\Core\Block\CustomPix;
 
+use Magento\Framework\DataObject;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Sales\Model\OrderFactory;
+
 /**
  * Class Info
- *
- * @package MercadoPago\Core\Block
  */
 class Info extends \Magento\Payment\Block\Info
 {
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var OrderFactory
      */
     protected $_orderFactory;
 
@@ -20,15 +22,16 @@ class Info extends \Magento\Payment\Block\Info
      */
     protected $_template = 'MercadoPago_Core::custom_pix/info.phtml';
 
+
     /**
      * Constructor
      *
-     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param Context $context
      * @param array                                            $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
+        Context $context,
+        OrderFactory $orderFactory,
         array $data=[]
     ) {
         parent::__construct($context, $data);
@@ -41,7 +44,7 @@ class Info extends \Magento\Payment\Block\Info
      * Prepare information specific to current payment method
      *
      * @param  null | array $transport
-     * @return \Magento\Framework\DataObject
+     * @return DataObject
      */
     protected function _prepareSpecificInformation($transport=null)
     {
@@ -56,29 +59,30 @@ class Info extends \Magento\Payment\Block\Info
             $data[$title->__toString()] = $paymentResponse['id'];
         }
 
-        if (isset($paymentResponse['card']) && isset($paymentResponse['card']['first_six_digits']) && isset($paymentResponse['card']['last_four_digits'])) {
-            $title = __('Card Number');
-            $data[$title->__toString()] = $paymentResponse['card']['first_six_digits'].'xxxxxx'.$paymentResponse['card']['last_four_digits'];
+        if (isset($paymentResponse['point_of_interaction'])
+            && isset($paymentResponse['point_of_interaction']['transaction_data'])
+        ) {
+            $transactionData = $paymentResponse['point_of_interaction']['transaction_data'];
+            if (isset($transactionData['qr_code'])) {
+                $title = __('Pix Code');
+                $data[$title->__toString()] = $transactionData['qr_code'];
+            }
+
+            if (isset($transactionData['qr_code_base64'])) {
+                $title = __('Pix QR Code');
+                $data[$title->__toString()] = $transactionData['qr_code_base64'];
+            }
         }
 
-        if (isset($paymentResponse['card']) && isset($paymentResponse['card']['expiration_month']) && isset($paymentResponse['card']['expiration_year'])) {
-            $title = __('Expiration Date');
-            $data[$title->__toString()] = $paymentResponse['card']['expiration_month'].'/'.$paymentResponse['card']['expiration_year'];
-        }
-
-        if (isset($paymentResponse['card']) && isset($paymentResponse['card']['cardholder']) && isset($paymentResponse['card']['cardholder']['name'])) {
-            $title = __('Card Holder Name');
-            $data[$title->__toString()] = $paymentResponse['card']['cardholder']['name'];
+        if (isset($paymentResponse['date_of_expiration'])) {
+            $pixExpiration = strtotime($paymentResponse['date_of_expiration']);
+            $title = __('Pix Expiration');
+            $data[$title->__toString()] = date('d/m/Y H:i:s', $pixExpiration);
         }
 
         if (isset($paymentResponse['payment_method_id'])) {
             $title = __('Payment Method');
             $data[$title->__toString()] = ucfirst($paymentResponse['payment_method_id']);
-        }
-
-        if (isset($paymentResponse['installments'])) {
-            $title = __('Installments');
-            $data[$title->__toString()] = $paymentResponse['installments'];
         }
 
         if (isset($paymentResponse['statement_descriptor'])) {
@@ -88,18 +92,19 @@ class Info extends \Magento\Payment\Block\Info
 
         if (isset($paymentResponse['status'])) {
             $title = __('Payment Status');
-            $data[$title->__toString()] = ucfirst($paymentResponse['status']);
+            $data[$title->__toString()] = ucwords(__($paymentResponse['status']));
         }
 
         if (isset($paymentResponse['status_detail'])) {
             $title = __('Payment Status Detail');
-            $data[$title->__toString()] = ucfirst($paymentResponse['status_detail']);
+            $data[$title->__toString()] = ucwords(preg_replace('/_/',' ', $paymentResponse['status_detail']));
         }
 
-        // LINK TO TICKET disable
-        // if(isset($paymentResponse['transaction_details']) && $paymentResponse['transaction_details']['external_resource_url']){
-        // $data['Link'] = $paymentResponse['transaction_details']['external_resource_url'];
-        // }
+        $data['qrcode_url'] = $this->_urlBuilder->getRouteUrl('mercadopago/custompix/qrcode', [
+            'order' => $paymentResponse['external_reference'],
+            'payment' => $paymentResponse['id']
+        ]);
+
         return $transport->setData(array_merge($data, $transport->getData()));
 
     }//end _prepareSpecificInformation()
