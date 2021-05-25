@@ -56,7 +56,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>-1</sort_order>
                 <payment_action>authorize</payment_action>
-                <cctypes>AE,VI,MC,DI,JCB</cctypes>
+                <cctypes>VI,MC</cctypes>
             </mercadopago_custom_pix>
             <mercadopago>
                 <order_status_approved>processing</order_status_approved>

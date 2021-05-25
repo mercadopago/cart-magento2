@@ -21,11 +21,11 @@
             <comment>By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.</comment>
         </field>
 
-        <field id="expiration_days" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+        <field id="expiration_minutes" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Expiration of Pix</label>
-            <source_model>MercadoPago\Core\Model\System\Config\Source\PixExpirationDays</source_model>
-            <config_path>payment/mercadopago_custom_pix/expiration_days</config_path>
-            <comment>Set up to how many days your customers will be able to pay</comment>
+            <source_model>MercadoPago\Core\Model\System\Config\Source\PixExpirationMinutes</source_model>
+            <config_path>payment/mercadopago_custom_pix/expiration_minutes</config_path>
+            <comment>Set up to how many minutes or hours or days your customers will be able to pay</comment>
         </field>
 
         <field id="sort_order" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">

@@ -2,13 +2,10 @@
 
 namespace MercadoPago\Core\Controller\CustomPix;
 
-use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\Request\Http;
+use Magento\Framework\Controller\Result\Raw;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Model\OrderFactory;
-use MercadoPago\Core\Lib\RestClient;
 
 /**
  * Class Qrcode
@@ -35,6 +32,7 @@ class Qrcode extends Action
             $context
         );
         $this->order = $order;
+
     }//end __construct()
 
 
@@ -43,9 +41,24 @@ class Qrcode extends Action
      */
     public function execute()
     {
-        $orderId = $this->_request->getParam('order', false);
+        $orderId   = $this->_request->getParam('order', false);
         $paymentId = (int) $this->_request->getParam('payment', false);
 
+        $base64ImageString = $this->getImageBase64String($orderId, $paymentId);
+
+        if (!$base64ImageString) {
+            return false;
+        }
+
+        $image = $this->getImage($base64ImageString);
+
+        return $this->getRawResponse($image);
+
+    }//end execute()
+
+
+    protected function getImageBase64String($orderId, $paymentId)
+    {
         if (!$orderId || !$paymentId) {
             return false;
         }
@@ -53,7 +66,7 @@ class Qrcode extends Action
         $order = $this->order->loadByIncrementId($orderId);
 
         if (!$order) {
-            return  false;
+            return false;
         }
 
         $paymentResponse = $order->getPayment()->getAdditionalInformation('paymentResponse');
@@ -62,6 +75,7 @@ class Qrcode extends Action
             return false;
         }
 
+        $base64Image = false;
 
         if (isset($paymentResponse['point_of_interaction'])
             && isset($paymentResponse['point_of_interaction']['transaction_data'])
@@ -71,18 +85,45 @@ class Qrcode extends Action
             }
         }
 
-        if (!$base64Image) {
-            return false;
-        }
 
-        $data = base64_decode($base64Image);
+        return $base64Image;
+
+    }//end getImageBase64String()
+
+
+    /**
+     * @param  $base64ImageString
+     * @return false|string
+     */
+    protected function getImage($base64ImageString)
+    {
+        $data = base64_decode($base64ImageString);
 
         $im = imagecreatefromstring($data);
-        header('Content-Type: image/jpeg');
+        ob_start();
         imagejpeg($im);
+        $image = ob_get_contents();
         imagedestroy($im);
+        ob_end_clean();
 
-    }//end execute()
+        return $image;
+
+    }//end getImage()
+
+
+    /**
+     * @param  $content
+     * @return Raw
+     */
+    protected function getRawResponse($content)
+    {
+        $result = new Raw();
+        $result->setHeader('Content-Type', 'image/jpeg');
+        $result->setContents($content);
+
+        return $result;
+
+    }//end getRawResponse()
 
 
 }//end class

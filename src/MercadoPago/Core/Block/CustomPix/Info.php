@@ -27,7 +27,7 @@ class Info extends \Magento\Payment\Block\Info
      * Constructor
      *
      * @param Context $context
-     * @param array                                            $data
+     * @param array   $data
      */
     public function __construct(
         Context $context,
@@ -59,10 +59,13 @@ class Info extends \Magento\Payment\Block\Info
             $data[$title->__toString()] = $paymentResponse['id'];
         }
 
-        $data['QR Code'] = $this->_urlBuilder->getRouteUrl('mercadopago/custompix/qrcode', [
-            'order' => $paymentResponse['external_reference'],
-            'payment' => $paymentResponse['id']
-        ]);
+        $data['QR Code'] = $this->_urlBuilder->getRouteUrl(
+            'mercadopago/custompix/qrcode',
+            [
+                'order'   => $paymentResponse['external_reference'],
+                'payment' => $paymentResponse['id'],
+            ]
+        );
 
         if (isset($paymentResponse['point_of_interaction'])
             && isset($paymentResponse['point_of_interaction']['transaction_data'])
@@ -81,8 +84,8 @@ class Info extends \Magento\Payment\Block\Info
 
         if (isset($paymentResponse['date_of_expiration'])) {
             $pixExpiration = strtotime($paymentResponse['date_of_expiration']);
-            $title = __('Pix Expiration');
-            $data[$title->__toString()] = date('d/m/Y H:i:s', $pixExpiration);
+            $title         = __('Pix Expiration');
+            $data[$title->__toString()] = $this->_localeDate->date($pixExpiration)->format('d/m/Y H:i:s');
         }
 
         if (isset($paymentResponse['payment_method_id'])) {
@@ -102,7 +105,7 @@ class Info extends \Magento\Payment\Block\Info
 
         if (isset($paymentResponse['status_detail'])) {
             $title = __('Payment Status Detail');
-            $data[$title->__toString()] = ucwords(preg_replace('/_/',' ', $paymentResponse['status_detail']));
+            $data[$title->__toString()] = ucwords(preg_replace('/_/', ' ', $paymentResponse['status_detail']));
         }
 
         return $transport->setData(array_merge($data, $transport->getData()));
