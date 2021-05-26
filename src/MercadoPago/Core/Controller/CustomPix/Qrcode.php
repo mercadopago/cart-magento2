@@ -57,6 +57,11 @@ class Qrcode extends Action
     }//end execute()
 
 
+    /**
+     * @param $orderId
+     * @param $paymentId
+     * @return false|string
+     */
     protected function getImageBase64String($orderId, $paymentId)
     {
         if (!$orderId || !$paymentId) {

@@ -22,12 +22,12 @@ $paymentTitle = $block->getMethod()->getConfigData('title', $block->getInfo()->g
                 endif;
             ?>
             <tr>
-                <th><?= $block->escapeHtml($label) ?>:</th>
+                <th><?= $block->escapeHtml(__($label)) ?>:</th>
                 <td style="word-break: break-word;">
-                    <?php if ($label === 'QR Code do Pix' || $label === 'Pix QR Code') : ?>
-                        <img src="data:image/jpg;base64,<?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray($value, true)))) ?>" width="276" style="" />
+                    <?php if ($label === 'Pix QR Code') : ?>
+                        <img src="data:image/jpg;base64,<?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray($value, true)))) ?>" width="207" style="" />
                     <?php else : ?>
-                        <?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray($value, true)))) ?>
+                        <?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray(__($value), true)))) ?>
                     <?php endif; ?>
                 </td>
             </tr>
