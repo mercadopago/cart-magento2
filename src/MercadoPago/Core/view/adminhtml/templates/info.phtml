@@ -21,7 +21,7 @@ $paymentTitle = $block->getMethod()->getConfigData('title', $block->getInfo()->g
             <td>
                 <?php if ($label === 'Link') : ?>
                     <a href="<?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray($value, true)))) ?>" target="_blank" >
-                        <?= __('Open Ticket') ?>
+                        <?= __('Generate Ticket') ?>
                     </a>
                 <?php else : ?>
                     <?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray(__($value), true)))) ?>
