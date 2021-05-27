@@ -20,23 +20,30 @@ class Custom extends NotificationBase
     const LOG_NAME = 'custom_notification';
 
     protected $coreHelper;
+
     protected $coreModel;
+
     protected $_order;
+
     protected $_notifications;
+
 
     /**
      * Custom constructor.
+     *
      * @param Context $context
-     * @param Data $coreHelper
-     * @param Core $coreModel
+     * @param Data    $coreHelper
+     * @param Core    $coreModel
      */
     public function __construct(Context $context, Data $coreHelper, Core $coreModel, Notifications $notifications)
     {
-        $this->coreHelper = $coreHelper;
-        $this->coreModel = $coreModel;
+        $this->coreHelper     = $coreHelper;
+        $this->coreModel      = $coreModel;
         $this->_notifications = $notifications;
         parent::__construct($context);
-    }
+
+    }//end __construct()
+
 
     /**
      * Controller Action
@@ -47,54 +54,58 @@ class Custom extends NotificationBase
             $request = $this->getRequest();
 
             $requestValues = $this->_notifications->validateRequest($request);
-            $topicClass = $this->_notifications->getTopicClass($request);
+            $topicClass    = $this->_notifications->getTopicClass($request);
 
             if ($requestValues['topic'] != 'payment') {
-                $message = "Mercado Pago - Invalid Notification Parameters, Invalid Type.";
+                $message = 'Mercado Pago - Invalid Notification Parameters, Invalid Type.';
                 $this->setResponseHttp(Response::HTTP_BAD_REQUEST, $message, $request->getParams());
             }
+
             $response = $this->coreModel->getPaymentV1($requestValues['id']);
             if (empty($response) || ($response['status'] != 200 && $response['status'] != 201)) {
-                $message = "Mercado Pago - Payment not found, Mercado Pago API did not return the expected information.";
+                $message = 'Mercado Pago - Payment not found, Mercado Pago API did not return the expected information.';
                 $this->setResponseHttp(Response::HTTP_NOT_FOUND, $message, $response);
                 return;
             }
 
-            $payment = $response['response'];
+            $payment  = $response['response'];
             $response = $topicClass->updateStatusOrderByPayment($payment);
             $this->setResponseHttp($response['httpStatus'], $response['message'], $response['data']);
             return;
         } catch (\Exception $e) {
-
             $statusResponse = Response::HTTP_INTERNAL_ERROR;
 
-            if (method_exists($e, "getCode")) {
+            if (method_exists($e, 'getCode') && ($e->getCode() >= 200 && $e->getCode() <= 599)) {
                 $statusResponse = $e->getCode();
             }
 
-            $message = "Mercado Pago - There was a serious error processing the notification. Could not handle the error.";
-            $this->setResponseHttp($statusResponse, $message, ["exception_error" => $e->getMessage()]);
-        }
-    }
+            $message = 'Mercado Pago - There was a serious error processing the notification. Could not handle the error.';
+            $this->setResponseHttp($statusResponse, $message, ['exception_error' => $e->getMessage()]);
+        }//end try
+
+    }//end execute()
+
 
     /**
      * @param $httpStatus
      * @param $message
-     * @param array $data
+     * @param array      $data
      */
-    protected function setResponseHttp($httpStatus, $message, $data = [])
+    protected function setResponseHttp($httpStatus, $message, $data=[])
     {
         $response = [
-            "status" => $httpStatus,
-            "message" => $message,
-            "data" => $data
+            'status'  => $httpStatus,
+            'message' => $message,
+            'data'    => $data,
         ];
 
-        $this->coreHelper->log("NotificationsCustom::setResponseHttp - Response: " . json_encode($response), self::LOG_NAME);
+        $this->coreHelper->log('NotificationsCustom::setResponseHttp - Response: '.json_encode($response), self::LOG_NAME);
 
         $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
         $this->getResponse()->setBody(json_encode($response));
         $this->getResponse()->setHttpResponseCode($httpStatus);
-    }
 
-}
+    }//end setResponseHttp()
+
+
+}//end class

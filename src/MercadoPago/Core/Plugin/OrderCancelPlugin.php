@@ -123,7 +123,7 @@ class OrderCancelPlugin
 
         if ($response['status'] == 200) {
             if ($response['response']['status'] == 'pending' || $response['response']['status'] == 'in_process') {
-               $data = json_encode(['status' => 'cancelled']);
+                $data = json_encode(['status' => 'cancelled']);
                 $response = $mp->put("/v1/payments/" . $paymentID, $data);
 
                 if ($response['status'] == 200) {
@@ -137,6 +137,9 @@ class OrderCancelPlugin
                 if ($response['response']['status'] == 'rejected') {
                     $this->dataHelper->log('OrderCancelPlugin::salesOrderBeforeCancel - Payment was not canceled because the status is rejected.', 'mercadopago-custom.log', $response);
                     $this->messageManager->addSuccessMessage('Mercado Pago - ' . __('Payment was not canceled because the status is rejected.'));
+                } elseif ($response['response']['status'] == 'cancelled') {
+                    $this->dataHelper->log('OrderCancelPlugin::salesOrderBeforeCancel - Payment has already been canceled at Mercado Pago.', 'mercadopago-custom.log', $response);
+                    $this->messageManager->addSuccessMessage('Mercado Pago - ' . __('Payment has already been canceled at Mercado Pago.'));
                 } else {
                     $this->throwCancelationException(__('The payment has not been canceled, you can only cancel payments with status pending or in_process. The payment status is ') . $response['response']['status'] . '.');
                 }
