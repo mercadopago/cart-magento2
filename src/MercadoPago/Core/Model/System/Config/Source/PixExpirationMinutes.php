@@ -20,8 +20,17 @@ class PixExpirationMinutes implements OptionSourceInterface
         $values = [];
 
         foreach (Pix::EXPIRATION_TIME as $label => $value) {
+            $translateLabel = __($label);
+            if ($value === '30') {
+                $translateLabel = sprintf(
+                    '%s (%s)',
+                    $translateLabel,
+                    __('recommended')
+                );
+            }
+
             $values[] = [
-                'label' => __($label),
+                'label' => $translateLabel,
                 'value' => $value,
             ];
         }
