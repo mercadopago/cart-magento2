@@ -25,7 +25,7 @@
             <label>Expiration of Pix</label>
             <source_model>MercadoPago\Core\Model\System\Config\Source\PixExpirationMinutes</source_model>
             <config_path>payment/mercadopago_custom_pix/expiration_minutes</config_path>
-            <comment>Set up to how many minutes or hours or days your customers will be able to pay</comment>
+            <comment>30 minutes (recommended)</comment>
         </field>
 
         <field id="sort_order" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">

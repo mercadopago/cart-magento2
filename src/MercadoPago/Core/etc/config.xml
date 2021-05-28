@@ -57,6 +57,7 @@
                 <sort_order>-1</sort_order>
                 <payment_action>authorize</payment_action>
                 <cctypes>VI,MC</cctypes>
+                <expiration_minutes>30</expiration_minutes>
             </mercadopago_custom_pix>
             <mercadopago>
                 <order_status_approved>processing</order_status_approved>
