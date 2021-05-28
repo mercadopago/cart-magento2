@@ -5,14 +5,14 @@ namespace MercadoPago\Core\Block;
 use Magento\Framework\View\Asset\Repository;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Pix;
 
 /**
  * Class AbstractSuccess
  *
  * @package MercadoPago\Core\Block
  */
-class AbstractSuccess
-    extends \Magento\Framework\View\Element\Template
+class AbstractSuccess extends \Magento\Framework\View\Element\Template
 {
 
     /**
@@ -36,17 +36,18 @@ class AbstractSuccess
     protected $_scopeConfig;
 
       /**
-     * @var Repository
-     */
+       * @var Repository
+       */
     protected $_assetRepo;
+
 
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \MercadoPago\Core\Model\CoreFactory $coreFactory
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Magento\Store\Model\ScopeInterface $scopeConfig
-     * @param array $data
+     * @param \MercadoPago\Core\Model\CoreFactory              $coreFactory
+     * @param \Magento\Sales\Model\OrderFactory                $orderFactory
+     * @param \Magento\Checkout\Model\Session                  $checkoutSession
+     * @param \Magento\Store\Model\ScopeInterface              $scopeConfig
+     * @param array                                            $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
@@ -55,39 +56,48 @@ class AbstractSuccess
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         Repository $assetRepo,
-        array $data = []
-    )
-    {
-        $this->_coreFactory = $coreFactory;
-        $this->_orderFactory = $orderFactory;
+        array $data=[]
+    ) {
+        $this->_coreFactory     = $coreFactory;
+        $this->_orderFactory    = $orderFactory;
         $this->_checkoutSession = $checkoutSession;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_assetRepo = $assetRepo;
+        $this->_scopeConfig     = $scopeConfig;
+        $this->_assetRepo       = $assetRepo;
         parent::__construct(
             $context,
             $data
         );
-    }
+
+    }//end __construct()
+
 
     /**
      * @return string
      */
-    public function getConfigExpirationDays()
+    public function getConfigExpirationInfo()
     {
-        $days = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_EXPIRATION_DAYS, ScopeInterface::SCOPE_STORE);
+        $expirations = array_flip(Pix::EXPIRATION_TIME);
+        $minutes        = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_EXPIRATION_MINUTES, ScopeInterface::SCOPE_STORE);
 
-        return $days;
-    }
+        if (isset($expirations[$minutes])) {
+            return $expirations[$minutes];
+        }
+
+        return 'N/A';
+
+    }//end getConfigExpirationInfo()
+
 
     /**
      * @return string
      */
     public function getPixImg()
     {
-        $pixImg = $this->_assetRepo->getUrl("MercadoPago_Core::images/logo_pix.png");
+        $pixImg = $this->_assetRepo->getUrl('MercadoPago_Core::images/logo_pix.png');
 
         return $pixImg;
-    }
+
+    }//end getPixImg()
 
 
     /**
@@ -95,11 +105,13 @@ class AbstractSuccess
      */
     public function getPayment()
     {
-        $order = $this->getOrder();
+        $order   = $this->getOrder();
         $payment = $order->getPayment();
 
         return $payment;
-    }
+
+    }//end getPayment()
+
 
     /**
      * @return \Magento\Sales\Model\Order
@@ -107,10 +119,12 @@ class AbstractSuccess
     public function getOrder()
     {
         $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
-        $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
+        $order            = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
 
         return $order;
-    }
+
+    }//end getOrder()
+
 
     /**
      * @return float|string
@@ -121,13 +135,15 @@ class AbstractSuccess
         $total = $order->getBaseGrandTotal();
 
         if (!$total) {
-            $total = $order->getBasePrice() + $order->getBaseShippingAmount();
+            $total = ($order->getBasePrice() + $order->getBaseShippingAmount());
         }
 
         $total = number_format($total, 2, '.', '');
 
         return $total;
-    }
+
+    }//end getTotal()
+
 
     /**
      * @return mixed
@@ -135,7 +151,9 @@ class AbstractSuccess
     public function getEntityId()
     {
         return $this->getOrder()->getEntityId();
-    }
+
+    }//end getEntityId()
+
 
     /**
      * @return string
@@ -146,18 +164,22 @@ class AbstractSuccess
         $payment_method = $this->getPayment()->getMethodInstance()->getCode();
 
         return $payment_method;
-    }
+
+    }//end getPaymentMethod()
+
 
     /**
      * @return array
      */
     public function getInfoPayment()
     {
-        $order_id = $this->_checkoutSession->getLastRealOrderId();
+        $order_id      = $this->_checkoutSession->getLastRealOrderId();
         $info_payments = $this->_coreFactory->create()->getInfoPaymentByOrder($order_id);
 
         return $info_payments;
-    }
+
+    }//end getInfoPayment()
+
 
     /**
      * Return a message to show in success page
@@ -168,14 +190,16 @@ class AbstractSuccess
      */
     public function getMessageByStatus($payment)
     {
-        $status = $payment['status'] != "" ? $payment['status'] : '';
-        $status_detail = $payment['status_detail'] != "" ? $payment['status_detail'] : '';
-        $payment_method = $payment['payment_method_id'] != "" ? $payment['payment_method_id'] : '';
-        $amount = $payment['transaction_amount'] != "" ? $payment['transaction_amount'] : '';
-        $installments = $payment['installments'] != "" ? $payment['installments'] : '';
+        $status         = $payment['status'] != '' ? $payment['status'] : '';
+        $status_detail  = $payment['status_detail'] != '' ? $payment['status_detail'] : '';
+        $payment_method = $payment['payment_method_id'] != '' ? $payment['payment_method_id'] : '';
+        $amount         = $payment['transaction_amount'] != '' ? $payment['transaction_amount'] : '';
+        $installments   = $payment['installments'] != '' ? $payment['installments'] : '';
 
         return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $installments, $amount);
-    }
+
+    }//end getMessageByStatus()
+
 
     /**
      * Return a url to go to order detail page
@@ -185,15 +209,20 @@ class AbstractSuccess
     public function getOrderUrl()
     {
         $params = ['order_id' => $this->_checkoutSession->getLastRealOrder()->getId()];
-        $url = $this->_urlBuilder->getUrl('sales/order/view', $params);
+        $url    = $this->_urlBuilder->getUrl('sales/order/view', $params);
 
         return $url;
-    }
+
+    }//end getOrderUrl()
+
 
     public function getReOrderUrl()
     {
         $params = ['order_id' => $this->_checkoutSession->getLastRealOrder()->getId()];
-        $url = $this->_urlBuilder->getUrl('sales/order/reorder', $params);
+        $url    = $this->_urlBuilder->getUrl('sales/order/reorder', $params);
         return $url;
-    }
-}
+
+    }//end getReOrderUrl()
+
+
+}//end class
