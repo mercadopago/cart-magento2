@@ -8,7 +8,7 @@ $payment = $this->getPayment();
 $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 $payment_method = $this->getPaymentMethod();
 $pixImg = $this->getPixImg();
-$expirationDays = $this->getConfigExpirationDays();
+$expirationInfo = $this->getConfigExpirationInfo();
 ?>
 
 <div id="box-mercadopago">
@@ -70,8 +70,7 @@ $expirationDays = $this->getConfigExpirationDays();
 				<img class="mp-details-pix-qr-img" src="data:image/jpeg;base64,<?php echo $paymentResponse['point_of_interaction']['transaction_data']['qr_code_base64']; ?>" />
 				<?php } ?>
 				<p class="mp-details-pix-qr-subtitle">
-					<?php echo __( 'Code valid for ' ); ?><?php echo $expirationDays; ?>
-					<?php echo $expirationDays > 1 ?  __( ' days' ) : __( ' day' ) ?>
+					<?php echo __( 'Code valid for ' ); ?><?php echo __($expirationInfo); ?>
 				</p>
 				<div class="mp-details-pix-container">
 					<p class="mp-details-pix-qr-description">

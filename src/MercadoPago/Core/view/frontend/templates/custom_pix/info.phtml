@@ -1,0 +1,44 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/**
+ * @var \Magento\Payment\Block\Info $block
+ * @see \Magento\Payment\Block\Info
+ */
+$specificInfo = $block->getSpecificInformation();
+$title = $block->escapeHtml($block->getMethod()->getTitle());
+$qrcode = array_shift($specificInfo);
+?>
+<dl class="payment-method">
+    <dt class="title"><?= /* @noEscape */ $title ?></dt>
+    <?php if ($specificInfo) : ?>
+        <dd class="content">
+            <table class="data table">
+                <caption class="table-caption"><?= /* @noEscape */ $title ?></caption>
+                <tr>
+                    <th colspan="2">
+                        <img src="<?= /* @noEscape */ $qrcode ?>" width="276" style="" />
+                    </th>
+                </tr>
+                <?php
+                    foreach ($specificInfo as $label => $value) :
+                        if ($label === 'Pix QR Code') :
+                            continue;
+                        endif;
+                        $finalValue = nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray(__($value), true))));
+                ?>
+                    <tr>
+                        <th scope="row"><?= $block->escapeHtml(__($label)) ?></th>
+                        <td style="word-break: break-word;">
+                                <?= $finalValue ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </dd>
+    <?php endif;?>
+</dl>
+<?= $block->getChildHtml() ?>

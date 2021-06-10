@@ -124,7 +124,6 @@ class Payment extends TopicsAbstract
 
         $order = self::setStatusAndComment($order, $newOrderStatus, $message);
 
-        $this->sendEmailCreateOrUpdate($order, $message);
         $responseInvoice = false;
         if ($payment['status'] == 'approved') {
             $responseInvoice = $this->createInvoice($order, $message);
@@ -134,6 +133,8 @@ class Payment extends TopicsAbstract
         $this->updateAdditionalInformation($order, $payment);
 
         $order->save();
+
+        $this->sendEmailCreateOrUpdate($order, $message);
 
         $messageHttp = 'Mercado Pago - Status successfully updated.';
         return [

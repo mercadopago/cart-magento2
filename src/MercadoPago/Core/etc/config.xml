@@ -4,7 +4,7 @@
             <mercadopago_basic>
                 <active>1</active>
                 <model>MercadoPago\Core\Model\Basic\Payment</model>
-                <title translate="label">Quiero pagar con Mercado Pago sin costo Adicional.</title>
+                <title translate="label">I want to pay with Mercado Pago at no additional cost.</title>
                 <order_status>pending</order_status>
                 <max_installments>12</max_installments>
                 <auto_return>1</auto_return>
@@ -52,11 +52,12 @@
             <mercadopago_custom_pix>
                 <active>0</active>
                 <model>MercadoPago\Core\Model\CustomPix\Payment</model>
-                <title translate="label">Pay with Pix</title>
+                <title translate="label">Pay with Pix - Mercado Pago</title>
                 <allowspecific>0</allowspecific>
                 <sort_order>-1</sort_order>
                 <payment_action>authorize</payment_action>
-                <cctypes>AE,VI,MC,DI,JCB</cctypes>
+                <cctypes>VI,MC</cctypes>
+                <expiration_minutes>30</expiration_minutes>
             </mercadopago_custom_pix>
             <mercadopago>
                 <order_status_approved>processing</order_status_approved>
