@@ -26,6 +26,12 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     protected $_code = self::CODE;
 
     /**
+     * @var string
+     */
+    protected $_infoBlockType = 'MercadoPago\Core\Block\CustomPix\Info';
+
+
+    /**
      * @param  DataObject $data
      * @return $this|\MercadoPago\Core\Model\Custom\Payment
      * @throws LocalizedException
@@ -48,7 +54,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $this;
+
     }//end assignData()
+
 
     /**
      * @param string $paymentAction
@@ -121,7 +129,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
             $this->_helperData->log('CustomPaymentPix::initialize - Preference to POST', self::LOG_NAME, $preference);
         } catch (Exception $e) {
-            $this->_helperData->log('CustomPaymentPix::initialize - There was an error retrieving the information to create the payment, more details: ' . $e->getMessage());
+            $this->_helperData->log('CustomPaymentPix::initialize - There was an error retrieving the information to create the payment, more details: '.$e->getMessage());
             throw new LocalizedException(__(Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
             return $this;
         }//end try
@@ -144,11 +152,13 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 'message'  => $messageErrorToClient,
             ];
 
-            $this->_helperData->log('CustomPaymentPix::initialize - The API returned an error while creating the payment, more details: ' . json_encode($arrayLog));
+            $this->_helperData->log('CustomPaymentPix::initialize - The API returned an error while creating the payment, more details: '.json_encode($arrayLog));
 
             throw new LocalizedException(__($messageErrorToClient));
         }
+
     }//end initialize()
+
 
     /**
      * @param  $data
@@ -162,7 +172,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $order->setBaseGrandTotal($total);
 
         $this->getInfoInstance()->setOrder($order);
+
     }//end setOrderSubtotals()
+
 
     /**
      * is payment method available?
@@ -179,19 +191,26 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return parent::isAvailableMethod($quote);
+
     }//end isAvailable()
+
 
     /**
      * @return false|string
      */
     protected function getDateOfExpiration()
     {
-        $days = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_EXPIRATION_DAYS, ScopeInterface::SCOPE_STORE);
+        $minutes = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_EXPIRATION_MINUTES, ScopeInterface::SCOPE_STORE);
 
-        if (!$days || !is_numeric($days)) {
-            $days = 1;
+        if (!$minutes || !is_numeric($minutes)) {
+            $minutes = 30;
         }
 
-        return gmdate('Y-m-d\TH:i:s.000O', strtotime('+' . (int) $days . ' days'));
+        $dateOfExpiration = $this->_localeDate->date()->add(new \DateInterval(sprintf('PT%dM', $minutes)))->format('Y-m-d\TH:i:s.000O');
+
+        return $dateOfExpiration;
+
     }//end getDateOfExpiration()
+
+
 }//end class

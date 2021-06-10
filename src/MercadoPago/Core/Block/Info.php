@@ -4,8 +4,6 @@ namespace MercadoPago\Core\Block;
 
 /**
  * Class Info
- *
- * @package MercadoPago\Core\Block
  */
 class Info extends \Magento\Payment\Block\Info
 {
@@ -16,86 +14,84 @@ class Info extends \Magento\Payment\Block\Info
     protected $_orderFactory;
 
     /**
+     * @var string
+     */
+    protected $_template = 'MercadoPago_Core::info.phtml';
+
+    /**
      * Constructor
      *
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param array $data
+     * @param array                                            $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Sales\Model\OrderFactory $orderFactory,
-        array $data = []
-    )
-    {
+        array $data=[]
+    ) {
         parent::__construct($context, $data);
         $this->_orderFactory = $orderFactory;
-    }
+
+    }//end __construct()
+
 
     /**
      * Prepare information specific to current payment method
      *
-     * @param null | array $transport
+     * @param  null | array $transport
      * @return \Magento\Framework\DataObject
      */
-    protected function _prepareSpecificInformation($transport = null)
+    protected function _prepareSpecificInformation($transport=null)
     {
         $transport = parent::_prepareSpecificInformation($transport);
-        $data = [];
+        $data      = [];
 
-        $info = $this->getInfo();
-        $paymentResponse = $info->getAdditionalInformation("paymentResponse");
+        $info            = $this->getInfo();
+        $paymentResponse = $info->getAdditionalInformation('paymentResponse');
 
         if (isset($paymentResponse['id'])) {
-            $title = __('Payment id (Mercado Pago)');
-            $data[$title->__toString()] = $paymentResponse['id'];
+            $data['Payment id (Mercado Pago)'] = $paymentResponse['id'];
         }
 
         if (isset($paymentResponse['card']) && isset($paymentResponse['card']['first_six_digits']) && isset($paymentResponse['card']['last_four_digits'])) {
-            $title = __('Card Number');
-            $data[$title->__toString()] = $paymentResponse['card']['first_six_digits'] . "xxxxxx" . $paymentResponse['card']['last_four_digits'];
+            $data['Card Number'] = $paymentResponse['card']['first_six_digits'].'xxxxxx'.$paymentResponse['card']['last_four_digits'];
         }
 
         if (isset($paymentResponse['card']) && isset($paymentResponse['card']['expiration_month']) && isset($paymentResponse['card']['expiration_year'])) {
-            $title = __('Expiration Date');
-            $data[$title->__toString()] = $paymentResponse['card']['expiration_month'] . "/" . $paymentResponse['card']['expiration_year'];
+            $data['Expiration Date'] = $paymentResponse['card']['expiration_month'].'/'.$paymentResponse['card']['expiration_year'];
         }
 
         if (isset($paymentResponse['card']) && isset($paymentResponse['card']['cardholder']) && isset($paymentResponse['card']['cardholder']['name'])) {
-            $title = __('Card Holder Name');
-            $data[$title->__toString()] = $paymentResponse['card']['cardholder']['name'];
+            $data['Card Holder Name'] = $paymentResponse['card']['cardholder']['name'];
         }
 
         if (isset($paymentResponse['payment_method_id'])) {
-            $title = __('Payment Method');
-            $data[$title->__toString()] = ucfirst($paymentResponse['payment_method_id']);
+            $data['Payment Method'] = ucfirst($paymentResponse['payment_method_id']);
         }
 
         if (isset($paymentResponse['installments'])) {
-            $title = __('Installments');
-            $data[$title->__toString()] = $paymentResponse['installments'];
+            $data['Installments'] = $paymentResponse['installments'];
         }
 
         if (isset($paymentResponse['statement_descriptor'])) {
-            $title = __('Statement Descriptor');
-            $data[$title->__toString()] = $paymentResponse['statement_descriptor'];
+            $data['Statement Descriptor'] = $paymentResponse['statement_descriptor'];
         }
 
         if (isset($paymentResponse['status'])) {
-            $title = __('Payment Status');
-            $data[$title->__toString()] = ucfirst($paymentResponse['status']);
+            $data['Payment Status'] = ucfirst(__($paymentResponse['status']));
         }
 
         if (isset($paymentResponse['status_detail'])) {
-            $title = __('Payment Status Detail');
-            $data[$title->__toString()] = ucfirst($paymentResponse['status_detail']);
+            $data['Payment Status Detail'] = ucwords(str_replace("_", ' ', $paymentResponse['status_detail']));
         }
 
-        // LINK TO TICKET disable
-        //       if(isset($paymentResponse['transaction_details']) && $paymentResponse['transaction_details']['external_resource_url']){
-        //         $data['Link'] = $paymentResponse['transaction_details']['external_resource_url'];
-        //       }
+        if (isset($paymentResponse['transaction_details']) && $paymentResponse['transaction_details']['external_resource_url']) {
+            $data['Link'] = $paymentResponse['transaction_details']['external_resource_url'];
+        }
 
         return $transport->setData(array_merge($data, $transport->getData()));
-    }
 
-}
+    }//end _prepareSpecificInformation()
+
+
+}//end class

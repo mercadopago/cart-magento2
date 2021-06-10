@@ -15,20 +15,37 @@ class Basic extends NotificationBase
     const LOG_NAME = 'basic_notification';
 
     protected $_paymentFactory;
+
     protected $coreHelper;
+
     protected $coreModel;
-    protected $_finalStatus = ['rejected', 'cancelled', 'refunded', 'charged_back'];
-    protected $_notFinalStatus = ['authorized', 'process', 'in_mediation'];
+
+    protected $_finalStatus = [
+        'rejected',
+        'cancelled',
+        'refunded',
+        'charged_back',
+    ];
+
+    protected $_notFinalStatus = [
+        'authorized',
+        'process',
+        'in_mediation',
+    ];
+
     protected $_orderFactory;
+
     protected $_notifications;
+
 
     /**
      * Basic constructor.
-     * @param Context $context
-     * @param Payment $paymentFactory
-     * @param Data $coreHelper
-     * @param Core $coreModel
-     * @param OrderFactory $orderFactory
+     *
+     * @param Context       $context
+     * @param Payment       $paymentFactory
+     * @param Data          $coreHelper
+     * @param Core          $coreModel
+     * @param OrderFactory  $orderFactory
      * @param Notifications $notifications
      */
     public function __construct(
@@ -40,12 +57,14 @@ class Basic extends NotificationBase
         Notifications $notifications
     ) {
         $this->_paymentFactory = $paymentFactory;
-        $this->coreHelper = $coreHelper;
-        $this->coreModel = $coreModel;
-        $this->_orderFactory = $orderFactory;
-        $this->_notifications = $notifications;
+        $this->coreHelper      = $coreHelper;
+        $this->coreModel       = $coreModel;
+        $this->_orderFactory   = $orderFactory;
+        $this->_notifications  = $notifications;
         parent::__construct($context);
-    }
+
+    }//end __construct()
+
 
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
@@ -55,25 +74,26 @@ class Basic extends NotificationBase
         $request = $this->getRequest();
         try {
             $requestValues = $this->_notifications->validateRequest($request);
-            $topicClass = $this->_notifications->getTopicClass($request);
-            $data = $this->_notifications->getPaymentInformation($topicClass, $requestValues);
+            $topicClass    = $this->_notifications->getTopicClass($request);
+            $data          = $this->_notifications->getPaymentInformation($topicClass, $requestValues);
             if (empty($data)) {
                 throw new Exception(__('Error Merchant Order notification is expected'), 400);
             }
+
             $merchantOrder = $data['merchantOrder'];
 
             if (is_null($merchantOrder)) {
                 throw new Exception(__('Merchant Order not found or is an notification invalid type.'), 400);
             }
 
-            $order = $this->_orderFactory->create()->loadByIncrementId($merchantOrder["external_reference"]);
+            $order = $this->_orderFactory->create()->loadByIncrementId($merchantOrder['external_reference']);
 
             if (empty($order) || empty($order->getId())) {
-                throw new Exception(__('Error Order Not Found in Magento: ') . $merchantOrder["external_reference"], 400);
+                throw new Exception(__('Error Order Not Found in Magento: ').$merchantOrder['external_reference'], 400);
             }
 
             if ($order->getStatus() == 'canceled') {
-                throw new Exception(__('Order already canceled: ') . $merchantOrder["external_reference"], 400);
+                throw new Exception(__('Order already canceled: ').$merchantOrder['external_reference'], 400);
             }
 
             $data['statusFinal'] = $topicClass->getStatusFinal($data['payments'], $merchantOrder);
@@ -87,28 +107,35 @@ class Basic extends NotificationBase
             $this->setResponseHttp($statusResponse['code'], $statusResponse['text'], $request->getParams());
         } catch (\Exception $e) {
             $this->setResponseHttp($e->getCode(), $e->getMessage(), $request->getParams());
-        }
-    }
+        }//end try
+
+    }//end execute()
+
 
     /**
      * @param $httpStatus
      * @param $message
-     * @param array $data
+     * @param array      $data
      */
-    protected function setResponseHttp($httpStatus, $message, $data = [])
+    protected function setResponseHttp($httpStatus, $message, $data=[])
     {
+        if ($httpStatus < 200 || $httpStatus > 500) {
+            $httpStatus = 500;
+        }
+
         $response = [
-            "status" => $httpStatus,
-            "message" => $message,
-            "data" => $data
+            'status'  => $httpStatus,
+            'message' => $message,
+            'data'    => $data,
         ];
 
-        $this->coreHelper->log("NotificationsBasic::setResponseHttp - Response: " . json_encode($response), self::LOG_NAME);
+        $this->coreHelper->log('NotificationsBasic::setResponseHttp - Response: '.json_encode($response), self::LOG_NAME);
 
         $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
         $this->getResponse()->setBody(json_encode($response));
         $this->getResponse()->setHttpResponseCode($httpStatus);
 
-        return;
-    }
-}
+    }//end setResponseHttp()
+
+
+}//end class

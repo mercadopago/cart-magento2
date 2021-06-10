@@ -107,7 +107,7 @@ class Notification extends NotificationBase
             "data" => $data
         ];
 
-        $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
+        $this->getResponse()->setHeader('Content-Type', 'application/json', true);
         $this->getResponse()->setBody(json_encode($response));
         $this->getResponse()->setHttpResponseCode($httpStatus);
     }
