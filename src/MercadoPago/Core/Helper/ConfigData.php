@@ -15,6 +15,8 @@ class ConfigData
     //custom method credit and debit card
     const PATH_CUSTOM_ACTIVE = 'payment/mercadopago_custom/active';
     const PATH_CUSTOM_BINARY_MODE = 'payment/mercadopago_custom/binary_mode';
+    const PATH_BASIC_STOP_REJECTED = 'payment/mercadopago_basic/stop_rejected';
+    const PATH_BASIC_STOP_REJECTED_TEXT = 'payment/mercadopago_basic/stop_rejected_text';
     const PATH_CUSTOM_STATEMENT_DESCRIPTOR = 'payment/mercadopago_custom/statement_descriptor';
     const PATH_CUSTOM_BANNER = 'payment/mercadopago_custom/banner_checkout';
     const PATH_CUSTOM_COUPON = 'payment/mercadopago_custom/coupon_mercadopago';

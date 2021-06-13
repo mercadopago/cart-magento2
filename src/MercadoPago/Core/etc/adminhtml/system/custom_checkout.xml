@@ -28,6 +28,26 @@
             <comment>This functionality will mark the payment to approve or reject at the time it is created, there will be no intermediate status pending.</comment>
         </field>
 
+        <field id="stop_rejected" translate="label comment" type="select" sortOrder="71" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Prevent create orders with status Rejected</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/mercadopago_basic/stop_rejected</config_path>
+            <comment>Prenvent create orders with status rejected</comment>
+            <depends>
+				<field id="binary_mode">1</field>
+			</depends>
+        </field>
+
+        <field id="stop_rejected_text" translate="label comment" type="text" sortOrder="72" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Text general of Rejected</label>
+            <config_path>payment/mercadopago_basic/stop_rejected_text</config_path>
+            <comment>If not empty, this text show in message frontend error</comment>
+            <depends>
+				<field id="binary_mode">1</field>
+                <field id="stop_rejected">1</field>
+			</depends>
+        </field>
+
         <field id="banner_checkout" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Banner Checkout</label>
             <config_path>payment/mercadopago_custom/banner_checkout</config_path>
