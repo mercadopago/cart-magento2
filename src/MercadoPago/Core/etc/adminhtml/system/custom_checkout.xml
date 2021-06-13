@@ -32,7 +32,7 @@
             <label>Prevent create orders with status Rejected</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago_basic/stop_rejected</config_path>
-            <comment>Prenvent create orders with status rejected</comment>
+            <comment>Prevent create orders with status rejected</comment>
             <depends>
 				<field id="binary_mode">1</field>
 			</depends>
