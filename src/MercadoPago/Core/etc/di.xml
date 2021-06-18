@@ -43,4 +43,14 @@
     <type name="Magento\Framework\App\Request\CsrfValidator">
         <plugin name="csrf_validator_skip" type="MercadoPago\Core\Plugin\CsrfValidatorSkip"/>
     </type>
+
+    <type name="Magento\Config\Model\Config\TypePool">
+        <arguments>
+            <argument name="sensitive" xsi:type="array">
+                <item name="payment/mercadopago/public_key" xsi:type="string">1</item>
+                <item name="payment/mercadopago/access_token" xsi:type="string">1</item>
+            </argument>
+        </arguments>
+    </type>
+
 </config>
