@@ -5,11 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.0] - 2021-06-02
+- Improvements for Pix
+  - Created a controller to render pix qrcode image.
+  - Created a custom info template for pix gateway.
+- Improvements for Ticket
+  - Created a custom info template for ticket custom gateway.
+- Added translation for payment status
+- Use Magento 2 DateTime class to create and display pix expiration
+- Verify response code before set on response class
+
 ## [3.8.5] - 2021-04-30
 
 ### Fixed
 - Adjusted to use path site instead advanced country
 - Adjusted the total value of the installments presented at checkout
+
 ## [3.8.4] - 2021-04-30
 
 ### Added
