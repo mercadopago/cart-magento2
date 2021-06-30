@@ -13,6 +13,7 @@ use Magento\Framework\Module\ResourceInterface;
 use Magento\Framework\View\LayoutFactory;
 use Magento\Payment\Model\Config;
 use Magento\Payment\Model\Method\Factory;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\ResourceModel\Status\Collection;
 use Magento\Store\Model\App\Emulation;
@@ -241,12 +242,10 @@ class Data extends \Magento\Payment\Helper\Data
      * Calculate and set order MercadoPago specific subtotals based on data values
      *
      * @param $data
-     * @param $order
+     * @param $order Order
      */
     public function setOrderSubtotals($data, $order)
     {
-        $transactionAmount = $this->_getMultiCardValue($data, 'transaction_amount');
-
         if (isset($data['total_paid_amount'])) {
             $paidAmount = $this->_getMultiCardValue($data, 'total_paid_amount');
         } else {
@@ -254,9 +253,6 @@ class Data extends \Magento\Payment\Helper\Data
         }
 
         $shippingCost = $this->_getMultiCardValue($data, 'shipping_cost');
-        $originalAmount = $transactionAmount + $shippingCost;
-
-        $financingCost = $paidAmount - $originalAmount;
 
         if ($shippingCost > 0) {
             $order->setBaseShippingAmount($shippingCost);
