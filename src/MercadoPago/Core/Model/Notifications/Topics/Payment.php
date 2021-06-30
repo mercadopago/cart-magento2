@@ -100,8 +100,8 @@ class Payment extends TopicsAbstract
 
         if ($order->getGrandTotal() > $payment['transaction_details']['total_paid_amount']) {
             $newOrderStatus = 'fraud';
-            $message       .= __('<br/> Order total: %s', $order->getGrandTotal());
-            $message       .= __('<br/> Paid: %s', $payment['transaction_details']['total_paid_amount']);
+            $message       .= __('<br/> Order total: %1', $order->getGrandTotal());
+            $message       .= __('<br/> Paid: %1', $payment['transaction_details']['total_paid_amount']);
         }
 
         if ($statusAlreadyUpdated) {
