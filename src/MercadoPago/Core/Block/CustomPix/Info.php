@@ -22,6 +22,10 @@ class Info extends \Magento\Payment\Block\Info
      */
     protected $_template = 'MercadoPago_Core::custom_pix/info.phtml';
 
+    /**
+     * @var bool
+     */
+    protected $isPdf = false;
 
     /**
      * Constructor
@@ -70,7 +74,8 @@ class Info extends \Magento\Payment\Block\Info
             && isset($paymentResponse['point_of_interaction']['transaction_data'])
         ) {
             $transactionData = $paymentResponse['point_of_interaction']['transaction_data'];
-            if (isset($transactionData['qr_code_base64'])) {
+
+            if (isset($transactionData['qr_code_base64']) && !$this->isPdf()) {
                 $data['Pix QR Code'] = $transactionData['qr_code_base64'];
             }
             if (isset($transactionData['qr_code'])) {
@@ -103,5 +108,29 @@ class Info extends \Magento\Payment\Block\Info
 
     }//end _prepareSpecificInformation()
 
+    /**
+     * @return bool
+     */
+    public function isPdf(): bool
+    {
+        return $this->isPdf;
+    }
+
+    /**
+     * @param bool $isPdf
+     */
+    public function setIsPdf(bool $isPdf): void
+    {
+        $this->isPdf = $isPdf;
+    }
+
+    /**
+     * @return string
+     */
+    public function toPdf()
+    {
+        $this->setIsPdf(true);
+        return parent::toPdf();
+    }
 
 }//end class
