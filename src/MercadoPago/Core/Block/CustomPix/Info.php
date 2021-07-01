@@ -27,7 +27,6 @@ class Info extends \Magento\Payment\Block\Info
      */
     protected $isPdf = false;
 
-
     /**
      * Constructor
      *
@@ -43,6 +42,7 @@ class Info extends \Magento\Payment\Block\Info
         $this->_orderFactory = $orderFactory;
 
     }//end __construct()
+
 
     /**
      * Prepare information specific to current payment method
@@ -74,6 +74,7 @@ class Info extends \Magento\Payment\Block\Info
             && isset($paymentResponse['point_of_interaction']['transaction_data'])
         ) {
             $transactionData = $paymentResponse['point_of_interaction']['transaction_data'];
+
             if (isset($transactionData['qr_code_base64']) && !$this->isPdf()) {
                 $data['Pix QR Code'] = $transactionData['qr_code_base64'];
             }
@@ -131,6 +132,5 @@ class Info extends \Magento\Payment\Block\Info
         $this->setIsPdf(true);
         return parent::toPdf();
     }
-
 
 }//end class
