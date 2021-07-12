@@ -2,7 +2,7 @@
     <default>
         <payment>
             <mercadopago_basic>
-                <active>1</active>
+                <active>0</active>
                 <model>MercadoPago\Core\Model\Basic\Payment</model>
                 <title translate="label">I want to pay with Mercado Pago at no additional cost.</title>
                 <order_status>pending</order_status>
