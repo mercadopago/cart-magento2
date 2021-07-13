@@ -25,7 +25,7 @@ class Round
      */
     public static function roundWithSiteId($value, $siteId)
     {
-        $round = (float) number_format($price, 2, '.', '');
+        $round = (float) number_format($value, 2, '.', '');
 
         if (in_array($siteId, self::COUNTRIES_WITH_INTEGER_PRICE, true)) {
             return (int) $round;
