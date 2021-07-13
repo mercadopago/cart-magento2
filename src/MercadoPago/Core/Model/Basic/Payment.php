@@ -190,7 +190,11 @@ class Payment extends AbstractMethod
      */
     public function isAvailable(CartInterface $quote = null)
     {
-        $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_BASIC_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $isActive = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_BASIC_ACTIVE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
         if (empty($isActive)) {
             return false;
         }
@@ -203,7 +207,11 @@ class Payment extends AbstractMethod
      */
     public function getOrderPlaceRedirectUrl()
     {
-        $successPage = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_SUCCESS_PAGE, ScopeInterface::SCOPE_STORE);
+        $successPage = $this->_scopeConfig->getValue(
+            ConfigData::PATH_ADVANCED_SUCCESS_PAGE,
+            ScopeInterface::SCOPE_STORE
+        );
+
         $successUrl = $successPage ? 'mercadopago/checkout/page' : 'checkout/onepage/success';
         return $this->_urlBuilder->getUrl($successUrl, ['_secure' => true]);
     }
