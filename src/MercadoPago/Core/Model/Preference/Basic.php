@@ -150,34 +150,38 @@ class Basic extends AbstractMethod
             $product = $item->getProduct();
             $image = $this->_helperImage->init($product, 'image');
             $items[] = [
-                "id" => $item->getSku(),
-                "title" => $product->getName(),
+                "id"          => $item->getSku(),
+                "title"       => $product->getName(),
                 "description" => $product->getName(),
                 "picture_url" => $image->getUrl(),
                 "category_id" => $config['category_id'],
-                "quantity" => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
-                "unit_price" => (float)number_format($item->getPrice(), 2, '.', '')
+                "quantity"    => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
+                "unit_price"  => (float)number_format($item->getPrice(), 2, '.', '')
             ];
         }
 
         $this->calculateDiscountAmount($items, $order, $config);
         $this->calculateBaseTaxAmount($items, $order, $config);
-        $total_item = $this->getTotalItems($items);
-        $total_item += (float)$order->getBaseShippingAmount();
+
+        $total_item   = $this->getTotalItems($items);
+        $total_item  += (float)$order->getBaseShippingAmount();
         $order_amount = (float)$order->getBaseGrandTotal();
+
         if (!$order_amount) {
             $order_amount = (float)$order->getBasePrice() + $order->getBaseShippingAmount();
         }
 
         if ($total_item > $order_amount || $total_item < $order_amount) {
             $diff_price = $order_amount - $total_item;
+
             $difference = [
-                "title" => "Difference amount of the items with a total",
+                "title"       => "Difference amount of the items with a total",
                 "description" => "Difference amount of the items with a total",
                 "category_id" => $config['category_id'],
-                "quantity" => 1,
-                "unit_price" => (float)$diff_price
+                "quantity"    => 1,
+                "unit_price"  => (float)$diff_price
             ];
+
             $this->_helperData->log("Total items: " . $total_item, 'mercadopago-basic.log');
             $this->_helperData->log("Total order: " . $order_amount, 'mercadopago-basic.log');
             $this->_helperData->log("Difference add items: " . $diff_price, 'mercadopago-basic.log');
@@ -202,11 +206,11 @@ class Basic extends AbstractMethod
     {
         if ($order->getDiscountAmount() < 0) {
             $arr[] = [
-                "title" => "Store discount coupon",
+                "title"       => "Store discount coupon",
                 "description" => "Store discount coupon",
                 "category_id" => $config['category_id'],
-                "quantity" => 1,
-                "unit_price" => (float)$order->getDiscountAmount()
+                "quantity"    => 1,
+                "unit_price"  => (float)$order->getDiscountAmount()
             ];
         }
 
@@ -225,11 +229,11 @@ class Basic extends AbstractMethod
     {
         if ($order->getBaseTaxAmount() > 0) {
             $arr[] = [
-                "title" => "Store taxes",
+                "title"       => "Store taxes",
                 "description" => "Store taxes",
                 "category_id" => $config['category_id'],
-                "quantity" => 1,
-                "unit_price" => (float)$order->getBaseTaxAmount()
+                "quantity"    => 1,
+                "unit_price"  => (float)$order->getBaseTaxAmount()
             ];
         }
 
@@ -246,6 +250,7 @@ class Basic extends AbstractMethod
     protected function getTotalItems($items)
     {
         $total = 0;
+
         foreach ($items as $item) {
             $total += $item['unit_price'] * $item['quantity'];
         }
@@ -265,16 +270,17 @@ class Basic extends AbstractMethod
     protected function getReceiverAddress($shippingAddress)
     {
         $receiverAddress = [
-            "floor" => "-",
-            "zip_code" => $shippingAddress->getPostcode(),
-            "street_name" => $shippingAddress->getStreet()[0] . " - " . $shippingAddress->getCity() . " - " . $shippingAddress->getCountryId(),
-            "apartment" => "-",
-            "street_number" => ""
+            "floor"         => "-",
+            "zip_code"      => $shippingAddress->getPostcode(),
+            "apartment"     => "-",
+            "street_number" => "",
+            "street_name"   => $shippingAddress->getStreet()[0] . " - " . $shippingAddress->getCity() . " - " . $shippingAddress->getCountryId(),
         ];
 
         if (!is_array($receiverAddress)) {
             throw new Exception(__('Error on create preference Checkout Pro - Exception on getReceiverAddress'));
         }
+
         return $receiverAddress;
     }
 
@@ -285,9 +291,10 @@ class Basic extends AbstractMethod
      */
     protected function getExcludedPaymentsMethods($config)
     {
-        $excludedMethods = [];
+        $excludedMethods          = [];
         $excluded_payment_methods = $config['exclude_payment_methods'];
-        $arr_epm = explode(",", $excluded_payment_methods);
+        $arr_epm                  = explode(",", $excluded_payment_methods);
+
         if (count($arr_epm) > 0) {
             foreach ($arr_epm as $m) {
                 $excludedMethods[] = ["id" => $m];
@@ -312,20 +319,24 @@ class Basic extends AbstractMethod
         $result = [];
 
         $billingAddress = $order->getBillingAddress()->getData();
-        $payment = $order->getPayment();
+        $payment        = $order->getPayment();
 
-        $result['date_created'] = date('Y-m-d', $customer->getCreatedAtTimestamp()) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp());
-        $result['email'] = $customer->getId() ? htmlentities($customer->getEmail()) : htmlentities($billingAddress['email']);
+        $result['date_created'] = date(
+            'Y-m-d',
+            $customer->getCreatedAtTimestamp()) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp()
+        );
+
+        $result['email']      = $customer->getId() ? htmlentities($customer->getEmail()) : htmlentities($billingAddress['email']);
         $result['first_name'] = $customer->getId() ? htmlentities($customer->getFirstname()) : htmlentities($billingAddress['firstname']);
-        $result['last_name'] = $customer->getId() ? htmlentities($customer->getLastname()) : htmlentities($billingAddress['lastname']);
+        $result['last_name']  = $customer->getId() ? htmlentities($customer->getLastname()) : htmlentities($billingAddress['lastname']);
 
         if (isset($payment['additional_information']['doc_number']) && $payment['additional_information']['doc_number'] != "") {
             $result['identification'] = ["type" => "CPF", "number" => $payment['additional_information']['doc_number']];
         }
 
         $result['address'] = [
-            "zip_code" => $billingAddress['postcode'],
-            "street_name" => $billingAddress['street'] . " - " . $billingAddress['city'] . " - " . $billingAddress['country_id'],
+            "zip_code"      => $billingAddress['postcode'],
+            "street_name"   => $billingAddress['street'] . " - " . $billingAddress['city'] . " - " . $billingAddress['country_id'],
             "street_number" => ""
         ];
 
@@ -344,7 +355,8 @@ class Basic extends AbstractMethod
     protected function getBackUrls($config)
     {
         $result = [];
-        $successUrl = $config['success_page'] ? 'mercadopago/checkout/page' : 'checkout/onepage/success';
+
+        $successUrl        = $config['success_page'] ? 'mercadopago/checkout/page' : 'checkout/onepage/success';
         $result['success'] = $this->_urlBuilder->getUrl($successUrl);
         $result['pending'] = $this->_urlBuilder->getUrl($successUrl);
         $result['failure'] = $config['success_page'] ? $this->_urlBuilder->getUrl(self::FAILURE_URL) : $this->_urlBuilder->getUrl('checkout/onepage/failure');
@@ -352,6 +364,7 @@ class Basic extends AbstractMethod
         if (!is_array($result)) {
             throw new Exception(__('Error on create preference Checkout Pro - Exception on getBackUrls'));
         }
+
         return $result;
     }
 
@@ -364,6 +377,7 @@ class Basic extends AbstractMethod
         $sponsor_id = $config['sponsor_id'];
 
         $this->_helperData->log("Sponsor_id", 'mercadopago-basic.log', $sponsor_id);
+
         if (!empty($sponsor_id)) {
             $this->_helperData->log("Sponsor_id identificado", 'mercadopago-basic.log', $sponsor_id);
             return (int)$sponsor_id;
@@ -382,8 +396,10 @@ class Basic extends AbstractMethod
     protected function createPreference($arr, $config)
     {
         $this->_helperData->log("make array", 'mercadopago-basic.log', $arr);
+
         $mpApiInstance = $this->_helperData->getApiInstance($config['access_token']);
-        $response = $mpApiInstance->create_preference($arr);
+        $response      = $mpApiInstance->create_preference($arr);
+
         $this->_helperData->log("create preference result", 'mercadopago-basic.log', $response);
 
         if (!is_array($arr)) {
@@ -399,41 +415,45 @@ class Basic extends AbstractMethod
     public function makePreference()
     {
         try {
-            $order = $this->getOrderInfo();
+            $order    = $this->getOrderInfo();
             $customer = $this->getCustomerInfo();
-            $config = $this->getConfig();
+            $config   = $this->getConfig();
 
             $arr = [];
             $arr['external_reference'] = $order->getIncrementId();
             $arrItems = $this->getItems($order, $config);
 
             $arr['items'] = $arrItems['items'];
+
             if (!empty($arrItems['difference'])) {
                 $arr['items'][] = $arrItems['difference'];
             }
 
             if ($order->canShip()) {
                 $shippingAddress = $order->getShippingAddress();
-                $shipping = $shippingAddress->getData();
+                $shipping        = $shippingAddress->getData();
+
                 $arr['payer']['phone'] = ["area_code" => "-", "number" => $shipping['telephone']];
+
                 $arr['shipments'] = [];
                 $arr['shipments']['receiver_address'] = $this->getReceiverAddress($shippingAddress);
+
                 $arr['items'][] = [
-                    "title" => "Shipment cost",
+                    "title"       => "Shipment cost",
                     "description" => "Shipment cost",
                     "category_id" => $config['category_id'],
-                    "quantity" => 1,
-                    "unit_price" => (float)$order->getBaseShippingAmount()
+                    "quantity"    => 1,
+                    "unit_price"  => (float)$order->getBaseShippingAmount()
                 ];
             }
 
             $payerInfo = $this->getPayerInfo($order, $customer);
 
             $arr['payer']['date_created'] = $payerInfo['date_created'];
-            $arr['payer']['email'] = $payerInfo['email'];
-            $arr['payer']['first_name'] = $payerInfo['first_name'];
-            $arr['payer']['last_name'] = $payerInfo['last_name'];
-            $arr['payer']['address'] = $payerInfo['address'];
+            $arr['payer']['email']        = $payerInfo['email'];
+            $arr['payer']['first_name']   = $payerInfo['first_name'];
+            $arr['payer']['last_name']    = $payerInfo['last_name'];
+            $arr['payer']['address']      = $payerInfo['address'];
 
             if (isset($payerInfo['identification'])) {
                 $arr['payer']['identification'] = $payerInfo['identification'];
@@ -453,7 +473,7 @@ class Basic extends AbstractMethod
             $arr['notification_url'] = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL, $notification_params);
 
             $arr['payment_methods']['excluded_payment_methods'] = $this->getExcludedPaymentsMethods($config);
-            $arr['payment_methods']['installments'] = (int)$config['installments'];
+            $arr['payment_methods']['installments']             = (int)$config['installments'];
 
             if ($config['auto_return'] == 1) {
                 $arr['auto_return'] = "approved";
@@ -462,6 +482,7 @@ class Basic extends AbstractMethod
             $sponsor_id = $this->getSponsorId($config);
 
             $siteId = strtoupper($config['country']);
+
             if ($siteId == 'MLC' || $siteId == 'MCO') {
                 foreach ($arr['items'] as $key => $item) {
                     $arr['items'][$key]['unit_price'] = (int)$item['unit_price'];
@@ -476,6 +497,7 @@ class Basic extends AbstractMethod
             }
 
             $test_mode = true;
+
             if (!empty($sponsor_id) && strpos($payerInfo['email'], "@testuser.com") === false) {
                 $arr['sponsor_id'] = (int)$sponsor_id;
                 $test_mode = false;
@@ -485,14 +507,14 @@ class Basic extends AbstractMethod
             $this->_version->afterLoad();
 
             $arr['metadata'] = [
-                "site" => $siteId,
-                "platform" => "Magento2",
+                "site"             => $siteId,
+                "platform"         => "Magento2",
                 "platform_version" => $this->_productMetaData->getVersion(),
-                "module_version" => $this->_version->getValue(),
-                "sponsor_id" => $sponsor_id,
-                "test_mode" => $test_mode,
-                "checkout" => "pro",
-                "checkout_type" => "redirect"
+                "module_version"   => $this->_version->getValue(),
+                "sponsor_id"       => $sponsor_id,
+                "test_mode"        => $test_mode,
+                "checkout"         => "pro",
+                "checkout_type"    => "redirect"
             ];
 
             if (!empty($config['statement_descriptor'])) {
@@ -504,8 +526,10 @@ class Basic extends AbstractMethod
             }
 
             $this->_helperData->log("make array", 'mercadopago-basic.log', $arr);
+
             $mpApiInstance = $this->_helperData->getApiInstance($config['access_token']);
-            $response = $mpApiInstance->create_preference($arr);
+            $response      = $mpApiInstance->create_preference($arr);
+
             $this->_helperData->log("create preference result", 'mercadopago-basic.log', $response);
 
             return $response;
