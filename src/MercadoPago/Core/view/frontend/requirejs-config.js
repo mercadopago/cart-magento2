@@ -5,7 +5,7 @@
 let config = {
     map: {
         '*': {
-            MPcustom: 'https://secure.mlstatic.com/sdk/javascript/v1/mercadopago.js?_magento=1.0.4',
+            MPcustom: 'https://secure.mlstatic.com/sdk/javascript/v1/mercadopago.js?_magento=3.9.1',
             MPv1: 'MercadoPago_Core/js/MPv1',
             MPv1Ticket: 'MercadoPago_Core/js/MPv1Ticket'
         }
