@@ -43,7 +43,7 @@ class Round
      */
     public static function roundWithoutSiteId($value)
     {
-        $round = (float) number_format($price, 2, '.', '');
+        $round = (float) number_format($value, 2, '.', '');
         return $round;
     }
 }
