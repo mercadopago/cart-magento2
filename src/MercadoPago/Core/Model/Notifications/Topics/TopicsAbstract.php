@@ -15,6 +15,7 @@ use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Helper\Response;
+use MercadoPago\Core\Helper\Round;
 use Magento\Framework\DB\TransactionFactory;
 use Magento\Sales\Model\Service\InvoiceService;
 use mysql_xdevapi\Exception;
@@ -381,8 +382,9 @@ abstract class TopicsAbstract
     {
         if ($order->getState() !== Order::STATE_COMPLETE) {
             $statusOrder = $this->getConfigStatus($payment, $order->canCreditmemo());
+            $orderTotal  = Round::roundWithoutSiteId($order->getGrandTotal());
 
-            if ($order->getGrandTotal() > $payment['transaction_details']['total_paid_amount']) {
+            if ($orderTotal > $payment['transaction_details']['total_paid_amount']) {
                 $statusOrder = 'fraud';
                 $message .= __('<br/> Order total: %1', $order->getGrandTotal());
                 $message .= __('<br/> Paid: %1', $payment['transaction_details']['total_paid_amount']);

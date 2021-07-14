@@ -18,6 +18,7 @@ use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data as mpHelper;
 use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Helper\Response;
+use MercadoPago\Core\Helper\Round;
 use MercadoPago\Core\Lib\RestClient;
 use MercadoPago\Core\Model\Core;
 
@@ -97,8 +98,9 @@ class Payment extends TopicsAbstract
         $statusAlreadyUpdated = $this->checkStatusAlreadyUpdated($payment, $order);
         $newOrderStatus       = parent::getConfigStatus($payment, $order->canCreditmemo());
         $currentOrderStatus   = $order->getState();
+        $orderTotal           = Round::roundWithoutSiteId($order->getGrandTotal());
 
-        if ($order->getGrandTotal() > $payment['transaction_details']['total_paid_amount']) {
+        if ($orderTotal > $payment['transaction_details']['total_paid_amount']) {
             $newOrderStatus = 'fraud';
             $message       .= __('<br/> Order total: %1', $order->getGrandTotal());
             $message       .= __('<br/> Paid: %1', $payment['transaction_details']['total_paid_amount']);

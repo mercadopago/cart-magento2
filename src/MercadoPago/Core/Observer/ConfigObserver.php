@@ -50,7 +50,7 @@ class ConfigObserver
      *
      * @var array
      */
-    private $available_transparent_ticket = ['MLA', 'MLB', 'MLM', 'MPE'];
+    private $available_transparent_ticket = ['MLA', 'MLB', 'MLM', 'MPE', 'MCO'];
 
     /**
      *

@@ -2,7 +2,7 @@
     <default>
         <payment>
             <mercadopago_basic>
-                <active>1</active>
+                <active>0</active>
                 <model>MercadoPago\Core\Model\Basic\Payment</model>
                 <title translate="label">I want to pay with Mercado Pago at no additional cost.</title>
                 <order_status>pending</order_status>
@@ -14,7 +14,7 @@
                 <gateway_mode>0</gateway_mode>
             </mercadopago_basic>
             <mercadopago_custom>
-                <active>1</active>
+                <active>0</active>
                 <coupon_mercadopago>0</coupon_mercadopago>
                 <useccv>1</useccv>
                 <cctypes>AE,VI,MC,DI,JCB</cctypes>
@@ -30,7 +30,7 @@
                 <wallet_button>0</wallet_button>
             </mercadopago_custom>
             <mercadopago_customticket>
-                <active>1</active>
+                <active>0</active>
                 <model>MercadoPago\Core\Model\CustomTicket\Payment</model>
                 <title translate="label">Ticket - Mercado Pago</title>
                 <allowspecific>0</allowspecific>

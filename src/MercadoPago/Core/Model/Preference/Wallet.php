@@ -26,6 +26,7 @@ use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
+use MercadoPago\Core\Helper\Round;
 use MercadoPago\Core\Lib\Api;
 use MercadoPago\Core\Model\Notifications\Topics\Payment;
 
@@ -41,11 +42,6 @@ class Wallet
     const SUCCESS_PATH = 'mercadopago/wallet/success';
 
     const FAILURE_PATH = 'mercadopago/wallet/failure';
-
-    const COUNTRIES_WITH_INTEGER_PRICE = [
-        'MLC',
-        'MLO',
-    ];
 
     /**
      * @var CheckoutSession
@@ -363,7 +359,11 @@ class Wallet
             unset($preference['shipments']);
         }
 
-        $preference['shipments']['cost']     = $this->getPrice($quote->getShippingAddress()->getShippingAmount(), $siteId);
+        $preference['shipments']['cost'] = Round::roundWithSiteId(
+            $quote->getShippingAddress()->getShippingAmount(),
+            $siteId
+        );
+
         $preference['metadata']['test_mode'] = $this->isTestMode($preference['payer']);
         $preference['metadata']['quote_id']  = $quote->getId();
 
@@ -565,7 +565,7 @@ class Wallet
             'title'       => $title,
             'description' => $title,
             'quantity'    => 1,
-            'unit_price'  => $this->getPrice($amount, $siteId),
+            'unit_price'  => Round::roundWithSiteId($amount, $siteId),
         ];
     }//end getItemDiscountTax()
 
@@ -587,25 +587,9 @@ class Wallet
             'picture_url' => $image->getUrl(),
             'category_id' => $categoryId,
             'quantity'    => (int) number_format($item->getQty(), 0, '.', ''),
-            'unit_price'  => $this->getPrice($item->getPrice(), $siteId),
+            'unit_price'  => Round::roundWithSiteId($item->getPrice(), $siteId),
         ];
     }//end getItem()
-
-    /**
-     * @param  $price
-     * @param  $siteId
-     * @return float|integer
-     */
-    protected function getPrice($price, $siteId)
-    {
-        $amount = (float) number_format($price, 2, '.', '');
-
-        if (in_array($siteId, self::COUNTRIES_WITH_INTEGER_PRICE, true)) {
-            return (int) $amount;
-        }
-
-        return $amount;
-    }//end getPrice()
 
     /**
      * @param  Quote             $quote
