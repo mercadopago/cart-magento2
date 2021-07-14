@@ -1,7 +1,7 @@
 /*
  * MPv1
  * Handlers Form Mercado Pago v1
- * @version     3.9.1
+ * @version     1.0.4
  */
 
 (function () {
