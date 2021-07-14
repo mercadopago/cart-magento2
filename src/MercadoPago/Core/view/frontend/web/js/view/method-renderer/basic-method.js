@@ -28,9 +28,6 @@ define(
         window.location = this.getActionUrl();
       },
 
-      placePendingPaymentOrder: function () {
-        this.placeOrder();
-      },
       initialize: function () {
         this._super();
       },
