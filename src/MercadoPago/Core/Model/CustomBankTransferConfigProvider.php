@@ -62,10 +62,10 @@ class CustomBankTransferConfigProvider implements ConfigProviderInterface
      * @var Repository
      */
     protected $_assetRepo;
+
     /**
      * @var UrlInterface
      */
-
     protected $_urlBuilder;
     protected $_coreHelper;
     protected $_productMetaData;

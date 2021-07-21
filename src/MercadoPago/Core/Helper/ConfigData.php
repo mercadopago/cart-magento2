@@ -32,7 +32,6 @@ class ConfigData
     const PATH_CUSTOM_BANK_TRANSFER_BANNER = 'payment/mercadopago_custom_bank_transfer/banner_checkout';
     const PATH_CUSTOM_BANK_TRANSFER_REDIRECT_PAYER = 'payment/mercadopago_custom_bank_transfer/redirect_payer';
 
-
     //basic method
     const PATH_BASIC_ACTIVE = 'payment/mercadopago_basic/active';
     const PATH_BASIC_TITLE = 'payment/mercadopago_basic/title';
@@ -46,10 +45,14 @@ class ConfigData
     const PATH_BASIC_BINARY_MODE = 'payment/mercadopago_basic/binary_mode';
     const PATH_BASIC_GATEWAY_MODE = 'payment/mercadopago_basic/gateway_mode';
 
-    //custom method ticket
+    //custom method pix
     const PATH_CUSTOM_PIX_ACTIVE = 'payment/mercadopago_custom_pix/active';
     const PATH_CUSTOM_PIX_BANNER = 'payment/mercadopago_custom_pix/banner_checkout';
     const PATH_CUSTOM_PIX_EXPIRATION_MINUTES = 'payment/mercadopago_custom_pix/expiration_minutes';
+
+    //custom method webpay
+    const PATH_CUSTOM_WEBPAY_ACTIVE = 'payment/mercadopago_custom_webpay/active';
+    const PATH_CUSTOM_WEBPAY_BANNER = 'payment/mercadopago_custom_webpay/banner_checkout';
 
     //order configuration
     const PATH_ORDER_APPROVED = 'payment/mercadopago/order_status_approved';
@@ -63,7 +66,6 @@ class ConfigData
     const PATH_ORDER_PARTIALLY_REFUNDED = 'payment/mercadopago/order_status_partially_refunded';
     const PATH_ORDER_REFUND_AVAILABLE = 'payment/mercadopago/refund_available';
     const PATH_ORDER_CANCEL_AVAILABLE = 'payment/mercadopago/cancel_payment';
-
 
     //advanced configuration
     const PATH_ADVANCED_LOG = 'payment/mercadopago/logs';

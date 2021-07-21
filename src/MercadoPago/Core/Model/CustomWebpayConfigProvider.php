@@ -20,7 +20,7 @@ use MercadoPago\Core\Helper\Data;
 /**
  * Class CustomBankTransferConfigProvider
  */
-class CustomPixConfigProvider implements ConfigProviderInterface
+class CustomWebpayConfigProvider implements ConfigProviderInterface
 {
     /**
      * @var MethodInterface
@@ -30,7 +30,7 @@ class CustomPixConfigProvider implements ConfigProviderInterface
     /**
      * @var string
      */
-    protected $methodCode = CustomPix\Payment::CODE;
+    protected $methodCode = CustomWebpay\Payment::CODE;
 
     /**
      * @var Session
@@ -113,16 +113,16 @@ class CustomPixConfigProvider implements ConfigProviderInterface
             'payment' => [
                 $this->methodCode => [
                     'country' => strtoupper($this->_scopeConfig->getValue(ConfigData::PATH_SITE_ID, ScopeInterface::SCOPE_STORE)),
-                    'bannerUrl' => $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_BANNER, ScopeInterface::SCOPE_STORE),
+                    'banner_url' => $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_WEBPAY_BANNER, ScopeInterface::SCOPE_STORE),
                     'success_url' => $this->methodInstance->getConfigData('order_place_redirect_url'),
                     'route' => $this->_request->getRouteName(),
                     'base_url' => $this->_storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK),
                     'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
-                    'logoUrl' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
+                    'logo_url' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mp_logo.png"),
                     'platform_version' => $this->_productMetaData->getVersion(),
                     'module_version' => $this->_coreHelper->getModuleVersion(),
-                    'pix_logo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/logo_pix.png"),
-                    'pix_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/pix-mini.png"),
+                    'webpay_logo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/logo_webpay.png"),
+                    'debitcard_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/debitcard_mini.png"),
                 ]
             ]
         ];

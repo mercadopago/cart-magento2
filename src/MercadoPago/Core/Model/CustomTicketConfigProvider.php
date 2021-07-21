@@ -50,10 +50,10 @@ class CustomTicketConfigProvider implements ConfigProviderInterface
      * @var \Magento\Framework\View\Asset\Repository
      */
     protected $_assetRepo;
+
     /**
      * @var \Magento\Framework\UrlInterface
      */
-
     protected $_urlBuilder;
     protected $_coreHelper;
     protected $_productMetaData;

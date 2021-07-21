@@ -36,6 +36,12 @@ define(
         component: 'MercadoPago_Core/js/view/method-renderer/custom-method-pix'
       }
     );
+    rendererList.push(
+      {
+        type: 'mercadopago_custom_webpay',
+        component: 'MercadoPago_Core/js/view/method-renderer/custom-method-webpay'
+      }
+    );
     return Component.extend({});
   }
 );
