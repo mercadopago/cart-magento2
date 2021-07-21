@@ -29,12 +29,22 @@
                 <gateway_mode>0</gateway_mode>
                 <wallet_button>0</wallet_button>
             </mercadopago_custom>
+            <mercadopago_custom_webpay>
+                <active>0</active>
+                <model>MercadoPago\Core\Model\CustomBankTransfer\Payment</model>
+                <title translate="label">Debit Card/Redcompra - Mercado Pago</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>-3</sort_order>
+                <payment_action>authorize</payment_action>
+                <cctypes>AE,VI,MC,DI,JCB</cctypes>
+                <redirect_payer>1</redirect_payer>
+            </mercadopago_custom_webpay>
             <mercadopago_customticket>
                 <active>0</active>
                 <model>MercadoPago\Core\Model\CustomTicket\Payment</model>
                 <title translate="label">Ticket - Mercado Pago</title>
                 <allowspecific>0</allowspecific>
-                <sort_order>-3</sort_order>
+                <sort_order>-2</sort_order>
                 <payment_action>authorize</payment_action>
                 <coupon_mercadopago>0</coupon_mercadopago>
                 <cctypes>AE,VI,MC,DI,JCB</cctypes>
@@ -44,7 +54,7 @@
                 <model>MercadoPago\Core\Model\CustomBankTransfer\Payment</model>
                 <title translate="label">Bank Transfer - Mercado Pago</title>
                 <allowspecific>0</allowspecific>
-                <sort_order>-2</sort_order>
+                <sort_order>-1</sort_order>
                 <payment_action>authorize</payment_action>
                 <cctypes>AE,VI,MC,DI,JCB</cctypes>
                 <redirect_payer>1</redirect_payer>
@@ -52,23 +62,13 @@
             <mercadopago_custom_pix>
                 <active>0</active>
                 <model>MercadoPago\Core\Model\CustomPix\Payment</model>
-                <title translate="label">Debit Card - Webpay/Redcompra</title>
+                <title translate="label">Pay with Pix - Mercado Pago</title>
                 <allowspecific>0</allowspecific>
-                <sort_order>-2</sort_order>
+                <sort_order>-1</sort_order>
                 <payment_action>authorize</payment_action>
                 <cctypes>VI,MC</cctypes>
                 <expiration_minutes>30</expiration_minutes>
             </mercadopago_custom_pix>
-            <mercadopago_custom_webpay>
-                <active>0</active>
-                <model>MercadoPago\Core\Model\CustomBankTransfer\Payment</model>
-                <title translate="label">Pay with Webpay - Mercado Pago</title>
-                <allowspecific>0</allowspecific>
-                <sort_order>-1</sort_order>
-                <payment_action>authorize</payment_action>
-                <cctypes>AE,VI,MC,DI,JCB</cctypes>
-                <redirect_payer>1</redirect_payer>
-            </mercadopago_custom_webpay>
             <mercadopago>
                 <order_status_approved>processing</order_status_approved>
                 <order_status_in_process>pending</order_status_in_process>

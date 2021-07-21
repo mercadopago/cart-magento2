@@ -101,11 +101,14 @@ class Payment
         //check is active for disable
         if ($statusPaymentMethod) {
             $value = 0;
+
             if ($this->switcher->getWebsiteId() == 0) {
                 $this->configResource->saveConfig($paymentActivePath, $value, 'default', 0);
             } else {
-                $this->configResource->saveConfig($paymentActivePath, $value, 'websites',
-                    $this->switcher->getWebsiteId());
+                $this->configResource->saveConfig(
+                    $paymentActivePath, $value, 'websites',
+                    $this->switcher->getWebsiteId()
+                );
             }
         }
     }
@@ -118,12 +121,13 @@ class Payment
     protected function hideBankTransfer($paymentId, $siteId)
     {
         if (strpos($paymentId, 'custom_checkout_bank_transfer') !== false) {
-            //hide payment method if not Chile or Colombia
-            if ($siteId !== "MLC" && $siteId !== "MCO") {
+            //hide payment method if not Colombia
+            if ($siteId !== "MCO") {
                 $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
                 return true;
             }
         }
+
         return false;
     }
 
@@ -140,6 +144,7 @@ class Payment
                 return true;
             }
         }
+
         return false;
     }
 }
