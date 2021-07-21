@@ -28,7 +28,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * @var string
      */
-    protected $_infoBlockType = 'MercadoPago\Core\Block\CustomPix\Info';
+    protected $_infoBlockType = 'MercadoPago\Core\Block\CustomWebpay\Info';
 
     /**
      * @param string $paymentAction
@@ -52,7 +52,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     public function isAvailable(CartInterface $quote=null)
     {
-        $isActive = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_ACTIVE, ScopeInterface::SCOPE_STORE);
+        $isActive = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_WEBPAY_ACTIVE, ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {
             return false;
         }
