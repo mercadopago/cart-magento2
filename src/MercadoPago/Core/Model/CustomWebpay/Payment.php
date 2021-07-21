@@ -82,6 +82,5 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $this;
-
     }//end assignData
 }
