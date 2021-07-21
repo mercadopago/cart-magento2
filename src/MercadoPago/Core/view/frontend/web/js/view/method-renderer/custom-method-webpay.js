@@ -113,8 +113,7 @@ define(
        * Events
        * @param paymentMethodSelected
        */
-      changePaymentMethodSelector: function (paymentMethodSelected) {
-      },
+      changePaymentMethodSelector: function (paymentMethodSelected) {},
 
       /**
        * Webpay Logo

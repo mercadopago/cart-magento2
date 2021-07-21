@@ -39,9 +39,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @throws LocalizedException
      */
-    public function initialize($paymentAction, $stateObject)
-    {
-    }
+    public function initialize($paymentAction, $stateObject) {}
 
     /**
      * is payment method available?
@@ -53,12 +51,12 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     public function isAvailable(CartInterface $quote=null)
     {
         $isActive = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_WEBPAY_ACTIVE, ScopeInterface::SCOPE_STORE);
+
         if (empty($isActive)) {
             return false;
         }
 
         return parent::isAvailableMethod($quote);
-
     }//end isAvailable()
 
     /**
