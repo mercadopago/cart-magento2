@@ -6,8 +6,7 @@ namespace MercadoPago\Core\Helper\Message;
  * Map Payment Messages with the Credit Card Payment response detail
  * @package MercadoPago\Core\Helper
  */
-class StatusDetailMessage
-    extends AbstractMessage
+class StatusDetailMessage extends AbstractMessage
 {
     /**
      * Map error messages
@@ -40,5 +39,4 @@ class StatusDetailMessage
     {
         return $this->messagesMap;
     }
-
 }

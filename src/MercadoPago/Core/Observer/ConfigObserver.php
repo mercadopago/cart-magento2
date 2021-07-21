@@ -50,7 +50,7 @@ class ConfigObserver
      *
      * @var array
      */
-    private $available_transparent_ticket = ['MLA', 'MLB', 'MLM', 'MPE', 'MCO'];
+    private $available_transparent_ticket = ['MLA', 'MLB', 'MLM', 'MLV', 'MLC', 'MCO', 'MPE'];
 
     /**
      *
@@ -81,7 +81,6 @@ class ConfigObserver
      * @var \Magento\Framework\App\Cache\TypeListInterface
      */
     protected $cacheTypeList;
-
 
     protected $country;
 
@@ -120,17 +119,11 @@ class ConfigObserver
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-
         $this->validateAccessToken();
-
         $this->setUserInfo();
-
         $this->availableCheckout();
-
         $this->checkBanner('mercadopago_custom');
-
         $this->checkBanner('mercadopago_customticket');
-
     }
 
     /**
@@ -178,8 +171,8 @@ class ConfigObserver
         if (!isset($this->banners[$typeCheckout][$country])) {
             return;
         }
-        $defaultBanner = $this->banners[$typeCheckout][$country];
 
+        $defaultBanner = $this->banners[$typeCheckout][$country];
         $currentBanner = $this->_scopeConfig->getValue(
             'payment/' . $typeCheckout . '/banner_checkout',
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
@@ -196,13 +189,11 @@ class ConfigObserver
             if ($defaultBanner != $currentBanner) {
                 $this->_saveWebsiteConfig('payment/' . $typeCheckout . '/banner_checkout', $defaultBanner);
                 $this->coreHelper->log('payment/' . $typeCheckout . '/banner_checkout setted ' . $defaultBanner, self::LOG_NAME);
-
                 $this->cacheTypeList->cleanType(\Magento\Framework\App\Cache\Type\Config::TYPE_IDENTIFIER);
                 $this->cacheTypeList->cleanType(\Magento\PageCache\Model\Cache\Type::TYPE_IDENTIFIER);
             }
         }
     }
-
 
     /**
      * Set configuration value sponsor_id based on current credentials
@@ -279,12 +270,12 @@ class ConfigObserver
      */
     protected function validateAccessToken()
     {
-
         $accessToken = $this->_scopeConfig->getValue(
             \MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
             $this->_scopeCode
         );
+
         if (!empty($accessToken)) {
             if (!$this->coreHelper->isValidAccessToken($accessToken)) {
                 throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Custom Checkout: Invalid access token'));
@@ -299,6 +290,5 @@ class ConfigObserver
         } else {
             $this->configResource->saveConfig($path, $value, 'websites', $this->_switcher->getWebsiteId());
         }
-
     }
 }

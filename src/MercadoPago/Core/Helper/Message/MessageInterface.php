@@ -2,7 +2,6 @@
 
 namespace MercadoPago\Core\Helper\Message;
 
-
 /**
  * Interface MessageInterface
  *
@@ -16,7 +15,6 @@ interface MessageInterface
      * @return mixed
      */
     public function getMessageMap();
-
 
     /**
      * @param      $key
