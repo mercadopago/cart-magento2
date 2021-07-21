@@ -1,6 +1,7 @@
 "==================== CREDENTIALS CONFIGURATION PAGE =====================","================================================"
 "Credentials","Credenciais"
 "Get your credentials access_token and public_key, visit the country in which your account was created: <a href=""https://www.mercadopago.com/mla/account/credentials"" target=""_blank"">Argentina</a>, <a href=""https://www.mercadopago.com/mlb/account/credentials"" target=""_blank"">Brazil</a>, <a href=""https://www.mercadopago.com/mlc/account/credentials"" target=""_blank"">Chile</a>, <a href=""https://www.mercadopago.com/mco/account/credentials"" target=""_blank"">Colombia</a>, <a href=""https://www.mercadopago.com/mlm/account/credentials"" target=""_blank"">Mexico</a>, <a href=""https://www.mercadopago.com/mlu/account/credentials"" target=""_blank"">Uruguay</a> and <a href=""https://www.mercadopago.com/mpe/account/credentials"" target=""_blank"">Peru</a>.","Obtenha as credenciais access_token e public_key do Mercado Pago, acessando o link de acordo com o país onde a sua conta foi criada: <a href=""https://www.mercadopago.com/mla/account/credentials"" target=""_blank"">Argentina</a>, <a href=""https://www.mercadopago.com/mlb/account/credentials"" target=""_blank"">Brazil</a>, <a href=""https://www.mercadopago.com/mlc/account/credentials"" target=""_blank"">Chile</a>, <a href=""https://www.mercadopago.com/mco/account/credentials"" target=""_blank"">Colombia</a>, <a href=""https://www.mercadopago.com/mlm/account/credentials"" target=""_blank"">Mexico</a>, <a href=""https://www.mercadopago.com/mlu/account/credentials"" target=""_blank"">Uruguay</a> ou <a href=""https://www.mercadopago.com/mpe/account/credentials"" target=""_blank"">Peru</a>."
+
 "==================== ORDER MANAGEMENT CONFIGURATION PAGE =====================","================================================"
 "Order Management","Gerenciamento de Ordem"
 "Automatic update of Order Status (Webhooks)","Atualização automática do status do pedido (webhooks)"
@@ -58,7 +59,7 @@
 "Redirect Payer","Redirecionar Comprador"
 "By enabling this option the buyer will be automatically redirected to the payment page of the bank, it will not go through an intermediate page of your store.","Ao habilitar essa opção o comprador será redirecionado automaticamente para a pagina de pagamento do banco, ele não irá passar por uma pagina intermedia da sua loja."
 
-"==================== v3.3.1 Checkout Pro PAGE =====================","================================================"
+"==================== v3.3.1 CHECKOUT PRO PAGE =====================","================================================"
 "Checkout Pro","Checkout Pro - Redirecionado"
 "Auto Return","Redirecionamento Automático"
 "Redirect buyer automatically to your store when payment is approved.","Redireciona o comprador automaticamente para a sua loja quando o pagamento é aprovado."
@@ -87,7 +88,6 @@
 "Current Version","Versão atual"
 
 "==================== PAYMENT FORM =====================","================================================"
-
 "Please, inform your coupon code", "Por favor, informe o cupom de desconto"
 "Apply", "Aplicar"
 "Remove", "Remover"
@@ -135,7 +135,6 @@
 "Parameter cardIssuerId can not be null/empty","Banco inválido"
 
 "==================== PAYMENT OFFLINE FORM =====================","================================================"
-
 "Information requested in accordance with the rules of Circular No. 3.461/09, 3.598/12 and 3.656/13 of the Banco Central do Brasil.","Informações solicitadas em conformidade com as normas das circulares Nro. 3.461/09, 3.598/12 e 3.656/13 do Banco Central do Brasil."
 "Select","Selecione"
 "Name","Nome"
@@ -157,7 +156,6 @@
 "Zipcode required","Obrigatório informar o CEP"
 
 "==================== v3.1.0 PAYMENT BANK TRANSFER FORM =====================","================================================"
-
 "Identification Type","Tipo de Documento"
 "Identification Number","Número do Documento"
 "Financial Institutions","Banco"
@@ -166,7 +164,6 @@
 "Jurídica", "Pessoa jurídica"
 
 "==================== 3.3.1 - Checkout Pro Checkout FLOW =====================","================================================"
-
 "Quiero pagar con Mercado Pago sin costo Adicional.", "Quero pagar com Mercado Pago sem custo adicional."
 "Usa el medio de pago que prefieras","Use os meios de pagamento que você preferir"
 "Tarjetas de crédito","Cartões de Crédito"
@@ -177,15 +174,12 @@
 "Te llevamos a nuestro sitio para completar el pago","Você será redirecionado para o site do Mercado Pago para concluir o pagamento"
 
 "==================== DISCOUNT FLOW =====================","================================================"
-
 "You will save <b>%1 %2</b> with discount from %3.","Você ira economizar <b>%1 %2</b> com desconto de %3."
 "Total of your purchase: <b>%1 %2</b>","Total da sua compra: <b>%1 %2</b>"
 "Total of your purchase with discount: <b>%1 %2*</b>","Total da sua compra com Desconto: <b>%1 %2*</b>"
 "* Uppon payment approval.","* Mediante aprovação de pagamento."
 "Terms and Conditions of Use","Termos e Condições de utilização"
 "Coupon discount of the Mercado Pago", "Cupom de desconto do Mercado Pago"
-
-
 "An error has occurred, please try again. If the error persists, please contact the seller.", "Ocorreu um erro ao validar o cupom de desconto, Por favor, tente novamente. Se o erro persistir, entre em contato com o vendedor."
 "doesn't find a campaign", "Campanha não encontrada."
 "doesn't find a campaign with the given code", "Cupom de desconto inválido."
@@ -199,22 +193,17 @@
 "payer_email should be an email", "Seu e-mail não pôde ser identificado, faça login na loja e tente novamente."
 
 "==================== SUCCESS PAGE =====================","================================================"
-
 "Thank you for your purchase!", "Obrigado pela sua Compra!"
 "Your order %1 has been successfully generated.", "O seu pedido de numero %1 foi gerado com sucesso."
 "Done, your payment was accredited!", "O seu pagamento foi aprovado!"
 "We are processing the payment.", "Estamos processando o pagamento."
 "In less than 2 business days we will tell you by e-mail if it is accredited or if we need more information.", "Em menos de 2 dias úteis você será avisado por e-mail se foi creditado ou se precisarmos de mais informações."
 "In less than an hour we will send you by e-mail the result.", "Em menos de 1 hora, nós enviaremos o resultado por e-mail."
-
 "Click on the link to generate the ticket", "Clique no link para gerar o boleto"
 "Generate Ticket", "Gerar Boleto"
-
 "Payment Method", "Método de Pagamento"
-
 "Generate the ticket and pay it wherever you want.", "Gere o boleto e pague-o onde quiser."
 "Will be approved within 2 business days.","Será aprovado até 2 dias úteis."
-
 "Payment id (Mercado Pago): %1","Identificação do pagamento (Mercado Pago): %1"
 "Card Number: %1","Número do Cartão: %1"
 "Expiration Date: %1","Data de Vencimento: %1"
@@ -230,7 +219,6 @@
 "The payment will be credited in less than 1 hour.","O pagamento será creditado em menos de 1 hora."
 
 "==================== ORDER PAGE =====================","================================================"
-
 "Payment id (Mercado Pago)","Identificação do pagamento (Mercado Pago)"
 "Card Number","Número do Cartão"
 "Expiration Date","Data de Vencimento"
@@ -242,8 +230,6 @@
 "Payment Status Detail","Status detalhado do Pagamento"
 
 "====================== ERRORS PAYMENT FORM ==========================","================================================"
-
-
 "Params Error.", "Erro de parâmetro"
 "Token must be for test.", "O token deve ser um teste"
 "The caller is not authorized to access this resource.", "O invocador não está autorizado a acessar este recurso"
@@ -319,19 +305,16 @@
 "application_fee cannot be a negative value.", "O parâmetro aplication_fee não pode ser negativo"
 "payer.email must be a valid email.", "O seu email tem que ser um endereço de email valida."
 "payer.email must be shorter than 254 characters.", "O seu email deve ser um endereço de e-mail com menos de 254 caracteres"
-
 "Payer firstname required.", "Nome do comprador é obrigatório."
 "Payer lastname required.", "Sobrenome do comprador é obrigatório."
 "Payer required.", "É obrigatório preencher os dados do comprador."
 "Payer identification type required.", "Tipo de documento do comprador é obrigatório."
 "Payer identification number required.", "Número do documento do comprador é obrigatório."
-
 "An error occurred when creating the payment. Please refresh the page and try again.", "Ocorreu um erro ao criar o pagamento. Atualize a página e tente novamente."
 "Verify the form data or wait until the validation of the payment data.", "Verifique os dados do formulário ou aguarde até a validação dos dados de pagamento."
 "There was an internal error when creating the payment.", "Houve um erro interno ao criar o pagamento. Tente novamente, caso o erro persista entre em contato com o vendedor."
 
-"=============== Cancellation FLOW =================================","================================================"
-
+"=============== CANCELLATION FLOW =================================","================================================"
 "Payment canceled.", "Pagamento cancelado."
 "Payment was not canceled because the status is rejected.","O pagamento não foi cancelado, pois o pagamento esta com o status Rejeitado."
 "Cancellation can not be executed because the payment id was not found.", "Não foi possível cancelar o pagamento, o id do pagamento não foi encontrado na orden."
@@ -340,8 +323,7 @@
 "The payment has not been canceled, you can only cancel payments with status pending or in_process. The payment status is", "Não foi possível cancelar o pagamento, só é possível cancelar pagamentos com o status pending ou in_process. O status do pagamento é "
 "An error occurred while getting the status of the payment in the API Mercado Pago.", "Ocorreu um erro ao obter o status do pagamento na API do Mercado Pago, tente novamente em breve."
 
-"=============== Refund FLOW =================================","================================================"
-
+"=============== REFUND FLOW =================================","================================================"
 "Refund of %1 was processed successfully.", "A devolução no valor de %1 foi processado."
 "The refunded amount must be greater than 0.", "O valor a ser devolvido tem que ser superior a 0."
 "Refund can not be executed because the payment id was not found.", "Não foi possível realizar a devolução, o id do pagamento não foi encontrado na orden."
@@ -351,7 +333,6 @@
 "An error occurred while getting the status of the payment in the API Mercado Pago.", "Ocorreu um erro ao obter o status do pagamento na API do Mercado Pago, tente novamente em breve."
 
 "================================================","================================================"
-
 "Automatic notification of the Mercado Pago: The payment was approved.", "Notificação automática do Mercado Pago: O pagamento foi aprovado."
 "Automatic notification of the Mercado Pago: The payment was refunded.", "Notificação automática do Mercado Pago: O pagamento foi devolvido."
 "Automatic notification of the Mercado Pago: The payment is being processed.", "Notificação automática do Mercado Pago: O pagamento está sendo processado."
@@ -363,12 +344,10 @@
 "<br/> Status: %1", "<br/> Status: %1"
 "<br/> Status Detail: %1", "<br/> Detalhe do Status: %1"
 
-"=====================BACK END ===========================","================================================"
-
+"===================== BACK END ===========================","================================================"
 "The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.", "O ACCESS_TOKEN não foi configurado, sem essa credencial o módulo não funcionará corretamente."
 
 "================================================","================================================"
-
 "Payment information", "Informações sobre o pagamento"
 "Check the card number.", "Verifique o número do cartão."
 "Check the expiration date.", "Verifique a data de validade."
@@ -455,7 +434,7 @@ Cannot operate between users from different countries.", "Não é possível oper
 "Payment #%1 not found!", "Pagamento #%1 não encontrado"
 "Error to create. Order #%1 not available yet.", "Erro ao criar. Pedido #%1 não está disponível ainda."
 
-"==================== Pix GATEWAY =====================","================================================"
+"==================== PIX GATEWAY =====================","================================================"
 "Custom Checkout - Payment via Pix","Custom Checkout - Pagamento via Pix"
 "Set up to how many days your customers will be able to pay", "Defina em até quantos dias seus clientes poderão pagar"
 "Expiration of Pix", "Vencimento do Pix"
@@ -490,9 +469,11 @@ Cannot operate between users from different countries.", "Não é possível oper
 "Pix Expiration","Expiração do Pix"
 "Pix QR Code","QR Code do Pix"
 "Pix Code","Código do Pix"
-"==================== Checkout PRO =====================","================================================"
+
+"==================== CHECKOUT PRO =====================","================================================"
 "I want to pay with Mercado Pago at no additional cost.", "Quero pagar com o Mercado Pago, sem nenhum custo adicional."
-"==================== Status =====================", "====================================================="
+
+"==================== STATUS =====================", "====================================================="
 "pending", "pagamento pendente"
 "approved", "pagamento aprovado"
 "authorized", "pagamento autorizado"
@@ -503,3 +484,6 @@ Cannot operate between users from different countries.", "Não é possível oper
 "refunded", "pagamento reembolsado"
 "charged_back", "pagamento devolvido"
 "Generate Ticket", "Gerar Boleto"
+
+"==================== WEBPAY GATEWAY =====================","================================================"
+"Add the URL of an image that you want to insert in the checkout.", "Adicione a URL de uma imagem que você deseja inserir no checkout."

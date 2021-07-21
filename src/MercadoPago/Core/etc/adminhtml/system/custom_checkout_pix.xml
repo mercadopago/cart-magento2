@@ -18,7 +18,7 @@
         <field id="banner_checkout" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Banner Checkout</label>
             <config_path>payment/mercadopago_custom_pix/banner_checkout</config_path>
-            <comment>By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.</comment>
+            <comment>Add the URL of an image that you want to insert in the checkout.</comment>
         </field>
 
         <field id="expiration_minutes" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
