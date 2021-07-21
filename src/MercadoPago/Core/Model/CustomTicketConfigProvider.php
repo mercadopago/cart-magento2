@@ -12,8 +12,7 @@ use Magento\Payment\Helper\Data as PaymentHelper;
  *
  * @package MercadoPago\Core\Model
  */
-class CustomTicketConfigProvider
-    implements ConfigProviderInterface
+class CustomTicketConfigProvider implements ConfigProviderInterface
 {
     /**
      * @var \Magento\Payment\Model\MethodInterface
@@ -54,6 +53,7 @@ class CustomTicketConfigProvider
     /**
      * @var \Magento\Framework\UrlInterface
      */
+
     protected $_urlBuilder;
     protected $_coreHelper;
     protected $_productMetaData;
@@ -88,9 +88,7 @@ class CustomTicketConfigProvider
      */
     public function getConfig()
     {
-
         if (!$this->methodInstance->isAvailable()) {
-
             return [];
         }
 

@@ -1,31 +1,21 @@
 define(
   [
+    'jquery',
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/model/quote',
     'Magento_Checkout/js/model/payment-service',
     'Magento_Checkout/js/model/payment/method-list',
     'Magento_Checkout/js/action/get-totals',
-    'jquery',
     'Magento_Checkout/js/model/full-screen-loader',
-    'mage/translate',
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/model/payment/additional-validators',
+    'mage/translate',
     'MPcustom',
   ],
-  function (
-    Component,
-    quote,
-    paymentService,
-    paymentMethodList,
-    getTotalsAction,
-    $,
-    fullScreenLoader,
-    $t,
-    defaultTotal,
-    cartCache
-  ) {
+  function (Component, quote, defaultTotal, cartCache) {
     'use strict';
+
     var configPayment = window.checkoutConfig.payment.mercadopago_custom_pix;
 
     return Component.extend({

@@ -61,6 +61,7 @@ class CustomPixConfigProvider implements ConfigProviderInterface
     /**
      * @var UrlInterface
      */
+
     protected $_urlBuilder;
     protected $_coreHelper;
     protected $_productMetaData;
