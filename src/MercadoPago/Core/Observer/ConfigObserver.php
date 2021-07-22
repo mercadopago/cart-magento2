@@ -9,8 +9,7 @@ use Magento\Framework\Event\ObserverInterface;
  *
  * @package MercadoPago\Core\Observer
  */
-class ConfigObserver
-    implements ObserverInterface
+class ConfigObserver implements ObserverInterface
 {
     /**
      * url banners grouped by country

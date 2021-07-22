@@ -27,11 +27,11 @@ define(
   ) {
     'use strict';
 
-    var configPayment = window.checkoutConfig.payment.mercadopago_custom_pix;
+    var configPayment = window.checkoutConfig.payment.mercadopago_custom_webpay;
 
     return Component.extend({
       defaults: {
-        template: 'MercadoPago_Core/payment/custom_pix',
+        template: 'MercadoPago_Core/payment/custom_webpay',
         paymentReady: false
       },
       redirectAfterPlaceOrder: false,
@@ -45,7 +45,6 @@ define(
         quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
       },
 
-
       setValidateHandler: function (handler) {
         this.validateHandler = handler;
       },
@@ -56,7 +55,7 @@ define(
 
       getLogoUrl: function () {
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-          return configPayment['logoUrl'];
+          return configPayment['logo_url'];
         }
         return '';
       },
@@ -71,7 +70,7 @@ define(
 
       existBanner: function () {
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-          if (window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null) {
+          if (window.checkoutConfig.payment[this.getCode()]['banner_url'] != null) {
             return true;
           }
         }
@@ -80,15 +79,14 @@ define(
 
       getBannerUrl: function () {
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-          return window.checkoutConfig.payment[this.getCode()]['bannerUrl'];
+          return window.checkoutConfig.payment[this.getCode()]['banner_url'];
         }
         return '';
       },
 
       getCode: function () {
-        return 'mercadopago_custom_pix';
+        return 'mercadopago_custom_webpay';
       },
-
 
       getSuccessUrl: function () {
         if (configPayment != undefined) {
@@ -124,27 +122,26 @@ define(
        * Events
        * @param paymentMethodSelected
        */
-      changePaymentMethodSelector: function (paymentMethodSelected) {
-      },
+      changePaymentMethodSelector: function (paymentMethodSelected) {},
 
       /**
-       * Pix Big Logo
+       * Webpay Logo
        * @returns {string|*}
        */
-      getPixLogo: function () {
+      getWebpayLogo: function () {
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-          return window.checkoutConfig.payment[this.getCode()]['pix_logo'];
+          return window.checkoutConfig.payment[this.getCode()]['webpay_logo'];
         }
         return '';
       },
 
       /**
-       * Pix Mini Logo
+       * Webpay Mini Logo
        * @returns {string|*}
        */
-      getPixMini: function () {
+      getDebitCardMini: function () {
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-          return window.checkoutConfig.payment[this.getCode()]['pix_mini'];
+          return window.checkoutConfig.payment[this.getCode()]['debitcard_mini'];
         }
         return '';
       },

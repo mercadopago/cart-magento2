@@ -588,3 +588,55 @@ input.has-error, select.has-error, textarea.has-error {
   font-size: 1.2em;
   color: #787878;
 }
+
+/* webpay */
+
+.mp-webpay-checkout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 460px;
+}
+
+.mp-webpay-checkout div {
+  padding: 4px 20px 6px 0px;
+  border-right: 1px solid rgba(0, 0, 0, 0.15);
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.mp-webpay-checkout div img {
+  width: 230px;
+  height: auto;
+}
+
+.mp-webpay-checkout p {
+  padding-left: 20px;
+  margin-bottom: 0;
+  color: #6C6C6C;
+  font-size: 13px;
+}
+
+@media (max-width: 767.98px) {
+  .mp-webpay-checkout {
+    flex-direction: column;
+  }
+
+  .mp-webpay-checkout div {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .mp-webpay-checkout div img {
+    width: 124px;
+    height: auto;
+    padding-bottom: 16px;
+  }
+
+  .mp-webpay-checkout p {
+    padding: 16px 16px 0px;
+    text-align: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+  }
+}

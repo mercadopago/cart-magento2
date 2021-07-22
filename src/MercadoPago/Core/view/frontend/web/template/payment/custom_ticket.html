@@ -1,10 +1,15 @@
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
-        <input
-        type="radio"
-        name="payment[method]"
-        class="radio"
-        data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="
+                    attr: {'id': getCode()},
+                    value: getCode(),
+                    checked: isChecked,
+                    click: selectPaymentMethod,
+                    visible: isRadioButtonVisible()
+               "
         />
         <label class="label" data-bind="attr: {'for': getCode()}">
             <!-- Mercado Pago Logo -->
@@ -25,12 +30,11 @@
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
 
-        <form
-        class="form"
-        id="co-mercadopago-form-ticket"
-        action="#"
-        method="post"
-        data-bind="mageInit: {
+        <form class="form"
+              id="co-mercadopago-form-ticket"
+              action="#"
+              method="post"
+              data-bind="mageInit: {
                 'transparent':{
                 'context': context(),
                 }, 'validation':[]}"
@@ -43,27 +47,24 @@
                 <!-- /ko -->
 
                 <!-- ko if: (getCountTickets() == 1)-->
-                <input
-                type="hidden"
-                name="mercadopago_custom_ticket[payment_method_ticket]"
-                class="optionsTicketMp"
-                data-bind="'attr':{value: getFirstTicketId()}"
-                id="payment_method_ticket"
-                />
+                <input type="hidden"
+                       name="mercadopago_custom_ticket[payment_method_ticket]"
+                       class="optionsTicketMp"
+                       data-bind="'attr':{value: getFirstTicketId()}"
+                       id="payment_method_ticket" />
                 <!-- /ko -->
 
                 <!-- ko if: (getCountTickets() > 1) -->
                 <ul id="mercadopago-payment-methods-ticket">
                     <!-- ko foreach: {data: getTicketsData(), as: 'ticket'} -->
                     <li class="mercadopago-ticket-option">
-                        <input
-                        type="radio"
-                        class="optionsTicketMp"
-                        name="mercadopago_custom_ticket[payment_method_ticket]"
-                        data-bind="'attr':{
+                        <input type="radio"
+                               class="optionsTicketMp"
+                               name="mercadopago_custom_ticket[payment_method_ticket]"
+                               data-bind="'attr':{
                                     value: ticket.id,
                                     'data-validate': JSON.stringify({'validate-one-required-by-name':true})
-                                    }"
+                                }"
                         />
 
                         <label class="mercadopago-ticket-label">
@@ -80,45 +81,43 @@
                 <div id="form-ticket">
                     <div class="form-row">
                         <div class="form-col-6">
-                            <input
-                                type="radio"
-                                name="mercadopago_custom_ticket[doc-type]"
-                                class="MPv1-docType"
-                                id="MPv1-docType-fisica"
-                                checked="checked"
-                                value="CPF"
-                                data-bind="attr: {title: $t('Document Number')}"
-                            />
-                            <!-- ko i18n: 'Pessoa Física'--> <!-- /ko -->
+                            <input type="radio"
+                                   name="mercadopago_custom_ticket[doc-type]"
+                                   class="MPv1-docType"
+                                   id="MPv1-docType-fisica"
+                                   checked="checked"
+                                   value="CPF"
+                                   data-bind="attr: {title: $t('Document Number')}" />
+                            <!-- ko i18n: 'Pessoa Física'-->
+                            <!-- /ko -->
                         </div>
                         <div class="form-col-6">
-                            <input
-                                type="radio"
-                                name="mercadopago_custom_ticket[doc-type]"
-                                class="MPv1-docType"
-                                id="MPv1-docType-juridica"
-                                value="CNPJ"
-                                data-bind="attr: {title: $t('Document Number')}"
-                            />
-                            <!-- ko i18n: 'Pessoa Jurídica'--> <!-- /ko -->
+                            <input type="radio"
+                                   name="mercadopago_custom_ticket[doc-type]"
+                                   class="MPv1-docType"
+                                   id="MPv1-docType-juridica"
+                                   value="CNPJ"
+                                   data-bind="attr: {title: $t('Document Number')}" />
+                            <!-- ko i18n: 'Pessoa Jurídica'-->
+                            <!-- /ko -->
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-col-6" id="box-firstname">
                             <label for="firstname" class="require title-name">
-                                <!-- ko i18n: 'Name'--> <!-- /ko -->
+                                <!-- ko i18n: 'Name'-->
+                                <!-- /ko -->
                             </label>
                             <label for="firstname" class="require title-razao-social">
-                                <!-- ko i18n: 'Razão Social'--> <!-- /ko -->
+                                <!-- ko i18n: 'Razão Social'-->
+                                <!-- /ko -->
                             </label>
-                            <input
-                                type="text"
-                                name="mercadopago_custom_ticket[firstname]"
-                                id="MPv1-firstname"
-                                class="form-control-mine required-entry-firstname"
-                                data-bind="attr: {title: $t('Name'), 'data-validate': JSON.stringify({required:true})}"
-                            />
+                            <input type="text"
+                                   name="mercadopago_custom_ticket[firstname]"
+                                   id="MPv1-firstname"
+                                   class="form-control-mine required-entry-firstname"
+                                   data-bind="attr: {title: $t('Name'), 'data-validate': JSON.stringify({required:true})}" />
                         </div>
 
                         <div class="form-col-6" id="box-lastname">
@@ -128,27 +127,27 @@
                                 name="mercadopago_custom_ticket[lastname]"
                                 id="MPv1-lastname"
                                 class="form-control-mine required-entry-lastname"
-                                data-bind="attr: {title: $t('Surname'), 'data-validate': JSON.stringify({required:true})}"
-                            />
+                                data-bind="attr: {title: $t('Surname'), 'data-validate': JSON.stringify({required:true})}" />
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-col-12" id="box-docnumber">
                             <label for="docNumber" class="require title-cpf">
-                                <!-- ko i18n: 'Document Number'--> <!-- /ko -->
+                                <!-- ko i18n: 'Document Number'-->
+                                <!-- /ko -->
                             </label>
                             <label for="docNumber" class="require title-cnpj">
-                                <!-- ko i18n: 'CNPJ'--> <!-- /ko -->
+                                <!-- ko i18n: 'CNPJ'-->
+                                <!-- /ko -->
                             </label>
-                            <input
-                                type="text"
-                                name="mercadopago_custom_ticket[doc-number]"
-                                class="form-control-mine required-entry-doc-number"
-                                maxlength="14"
-                                id="MPv1-docNumber"
-                                onblur="clearTimeout()"
-                                data-bind="attr: {title: $t('Document Number'), 'data-validate': JSON.stringify({required:true})}"
+                            <input type="text"
+                                   name="mercadopago_custom_ticket[doc-number]"
+                                   class="form-control-mine required-entry-doc-number"
+                                   maxlength="14"
+                                   id="MPv1-docNumber"
+                                   onblur="clearTimeout()"
+                                   data-bind="attr: {title: $t('Document Number'), 'data-validate': JSON.stringify({required:true})}"
                             />
                         </div>
                     </div>
@@ -156,50 +155,45 @@
                     <div class="form-row">
                         <div class="form-col-8">
                             <label for="address" class="require"><!-- ko i18n: 'Address'--><!-- /ko --></label>
-                            <input
-                                type="text"
-                                name="mercadopago_custom_ticket[address]"
-                                id="MPv1-address"
-                                class="form-control-mine required-entry-address"
-                                data-bind="attr: {title: $t('Address')}"
-                            />
+                            <input type="text"
+                                   name="mercadopago_custom_ticket[address]"
+                                   id="MPv1-address"
+                                   class="form-control-mine required-entry-address"
+                                   data-bind="attr: {title: $t('Address')}" />
                         </div>
                         <div class="form-col-4">
                             <label for="number" class="require"><!-- ko i18n: 'Number'--><!-- /ko --></label>
-                            <input
-                                type="text"
-                                name="mercadopago_custom_ticket[address-number]"
-                                id="MPv1-number"
-                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                class="form-control-mine required-entry-address-number"
-                                data-bind="attr: {title: $t('Number'), 'data-validate': JSON.stringify({required:true})}"
-                            />
+                            <input type="text"
+                                   name="mercadopago_custom_ticket[address-number]"
+                                   id="MPv1-number"
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   class=" form-control-mine required-entry-address-number"
+                                   data-bind="attr: {title: $t('Number'), 'data-validate': JSON.stringify({required:true})}" />
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-col-6">
-                            <label for="city" class="require"><!-- ko i18n: 'City'--><!-- /ko --></label>
-                            <input
-                                type="text"
-                                name="mercadopago_custom_ticket[address-city]"
-                                id="MPv1-city"
-                                class="form-control-mine required-entry-address-city"
-                                data-bind="attr: {title: $t('City'), 'data-validate': JSON.stringify({required:true})}"
-                            />
+                            <label for="city" class="require" ><!-- ko i18n: 'City'--><!-- /ko --></label>
+                            <input type="text"
+                                   name="mercadopago_custom_ticket[address-city]"
+                                   id="MPv1-city"
+                                   class="form-control-mine required-entry-address-city"
+                                   data-bind="attr: {title: $t('City'), 'data-validate': JSON.stringify({required:true})}" />
                         </div>
 
                         <div class="form-col-6">
                             <label for="state" class="require"><!-- ko i18n: 'State'--><!-- /ko --></label>
-                            <select
-                                name="mercadopago_custom_ticket[address-state]"
-                                id="MPv1-state"
-                                class="form-control-mine required-entry-address-state"
-                                data-bind="attr: {title: $t('State'), 'data-validate': JSON.stringify({required:true})}"
-                            >
+                            <select name="mercadopago_custom_ticket[address-state]"
+                                    id="MPv1-state"
+                                    class="
+                                        form-control-mine
+                                        required-entry-address-state
+                                    "
+                                    data-bind="attr: {title: $t('State'), 'data-validate': JSON.stringify({required:true})}">
                                 <option value="">
-                                <!-- ko i18n: 'Select'--><!-- /ko -->
-                                ...
+                                    <!-- ko i18n: 'Select'--><!-- /ko -->
+                                    ...
                                 </option>
                                 <option value="AC">Acre</option>
                                 <option value="AL">Alagoas</option>
@@ -235,14 +229,15 @@
                     <div class="form-row">
                         <div class="form-col-12">
                             <label for="zipcode" class="require"><!-- ko i18n: 'Zipcode'--><!-- /ko --></label>
-                            <input
-                                type="text"
-                                name="mercadopago_custom_ticket[address-zipcode]"
-                                id="MPv1-zipcode"
-                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                class="form-control-mine required-entry-address-zipcode"
-                                data-bind="attr: {title: $t('Zipcode'), 'data-validate': JSON.stringify({required:true})}"
-                            />
+                            <input type="text"
+                                   name="mercadopago_custom_ticket[address-zipcode]"
+                                   id="MPv1-zipcode"
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   class="
+                                        form-control-mine
+                                        required-entry-address-zipcode
+                                   "
+                                   data-bind="attr: {title: $t('Zipcode'), 'data-validate': JSON.stringify({required:true})}" />
                         </div>
                     </div>
 
@@ -261,7 +256,12 @@
                 <!-- /ko -->
 
                 <div class="mp-box-inputs mp-col-100" id="mercadopago-utilities">
-                    <input type="hidden" id="site_idTicket" value="" name="mercadopago_custom_ticket[site_id]" />
+                    <input
+                        type="hidden"
+                        id="site_idTicket"
+                        value=""
+                        name="mercadopago_custom_ticket[site_id]"
+                    />
                     <input
                         type="hidden"
                         id="amountTicket"
@@ -269,9 +269,21 @@
                         name="mercadopago_custom_ticket[amount]"
                         data-bind="attr: {value: getInitialTotal()}"
                     />
-                    <input type="hidden" id="campaign_idTicket" name="mercadopago_custom_ticket[campaign_id]" />
-                    <input type="hidden" id="campaignTicket" name="mercadopago_custom_ticket[campaign]" />
-                    <input type="hidden" id="discountTicket" name="mercadopago_custom_ticket[discount]" />
+                    <input
+                        type="hidden"
+                        id="campaign_idTicket"
+                        name="mercadopago_custom_ticket[campaign_id]"
+                    />
+                    <input
+                        type="hidden"
+                        id="campaignTicket"
+                        name="mercadopago_custom_ticket[campaign]"
+                    />
+                    <input
+                        type="hidden"
+                        id="discountTicket"
+                        name="mercadopago_custom_ticket[discount]"
+                    />
                 </div>
                 <!-- end formulario unico -->
             </div>
@@ -295,15 +307,14 @@
         <div class="actions-toolbar">
             <div class="primary">
                 <button
-                data-role="review-save"
-                type="submit"
-                data-bind="attr: {title: $t('Place Order')},
+                    data-role="review-save"
+                    type="submit"
+                    data-bind="attr: {title: $t('Place Order')},
                         enable: (getCode() == isChecked()),
                         click: placeOrder,
                         css: {disabled: !isPlaceOrderActionAllowed()}"
-                class="action primary checkout"
-                disabled
-                >
+                    class="action primary checkout"
+                    disabled>
                     <span data-bind="i18n: 'Place Order'"></span>
                 </button>
             </div>

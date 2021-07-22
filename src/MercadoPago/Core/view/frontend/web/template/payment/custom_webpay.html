@@ -14,10 +14,9 @@
 
         <label class="label" data-bind="attr: {'for': getCode()}">
             <!-- Mercado Pago Logo -->
-            <img  data-bind="attr: {alt: 'Mercado Pago',src:getPixMini()}" class="payment-icon mercadopago-payment-icon" />
+            <img  data-bind="attr: {alt: 'Mercado Pago', src:getDebitCardMini()}" class="payment-icon mercadopago-payment-icon" />
             <!-- Mercado Pago Logo -->
             <span data-bind="text: getTitle()"></span>
-            <span class="class-custom-new-label-checkout">NOVO</span>
         </label>
 
         <!-- ko if: (existBanner() == true)-->
@@ -32,7 +31,7 @@
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!-- /ko -->
         <form class="form"
-              id="mercadopago-form-pix"
+              id="mercadopago-form-webpay"
               action="#"
               method="post"
               data-bind="
@@ -45,16 +44,23 @@
 
         <div data-bind="template: {afterRender: initializeMethod()}"></div>
 
-        <div class="checkout-agreements-block">
-            <!-- ko foreach: $parent.getRegion('before-place-order') -->
-            <!-- ko template: getTemplate() --><!-- /ko -->
+        <div class="opc-block-summary mp-webpay-checkout">
+            <div>
+                <img data-bind="attr: { alt: 'Mercado Pago', src: getWebpayLogo() }" width="124" />
+            </div>
+            <p><!-- ko i18n: 'Te redirigiremos al sitio de Webpay para que completes tu pago.'--><!-- /ko --></p>
+        </div>
+
+        <div class="payment-method-billing-address mp-custom-display-inline-block">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
             <!--/ko-->
         </div>
 
-        <div class="opc-block-summary pix-checkout">
-            <img data-bind="attr: { alt: 'Mercado Pago', src: getPixLogo() }" width="180" />
-            <p><!-- ko i18n: 'Pay safely and instantly!'--><!-- /ko --></p>
-            <p><!-- ko i18n: 'When finalizing or ordering, you will see the code to order or pay.'--><!-- /ko --></p>
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
         </div>
 
         <div class="actions-toolbar">

@@ -24,8 +24,7 @@ use MercadoPago\Core\Helper\Data;
  *
  * @package MercadoPago\Core\Model
  */
-class CustomBankTransferConfigProvider
-    implements ConfigProviderInterface
+class CustomBankTransferConfigProvider implements ConfigProviderInterface
 {
     /**
      * @var MethodInterface
@@ -63,6 +62,7 @@ class CustomBankTransferConfigProvider
      * @var Repository
      */
     protected $_assetRepo;
+
     /**
      * @var UrlInterface
      */
@@ -100,7 +100,6 @@ class CustomBankTransferConfigProvider
      */
     public function getConfig()
     {
-
         if (!$this->methodInstance->isAvailable()) {
             return [];
         }

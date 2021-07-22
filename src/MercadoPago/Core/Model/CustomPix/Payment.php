@@ -30,7 +30,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     protected $_infoBlockType = 'MercadoPago\Core\Block\CustomPix\Info';
 
-
     /**
      * @param  DataObject $data
      * @return $this|\MercadoPago\Core\Model\Custom\Payment
@@ -56,7 +55,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         return $this;
 
     }//end assignData()
-
 
     /**
      * @param string $paymentAction
@@ -175,7 +173,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     }//end setOrderSubtotals()
 
-
     /**
      * is payment method available?
      *
@@ -194,7 +191,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     }//end isAvailable()
 
-
     /**
      * @return false|string
      */
@@ -211,6 +207,4 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         return $dateOfExpiration;
 
     }//end getDateOfExpiration()
-
-
 }//end class

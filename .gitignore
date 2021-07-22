@@ -83,4 +83,5 @@ atlassian*
 !/.gitignore
 !/CHANGELOG.md
 !/.editorconfig
+!.github/
 
