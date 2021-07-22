@@ -1,19 +1,30 @@
 define(
   [
-    'jquery',
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/model/quote',
     'Magento_Checkout/js/model/payment-service',
     'Magento_Checkout/js/model/payment/method-list',
     'Magento_Checkout/js/action/get-totals',
+    'jquery',
     'Magento_Checkout/js/model/full-screen-loader',
+    'mage/translate',
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/model/payment/additional-validators',
-    'mage/translate',
     'MPcustom',
   ],
-  function (Component, quote, defaultTotal, cartCache) {
+  function (
+    Component,
+    quote,
+    paymentService,
+    paymentMethodList,
+    getTotalsAction,
+    $,
+    fullScreenLoader,
+    $t,
+    defaultTotal,
+    cartCache
+  ) {
     'use strict';
 
     var configPayment = window.checkoutConfig.payment.mercadopago_custom_webpay;
@@ -33,7 +44,6 @@ define(
         //get action change payment method
         quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
       },
-
 
       setValidateHandler: function (handler) {
         this.validateHandler = handler;
@@ -77,7 +87,6 @@ define(
       getCode: function () {
         return 'mercadopago_custom_webpay';
       },
-
 
       getSuccessUrl: function () {
         if (configPayment != undefined) {

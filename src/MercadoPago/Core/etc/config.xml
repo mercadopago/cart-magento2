@@ -37,7 +37,6 @@
                 <sort_order>-3</sort_order>
                 <payment_action>authorize</payment_action>
                 <cctypes>AE,VI,MC,DI,JCB</cctypes>
-                <redirect_payer>1</redirect_payer>
             </mercadopago_custom_webpay>
             <mercadopago_customticket>
                 <active>0</active>
