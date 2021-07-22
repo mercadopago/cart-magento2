@@ -15,14 +15,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install dependencies
-        run: |
-          composer install --no-progress
-
       - name: Install PHP_CodeSniffer
         run: |
           curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
           php phpcs.phar --version
+
+      - name: Install dependencies
+        run: |
+          php composer.phar install --no-progress
 
       - uses: tinovyatkin/action-php-codesniffer@v1
         with:
