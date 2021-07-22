@@ -123,6 +123,10 @@ class CustomWebpayConfigProvider implements ConfigProviderInterface
                     'module_version' => $this->_coreHelper->getModuleVersion(),
                     'webpay_logo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/logo_webpay.png"),
                     'debitcard_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/debitcard_mini.png"),
+                    'public_key' => $this->_scopeConfig->getValue(
+                        ConfigData::PATH_PUBLIC_KEY,
+                        ScopeInterface::SCOPE_STORE
+                    ),
                 ]
             ]
         ];

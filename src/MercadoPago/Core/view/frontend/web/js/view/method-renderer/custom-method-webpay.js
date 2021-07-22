@@ -11,7 +11,6 @@ define(
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/model/payment/additional-validators',
-    'MPcustom',
   ],
   function (
     Component,
@@ -28,6 +27,7 @@ define(
     'use strict';
 
     var configPayment = window.checkoutConfig.payment.mercadopago_custom_webpay;
+    var mp = null;
 
     return Component.extend({
       defaults: {
@@ -40,6 +40,7 @@ define(
 
       initializeMethod: function () {
         var self = this;
+        mp = new MercadoPago(this.getPublicKey());
 
         //get action change payment method
         quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
@@ -150,6 +151,20 @@ define(
         cartCache.set('totals', null);
         defaultTotal.estimateTotals();
       },
+
+      getPublicKey: function () {
+        return window.checkoutConfig.payment[this.getCode()]['public_key'];
+      },
+
+      getGrandTotal: function () {
+        return quote.totals().base_grand_total;
+      },
+
+      getPayerEmail: function() {
+        if (typeof quote == 'object' && typeof quote.guestEmail == 'string') {
+          return quote.guestEmail;
+        }
+      }
     });
   }
 );
