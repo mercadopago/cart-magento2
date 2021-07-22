@@ -33,6 +33,5 @@
             <config_path>payment/mercadopago_customticket/sort_order</config_path>
             <comment>This setting will be the position in which the payment method will be available to the buyer.</comment>
         </field>
-
     </group>
 </include>

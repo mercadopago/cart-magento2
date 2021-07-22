@@ -77,7 +77,14 @@ class RefundObserverBeforeSave
         //get payment order object
         $paymentOrder = $order->getPayment();
         $paymentMethod = $paymentOrder->getMethodInstance()->getCode();
-        if (!($paymentMethod == 'mercadopago_custom' || $paymentMethod == 'mercadopago_customticket' || $paymentMethod == 'mercadopago_custom_bank_transfer' || $paymentMethod == 'mercadopago_basic')) {
+        if (!(
+            $paymentMethod == 'mercadopago_basic'
+            || $paymentMethod == 'mercadopago_custom'
+            || $paymentMethod == 'mercadopago_customticket'
+            || $paymentMethod == 'mercadopago_custom_bank_transfer'
+            || $paymentMethod == 'mercadopago_custom_pix'
+            || $paymentMethod == 'mercadopago_custom_webpay'
+        )) {
             return;
         }
 

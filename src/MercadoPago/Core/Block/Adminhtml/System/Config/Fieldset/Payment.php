@@ -16,8 +16,7 @@ use MercadoPago\Core\Helper\ConfigData;
 /**
  * Config form FieldSet renderer
  */
-class Payment
-    extends Fieldset
+class Payment extends Fieldset
 {
     /**
      * @var ScopeConfigInterface
@@ -68,6 +67,7 @@ class Payment
     {
         //get id element
         $paymentId = $element->getId();
+
         //get country (Site id for Mercado Pago)
         $siteId = strtoupper(
             $this->scopeConfig->getValue(
@@ -81,8 +81,13 @@ class Payment
             return "";
         }
 
-        //check is bank transfer
+        //check is pix
         if ($this->hidePix($paymentId, $siteId)) {
+            return "";
+        }
+
+        //check is webpay
+        if ($this->hideWebpay($paymentId, $siteId)) {
             return "";
         }
 
@@ -98,6 +103,7 @@ class Payment
             $paymentActivePath,
             ScopeInterface::SCOPE_STORE
         );
+
         //check is active for disable
         if ($statusPaymentMethod) {
             $value = 0;
@@ -114,14 +120,13 @@ class Payment
     }
 
     /**
-     * @param $paymentId
-     * @param $siteId
+     * @param  $paymentId
+     * @param  $siteId
      * @return bool
      */
     protected function hideBankTransfer($paymentId, $siteId)
     {
         if (strpos($paymentId, 'custom_checkout_bank_transfer') !== false) {
-            //hide payment method if not Colombia
             if ($siteId !== "MCO") {
                 $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
                 return true;
@@ -132,8 +137,8 @@ class Payment
     }
 
     /**
-     * @param $paymentId
-     * @param $siteId
+     * @param  $paymentId
+     * @param  $siteId
      * @return bool
      */
     protected function hidePix($paymentId, $siteId)
@@ -141,6 +146,23 @@ class Payment
         if (strpos($paymentId, 'custom_checkout_pix') !== false) {
             if ($siteId !== "MLB") {
                 $this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  $paymentId
+     * @param  $siteId
+     * @return bool
+     */
+    protected function hideWebpay($paymentId, $siteId)
+    {
+        if (strpos($paymentId, 'custom_checkout_webpay') !== false) {
+            if ($siteId !== "MLC") {
+                $this->disablePayment(ConfigData::PATH_CUSTOM_WEBPAY_ACTIVE);
                 return true;
             }
         }
