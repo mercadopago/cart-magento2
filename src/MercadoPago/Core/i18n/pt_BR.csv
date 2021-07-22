@@ -487,6 +487,6 @@ Cannot operate between users from different countries.", "Não é possível oper
 
 "==================== WEBPAY GATEWAY =====================","================================================"
 "Add the URL of an image that you want to insert in the checkout.", "Adicione a URL de uma imagem que você deseja inserir no checkout."
-"Custom Checkout - Debit Card (Webpay/Redcompra)", "Custom Checkout - Cartão de Débito"
+"Custom Checkout - Debit Card (Webpay/Redcompra)", "Custom Checkout - Cartão de Débito (Webpay/Redcompra)"
 "Debit Card/Redcompra - Mercado Pago", "Cartão de Débito/Redcompra - Mercado Pago"
 "We will redirect you to the Webpay site to complete your payment.", "Iremos redirecioná-lo para o site do Webpay para concluir o seu pagamento."
