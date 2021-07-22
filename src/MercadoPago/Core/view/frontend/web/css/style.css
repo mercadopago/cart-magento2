@@ -588,3 +588,32 @@ input.has-error, select.has-error, textarea.has-error {
   font-size: 1.2em;
   color: #787878;
 }
+
+/* webpay */
+
+.mp-webpay-checkout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 460px;
+}
+
+.mp-webpay-checkout div {
+  padding: 4px 20px 6px 0px;
+  border-right: 1px solid rgba(0, 0, 0, 0.15);
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.mp-webpay-checkout div img {
+  width: 230px;
+  height: auto;
+}
+
+.mp-webpay-checkout p {
+  padding-left: 20px;
+  margin-bottom: 0;
+  color: #6C6C6C;
+  font-size: 13px;
+}
