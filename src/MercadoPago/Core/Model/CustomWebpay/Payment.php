@@ -16,6 +16,13 @@ use MercadoPago\Core\Helper\Response;
 class Payment extends \MercadoPago\Core\Model\Custom\Payment
 {
     /**
+     * Define callback endpoints
+     */
+    const SUCCESS_PATH = 'mercadopago/webpay/success';
+    const FAILURE_PATH = 'mercadopago/webpay/failure';
+    const NOTIFICATION_PATH = 'mercadopago/webpay/notification';
+
+    /**
      * Define payment method code
      */
     const CODE = 'mercadopago_custom_webpay';

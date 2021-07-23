@@ -14,8 +14,9 @@ define(
   ) {
     'use strict';
 
-    var configPayment = window.checkoutConfig.payment.mercadopago_custom_webpay;
     var mp = null;
+    var base_url = window.checkoutConfig.payment.mercadopago_custom_webpay['base_url'];
+    var configPayment = window.checkoutConfig.payment.mercadopago_custom_webpay;
 
     return Component.extend({
       defaults: {
@@ -32,6 +33,18 @@ define(
 
         //get action change payment method
         quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
+      },
+
+      webpayTokenizer: function () {
+        var tokenizer = mp.tokenizer({
+          type: 'webpay',
+          email: this.getPayerEmail(),
+          totalAmount: this.getGrandTotal(),
+          action: this.getSuccessUrl(),
+          cancelURL: this.getFailureUrl(),
+        });
+
+        return tokenizer.open();
       },
 
       setValidateHandler: function (handler) {
@@ -148,10 +161,20 @@ define(
         return quote.totals().base_grand_total;
       },
 
-      getPayerEmail: function() {
+      getPayerEmail: function () {
         if (typeof quote == 'object' && typeof quote.guestEmail == 'string') {
           return quote.guestEmail;
         }
+      },
+
+      getSuccessUrl: function () {
+        var success_url = window.checkoutConfig.payment[this.getCode()]['success_url'];
+        return base_url + success_url;
+      },
+
+      getFailureUrl: function () {
+        var failure_url = window.checkoutConfig.payment[this.getCode()]['failure_url'];
+        return base_url + failure_url;
       }
     });
   }
