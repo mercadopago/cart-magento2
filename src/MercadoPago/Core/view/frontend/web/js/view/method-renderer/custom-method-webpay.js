@@ -17,7 +17,6 @@ define(
     'use strict';
 
     var mp = null;
-    var base_url = window.checkoutConfig.payment.mercadopago_custom_webpay['base_url'];
     var configPayment = window.checkoutConfig.payment.mercadopago_custom_webpay;
 
     return Component.extend({
@@ -171,14 +170,18 @@ define(
         return customerData.getValidatedEmailValue();
       },
 
+      getBaseUrl: function () {
+        return window.checkoutConfig.payment[this.getCode()]['base_url'];
+      },
+
       getSuccessUrl: function () {
         var success_url = window.checkoutConfig.payment[this.getCode()]['success_url'];
-        return base_url + success_url;
+        return this.getBaseUrl() + success_url;
       },
 
       getFailureUrl: function () {
         var failure_url = window.checkoutConfig.payment[this.getCode()]['failure_url'];
-        return base_url + failure_url;
+        return this.getBaseUrl() + failure_url;
       }
     });
   }
