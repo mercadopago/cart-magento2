@@ -3,6 +3,7 @@
 namespace MercadoPago\Core\Controller\CustomWebpay;
 
 use Exception;
+use Throwable;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
@@ -75,11 +76,10 @@ class Success extends AbstractAction
             $preference = $this->webpayPayment->makePreference($token, $paymentMethodId, $issuerId, $installments);
 
             return;
-        } catch (Exception $exception) {
-            $this->messageManager->addExceptionMessage(
-                $exception,
-                __('Sorry, we can\'t finish Mercado Pago Webpay Payment.')
-            );
+        } catch (Throwable $e) {
+            $this->messageManager->addExceptionMessage($e, __('Sorry, we can\'t finish Mercado Pago Webpay Payment.'));
+
+            $this->_helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
 
             return $this->resultRedirectFactory->create()->setPath('checkout/cart');
         }
