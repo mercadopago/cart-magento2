@@ -44,7 +44,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     protected $checkoutSession;
 
     /**
-     * Webpay constructor.
+     * Webpay payment constructor.
      *
      * @param CheckoutSession $checkoutSession
      */
@@ -70,7 +70,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      *
      * @return boolean
      */
-    public function isAvailable(CartInterface $quote=null) {
+    public function isAvailable(CartInterface $quote = null) {
         $isActive = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_WEBPAY_ACTIVE, ScopeInterface::SCOPE_STORE);
 
         if (empty($isActive)) {
@@ -104,30 +104,15 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         return $this;
     }//end assignData
 
-    /**
-     * @return CartInterface|ModelQuote
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
-    protected function getQuote() {
+    public function getQuote() {
         return $this->checkoutSession->getQuote();
     }//end getQuote()
 
-    /**
-     * @return CartInterface|ModelQuote
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
-    protected function reserveQuote() {
+    public function reserveQuote() {
         return $this->getQuote()->reserveOrderId();
     }//end getQuote()
 
-    /**
-     * @return CartInterface|ModelQuote
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
-    protected function getReservedQuoteId() {
+    public function getReservedQuoteId() {
         return $this->getQuote()->getReservedOrderId();
     }//end getQuote()
 }

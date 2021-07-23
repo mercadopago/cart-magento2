@@ -6,6 +6,7 @@ define(
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/checkout-data',
     'Magento_Checkout/js/action/set-payment-information',
+    'jquery',
     'MPv2SDKJS'
   ],
   function (
@@ -15,6 +16,7 @@ define(
     cartCache,
     customerData,
     setPaymentInformationAction,
+    $,
   ) {
     'use strict';
 
@@ -40,8 +42,8 @@ define(
 
       webpayTokenizer: function () {
         setPaymentInformationAction(this.messageContainer, { method: this.getCode() }).done(() => {
-          $.getJSON('/mercadopago/webpay/reserve').done(function (response) {
-
+          $.getJSON('/mercadopago/customwebpay/reserve').done(function (response) {
+            console.log(response);
           });
         })
 
