@@ -13,6 +13,7 @@ use MercadoPago\Core\Model\CustomWebpay\Payment;
 
 /**
  * Class AbstractAction
+ *
  * @package MercadoPago\Core\Controller\CustomWebpay
  */
 abstract class AbstractAction extends Action
