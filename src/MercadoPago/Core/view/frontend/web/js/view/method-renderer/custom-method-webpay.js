@@ -101,13 +101,6 @@ define(
         return 'mercadopago_custom_webpay';
       },
 
-      getSuccessUrl: function () {
-        if (configPayment != undefined) {
-          return configPayment['success_url'];
-        }
-        return '';
-      },
-
       /**
        * @override
        */
