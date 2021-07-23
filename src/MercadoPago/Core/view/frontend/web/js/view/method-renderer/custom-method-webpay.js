@@ -2,31 +2,25 @@ define(
   [
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/model/quote',
-    'Magento_Checkout/js/model/payment-service',
-    'Magento_Checkout/js/model/payment/method-list',
-    'Magento_Checkout/js/action/get-totals',
-    'jquery',
-    'Magento_Checkout/js/model/full-screen-loader',
-    'mage/translate',
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
-    'Magento_Checkout/js/model/payment/additional-validators',
-    'MPcustom',
+    'Magento_Checkout/js/checkout-data',
+    'Magento_Checkout/js/action/set-payment-information',
+    'jquery',
+    'MPv2SDKJS'
   ],
   function (
     Component,
     quote,
-    paymentService,
-    paymentMethodList,
-    getTotalsAction,
-    $,
-    fullScreenLoader,
-    $t,
     defaultTotal,
-    cartCache
+    cartCache,
+    customerData,
+    setPaymentInformationAction,
+    $,
   ) {
     'use strict';
 
+    var mp = null;
     var configPayment = window.checkoutConfig.payment.mercadopago_custom_webpay;
 
     return Component.extend({
@@ -40,9 +34,28 @@ define(
 
       initializeMethod: function () {
         var self = this;
+        mp = new MercadoPago(this.getPublicKey());
 
         //get action change payment method
         quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
+      },
+
+      webpayTokenizer: function () {
+        var self = this;
+
+        setPaymentInformationAction(this.messageContainer, { method: this.getCode() }).done(() => {
+          $.getJSON('/mercadopago/customwebpay/reserve').done(function (response) {
+            var tokenizer = mp.tokenizer({
+              type: 'webpay',
+              email: self.getPayerEmail(),
+              totalAmount: self.getGrandTotal(),
+              action: self.getSuccessUrl() + '?quote_id=' + response.quote_id,
+              cancelURL: self.getFailureUrl(),
+            });
+
+            return tokenizer.open();
+          });
+        });
       },
 
       setValidateHandler: function (handler) {
@@ -86,13 +99,6 @@ define(
 
       getCode: function () {
         return 'mercadopago_custom_webpay';
-      },
-
-      getSuccessUrl: function () {
-        if (configPayment != undefined) {
-          return configPayment['success_url'];
-        }
-        return '';
       },
 
       /**
@@ -150,6 +156,36 @@ define(
         cartCache.set('totals', null);
         defaultTotal.estimateTotals();
       },
+
+      getPublicKey: function () {
+        return window.checkoutConfig.payment[this.getCode()]['public_key'];
+      },
+
+      getGrandTotal: function () {
+        return quote.totals().base_grand_total;
+      },
+
+      getPayerEmail: function () {
+        if (window.isCustomerLoggedIn) {
+          return window.customerData.email;
+        }
+
+        return customerData.getValidatedEmailValue();
+      },
+
+      getBaseUrl: function () {
+        return window.checkoutConfig.payment[this.getCode()]['base_url'];
+      },
+
+      getSuccessUrl: function () {
+        var success_url = window.checkoutConfig.payment[this.getCode()]['success_url'];
+        return this.getBaseUrl() + success_url;
+      },
+
+      getFailureUrl: function () {
+        var failure_url = window.checkoutConfig.payment[this.getCode()]['failure_url'];
+        return this.getBaseUrl() + failure_url;
+      }
     });
   }
 );

@@ -219,10 +219,11 @@ define(
 
       addWalletButton: function () {
         var self = this;
-        setPaymentInformationAction(this.messageContainer, {method: 'mercadopago_custom'}).done(() => {
+        setPaymentInformationAction(this.messageContainer, { method: 'mercadopago_custom' }).done(() => {
           $.getJSON('/mercadopago/wallet/preference').done(function (response){
             var preferenceId = response.preference.id
             self.toogleWalletButton();
+
             if (window.checkoutConfig.payment[self.getCode()] != undefined) {
               var wb_link = window.checkoutConfig.payment[self.getCode()]['wallet_button_link'];
               var mp_public_key = window.checkoutConfig.payment[self.getCode()]['public_key'];
@@ -240,6 +241,7 @@ define(
               };
 
               var mercadopago_button = document.querySelector('.mercadopago-button');
+
               if (mercadopago_button !== null || mercadopago_button !== undefined) {
                 mercadopago_button.click();
               }

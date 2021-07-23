@@ -24,8 +24,10 @@ use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Checkout\Model\Session as CheckoutSession;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Response;
+use MercadoPago\Core\Helper\Data as MercadopagoData;
 use MercadoPago\Core\Model\Api\V1\Exception;
 use MercadoPago\Core\Model\Core;
 
@@ -152,7 +154,7 @@ class Payment extends Cc implements GatewayInterface
     protected $_coreModel;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var CheckoutSession
      */
     protected $_checkoutSession;
 
@@ -172,7 +174,7 @@ class Payment extends Cc implements GatewayInterface
     protected $_urlBuilder;
 
     /**
-     * @var \MercadoPago\Core\Helper\Data
+     * @var MercadopagoData
      */
     protected $_helperData;
 
@@ -216,27 +218,27 @@ class Payment extends Cc implements GatewayInterface
     protected $_request;
 
     /**
-     * @param                                          \MercadoPago\Core\Helper\Data   $helperData
-     * @param                                          \Magento\Checkout\Model\Session $checkoutSession
-     * @param                                          Session                         $customerSession
-     * @param                                          OrderFactory                    $orderFactory
-     * @param                                          UrlInterface                    $urlBuilder
-     * @param                                          Context                         $context
-     * @param                                          Registry                        $registry
-     * @param                                          ExtensionAttributesFactory      $extensionFactory
-     * @param                                          AttributeValueFactory           $customAttributeFactory
-     * @param                                          Data                            $paymentData
-     * @param                                          ScopeConfigInterface            $scopeConfig
-     * @param                                          Logger                          $logger
-     * @param                                          ModuleListInterface             $moduleList
-     * @param                                          TimezoneInterface               $localeDate
-     * @param                                          Core                            $coreModel
-     * @param                                          RequestInterface                $request
+     * @param MercadopagoData            $helperData
+     * @param CheckoutSession            $checkoutSession
+     * @param Session                    $customerSession
+     * @param OrderFactory               $orderFactory
+     * @param UrlInterface               $urlBuilder
+     * @param Context                    $context
+     * @param Registry                   $registry
+     * @param ExtensionAttributesFactory $extensionFactory
+     * @param AttributeValueFactory      $customAttributeFactory
+     * @param Data                       $paymentData
+     * @param ScopeConfigInterface       $scopeConfig
+     * @param Logger                     $logger
+     * @param ModuleListInterface        $moduleList
+     * @param TimezoneInterface          $localeDate
+     * @param Core                       $coreModel
+     * @param RequestInterface           $request
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
-        \MercadoPago\Core\Helper\Data $helperData,
-        \Magento\Checkout\Model\Session $checkoutSession,
+        MercadopagoData $helperData,
+        CheckoutSession $checkoutSession,
         Session $customerSession,
         OrderFactory $orderFactory,
         UrlInterface $urlBuilder,

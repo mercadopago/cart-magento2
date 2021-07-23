@@ -71,7 +71,7 @@
                     data-bind="
                         attr: {title: $t('Place Order')},
                         enable: (getCode() == isChecked()),
-                        click: placeOrder
+                        click: webpayTokenizer
                     "
                     class="action primary checkout"
                     disabled>

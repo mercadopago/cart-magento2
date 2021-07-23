@@ -67,6 +67,16 @@ class CustomWebpayConfigProvider implements ConfigProviderInterface
     protected $_productMetaData;
 
     /**
+     * @var string
+     */
+    protected $successUrl = CustomWebpay\Payment::SUCCESS_PATH;
+
+    /**
+     * @var string
+     */
+    protected $failureUrl = CustomWebpay\Payment::FAILURE_PATH;
+
+    /**
      * CustomBankTransferConfigProvider constructor.
      * @param Context $context
      * @param PaymentHelper $paymentHelper
@@ -112,9 +122,6 @@ class CustomWebpayConfigProvider implements ConfigProviderInterface
         return [
             'payment' => [
                 $this->methodCode => [
-                    'country' => strtoupper($this->_scopeConfig->getValue(ConfigData::PATH_SITE_ID, ScopeInterface::SCOPE_STORE)),
-                    'banner_url' => $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_WEBPAY_BANNER, ScopeInterface::SCOPE_STORE),
-                    'success_url' => $this->methodInstance->getConfigData('order_place_redirect_url'),
                     'route' => $this->_request->getRouteName(),
                     'base_url' => $this->_storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK),
                     'loading_gif' => $this->_assetRepo->getUrl('MercadoPago_Core::images/loading.gif'),
@@ -123,6 +130,20 @@ class CustomWebpayConfigProvider implements ConfigProviderInterface
                     'module_version' => $this->_coreHelper->getModuleVersion(),
                     'webpay_logo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/logo_webpay.png"),
                     'debitcard_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/debitcard_mini.png"),
+                    'success_url' => $this->successUrl,
+                    'failure_url' => $this->failureUrl,
+                    'public_key' => $this->_scopeConfig->getValue(
+                        ConfigData::PATH_PUBLIC_KEY,
+                        ScopeInterface::SCOPE_STORE
+                    ),
+                    'country' => strtoupper($this->_scopeConfig->getValue(
+                        ConfigData::PATH_SITE_ID,
+                        ScopeInterface::SCOPE_STORE
+                    )),
+                    'banner_url' => $this->_scopeConfig->getValue(
+                        ConfigData::PATH_CUSTOM_WEBPAY_BANNER,
+                        ScopeInterface::SCOPE_STORE
+                    ),
                 ]
             ]
         ];
