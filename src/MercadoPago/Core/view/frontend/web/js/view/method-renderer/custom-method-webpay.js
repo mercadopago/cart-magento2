@@ -4,13 +4,15 @@ define(
     'Magento_Checkout/js/model/quote',
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
+    'Magento_Checkout/js/checkout-data',
     'MPv2SDKJS'
   ],
   function (
     Component,
     quote,
     defaultTotal,
-    cartCache
+    cartCache,
+    customerData,
   ) {
     'use strict';
 
@@ -162,9 +164,11 @@ define(
       },
 
       getPayerEmail: function () {
-        if (typeof quote == 'object' && typeof quote.guestEmail == 'string') {
-          return quote.guestEmail;
+        if (window.isCustomerLoggedIn) {
+          return window.customerData.email;
         }
+
+        return customerData.getValidatedEmailValue();
       },
 
       getSuccessUrl: function () {
