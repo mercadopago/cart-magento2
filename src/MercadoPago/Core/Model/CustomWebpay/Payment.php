@@ -90,14 +90,25 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         return $this;
     }//end assignData
 
+    /**
+     * @return CartInterface|ModelQuote
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
     public function getQuote() {
         return $this->_checkoutSession->getQuote();
     }//end getQuote()
 
+    /**
+     * @return void
+     */
     public function reserveQuote() {
         return $this->getQuote()->reserveOrderId();
     }//end getQuote()
 
+    /**
+     * @return string
+     */
     public function getReservedQuoteId() {
         return $this->getQuote()->getReservedOrderId();
     }//end getQuote()
