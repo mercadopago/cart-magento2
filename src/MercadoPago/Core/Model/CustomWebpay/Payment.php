@@ -5,9 +5,9 @@ namespace MercadoPago\Core\Model\CustomWebpay;
 use Exception;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Checkout\Model\Session as CheckoutSession;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Response;
 
@@ -19,9 +19,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * Define callback endpoints
      */
-    const SUCCESS_PATH = 'mercadopago/webpay/success';
-    const FAILURE_PATH = 'mercadopago/webpay/failure';
-    const NOTIFICATION_PATH = 'mercadopago/webpay/notification';
+    const SUCCESS_PATH = 'mercadopago/customwebpay/success';
+    const FAILURE_PATH = 'mercadopago/customwebpay/failure';
+    const NOTIFICATION_PATH = 'mercadopago/customwebpay/notification';
 
     /**
      * Define payment method code
@@ -37,20 +37,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @var string
      */
     protected $_infoBlockType = 'MercadoPago\Core\Block\CustomWebpay\Info';
-
-    /**
-     * @var CheckoutSession
-     */
-    protected $checkoutSession;
-
-    /**
-     * Webpay payment constructor.
-     *
-     * @param CheckoutSession $checkoutSession
-     */
-    public function __construct(CheckoutSession $checkoutSession) {
-        $this->checkoutSession = $checkoutSession;
-    }
 
     /**
      * @param string $paymentAction
@@ -105,7 +91,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end assignData
 
     public function getQuote() {
-        return $this->checkoutSession->getQuote();
+        return $this->_checkoutSession->getQuote();
     }//end getQuote()
 
     public function reserveQuote() {
