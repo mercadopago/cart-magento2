@@ -143,10 +143,15 @@ class Data extends \Magento\Payment\Helper\Data
     public function log($message, $name = "mercadopago", $array = null)
     {
         //load admin configuration value, default is true
-        $actionLog = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG, ScopeInterface::SCOPE_STORE);
+        $actionLog = $this->scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG,
+            ScopeInterface::SCOPE_STORE
+        );
+
         if (!$actionLog) {
             return;
         }
+
         //if extra data is provided, it's encoded for better visualization
         if (!is_null($array)) {
             $message .= " - " . json_encode($array);

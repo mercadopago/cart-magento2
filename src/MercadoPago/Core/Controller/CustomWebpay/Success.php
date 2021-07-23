@@ -7,6 +7,7 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use MercadoPago\Core\Model\CustomWebpay\Payment;
+use MercadoPago\Core\Helper\Data as MercadopagoData;
 
 /**
  * Class Success
@@ -16,9 +17,19 @@ use MercadoPago\Core\Model\CustomWebpay\Payment;
 class Success extends AbstractAction
 {
     /**
+     * log filename
+     */
+    const LOG_NAME = 'custom_webpay';
+
+    /**
      * @var Session
      */
     protected $session;
+
+    /**
+     * @var MercadopagoData
+     */
+    protected $_helperData;
 
     /**
      * Reserve constructor.
@@ -27,14 +38,17 @@ class Success extends AbstractAction
      * @param JsonFactory $resultJsonFactory
      * @param Payment $webpayPayment
      * @param Session $session
+     * @param MercadopagoData $helperData
      */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
         Payment $webpayPayment,
-        Session $session
+        Session $session,
+        MercadopagoData $helperData
     ) {
         $this->session = $session;
+        $this->helperData = $helperData;
         parent::__construct($context, $resultJsonFactory, $webpayPayment);
     }
 
@@ -46,11 +60,21 @@ class Success extends AbstractAction
         try {
             $quoteId = $this->getRequest()->getParam('quote_id', false);
 
-            if (!$quoteId) {
-                throw new Exception(__('Sorry, we can\'t process the quote id not found'));
+            $body = $this->getRequest()->getContent();
+            $body = (array) json_decode($body);
+
+            if (!$quoteId || !$body) {
+                throw new Exception(__('Sorry, we can\'t process: missing params.'));
             }
 
-            return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
+            $token = $body['token'];
+            $issuerId = $body['issuer_id'];
+            $installments = $body['installments'];
+            $paymentMethodId = $body['payment_method_id'];
+
+            $preference = $this->webpayPayment->makePreference($token, $paymentMethodId, $issuerId, $installments);
+
+            return;
         } catch (Exception $exception) {
             $this->messageManager->addExceptionMessage(
                 $exception,

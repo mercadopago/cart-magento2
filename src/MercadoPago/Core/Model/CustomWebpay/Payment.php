@@ -29,6 +29,11 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     const CODE = 'mercadopago_custom_webpay';
 
     /**
+     * log filename
+     */
+    const LOG_NAME = 'custom_webpay';
+
+    /**
      * @var string
      */
     protected $_code = self::CODE;
@@ -48,6 +53,76 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @throws LocalizedException
      */
     public function initialize($paymentAction, $stateObject) {}
+
+    /**
+     * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    public function makePreference($token, $paymentMethodId, $issuerId, $installments)
+    {
+        try {
+            $this->_helperData->log('CustomPaymentWebpay - initialize', self::LOG_NAME);
+
+            $quote   = $this->_getQuote();
+            $order   = $this->getInfoInstance()->getOrder();
+            $payment = $order->getPayment();
+
+            $payment_info = [];
+
+            $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
+
+            $preference['token'] = $token;
+            $preference['issuer_id'] = $issuerId;
+            $preference['installments'] = $installments;
+            $preference['payment_method_id'] = $paymentMethodId;
+
+            if ($payment->getAdditionalInformation('firstName') !== '') {
+                $preference['payer']['first_name'] = $payment->getAdditionalInformation('firstName');
+            }
+
+            if ($payment->getAdditionalInformation('lastName') !== '') {
+                $preference['payer']['last_name'] = $payment->getAdditionalInformation('lastName');
+            }
+
+            if ($payment->getAdditionalInformation('docNumber') !== '') {
+                $preference['payer']['identification']['number'] = $payment->getAdditionalInformation('docNumber');
+            }
+
+            if ($payment->getAdditionalInformation('address') !== '') {
+                $preference['payer']['address']['street_name'] = $payment->getAdditionalInformation('address');
+            }
+
+            if ($payment->getAdditionalInformation('addressNumber') !== '') {
+                $preference['payer']['address']['street_number'] = $payment->getAdditionalInformation('addressNumber');
+            }
+
+            if ($payment->getAdditionalInformation('addressCity') !== '') {
+                $preference['payer']['address']['city']         = $payment->getAdditionalInformation('addressCity');
+                $preference['payer']['address']['neighborhood'] = $payment->getAdditionalInformation('addressCity');
+            }
+
+            if ($payment->getAdditionalInformation('addressState') !== '') {
+                $preference['payer']['address']['federal_unit'] = $payment->getAdditionalInformation('addressState');
+            }
+
+            if ($payment->getAdditionalInformation('addressZipcode') !== '') {
+                $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation('addressZipcode');
+            }
+
+            $preference['metadata']['checkout']      = 'custom';
+            $preference['metadata']['checkout_type'] = 'webpay';
+
+            $this->_helperData->log('CustomPaymentWebpay - Preference to POST', self::LOG_NAME, $preference);
+        } catch (Exception $e) {
+            $this->_helperData->log('CustomPaymentWebpay - Error to create the preference: '.  $e->getMessage());
+
+            throw new LocalizedException(__(Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
+
+            return $this;
+        }
+
+    }//end makePreference()
 
     /**
      * is payment method available?
@@ -91,25 +166,16 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end assignData
 
     /**
-     * @return CartInterface|ModelQuote
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
-    public function getQuote() {
-        return $this->_checkoutSession->getQuote();
-    }//end getQuote()
-
-    /**
      * @return void
      */
     public function reserveQuote() {
-        return $this->getQuote()->reserveOrderId();
+        return $this->_getQuote()->reserveOrderId();
     }//end getQuote()
 
     /**
      * @return string
      */
     public function getReservedQuoteId() {
-        return $this->getQuote()->getReservedOrderId();
+        return $this->_getQuote()->getReservedOrderId();
     }//end getQuote()
 }
