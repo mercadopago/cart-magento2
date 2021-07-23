@@ -41,21 +41,21 @@ define(
       },
 
       webpayTokenizer: function () {
+        var self = this;
+
         setPaymentInformationAction(this.messageContainer, { method: this.getCode() }).done(() => {
           $.getJSON('/mercadopago/customwebpay/reserve').done(function (response) {
-            console.log(response);
+            var tokenizer = mp.tokenizer({
+              type: 'webpay',
+              email: self.getPayerEmail(),
+              totalAmount: self.getGrandTotal(),
+              action: self.getSuccessUrl() + '?quote_id=' + response.quote_id,
+              cancelURL: self.getFailureUrl(),
+            });
+
+            return tokenizer.open();
           });
-        })
-
-        var tokenizer = mp.tokenizer({
-          type: 'webpay',
-          email: this.getPayerEmail(),
-          totalAmount: this.getGrandTotal(),
-          action: this.getSuccessUrl(),
-          cancelURL: this.getFailureUrl(),
         });
-
-        return tokenizer.open();
       },
 
       setValidateHandler: function (handler) {
