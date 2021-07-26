@@ -28,6 +28,7 @@ use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Catalog\Helper\Image;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
@@ -203,6 +204,11 @@ class Payment extends Cc implements GatewayInterface
     protected $productMetadata;
 
     /**
+     * @var Image
+     */
+    protected $helperImage;
+
+    /**
      *
      */
     const LOG_NAME = 'custom_payment';
@@ -261,6 +267,7 @@ class Payment extends Cc implements GatewayInterface
      * @param QuoteRepository            $quoteRepository
      * @param QuoteManagement            $quoteManagement
      * @param Version                    $version
+     * @param Image                      $helperImage,
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -283,7 +290,8 @@ class Payment extends Cc implements GatewayInterface
         QuoteRepository $quoteRepository,
         QuoteManagement $quoteManagement,
         Version $version,
-        ProductMetadataInterface $productMetadata
+        ProductMetadataInterface $productMetadata,
+        Image $helperImage
     ) {
         parent::__construct(
             $context,
@@ -309,6 +317,7 @@ class Payment extends Cc implements GatewayInterface
         $this->_quoteManagement = $quoteManagement;
         $this->_version         = $version;
         $this->_productMetadata = $productMetadata;
+        $this->_helperImage     = $helperImage;
     }//end __construct()
 
     /**

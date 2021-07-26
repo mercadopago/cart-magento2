@@ -86,7 +86,8 @@ class Success extends AbstractAction
                 $installments
             );
 
-            var_dump($preference);
+            header('Content-type: application/json');
+            echo json_encode($preference);
 
             // return;
         } catch (Exception $e) {

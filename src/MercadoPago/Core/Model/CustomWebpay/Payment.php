@@ -7,6 +7,7 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\Quote\Item;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
@@ -107,8 +108,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     {
         $quote      = $this->getReservedQuote($quoteId);
         $preference = $this->getPreference();
-        $siteId     = $preference['metadata']['site'];
         $customer   = $this->getCustomer($quoteId);
+        $siteId     = $preference['metadata']['site'];
 
         $preference['items']              = $this->getItems($quote, $siteId);
         $preference['payer']              = $this->getPayer($quote, $customer);
@@ -125,6 +126,18 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $quote->setCustomerLastname($preference['payer']['surname']);
         }
 
+        $preference['shipments']['cost'] = Round::roundWithSiteId(
+            $quote->getShippingAddress()->getShippingAmount(),
+            $siteId
+        );
+
+        if (!$quote->getShippingAddress()) {
+            unset($preference['shipments']);
+        }
+
+        $preference['metadata']['test_mode'] = $this->isTestMode($preference['payer']);
+        $preference['metadata']['quote_id']  = $quote->getId();
+
         return $preference;
     }//end makePreference()
 
@@ -132,7 +145,11 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @return void
      */
     public function reserveQuote() {
-        return $this->_getQuote()->reserveOrderId();
+        $quote = $this->_getQuote();
+
+        $quote->reserveOrderId();
+
+        $this->_quoteRepository->save($quote);
     }//end reserveQuote()
 
     /**
@@ -239,6 +256,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     {
         $items      = [];
         $categoryId = $this->getConfig(ConfigData::PATH_ADVANCED_CATEGORY);
+    
         foreach ($quote->getAllVisibleItems() as $item) {
             $items[] = $this->getItem($item, $categoryId, $siteId);
         }
@@ -257,6 +275,28 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         return $items;
     }//end getItems()
+
+    /**
+     * @param  Item   $item
+     * @param  string $categoryId
+     * @param  string $siteId
+     * @return array
+     */
+    protected function getItem(Item $item, $categoryId, $siteId)
+    {
+        $product = $item->getProduct();
+        $image   = $this->_helperImage->init($product, 'image');
+
+        return [
+            'id'          => $item->getSku(),
+            'title'       => $product->getName(),
+            'description' => $product->getName(),
+            'picture_url' => $image->getUrl(),
+            'category_id' => $categoryId,
+            'quantity'    => (int) number_format($item->getQty(), 0, '.', ''),
+            'unit_price'  => Round::roundWithSiteId($item->getPrice(), $siteId),
+        ];
+    }//end getItem()
 
     /**
      * @param  Quote  $quote
@@ -326,4 +366,21 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             ],
         ];
     }//end getPayer()
+
+    /**
+     * @param  $payer
+     * @return boolean
+     */
+    protected function isTestMode($payer)
+    {
+        if (!empty($this->getSponsorId())) {
+            return false;
+        }
+
+        if (preg_match('/@testuser\.com$/i', $payer['email'])) {
+            return true;
+        }
+
+        return false;
+    }//end isTestMode()
 }

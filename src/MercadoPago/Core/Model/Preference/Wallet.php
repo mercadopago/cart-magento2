@@ -485,7 +485,7 @@ class Wallet
     }//end getSiteId()
 
     /**
-     * @return CartInterface|ModelQuote
+     * @return Quote|CartInterface|ModelQuote
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
