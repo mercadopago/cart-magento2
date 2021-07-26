@@ -3,7 +3,6 @@
 namespace MercadoPago\Core\Controller\CustomWebpay;
 
 use Exception;
-use Throwable;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
@@ -60,28 +59,36 @@ class Success extends AbstractAction
     {
         try {
             $quoteId = $this->getRequest()->getParam('quote_id', false);
-
+            
             $body = $this->getRequest()->getContent();
-            $body = (array) json_decode($body);
+            $body = explode('&', $body);
 
-            if (!$quoteId || !$body) {
+            $content = [];
+            foreach ($body as $value) {
+                $value = explode('=', $value);
+                $content[$value[0]] = $value[1];
+            }
+            
+            if (!isset($quoteId) || empty($quoteId) || !isset($body) || empty($content)) {
                 throw new Exception(__('Sorry, we can\'t process: missing params.'));
             }
 
-            $token = $body['token'];
-            $issuerId = $body['issuer_id'];
-            $installments = $body['installments'];
-            $paymentMethodId = $body['payment_method_id'];
+            $token           = $content['token'];
+            $issuerId        = $content['issuer_id'];
+            $installments    = $content['installments'];
+            $paymentMethodId = $content['payment_method_id'];
 
             $preference = $this->webpayPayment->makePreference($token, $paymentMethodId, $issuerId, $installments);
 
-            return;
-        } catch (Throwable $e) {
+            var_dump($preference);
+
+            // return;
+        } catch (Exception $e) {
             $this->messageManager->addExceptionMessage($e, __('Sorry, we can\'t finish Mercado Pago Webpay Payment.'));
 
-            $this->_helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
+            $this->helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
 
-            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
+            // return $this->resultRedirectFactory->create()->setPath('checkout/cart');
         }
     }
 }
