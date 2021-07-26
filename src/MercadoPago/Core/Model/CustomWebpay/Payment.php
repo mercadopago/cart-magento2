@@ -55,76 +55,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     public function initialize($paymentAction, $stateObject) {}
 
     /**
-     * @return array
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
-    public function makePreference($token, $paymentMethodId, $issuerId, $installments)
-    {
-        try {
-            $this->_helperData->log('CustomPaymentWebpay - initialize', self::LOG_NAME);
-
-            $quote   = $this->_getQuote();
-            $order   = $this->getInfoInstance()->getOrder();
-            $payment = $order->getPayment();
-
-            $payment_info = [];
-
-            $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
-
-            $preference['token'] = $token;
-            $preference['issuer_id'] = $issuerId;
-            $preference['installments'] = $installments;
-            $preference['payment_method_id'] = $paymentMethodId;
-
-            if ($payment->getAdditionalInformation('firstName') !== '') {
-                $preference['payer']['first_name'] = $payment->getAdditionalInformation('firstName');
-            }
-
-            if ($payment->getAdditionalInformation('lastName') !== '') {
-                $preference['payer']['last_name'] = $payment->getAdditionalInformation('lastName');
-            }
-
-            if ($payment->getAdditionalInformation('docNumber') !== '') {
-                $preference['payer']['identification']['number'] = $payment->getAdditionalInformation('docNumber');
-            }
-
-            if ($payment->getAdditionalInformation('address') !== '') {
-                $preference['payer']['address']['street_name'] = $payment->getAdditionalInformation('address');
-            }
-
-            if ($payment->getAdditionalInformation('addressNumber') !== '') {
-                $preference['payer']['address']['street_number'] = $payment->getAdditionalInformation('addressNumber');
-            }
-
-            if ($payment->getAdditionalInformation('addressCity') !== '') {
-                $preference['payer']['address']['city']         = $payment->getAdditionalInformation('addressCity');
-                $preference['payer']['address']['neighborhood'] = $payment->getAdditionalInformation('addressCity');
-            }
-
-            if ($payment->getAdditionalInformation('addressState') !== '') {
-                $preference['payer']['address']['federal_unit'] = $payment->getAdditionalInformation('addressState');
-            }
-
-            if ($payment->getAdditionalInformation('addressZipcode') !== '') {
-                $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation('addressZipcode');
-            }
-
-            $preference['metadata']['checkout']      = 'custom';
-            $preference['metadata']['checkout_type'] = 'webpay';
-
-            $this->_helperData->log('CustomPaymentWebpay - Preference to POST', self::LOG_NAME, $preference);
-        } catch (Exception $e) {
-            $this->_helperData->log('CustomPaymentWebpay - Error to create the preference: '.  $e->getMessage());
-
-            throw new LocalizedException(__(Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
-
-            return $this;
-        }
-
-    }//end makePreference()
-
-    /**
      * is payment method available?
      *
      * @param CartInterface|null $quote
@@ -166,6 +96,18 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end assignData
 
     /**
+     * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    public function makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments)
+    {
+        $preference = $this->getPreference();
+
+        return $preference;
+    }//end makePreference()
+
+    /**
      * @return void
      */
     public function reserveQuote() {
@@ -178,4 +120,75 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     public function getReservedQuoteId() {
         return $this->_getQuote()->getReservedOrderId();
     }//end getQuote()
+
+    /**
+     * @return array
+     */
+    protected function getPreference()
+    {
+        $this->_version->afterLoad();
+
+        return [
+            'items'     => [],
+            'payer'     => [],
+            'shipments' => [
+                'mode' => 'not_specified',
+                'cost' => 0.00,
+            ],
+            'notification_url'     => $this->_urlBuilder->getUrl(self::NOTIFICATION_PATH),
+            'statement_descriptor' => $this->getStateDescriptor(),
+            'external_reference'   => '',
+            'metadata'             => [
+                'site'             => $this->getSiteId(),
+                'platform'         => 'BP1EF6QIC4P001KBGQ10',
+                'platform_version' => $this->_productMetadata->getVersion(),
+                'module_version'   => $this->_version->getValue(),
+                'sponsor_id'       => $this->getSponsorId(),
+                'test_mode'        => '',
+                'quote_id'         => '',
+                'checkout'         => 'custom',
+                'checkout_type'    => 'webpay',
+            ],
+        ];
+    }//end getPreference()
+
+    /**
+     * @param  $path
+     * @param  string $scopeType
+     * @return mixed
+     */
+    protected function getConfig($path, $scopeType=ScopeInterface::SCOPE_STORE)
+    {
+        return $this->_scopeConfig->getValue($path, $scopeType);
+    }//end getConfig()
+
+    /**
+     * @return mixed
+     */
+    protected function getStateDescriptor()
+    {
+        return $this->getConfig(ConfigData::PATH_CUSTOM_STATEMENT_DESCRIPTOR);
+    }//end getStateDescriptor()
+
+    /**
+     * @return false|string|string[]
+     */
+    protected function getSiteId()
+    {
+        return mb_strtoupper($this->getConfig(ConfigData::PATH_SITE_ID));
+    }//end getSiteId()
+
+    /**
+     * @return integer|null
+     */
+    protected function getSponsorId()
+    {
+        $sponsorId = $this->getConfig(ConfigData::PATH_SPONSOR_ID);
+
+        if (!empty($sponsorId)) {
+            return (int) $sponsorId;
+        }
+
+        return null;
+    }//end getSponsorId()
 }

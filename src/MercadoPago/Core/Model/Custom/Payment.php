@@ -22,14 +22,18 @@ use Magento\Payment\Model\Method\Logger;
 use Magento\Payment\Model\Method\Online\GatewayInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\QuoteManagement;
+use Magento\Quote\Model\QuoteRepository;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
 use MercadoPago\Core\Model\Api\V1\Exception;
 use MercadoPago\Core\Model\Core;
+use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 
 /**
  * Class Payment
@@ -179,6 +183,26 @@ class Payment extends Cc implements GatewayInterface
     protected $_helperData;
 
     /**
+     * @var QuoteRepository
+     */
+    protected $quoteRepository;
+
+    /**
+     * @var CartManagement
+     */
+    protected $quoteManagement;
+
+    /**
+     * @var Version
+     */
+    protected $version;
+
+    /**
+     * @var ProductMetadataInterface
+     */
+    protected $productMetadata;
+
+    /**
      *
      */
     const LOG_NAME = 'custom_payment';
@@ -234,6 +258,9 @@ class Payment extends Cc implements GatewayInterface
      * @param TimezoneInterface          $localeDate
      * @param Core                       $coreModel
      * @param RequestInterface           $request
+     * @param QuoteRepository            $quoteRepository
+     * @param QuoteManagement            $quoteManagement
+     * @param Version                    $version
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -252,7 +279,11 @@ class Payment extends Cc implements GatewayInterface
         ModuleListInterface $moduleList,
         TimezoneInterface $localeDate,
         Core $coreModel,
-        RequestInterface $request
+        RequestInterface $request,
+        QuoteRepository $quoteRepository,
+        QuoteManagement $quoteManagement,
+        Version $version,
+        ProductMetadataInterface $productMetadata
     ) {
         parent::__construct(
             $context,
@@ -274,6 +305,10 @@ class Payment extends Cc implements GatewayInterface
         $this->_urlBuilder      = $urlBuilder;
         $this->_request         = $request;
         $this->_scopeConfig     = $scopeConfig;
+        $this->_quoteRepository = $quoteRepository;
+        $this->_quoteManagement = $quoteManagement;
+        $this->_version         = $version;
+        $this->_productMetadata  = $productMetadata;
     }//end __construct()
 
     /**

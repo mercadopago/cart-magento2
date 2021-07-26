@@ -78,7 +78,13 @@ class Success extends AbstractAction
             $installments    = $content['installments'];
             $paymentMethodId = $content['payment_method_id'];
 
-            $preference = $this->webpayPayment->makePreference($token, $paymentMethodId, $issuerId, $installments);
+            $preference = $this->webpayPayment->makePreference(
+                $quoteId,
+                $token,
+                $paymentMethodId,
+                $issuerId,
+                $installments
+            );
 
             var_dump($preference);
 

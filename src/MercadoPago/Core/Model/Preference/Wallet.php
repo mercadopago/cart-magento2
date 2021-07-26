@@ -411,7 +411,7 @@ class Wallet
             'purpose'              => self::PURPOSE_WALLET_PURCHASE,
             'metadata'             => [
                 'site'             => $this->getSiteId(),
-                'platform'         => 'Magento',
+                'platform'         => 'BP1EF6QIC4P001KBGQ10',
                 'platform_version' => $this->productMetadata->getVersion(),
                 'module_version'   => $this->version->getValue(),
                 'sponsor_id'       => $this->getSponsorId(),
