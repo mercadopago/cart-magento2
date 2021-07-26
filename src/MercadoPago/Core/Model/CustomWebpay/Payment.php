@@ -6,9 +6,12 @@ use Exception;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Model\Quote;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Customer\Api\Data\CustomerInterface;
 use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Round;
 use MercadoPago\Core\Helper\Response;
 
 /**
@@ -102,7 +105,25 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     public function makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments)
     {
+        $quote      = $this->getReservedQuote($quoteId);
         $preference = $this->getPreference();
+        $siteId     = $preference['metadata']['site'];
+        $customer   = $this->getCustomer($quoteId);
+
+        $preference['items']              = $this->getItems($quote, $siteId);
+        $preference['payer']              = $this->getPayer($quote, $customer);
+        $preference['token']              = $token;
+        $preference['issuer_id']          = $issuerId;
+        $preference['installments']       = $installments;
+        $preference['payment_method_id']  = $paymentMethodId;
+        $preference['external_reference'] = $quoteId;
+
+        if (!$customer->getId()) {
+            $quote->setCustomerIsGuest(true);
+            $quote->setCustomerEmail($preference['payer']['email']);
+            $quote->setCustomerFirstname($preference['payer']['name']);
+            $quote->setCustomerLastname($preference['payer']['surname']);
+        }
 
         return $preference;
     }//end makePreference()
@@ -112,14 +133,21 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     public function reserveQuote() {
         return $this->_getQuote()->reserveOrderId();
-    }//end getQuote()
+    }//end reserveQuote()
 
     /**
      * @return string
      */
     public function getReservedQuoteId() {
         return $this->_getQuote()->getReservedOrderId();
-    }//end getQuote()
+    }//end getReservedQuoteId()
+
+    /**
+     * @return Quote
+     */
+    public function getReservedQuote($quoteId) {
+        return $this->_quoteRepository->get($quoteId);
+    }//end getReservedQuote()
 
     /**
      * @return array
@@ -191,4 +219,111 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         return null;
     }//end getSponsorId()
+
+    /**
+     * @return DataCustomerInterface|Customer|ExtensibleDataInterface|CustomerInterface
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    protected function getCustomer($quoteId)
+    {
+        return $this->getReservedQuote($quoteId)->getCustomer();
+    }//end getCustomer()
+
+    /**
+     * @param  Quote  $quote
+     * @param  $siteId
+     * @return array
+     */
+    protected function getItems(Quote $quote, $siteId)
+    {
+        $items      = [];
+        $categoryId = $this->getConfig(ConfigData::PATH_ADVANCED_CATEGORY);
+        foreach ($quote->getAllVisibleItems() as $item) {
+            $items[] = $this->getItem($item, $categoryId, $siteId);
+        }
+
+        $discount = $this->getDiscountAmount($quote, $siteId);
+
+        if ($discount < 0) {
+            $items[] = $this->getItemDiscountTax(__('Discount'), $discount, $siteId);
+        }
+
+        $tax = $this->getTaxAmount($quote, $siteId);
+
+        if ($tax > 0) {
+            $items[] = $this->getItemDiscountTax(__('Tax'), $tax, $siteId);
+        }
+
+        return $items;
+    }//end getItems()
+
+    /**
+     * @param  Quote  $quote
+     * @param  $siteId
+     * @return array
+     */
+    protected function getDiscountAmount(Quote $quote)
+    {
+        return ($quote->getSubtotalWithDiscount() - $quote->getBaseSubtotal());
+    }//end processDiscount()
+
+    /**
+     * @param  Quote  $quote
+     * @param  $siteId
+     * @return float
+     */
+    protected function getTaxAmount(Quote $quote)
+    {
+        return $quote->getGrandTotal() - ($quote->getShippingAddress()->getShippingAmount() + $quote->getSubtotalWithDiscount());
+    }//end processTaxes()
+
+    /**
+     * @param  $title
+     * @param  $amount
+     * @param  $siteId
+     * @return array
+     */
+    protected function getItemDiscountTax($title, $amount, $siteId)
+    {
+        return [
+            'id'          => $title,
+            'title'       => $title,
+            'description' => $title,
+            'quantity'    => 1,
+            'unit_price'  => Round::roundWithSiteId($amount, $siteId),
+        ];
+    }//end getItemDiscountTax()
+
+    /**
+     * @param  Quote             $quote
+     * @param  CustomerInterface $customer
+     * @return array
+     */
+    protected function getPayer(Quote $quote, CustomerInterface $customer)
+    {
+        $billing   = $quote->getBillingAddress();
+        $shipping  = $quote->getShippingAddress();
+        $data      = $customer->getId() ? $customer : $billing;
+        $createdAt = $customer->getId() ? strtotime($customer->getCreatedAt()) : time();
+        $email     = $data->getEmail() ? $data->getEmail() : $shipping->getEmail();
+
+        return [
+            'email'        => htmlentities($email),
+            'name'         => htmlentities($data->getFirstname()),
+            'surname'      => htmlentities($data->getLastname()),
+            'date_created' => date('c', $createdAt),
+            'address'      => [
+                'zip_code'      => $billing->getPostcode(),
+                'street_name'   => sprintf(
+                    '%s - %s - %s - %s',
+                    implode(', ', $billing->getStreet()),
+                    $billing->getCity(),
+                    $billing->getRegion(),
+                    $billing->getCountry()
+                ),
+                'street_number' => '',
+            ],
+        ];
+    }//end getPayer()
 }

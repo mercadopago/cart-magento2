@@ -308,7 +308,7 @@ class Payment extends Cc implements GatewayInterface
         $this->_quoteRepository = $quoteRepository;
         $this->_quoteManagement = $quoteManagement;
         $this->_version         = $version;
-        $this->_productMetadata  = $productMetadata;
+        $this->_productMetadata = $productMetadata;
     }//end __construct()
 
     /**
