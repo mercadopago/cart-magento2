@@ -104,6 +104,17 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
+    public function createPayment($quoteId, $token, $paymentMethodId, $issuerId, $installments)
+    {
+        return $this->makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments);
+        // return $this->_coreModel->postPaymentV1($preference);
+    }//end makePreference()
+
+    /**
+     * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
     public function makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments)
     {
         $quote      = $this->getReservedQuote($quoteId);
@@ -111,32 +122,31 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $customer   = $this->getCustomer($quoteId);
         $siteId     = $preference['metadata']['site'];
 
-        $preference['items']              = $this->getItems($quote, $siteId);
-        $preference['payer']              = $this->getPayer($quote, $customer);
-        $preference['token']              = $token;
-        $preference['issuer_id']          = $issuerId;
-        $preference['installments']       = $installments;
-        $preference['payment_method_id']  = $paymentMethodId;
-        $preference['external_reference'] = $quoteId;
+        $preference['additional_info']['items'] = $this->getItems($quote, $siteId);
+        $preference['additional_info']['payer'] = $this->getPayer($quote, $customer);
+        $preference['token']                    = $token;
+        $preference['issuer_id']                = $issuerId;
+        $preference['installments']             = (int) $installments;
+        $preference['payment_method_id']        = $paymentMethodId;
+        $preference['external_reference']       = $quoteId;
+        $preference['payer']['email']           = $preference['additional_info']['payer']['email'];
+        $preference['transaction_amount']       = Round::roundWithSiteId($quote->getBaseGrandTotal(), $siteId);
 
         if (!$customer->getId()) {
             $quote->setCustomerIsGuest(true);
             $quote->setCustomerEmail($preference['payer']['email']);
-            $quote->setCustomerFirstname($preference['payer']['name']);
-            $quote->setCustomerLastname($preference['payer']['surname']);
+            $quote->setCustomerFirstname($preference['additional_info']['payer']['first_name']);
+            $quote->setCustomerLastname($preference['additional_info']['payer']['last_name']);
         }
 
-        $preference['shipments']['cost'] = Round::roundWithSiteId(
-            $quote->getShippingAddress()->getShippingAmount(),
-            $siteId
-        );
-
-        if (!$quote->getShippingAddress()) {
-            unset($preference['shipments']);
+        if ($quote->getShippingAddress()) {
+            $preference['additional_info']['shipments'] = $this->getShipments($quote);
         }
 
         $preference['metadata']['test_mode'] = $this->isTestMode($preference['payer']);
         $preference['metadata']['quote_id']  = $quote->getId();
+
+        unset($preference['additional_info']['payer']['email']);
 
         return $preference;
     }//end makePreference()
@@ -144,25 +154,24 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * @return void
      */
-    public function reserveQuote() {
-        $quote = $this->_getQuote();
-
-        $quote->reserveOrderId();
-
-        $this->_quoteRepository->save($quote);
+    public function reserveQuote()
+    {
+        return $this->_getQuote()->reserveOrderId();
     }//end reserveQuote()
 
     /**
      * @return string
      */
-    public function getReservedQuoteId() {
+    public function getReservedQuoteId()
+    {
         return $this->_getQuote()->getReservedOrderId();
     }//end getReservedQuoteId()
 
     /**
      * @return Quote
      */
-    public function getReservedQuote($quoteId) {
+    public function getReservedQuote($quoteId)
+    {
         return $this->_quoteRepository->get($quoteId);
     }//end getReservedQuote()
 
@@ -174,11 +183,10 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $this->_version->afterLoad();
 
         return [
-            'items'     => [],
-            'payer'     => [],
-            'shipments' => [
-                'mode' => 'not_specified',
-                'cost' => 0.00,
+            'additional_info' => [
+                'items'     => [],
+                'payer'     => [],
+                'shipments' => [],
             ],
             'notification_url'     => $this->_urlBuilder->getUrl(self::NOTIFICATION_PATH),
             'statement_descriptor' => $this->getStateDescriptor(),
@@ -262,15 +270,18 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         $discount = $this->getDiscountAmount($quote, $siteId);
-
         if ($discount < 0) {
             $items[] = $this->getItemDiscountTax(__('Discount'), $discount, $siteId);
         }
 
         $tax = $this->getTaxAmount($quote, $siteId);
-
         if ($tax > 0) {
             $items[] = $this->getItemDiscountTax(__('Tax'), $tax, $siteId);
+        }
+
+        $shipping = $this->getItemShipping($quote, $siteId);
+        if ($shipping > 0) {
+            $item[] = $shipping;
         }
 
         return $items;
@@ -336,6 +347,23 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getItemDiscountTax()
 
     /**
+     * @param  $title
+     * @param  $amount
+     * @param  $siteId
+     * @return array
+     */
+    protected function getItemShipping(Quote $quote, $siteId)
+    {
+        return [
+            'id'          => __('Shipping'),
+            'title'       => __('Shipping'),
+            'description' => __('Shipping'),
+            'quantity'    => 1,
+            'unit_price'  => Round::roundWithSiteId($quote->getShippingAddress()->getShippingAmount(), $siteId),
+        ];
+    }//end getItemDiscountTax()
+
+    /**
      * @param  Quote             $quote
      * @param  CustomerInterface $customer
      * @return array
@@ -345,17 +373,15 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $billing   = $quote->getBillingAddress();
         $shipping  = $quote->getShippingAddress();
         $data      = $customer->getId() ? $customer : $billing;
-        $createdAt = $customer->getId() ? strtotime($customer->getCreatedAt()) : time();
         $email     = $data->getEmail() ? $data->getEmail() : $shipping->getEmail();
 
         return [
             'email'        => htmlentities($email),
-            'name'         => htmlentities($data->getFirstname()),
-            'surname'      => htmlentities($data->getLastname()),
-            'date_created' => date('c', $createdAt),
+            'first_name'   => htmlentities($data->getFirstname()),
+            'last_name'    => htmlentities($data->getLastname()),
             'address'      => [
-                'zip_code'      => $billing->getPostcode(),
-                'street_name'   => sprintf(
+                'zip_code'    => $billing->getPostcode(),
+                'street_name' => sprintf(
                     '%s - %s - %s - %s',
                     implode(', ', $billing->getStreet()),
                     $billing->getCity(),
@@ -364,8 +390,38 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 ),
                 'street_number' => '',
             ],
+            'phone' => [
+                "area_code" => '00',
+                "number"    => $shipping['telephone']
+            ],
         ];
     }//end getPayer()
+
+    /**
+     * @param  Quote             $quote
+     * @param  CustomerInterface $customer
+     * @return array
+     */
+    protected function getShipments(Quote $quote)
+    {
+        $billing = $quote->getBillingAddress();
+
+        return [
+            'receiver_address' => [
+                'zip_code'     => $billing->getPostcode(),
+                'street_name'  => sprintf(
+                    '%s - %s - %s - %s',
+                    implode(', ', $billing->getStreet()),
+                    $billing->getCity(),
+                    $billing->getRegion(),
+                    $billing->getCountry()
+                ),
+                'street_number' => '-',
+                'apartment'     => '-',
+                'floor'         => '-',
+            ],
+        ];
+    }//end getShipments()
 
     /**
      * @param  $payer

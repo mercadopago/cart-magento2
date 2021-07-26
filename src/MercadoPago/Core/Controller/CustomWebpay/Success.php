@@ -78,7 +78,7 @@ class Success extends AbstractAction
             $installments    = $content['installments'];
             $paymentMethodId = $content['payment_method_id'];
 
-            $preference = $this->webpayPayment->makePreference(
+            $preference = $this->webpayPayment->createPayment(
                 $quoteId,
                 $token,
                 $paymentMethodId,
