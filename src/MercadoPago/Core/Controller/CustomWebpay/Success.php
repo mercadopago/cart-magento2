@@ -2,7 +2,6 @@
 
 namespace MercadoPago\Core\Controller\CustomWebpay;
 
-use Exception;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
@@ -70,7 +69,16 @@ class Success extends AbstractAction
             }
             
             if (!isset($quoteId) || empty($quoteId) || !isset($body) || empty($content)) {
-                throw new Exception(__('Sorry, we can\'t process: missing params.'));
+                throw new \Exception('Webpay callback error: missing params');
+            }
+
+            if ($content['status'] > 299) {
+                throw new \Exception(
+                    'Webpay callback error: ' . $content['error'] .
+                    ' - status: ' . $content['status'] .
+                    ' - cause: ' . $content['cause'] .
+                    ' - message: '  . $content['message']
+                );
             }
 
             $token           = $content['token'];
@@ -89,11 +97,11 @@ class Success extends AbstractAction
             $this->webpayPayment->createOrder($payment['response']);
 
             return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $this->messageManager->addExceptionMessage($e, __('Sorry, we can\'t finish Mercado Pago Webpay Payment.'));
             $this->helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
 
-            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
+            return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
         }
     }
 }
