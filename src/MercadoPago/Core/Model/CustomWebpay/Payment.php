@@ -108,9 +108,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     public function createPayment($quoteId, $token, $paymentMethodId, $issuerId, $installments)
     {
-        return $this->makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments);
-        // return $this->_coreModel->postPaymentV1($preference);
-    }//end makePreference()
+        $preference = $this->makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments);
+        return $this->_coreModel->postPaymentV1($preference);
+    }//end createPayment()
 
     /**
      * @return array
@@ -449,4 +449,71 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         return false;
     }//end isTestMode()
+
+    /**
+     * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
+    public function createOrder($payment)
+    {
+        echo json_encode($payment);
+
+        $orderIncrementalId = $payment['external_reference'];
+        $order = $this->loadOrderByIncrementalId($orderIncrementalId);
+
+        if (!$order->getIncrementId()) {
+            $quote = $this->_checkoutSession->getQuote();
+            $quote->getPayment()->setMethod('mercado_pago_custom_webpay');
+            $order = $this->createOrderByPaymentWithQuote($payment);
+        }
+
+        if (!$order->getIncrementId()) {
+            throw new \Exception(__("Sorry, we can't create a order with external reference #%1", $orderIncrementalId));
+        }
+
+        $this->paymentNotification->updateStatusOrderByPayment($payment);
+
+        $this->_checkoutSession->setLastSuccessQuoteId($payment['metadata']['quote_id']);
+        $this->_checkoutSession->setLastQuoteId($payment['metadata']['quote_id']);
+        $this->_checkoutSession->setLastOrderId($payment['external_reference']);
+        $this->_checkoutSession->setLastRealOrderId($payment['external_reference']);
+    }//end createOrder()
+
+    /**
+     * @param  $incrementalId
+     * @return OrderInterface
+     */
+    public function loadOrderByIncrementalId($incrementalId)
+    {
+        return $this->order->loadByIncrementId($incrementalId);
+    }//end loadOrderByIncrementalId()
+
+    /**
+     * @param  $orderId
+     * @return OrderInterface
+     */
+    public function loadOrderById($orderId)
+    {
+        return $this->order->loadByAttribute('entity_id', $orderId);
+    }//end loadOrderById()
+
+    /**
+     * @param  $paymentId
+     * @return integer|mixed
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     */
+    protected function createOrderByPaymentWithQuote($payment)
+    {
+        $quoteId = $payment['metadata']['quote_id'];
+
+        $quote = $this->_quoteRepository->get($quoteId);
+        $quote->getPayment()->importData(['method' => 'mercadopago_custom_webpay']);
+
+        $orderId = $this->quoteManagement->placeOrder($quote->getId());
+
+        return $this->loadOrderById($orderId);
+    }//end createOrderByPaymentWithQuote()
 }

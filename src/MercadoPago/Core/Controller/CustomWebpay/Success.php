@@ -78,7 +78,7 @@ class Success extends AbstractAction
             $installments    = $content['installments'];
             $paymentMethodId = $content['payment_method_id'];
 
-            $preference = $this->webpayPayment->createPayment(
+            $payment = $this->webpayPayment->createPayment(
                 $quoteId,
                 $token,
                 $paymentMethodId,
@@ -86,8 +86,7 @@ class Success extends AbstractAction
                 $installments
             );
 
-            header('Content-type: application/json');
-            echo json_encode($preference);
+            $order = $this->webpayPayment->createOrder($payment['response']);
 
             // return;
         } catch (Exception $e) {
