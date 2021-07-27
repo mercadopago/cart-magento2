@@ -45,11 +45,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     protected $_code = self::CODE;
 
     /**
-     * @var string
-     */
-    protected $_infoBlockType = 'MercadoPago\Core\Block\CustomWebpay\Info';
-
-    /**
      * @param string $paymentAction
      * @param object $stateObject
      *
@@ -58,7 +53,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @throws LocalizedException
      */
-    public function initialize($paymentAction, $stateObject) {}
+    public function initialize($paymentAction, $stateObject){}
 
     /**
      * is payment method available?
@@ -79,7 +74,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     /**
      * @param  DataObject $data
-     * @return $this|\MercadoPago\Core\Model\Custom\Payment
+     * @return $this|\MercadoPago\Core\Model\CustomWebpay\Payment
      * @throws LocalizedException
      */
     public function assignData(DataObject $data) {
@@ -158,7 +153,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     public function getCartObject()
     {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $objectManager = ObjectManager::getInstance();
         return $objectManager->get('\Magento\Checkout\Model\Cart');
     }//end getCartObject()
 
@@ -457,14 +452,12 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     public function createOrder($payment)
     {
-        echo json_encode($payment);
-
         $orderIncrementalId = $payment['external_reference'];
         $order = $this->loadOrderByIncrementalId($orderIncrementalId);
 
         if (!$order->getIncrementId()) {
             $quote = $this->_checkoutSession->getQuote();
-            $quote->getPayment()->setMethod('mercado_pago_custom_webpay');
+            $quote->getPayment()->setMethod('mercadopago_custom_webpay');
             $order = $this->createOrderByPaymentWithQuote($payment);
         }
 
@@ -472,12 +465,15 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             throw new \Exception(__("Sorry, we can't create a order with external reference #%1", $orderIncrementalId));
         }
 
-        $this->paymentNotification->updateStatusOrderByPayment($payment);
+        $this->_paymentNotification->updateStatusOrderByPayment($payment);
 
         $this->_checkoutSession->setLastSuccessQuoteId($payment['metadata']['quote_id']);
         $this->_checkoutSession->setLastQuoteId($payment['metadata']['quote_id']);
         $this->_checkoutSession->setLastOrderId($payment['external_reference']);
         $this->_checkoutSession->setLastRealOrderId($payment['external_reference']);
+
+        $order->getPayment()->setAdditionalInformation('paymentResponse', $payment);
+        $order->save();
     }//end createOrder()
 
     /**
@@ -486,7 +482,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     public function loadOrderByIncrementalId($incrementalId)
     {
-        return $this->order->loadByIncrementId($incrementalId);
+        return $this->_order->loadByIncrementId($incrementalId);
     }//end loadOrderByIncrementalId()
 
     /**
@@ -495,7 +491,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     public function loadOrderById($orderId)
     {
-        return $this->order->loadByAttribute('entity_id', $orderId);
+        return $this->_order->loadByAttribute('entity_id', $orderId);
     }//end loadOrderById()
 
     /**
@@ -512,7 +508,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $quote = $this->_quoteRepository->get($quoteId);
         $quote->getPayment()->importData(['method' => 'mercadopago_custom_webpay']);
 
-        $orderId = $this->quoteManagement->placeOrder($quote->getId());
+        $orderId = $this->_quoteManagement->placeOrder($quote->getId());
 
         return $this->loadOrderById($orderId);
     }//end createOrderByPaymentWithQuote()

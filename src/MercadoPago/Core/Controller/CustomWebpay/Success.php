@@ -86,15 +86,14 @@ class Success extends AbstractAction
                 $installments
             );
 
-            $order = $this->webpayPayment->createOrder($payment['response']);
+            $this->webpayPayment->createOrder($payment['response']);
 
-            // return;
+            return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
         } catch (Exception $e) {
             $this->messageManager->addExceptionMessage($e, __('Sorry, we can\'t finish Mercado Pago Webpay Payment.'));
-
             $this->helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
 
-            // return $this->resultRedirectFactory->create()->setPath('checkout/cart');
+            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
         }
     }
 }

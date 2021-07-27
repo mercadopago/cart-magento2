@@ -228,7 +228,7 @@ class Wallet
 
         if (!$order->getIncrementId()) {
             $quote = $session->getQuote();
-            $quote->getPayment()->setMethod('mercado_pago_custom');
+            $quote->getPayment()->setMethod('mercadopago_custom');
             $order = $this->createOrderByPaymentWithQuote($payment);
         }
 
