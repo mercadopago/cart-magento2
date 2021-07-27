@@ -10,6 +10,8 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Framework\App\ObjectManager;
+use Magento\Checkout\Model\Cart;
 use Magento\Customer\Api\Data\CustomerInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Round;
@@ -152,11 +154,20 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end makePreference()
 
     /**
+     * @return Cart
+     */
+    public function getCartObject()
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        return $objectManager->get('\Magento\Checkout\Model\Cart');
+    }//end getCartObject()
+
+    /**
      * @return void
      */
     public function reserveQuote()
     {
-        return $this->_getQuote()->reserveOrderId();
+        return $this->getCartObject()->getQuote()->reserveOrderId();
     }//end reserveQuote()
 
     /**
@@ -164,7 +175,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     public function getReservedQuoteId()
     {
-        return $this->_getQuote()->getReservedOrderId();
+        return $this->getCartObject()->getQuote()->getId();
     }//end getReservedQuoteId()
 
     /**
@@ -280,8 +291,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         $shipping = $this->getItemShipping($quote, $siteId);
-        if ($shipping > 0) {
-            $item[] = $shipping;
+        if (!empty($shipping)) {
+            $items[] = $shipping;
         }
 
         return $items;
@@ -347,9 +358,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getItemDiscountTax()
 
     /**
-     * @param  $title
-     * @param  $amount
-     * @param  $siteId
+     * @param  Quote  $quote
+     * @param  string $siteId
      * @return array
      */
     protected function getItemShipping(Quote $quote, $siteId)
@@ -357,11 +367,11 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         return [
             'id'          => __('Shipping'),
             'title'       => __('Shipping'),
-            'description' => __('Shipping'),
             'quantity'    => 1,
+            'description' => $quote->getShippingAddress()->getShippingMethod(),
             'unit_price'  => Round::roundWithSiteId($quote->getShippingAddress()->getShippingAmount(), $siteId),
         ];
-    }//end getItemDiscountTax()
+    }//end getItemShipping()
 
     /**
      * @param  Quote             $quote
