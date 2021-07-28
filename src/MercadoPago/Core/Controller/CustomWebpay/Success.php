@@ -62,7 +62,8 @@ class Success extends AbstractAction
             }
 
             if ($content['status'] > 299) {
-                return $this->failureRedirect($content);
+                $this->helperData->log('CustomPaymentWebpay - callback error', self::LOG_NAME, $content);
+                return $this->resultRedirectFactory->create()->setPath('/mercadopago/customwebpay/failure');
             }
 
             $token           = $content['token'];

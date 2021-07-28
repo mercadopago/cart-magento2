@@ -13,7 +13,7 @@ use Magento\Framework\View\Element\Template;
 class Failure extends Template
 {
     /**
-     * Failure construct.
+     * Failure construct
      */
     protected function _construct()
     {

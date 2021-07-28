@@ -33,6 +33,6 @@ class Failure extends AbstractAction
 
     public function execute()
     {
-        return $this->failureRedirect();
+        return $this->renderFailurePage();
     }
 }

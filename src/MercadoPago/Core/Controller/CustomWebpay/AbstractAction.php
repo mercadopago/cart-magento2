@@ -7,7 +7,6 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Webapi\Exception as ExceptionHttpCode;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
@@ -82,26 +81,12 @@ abstract class AbstractAction extends Action
     /**
      * Redirect to checkout page without try catch error
      *
-     * @param array|null $content
-     * @return void
-     */
-    protected function failureRedirect($content = null)
-    {
-        $this->messageManager->addNoticeMessage(__('Mercado Pago: unable to complete payment.'));
-
-        if (!is_null($content)) {
-            $this->helperData->log('CustomPaymentWebpay - callback error', self::LOG_NAME, $content);
-        }
-
-        $this->renderFailurePage();
-    }
-
-    /**
      * @return void
      */
     protected function renderFailurePage()
     {
-        $this->_view->loadLayout(['default', 'mercadopago_customwebpay_failure']);
+        $this->messageManager->addNoticeMessage(__('Mercado Pago: unable to complete payment.'));
+        $this->_view->loadLayout(['default', 'mercadopago_custom_webpay_failure']);
         $this->_view->renderLayout();
     }
 }
