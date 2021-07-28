@@ -7,10 +7,11 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Webapi\Exception as ExceptionHttpCode;
-use MercadoPago\Core\Model\CustomWebpay\Payment;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
+use MercadoPago\Core\Model\CustomWebpay\Payment;
 
 /**
  * Class AbstractAction
@@ -19,6 +20,11 @@ use MercadoPago\Core\Helper\Data as MercadopagoData;
  */
 abstract class AbstractAction extends Action
 {
+    /**
+     * log filename
+     */
+    const LOG_NAME = 'custom_webpay';
+
     /**
      * @var JsonFactory
      */
@@ -46,7 +52,8 @@ abstract class AbstractAction extends Action
         JsonFactory $resultJsonFactory,
         Payment $webpayPayment,
         MercadopagoData $helperData
-    ) {
+    )
+    {
         parent::__construct($context);
         $this->resultJsonFactory = $resultJsonFactory;
         $this->webpayPayment = $webpayPayment;
@@ -59,9 +66,9 @@ abstract class AbstractAction extends Action
     abstract public function execute();
 
     /**
-     * @param Json   $response
+     * @param Json $response
      * @param string $message
-     * @param int    $code
+     * @param int $code
      * @return Json
      */
     protected function getErrorResponse(Json $response, $message, $code = ExceptionHttpCode::HTTP_BAD_REQUEST)
@@ -82,10 +89,19 @@ abstract class AbstractAction extends Action
     {
         $this->messageManager->addNoticeMessage(__('Mercado Pago: unable to complete payment.'));
 
-        if (is_null($content)) {
+        if (!is_null($content)) {
             $this->helperData->log('CustomPaymentWebpay - callback error', self::LOG_NAME, $content);
         }
 
-        return $this->resultRedirectFactory->create()->setPath('checkout/onepage/failure');
+        $this->renderFailurePage();
+    }
+
+    /**
+     * @return void
+     */
+    protected function renderFailurePage()
+    {
+        $this->_view->loadLayout(['default', 'mercadopago_basic_failure']);
+        $this->_view->renderLayout();
     }
 }

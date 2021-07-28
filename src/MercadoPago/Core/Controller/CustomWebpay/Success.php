@@ -5,8 +5,8 @@ namespace MercadoPago\Core\Controller\CustomWebpay;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
-use MercadoPago\Core\Model\CustomWebpay\Payment;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
+use MercadoPago\Core\Model\CustomWebpay\Payment;
 
 /**
  * Class Success
@@ -15,11 +15,6 @@ use MercadoPago\Core\Helper\Data as MercadopagoData;
  */
 class Success extends AbstractAction
 {
-    /**
-     * log filename
-     */
-    const LOG_NAME = 'custom_webpay';
-
     /**
      * @var Session
      */
@@ -67,7 +62,7 @@ class Success extends AbstractAction
             }
 
             if ($content['status'] > 299) {
-                $this->failureRedirect($content);
+                return $this->failureRedirect($content);
             }
 
             $token           = $content['token'];
@@ -90,7 +85,7 @@ class Success extends AbstractAction
             $this->helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
             $this->messageManager->addExceptionMessage($e, __('Sorry, we can\'t finish Mercado Pago Webpay Payment.'));
 
-            return $this->resultRedirectFactory->create()->setPath('checkout/onepage/failure');
+            return $this->renderFailurePage();
         }
     }
 }

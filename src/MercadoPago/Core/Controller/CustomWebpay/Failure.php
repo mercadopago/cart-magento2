@@ -4,8 +4,8 @@ namespace MercadoPago\Core\Controller\CustomWebpay;
 
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
-use MercadoPago\Core\Model\CustomWebpay\Payment;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
+use MercadoPago\Core\Model\CustomWebpay\Payment;
 
 /**
  * Class Failure
@@ -33,6 +33,6 @@ class Failure extends AbstractAction
 
     public function execute()
     {
-        $this->failureRedirect();
+        return $this->failureRedirect();
     }
 }
