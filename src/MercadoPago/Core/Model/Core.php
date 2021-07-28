@@ -578,7 +578,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $this->_version->afterLoad();
 
         $preference['metadata'] = [
-            "platform"         => "Magento",
+            "platform"         => "BP1EF6QIC4P001KBGQ10",
             "platform_version" => $this->_productMetaData->getVersion(),
             "module_version"   => $this->_version->getValue(),
             "sponsor_id"       => $sponsorId,

@@ -228,7 +228,7 @@ class Wallet
 
         if (!$order->getIncrementId()) {
             $quote = $session->getQuote();
-            $quote->getPayment()->setMethod('mercado_pago_custom');
+            $quote->getPayment()->setMethod('mercadopago_custom');
             $order = $this->createOrderByPaymentWithQuote($payment);
         }
 
@@ -411,7 +411,7 @@ class Wallet
             'purpose'              => self::PURPOSE_WALLET_PURCHASE,
             'metadata'             => [
                 'site'             => $this->getSiteId(),
-                'platform'         => 'Magento',
+                'platform'         => 'BP1EF6QIC4P001KBGQ10',
                 'platform_version' => $this->productMetadata->getVersion(),
                 'module_version'   => $this->version->getValue(),
                 'sponsor_id'       => $this->getSponsorId(),
@@ -485,7 +485,7 @@ class Wallet
     }//end getSiteId()
 
     /**
-     * @return CartInterface|ModelQuote
+     * @return Quote|CartInterface|ModelQuote
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */

@@ -22,14 +22,21 @@ use Magento\Payment\Model\Method\Logger;
 use Magento\Payment\Model\Method\Online\GatewayInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\QuoteManagement;
+use Magento\Quote\Model\QuoteRepository;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Catalog\Helper\Image;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
 use MercadoPago\Core\Model\Api\V1\Exception;
 use MercadoPago\Core\Model\Core;
+use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
+use MercadoPago\Core\Model\Notifications\Topics\Payment as PaymentNotification;
 
 /**
  * Class Payment
@@ -179,6 +186,41 @@ class Payment extends Cc implements GatewayInterface
     protected $_helperData;
 
     /**
+     * @var QuoteRepository
+     */
+    protected $quoteRepository;
+
+    /**
+     * @var CartManagement
+     */
+    protected $quoteManagement;
+
+    /**
+     * @var Version
+     */
+    protected $version;
+
+    /**
+     * @var ProductMetadataInterface
+     */
+    protected $productMetadata;
+
+    /**
+     * @var Image
+     */
+    protected $helperImage;
+
+    /**
+     * @var OrderInterface
+     */
+    protected $order;
+
+    /**
+     * @var PaymentNotification
+     */
+    protected $paymentNotification;
+
+    /**
      *
      */
     const LOG_NAME = 'custom_payment';
@@ -234,6 +276,12 @@ class Payment extends Cc implements GatewayInterface
      * @param TimezoneInterface          $localeDate
      * @param Core                       $coreModel
      * @param RequestInterface           $request
+     * @param QuoteRepository            $quoteRepository
+     * @param QuoteManagement            $quoteManagement
+     * @param Version                    $version
+     * @param Image                      $helperImage
+     * @param OrderInterface             $order
+     * @param PaymentNotification        $paymentNotification
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -252,7 +300,14 @@ class Payment extends Cc implements GatewayInterface
         ModuleListInterface $moduleList,
         TimezoneInterface $localeDate,
         Core $coreModel,
-        RequestInterface $request
+        RequestInterface $request,
+        QuoteRepository $quoteRepository,
+        QuoteManagement $quoteManagement,
+        Version $version,
+        ProductMetadataInterface $productMetadata,
+        Image $helperImage,
+        OrderInterface $order,
+        PaymentNotification $paymentNotification
     ) {
         parent::__construct(
             $context,
@@ -266,14 +321,21 @@ class Payment extends Cc implements GatewayInterface
             $localeDate
         );
 
-        $this->_helperData      = $helperData;
-        $this->_coreModel       = $coreModel;
-        $this->_checkoutSession = $checkoutSession;
-        $this->_customerSession = $customerSession;
-        $this->_orderFactory    = $orderFactory;
-        $this->_urlBuilder      = $urlBuilder;
-        $this->_request         = $request;
-        $this->_scopeConfig     = $scopeConfig;
+        $this->_helperData          = $helperData;
+        $this->_coreModel           = $coreModel;
+        $this->_checkoutSession     = $checkoutSession;
+        $this->_customerSession     = $customerSession;
+        $this->_orderFactory        = $orderFactory;
+        $this->_urlBuilder          = $urlBuilder;
+        $this->_request             = $request;
+        $this->_scopeConfig         = $scopeConfig;
+        $this->_quoteRepository     = $quoteRepository;
+        $this->_quoteManagement     = $quoteManagement;
+        $this->_version             = $version;
+        $this->_productMetadata     = $productMetadata;
+        $this->_helperImage         = $helperImage;
+        $this->_order               = $order;
+        $this->_paymentNotification = $paymentNotification;
     }//end __construct()
 
     /**
