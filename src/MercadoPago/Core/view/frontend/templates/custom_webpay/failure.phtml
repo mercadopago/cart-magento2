@@ -1,0 +1,24 @@
+<?php
+    /**
+     * @var MercadoPago\Core\Block\CustomWebpay\Failure $block
+     */
+
+   $homeLink = $block->escapeUrl($block->getHomeUrl());
+?>
+
+<div id="box-mercadopago"></div>
+
+<div id="logo-mercadopago">
+    <img src="https://secure.mlstatic.com/components/resources/mp/desktop/css/assets/desktop-logo-mercadopago.png"/>
+</div>
+
+<div class="primary button-success">
+    <a
+        class="action primary continue"
+        href="<?= $homeLink ?>"
+    >
+        <span>
+            <?php /* @escapeNotVerified */ echo __('Retry order') ?>
+        </span>
+    </a>
+</div>

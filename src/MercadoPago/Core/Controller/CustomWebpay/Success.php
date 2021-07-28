@@ -85,7 +85,7 @@ class Success extends AbstractAction
             $this->helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
             $this->messageManager->addExceptionMessage($e, __('Sorry, we can\'t finish Mercado Pago Webpay Payment.'));
 
-            return $this->renderFailurePage();
+            return $this->resultRedirectFactory->create()->setPath('/mercadopago/customwebpay/failure');
         }
     }
 }

@@ -101,7 +101,7 @@ abstract class AbstractAction extends Action
      */
     protected function renderFailurePage()
     {
-        $this->_view->loadLayout(['default', 'mercadopago_basic_failure']);
+        $this->_view->loadLayout(['default', 'mercadopago_customwebpay_failure']);
         $this->_view->renderLayout();
     }
 }
