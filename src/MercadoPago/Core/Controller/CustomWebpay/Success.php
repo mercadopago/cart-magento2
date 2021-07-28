@@ -26,29 +26,23 @@ class Success extends AbstractAction
     protected $session;
 
     /**
-     * @var MercadopagoData
-     */
-    protected $_helperData;
-
-    /**
-     * Reserve constructor.
+     * Success constructor.
      *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param Payment $webpayPayment
-     * @param Session $session
      * @param MercadopagoData $helperData
+     * @param Session $session
      */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
         Payment $webpayPayment,
-        Session $session,
-        MercadopagoData $helperData
+        MercadopagoData $helperData,
+        Session $session
     ) {
         $this->session = $session;
-        $this->helperData = $helperData;
-        parent::__construct($context, $resultJsonFactory, $webpayPayment);
+        parent::__construct($context, $resultJsonFactory, $webpayPayment, $helperData);
     }
 
     /**
@@ -58,7 +52,7 @@ class Success extends AbstractAction
     {
         try {
             $quoteId = $this->getRequest()->getParam('quote_id', false);
-            
+
             $body = $this->getRequest()->getContent();
             $body = explode('&', $body);
 
@@ -67,18 +61,13 @@ class Success extends AbstractAction
                 $value = explode('=', $value);
                 $content[$value[0]] = $value[1];
             }
-            
+
             if (!isset($quoteId) || empty($quoteId) || !isset($body) || empty($content)) {
                 throw new \Exception('Webpay callback error: missing params');
             }
 
             if ($content['status'] > 299) {
-                throw new \Exception(
-                    'Webpay callback error: ' . $content['error'] .
-                    ' - status: ' . $content['status'] .
-                    ' - cause: ' . $content['cause'] .
-                    ' - message: '  . $content['message']
-                );
+                $this->failureRedirect($content);
             }
 
             $token           = $content['token'];
@@ -97,11 +86,11 @@ class Success extends AbstractAction
             $this->webpayPayment->createOrder($payment['response']);
 
             return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
-        } catch (\Throwable $e) {
-            $this->messageManager->addExceptionMessage($e, __('Sorry, we can\'t finish Mercado Pago Webpay Payment.'));
+        } catch (\Exception $e) {
             $this->helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
+            $this->messageManager->addExceptionMessage($e, __('Sorry, we can\'t finish Mercado Pago Webpay Payment.'));
 
-            return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
+            return $this->resultRedirectFactory->create()->setPath('checkout/onepage/failure');
         }
     }
 }
