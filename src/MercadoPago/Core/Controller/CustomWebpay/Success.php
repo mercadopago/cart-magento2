@@ -63,7 +63,7 @@ class Success extends AbstractAction
 
             if ($content['status'] > 299) {
                 $this->helperData->log('CustomPaymentWebpay - callback error', self::LOG_NAME, $content);
-                return $this->resultRedirectFactory->create()->setPath('/mercadopago/customwebpay/failure');
+                return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
             }
 
             $token           = $content['token'];
@@ -84,9 +84,7 @@ class Success extends AbstractAction
             return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
         } catch (\Exception $e) {
             $this->helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
-            $this->messageManager->addExceptionMessage($e, __('Sorry, we can\'t finish Mercado Pago Webpay Payment.'));
-
-            return $this->resultRedirectFactory->create()->setPath('/mercadopago/customwebpay/failure');
+            return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
         }
     }
 }

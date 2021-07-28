@@ -85,7 +85,6 @@ abstract class AbstractAction extends Action
      */
     protected function renderFailurePage()
     {
-        $this->messageManager->addNoticeMessage(__('Mercado Pago: unable to complete payment.'));
         $this->_view->loadLayout(['default', 'mercadopago_custom_webpay_failure']);
         $this->_view->renderLayout();
     }

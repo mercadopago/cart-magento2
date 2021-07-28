@@ -25,9 +25,9 @@ class Failure extends Template
      * @return string
      * @throws NoSuchEntityException
      */
-    public function getHomeUrl()
+    public function getCheckoutUrl()
     {
-        return $this->_storeManager->getStore()->getBaseUrl();
+        return $this->getUrl('checkout', ['_secure' => true]);
     }
 }
 
