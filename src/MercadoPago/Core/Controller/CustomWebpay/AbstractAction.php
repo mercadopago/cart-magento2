@@ -9,6 +9,7 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Webapi\Exception as ExceptionHttpCode;
+use MercadoPago\Core\Helper\Data as MercadopagoData;
 use MercadoPago\Core\Model\CustomWebpay\Payment;
 
 /**
@@ -18,6 +19,11 @@ use MercadoPago\Core\Model\CustomWebpay\Payment;
  */
 abstract class AbstractAction extends Action
 {
+    /**
+     * log filename
+     */
+    const LOG_NAME = 'custom_webpay';
+
     /**
      * @var JsonFactory
      */
@@ -29,16 +35,28 @@ abstract class AbstractAction extends Action
     protected $webpayPayment;
 
     /**
+     * @var MercadopagoData
+     */
+    protected $helperData;
+
+    /**
      * AbstractAction constructor.
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param Payment $webpayPayment
+     * @param MercadopagoData $helperData
      */
-    public function __construct(Context $context, JsonFactory $resultJsonFactory, Payment $webpayPayment)
+    public function __construct(
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        Payment $webpayPayment,
+        MercadopagoData $helperData
+    )
     {
         parent::__construct($context);
         $this->resultJsonFactory = $resultJsonFactory;
         $this->webpayPayment = $webpayPayment;
+        $this->helperData = $helperData;
     }
 
     /**
@@ -48,7 +66,7 @@ abstract class AbstractAction extends Action
 
     /**
      * @param Json $response
-     * @param $message
+     * @param string $message
      * @param int $code
      * @return Json
      */
@@ -58,5 +76,16 @@ abstract class AbstractAction extends Action
         $response->setData(['message' => $message]);
 
         return $response;
+    }
+
+    /**
+     * Redirect to checkout page without try catch error
+     *
+     * @return void
+     */
+    protected function renderFailurePage()
+    {
+        $this->_view->loadLayout(['default', 'mercadopago_custom_webpay_failure']);
+        $this->_view->renderLayout();
     }
 }

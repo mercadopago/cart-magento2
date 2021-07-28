@@ -5,8 +5,8 @@ namespace MercadoPago\Core\Controller\CustomWebpay;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
-use MercadoPago\Core\Model\CustomWebpay\Payment;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
+use MercadoPago\Core\Model\CustomWebpay\Payment;
 
 /**
  * Class Success
@@ -16,39 +16,28 @@ use MercadoPago\Core\Helper\Data as MercadopagoData;
 class Success extends AbstractAction
 {
     /**
-     * log filename
-     */
-    const LOG_NAME = 'custom_webpay';
-
-    /**
      * @var Session
      */
     protected $session;
 
     /**
-     * @var MercadopagoData
-     */
-    protected $_helperData;
-
-    /**
-     * Reserve constructor.
+     * Success constructor.
      *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param Payment $webpayPayment
-     * @param Session $session
      * @param MercadopagoData $helperData
+     * @param Session $session
      */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
         Payment $webpayPayment,
-        Session $session,
-        MercadopagoData $helperData
+        MercadopagoData $helperData,
+        Session $session
     ) {
         $this->session = $session;
-        $this->helperData = $helperData;
-        parent::__construct($context, $resultJsonFactory, $webpayPayment);
+        parent::__construct($context, $resultJsonFactory, $webpayPayment, $helperData);
     }
 
     /**
@@ -58,7 +47,7 @@ class Success extends AbstractAction
     {
         try {
             $quoteId = $this->getRequest()->getParam('quote_id', false);
-            
+
             $body = $this->getRequest()->getContent();
             $body = explode('&', $body);
 
@@ -67,18 +56,14 @@ class Success extends AbstractAction
                 $value = explode('=', $value);
                 $content[$value[0]] = $value[1];
             }
-            
+
             if (!isset($quoteId) || empty($quoteId) || !isset($body) || empty($content)) {
                 throw new \Exception('Webpay callback error: missing params');
             }
 
             if ($content['status'] > 299) {
-                throw new \Exception(
-                    'Webpay callback error: ' . $content['error'] .
-                    ' - status: ' . $content['status'] .
-                    ' - cause: ' . $content['cause'] .
-                    ' - message: '  . $content['message']
-                );
+                $this->helperData->log('CustomPaymentWebpay - callback error', self::LOG_NAME, $content);
+                return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
             }
 
             $token           = $content['token'];
@@ -97,10 +82,8 @@ class Success extends AbstractAction
             $this->webpayPayment->createOrder($payment['response']);
 
             return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
-        } catch (\Throwable $e) {
-            $this->messageManager->addExceptionMessage($e, __('Sorry, we can\'t finish Mercado Pago Webpay Payment.'));
+        } catch (\Exception $e) {
             $this->helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
-
             return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
         }
     }
