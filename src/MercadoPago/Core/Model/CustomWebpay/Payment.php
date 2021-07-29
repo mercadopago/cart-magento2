@@ -106,6 +106,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @return array
      * @throws LocalizedException
      * @throws NoSuchEntityException
+     * @throws Exception
      */
     public function createPayment($token, $paymentMethodId, $issuerId, $installments)
     {
@@ -117,6 +118,12 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 return $response;
             }
         }
+
+        $this->_helperData->log(
+            'CustomPaymentWebpay - exception: it was unable to process payment with webpay',
+            self::LOG_NAME,
+            $response
+        );
 
         throw new Exception(__("Sorry, it was unable to process payment with webpay!"));
     }//end createPayment()
@@ -203,40 +210,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end makePreference()
 
     /**
-     * @return Cart
-     */
-    public function getCartObject()
-    {
-        $objectManager = ObjectManager::getInstance();
-        return $objectManager->get('\Magento\Checkout\Model\Cart');
-    }//end getCartObject()
-
-    /**
-     * @return Quote
-     */
-    public function reserveQuote()
-    {
-        return $this->getCartObject()->getQuote()->reserveOrderId();
-    }//end reserveQuote()
-
-    /**
-     * @return string
-     */
-    public function getReservedQuoteId()
-    {
-        return $this->getCartObject()->getQuote()->getId();
-    }//end getReservedQuoteId()
-
-    /**
-     * @return Quote
-     * @throws NoSuchEntityException
-     */
-    public function getReservedQuote($quoteId)
-    {
-        return $this->_quoteRepository->get($quoteId);
-    }//end getReservedQuote()
-
-    /**
      * @return array
      */
     protected function getPreference()
@@ -268,10 +241,10 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     /**
      * @param  $path
-     * @param  string $scopeType
+     * @param  $scopeType
      * @return mixed
      */
-    protected function getConfig($path, $scopeType=ScopeInterface::SCOPE_STORE)
+    protected function getConfig($path, $scopeType = ScopeInterface::SCOPE_STORE)
     {
         return $this->_scopeConfig->getValue($path, $scopeType);
     }//end getConfig()

@@ -5,8 +5,6 @@ define(
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/checkout-data',
-    'Magento_Checkout/js/action/set-payment-information',
-    'jquery',
     'MPv2SDKJS'
   ],
   function (
@@ -15,8 +13,6 @@ define(
     defaultTotal,
     cartCache,
     customerData,
-    setPaymentInformationAction,
-    $,
   ) {
     'use strict';
 
@@ -41,21 +37,15 @@ define(
       },
 
       webpayTokenizer: function () {
-        var self = this;
-
-        setPaymentInformationAction(this.messageContainer, { method: this.getCode() }).done(() => {
-          $.getJSON('/mercadopago/customwebpay/reserve').done(function (response) {
-            var tokenizer = mp.tokenizer({
-              type: 'webpay',
-              email: self.getPayerEmail(),
-              totalAmount: self.getGrandTotal(),
-              action: self.getSuccessUrl() + '?quote_id=' + response.quote_id,
-              cancelURL: self.getFailureUrl(),
-            });
-
-            // return tokenizer.open();
-          });
+        var tokenizer = mp.tokenizer({
+          type: 'webpay',
+          email: this.getPayerEmail(),
+          totalAmount: this.getGrandTotal(),
+          action: this.getSuccessUrl(),
+          cancelURL: this.getFailureUrl(),
         });
+
+        return tokenizer.open();
       },
 
       setValidateHandler: function (handler) {

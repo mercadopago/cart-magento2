@@ -15,7 +15,7 @@ use MercadoPago\Core\Model\CustomWebpay\Payment;
 class Failure extends AbstractAction
 {
     /**
-     * Failure constructor.
+     * Failure constructor
      *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory

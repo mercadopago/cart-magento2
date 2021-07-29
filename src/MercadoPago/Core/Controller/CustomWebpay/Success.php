@@ -21,7 +21,7 @@ class Success extends AbstractAction
     protected $session;
 
     /**
-     * Success constructor.
+     * Success constructor
      *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
