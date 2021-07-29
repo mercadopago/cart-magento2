@@ -643,7 +643,7 @@ class Wallet
     }//end isTestMode()
 
     /**
-     * @return string|null
+     * @return int|null
      */
     protected function getSponsorId()
     {

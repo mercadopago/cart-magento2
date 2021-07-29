@@ -280,7 +280,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getSiteId()
 
     /**
-     * @return string|null
+     * @return int|null
      */
     protected function getSponsorId()
     {

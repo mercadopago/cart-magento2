@@ -370,7 +370,7 @@ class Basic extends AbstractMethod
     }
 
     /**
-     * @return string|null
+     * @return int|null
      * @throws Exception
      */
     protected function getSponsorId()

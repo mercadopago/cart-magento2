@@ -6,7 +6,7 @@ class SponsorId
 {
     /**
      * @param $siteId
-     * @return string|null
+     * @return int|null
      */
     public static function getSponsorId($siteId)
     {
@@ -25,6 +25,6 @@ class SponsorId
             return null;
         }
 
-        return $sponsorIds[$siteId];
+        return (int) $sponsorIds[$siteId];
     }
 }

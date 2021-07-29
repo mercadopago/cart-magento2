@@ -800,7 +800,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
     protected function getSponsorId()
     {
