@@ -284,13 +284,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     protected function getSponsorId()
     {
-        $sponsorId = SponsorId::getSponsorId($this->getSiteId());
-
-        if (empty($sponsorId)) {
-            return null;
-        }
-
-        return $sponsorId;
+        return SponsorId::getSponsorId($this->getSiteId());
     }//end getSponsorId()
 
     /**

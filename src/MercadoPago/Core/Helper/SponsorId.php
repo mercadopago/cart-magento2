@@ -6,7 +6,7 @@ class SponsorId
 {
     /**
      * @param $siteId
-     * @return string
+     * @return string|null
      */
     public static function getSponsorId($siteId)
     {
@@ -20,6 +20,10 @@ class SponsorId
             'MPE' => '222568315',
             'MLV' => '222569730',
         ];
+
+        if (!isset($sponsorIds[$siteId])) {
+            return null;
+        }
 
         return $sponsorIds[$siteId];
     }

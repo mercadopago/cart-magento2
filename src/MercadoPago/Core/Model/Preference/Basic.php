@@ -20,6 +20,7 @@ use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data as dataHelper;
+use MercadoPago\Core\Helper\SponsorId;
 
 class Basic extends AbstractMethod
 {
@@ -369,21 +370,13 @@ class Basic extends AbstractMethod
     }
 
     /**
-     * @param $config
-     * @return int|null
+     * @return string|null
+     * @throws Exception
      */
-    protected function getSponsorId($config)
+    protected function getSponsorId()
     {
-        $sponsor_id = $config['sponsor_id'];
-
-        $this->_helperData->log("Sponsor_id", 'mercadopago-basic.log', $sponsor_id);
-
-        if (!empty($sponsor_id)) {
-            $this->_helperData->log("Sponsor_id identificado", 'mercadopago-basic.log', $sponsor_id);
-            return (int)$sponsor_id;
-        }
-
-        return null;
+        $siteId = mb_strtoupper($this->getConfig()['country']);
+        return SponsorId::getSponsorId($siteId);
     }
 
     /**
@@ -479,7 +472,7 @@ class Basic extends AbstractMethod
                 $arr['auto_return'] = "approved";
             }
 
-            $sponsor_id = $this->getSponsorId($config);
+            $sponsor_id = $this->getSponsorId();
 
             $siteId = strtoupper($config['country']);
 
@@ -499,7 +492,7 @@ class Basic extends AbstractMethod
             $test_mode = true;
 
             if (!empty($sponsor_id) && strpos($payerInfo['email'], "@testuser.com") === false) {
-                $arr['sponsor_id'] = (int)$sponsor_id;
+                $arr['sponsor_id'] = (int) $sponsor_id;
                 $test_mode = false;
             }
 
