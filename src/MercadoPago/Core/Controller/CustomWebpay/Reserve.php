@@ -39,11 +39,9 @@ class Reserve extends AbstractAction
         $response = $this->resultJsonFactory->create();
 
         try {
-            $this->webpayPayment->reserveQuote();
-
             $response->setData(
                 [
-                    'quote_id' => $this->webpayPayment->getReservedQuoteId(),
+                    'quote_id' => '000000',
                 ]
             );
 

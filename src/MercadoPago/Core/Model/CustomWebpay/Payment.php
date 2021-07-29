@@ -99,18 +99,23 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end assignData
 
     /**
+     * @param $token
+     * @param $paymentMethodId
+     * @param $issuerId
+     * @param $installments
      * @return array
      * @throws LocalizedException
      * @throws NoSuchEntityException
-     * @throws Exception
      */
-    public function createPayment($quoteId, $token, $paymentMethodId, $issuerId, $installments)
+    public function createPayment($token, $paymentMethodId, $issuerId, $installments)
     {
-        $preference = $this->makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments);
+        $preference = $this->makePreference($token, $paymentMethodId, $issuerId, $installments);
         $response   = $this->_coreModel->postPaymentV1($preference);
 
-        if(isset($response['response']['status']) && $response['response']['status'] != 'rejected'){
-            return $response;
+        if (isset($response['status']) && $response['status'] <= 299) {
+            if (isset($response['response']['status']) && $response['response']['status'] != 'rejected') {
+                return $response;
+            }
         }
 
         throw new Exception(__("Sorry, it was unable to process payment with webpay!"));
@@ -149,24 +154,30 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end createOrder()
 
     /**
+     * @param $token
+     * @param $paymentMethodId
+     * @param $issuerId
+     * @param $installments
      * @return array
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
-    public function makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments)
+    public function makePreference($token, $paymentMethodId, $issuerId, $installments)
     {
-        $quote      = $this->getReservedQuote($quoteId);
+        $quote      = $this->_getQuote();
         $preference = $this->getPreference();
-        $customer   = $this->getCustomer($quoteId);
+        $customer   = $this->getCustomer();
         $siteId     = $preference['metadata']['site'];
 
+        $quote->reserveOrderId();
+
+        $preference['external_reference']       = $quote->getReservedOrderId();
         $preference['additional_info']['items'] = $this->getItems($quote, $siteId);
         $preference['additional_info']['payer'] = $this->getPayer($quote, $customer);
         $preference['token']                    = $token;
         $preference['issuer_id']                = $issuerId;
         $preference['installments']             = (int) $installments;
         $preference['payment_method_id']        = $paymentMethodId;
-        $preference['external_reference']       = $quoteId;
         $preference['payer']['email']           = $preference['additional_info']['payer']['email'];
         $preference['transaction_amount']       = Round::roundWithSiteId($quote->getBaseGrandTotal(), $siteId);
 
@@ -176,6 +187,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $quote->setCustomerFirstname($preference['additional_info']['payer']['first_name']);
             $quote->setCustomerLastname($preference['additional_info']['payer']['last_name']);
         }
+
+        $this->_quoteRepository->save($quote);
 
         if ($quote->getShippingAddress()) {
             $preference['additional_info']['shipments'] = $this->getShipments($quote);
@@ -308,13 +321,13 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }
 
     /**
-     * @param $quoteId
      * @return CustomerInterface
+     * @throws LocalizedException
      * @throws NoSuchEntityException
      */
-    protected function getCustomer($quoteId)
+    protected function getCustomer()
     {
-        return $this->getReservedQuote($quoteId)->getCustomer();
+        return $this->_getQuote()->getCustomer();
     }//end getCustomer()
 
     /**

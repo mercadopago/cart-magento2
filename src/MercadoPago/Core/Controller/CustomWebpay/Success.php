@@ -46,8 +46,6 @@ class Success extends AbstractAction
     public function execute()
     {
         try {
-            $quoteId = $this->getRequest()->getParam('quote_id', false);
-
             $body = $this->getRequest()->getContent();
             $body = explode('&', $body);
 
@@ -57,7 +55,7 @@ class Success extends AbstractAction
                 $content[$value[0]] = $value[1];
             }
 
-            if (!isset($quoteId) || empty($quoteId) || !isset($body) || empty($content)) {
+            if (!isset($body) || empty($content)) {
                 throw new \Exception('Webpay callback error: missing params');
             }
 
@@ -71,14 +69,7 @@ class Success extends AbstractAction
             $installments    = $content['installments'];
             $paymentMethodId = $content['payment_method_id'];
 
-            $payment = $this->webpayPayment->createPayment(
-                $quoteId,
-                $token,
-                $paymentMethodId,
-                $issuerId,
-                $installments
-            );
-
+            $payment = $this->webpayPayment->createPayment($token, $paymentMethodId, $issuerId, $installments);
             $this->webpayPayment->createOrder($payment['response']);
 
             return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
