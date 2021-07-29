@@ -17,6 +17,7 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Round;
+use MercadoPago\Core\Helper\SponsorId;
 
 /**
  * Class Payment
@@ -279,17 +280,17 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getSiteId()
 
     /**
-     * @return integer|null
+     * @return string|null
      */
     protected function getSponsorId()
     {
-        $sponsorId = $this->getConfig(ConfigData::PATH_SPONSOR_ID);
+        $sponsorId = SponsorId::getSponsorId($this->getSiteId());
 
-        if (!empty($sponsorId)) {
-            return (int) $sponsorId;
+        if (empty($sponsorId)) {
+            return null;
         }
 
-        return null;
+        return $sponsorId;
     }//end getSponsorId()
 
     /**
