@@ -3,16 +3,18 @@
 namespace MercadoPago\Core\Model\CustomWebpay;
 
 use Exception;
-use Magento\Framework\DataObject;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Quote\Model\Quote;
-use Magento\Quote\Model\Quote\Item;
-use Magento\Quote\Api\Data\CartInterface;
-use Magento\Store\Model\ScopeInterface;
-use Magento\Framework\App\ObjectManager;
 use Magento\Checkout\Model\Cart;
 use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\DataObject;
+use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Api\Data\CartInterface;
+use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\Quote\Item;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Round;
 
@@ -196,7 +198,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getCartObject()
 
     /**
-     * @return void
+     * @return Quote
      */
     public function reserveQuote()
     {
@@ -213,6 +215,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     /**
      * @return Quote
+     * @throws NoSuchEntityException
      */
     public function getReservedQuote($quoteId)
     {
@@ -290,9 +293,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getSponsorId()
 
     /**
-     * @return DataCustomerInterface|Customer|ExtensibleDataInterface|CustomerInterface
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
+     * @param $quoteId
+     * @return CustomerInterface
      */
     protected function getCustomer($quoteId)
     {
@@ -501,6 +503,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * @param $payment
      * @return OrderInterface
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws CouldNotSaveException
      */
     protected function createOrderByPaymentWithQuote($payment)
     {

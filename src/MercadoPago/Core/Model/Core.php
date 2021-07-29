@@ -356,7 +356,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             if ($status_detail == 'cc_rejected_invalid_installments') {
                 $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail), strtoupper($payment_method), $installment);
             } elseif ($status_detail == 'cc_rejected_call_for_authorize') {
-                $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail), strtoupper($payment_method), $amount);
+                $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail));
             } else {
                 $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail), strtoupper($payment_method));
             }
