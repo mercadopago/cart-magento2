@@ -64,7 +64,7 @@ class Data extends \Magento\Payment\Helper\Data
     protected $_mpLogger;
 
     /**
-     * @var \MercadoPago\Core\Helper\Cache
+     * @var Cache
      */
     protected $_mpCache;
 
@@ -136,9 +136,9 @@ class Data extends \Magento\Payment\Helper\Data
     /**
      * Log custom message using MercadoPago logger instance
      *
-     * @param        $message
-     * @param string $name
-     * @param null $array
+     * @param            $message
+     * @param string     $name
+     * @param array|null $array
      */
     public function log($message, $name = "mercadopago", $array = null)
     {
@@ -248,6 +248,7 @@ class Data extends \Magento\Payment\Helper\Data
      *
      * @param $data
      * @param $order Order
+     * @throws Exception
      */
     public function setOrderSubtotals($data, $order)
     {
@@ -318,8 +319,8 @@ class Data extends \Magento\Payment\Helper\Data
     /**
      * Return sum of fields separated with |
      *
-     * @param $fullValue
-     *
+     * @param $data
+     * @param $field
      * @return int
      */
     protected function _getMultiCardValue($data, $field)
@@ -375,9 +376,8 @@ class Data extends \Magento\Payment\Helper\Data
             $store = $objectManager->get('Magento\Framework\Locale\Resolver');
             $locale = $store->getLocale();
             $locale = explode("_", $locale);
-            $locale = $locale[1];
 
-            return $locale;
+            return $locale[1];
         } catch (Exception $e) {
             return "US";
         }
@@ -391,12 +391,11 @@ class Data extends \Magento\Payment\Helper\Data
     public function getUrlStore()
     {
         try {
-            /** @var \Magento\Framework\App\ObjectManager $objectManager */
             $objectManager = ObjectManager::getInstance(); //instance of\Magento\Framework\App\ObjectManager
             $storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
             $currentStore = $storeManager->getStore();
-            $baseUrl = $currentStore->getBaseUrl();
-            return $baseUrl;
+
+            return $currentStore->getBaseUrl();
         } catch (Exception $e) {
             return "";
         }
@@ -409,8 +408,7 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function getModuleVersion()
     {
-        $version = $this->_moduleResource->getDbVersion('MercadoPago_Core');
-        return $version;
+        return $this->_moduleResource->getDbVersion('MercadoPago_Core');
     }
 
     /**
@@ -424,6 +422,7 @@ class Data extends \Magento\Payment\Helper\Data
     public static function getClientIdFromAccessToken($at)
     {
         $t = explode('-', $at);
+
         if (count($t) > 0) {
             return $t[1];
         }

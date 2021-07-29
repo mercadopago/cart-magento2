@@ -295,6 +295,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * @param $quoteId
      * @return CustomerInterface
+     * @throws NoSuchEntityException
      */
     protected function getCustomer($quoteId)
     {
