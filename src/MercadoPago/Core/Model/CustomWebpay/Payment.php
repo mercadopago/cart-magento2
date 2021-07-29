@@ -3,9 +3,7 @@
 namespace MercadoPago\Core\Model\CustomWebpay;
 
 use Exception;
-use Magento\Checkout\Model\Cart;
 use Magento\Customer\Api\Data\CustomerInterface;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\LocalizedException;
@@ -104,9 +102,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @param $issuerId
      * @param $installments
      * @return array
+     * @throws Exception
      * @throws LocalizedException
      * @throws NoSuchEntityException
-     * @throws Exception
      */
     public function createPayment($token, $paymentMethodId, $issuerId, $installments)
     {
@@ -131,6 +129,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * @param  $payment
      * @return void
+     * @throws Exception
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
@@ -178,7 +177,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         $quote->reserveOrderId();
 
-        $preference['external_reference']       = $quote->getReservedOrderId();
         $preference['additional_info']['items'] = $this->getItems($quote, $siteId);
         $preference['additional_info']['payer'] = $this->getPayer($quote, $customer);
         $preference['token']                    = $token;
@@ -186,6 +184,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $preference['installments']             = (int) $installments;
         $preference['payment_method_id']        = $paymentMethodId;
         $preference['payer']['email']           = $preference['additional_info']['payer']['email'];
+        $preference['external_reference']       = $quote->getReservedOrderId();
         $preference['transaction_amount']       = Round::roundWithSiteId($quote->getBaseGrandTotal(), $siteId);
 
         if (!$customer->getId()) {
