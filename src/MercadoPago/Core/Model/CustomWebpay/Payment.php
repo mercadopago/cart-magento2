@@ -29,7 +29,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     const SUCCESS_PATH = 'mercadopago/customwebpay/success';
     const FAILURE_PATH = 'mercadopago/customwebpay/failure';
-    const NOTIFICATION_PATH = 'mercadopago/customwebpay/notification';
+    const NOTIFICATION_PATH = 'mercadopago/notifications/custom';
 
     /**
      * Define payment method code
@@ -236,7 +236,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 'payer'     => [],
                 'shipments' => [],
             ],
-            'notification_url'     => $this->_urlBuilder->getUrl(self::NOTIFICATION_PATH),
+            'notification_url'     => $this->getNotificationUrl(),
             'statement_descriptor' => $this->getStateDescriptor(),
             'external_reference'   => '',
             'metadata'             => [
@@ -286,6 +286,26 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     {
         return SponsorId::getSponsorId($this->getSiteId());
     }//end getSponsorId()
+
+    /**
+     * @return string|void
+     */
+    protected function getNotificationUrl()
+    {
+        $params = array(
+            '_query' => array(
+                'source_news' => 'webhooks'
+            )
+        );
+
+        $notification_url = $this->_urlBuilder->getUrl(self::NOTIFICATION_PATH, $params);
+
+        if (strrpos($notification_url, 'localhost')) {
+            return;
+        }
+
+        return $notification_url;
+    }
 
     /**
      * @param $quoteId

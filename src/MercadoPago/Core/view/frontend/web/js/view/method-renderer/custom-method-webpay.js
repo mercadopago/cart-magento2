@@ -53,7 +53,7 @@ define(
               cancelURL: self.getFailureUrl(),
             });
 
-            return tokenizer.open();
+            // return tokenizer.open();
           });
         });
       },
