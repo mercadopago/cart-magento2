@@ -407,7 +407,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $dataItems = [];
         foreach ($order->getAllVisibleItems() as $item) {
             $product = $item->getProduct();
-            $image = $this->_helperImage->init($product, 'image');
+            $image = $this->_helperImage->init($product, 'product_thumbnail_image');
 
             $dataItems[] = [
                 "id"          => $item->getSku(),

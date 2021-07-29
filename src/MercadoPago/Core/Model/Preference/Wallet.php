@@ -578,7 +578,7 @@ class Wallet
     protected function getItem(Item $item, $categoryId, $siteId)
     {
         $product = $item->getProduct();
-        $image   = $this->helperImage->init($product, 'image');
+        $image   = $this->helperImage->init($product, 'product_thumbnail_image');
 
         return [
             'id'          => $item->getSku(),

@@ -2,6 +2,7 @@
 
 namespace MercadoPago\Core\Model\CustomWebpay;
 
+use Exception;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -46,10 +47,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @param string $paymentAction
      * @param object $stateObject
      *
-     * @return boolean
+     * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @throws LocalizedException
      */
     public function initialize($paymentAction, $stateObject){}
 
@@ -59,6 +59,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @param CartInterface|null $quote
      *
      * @return boolean
+     * @throws LocalizedException
      */
     public function isAvailable(CartInterface $quote = null) {
         $isActive = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_WEBPAY_ACTIVE, ScopeInterface::SCOPE_STORE);
@@ -72,7 +73,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     /**
      * @param  DataObject $data
-     * @return $this|\MercadoPago\Core\Model\CustomWebpay\Payment
+     * @return $this|Payment
      * @throws LocalizedException
      */
     public function assignData(DataObject $data) {
@@ -98,6 +99,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @return array
      * @throws LocalizedException
      * @throws NoSuchEntityException
+     * @throws Exception
      */
     public function createPayment($quoteId, $token, $paymentMethodId, $issuerId, $installments)
     {
@@ -108,11 +110,12 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             return $response;
         }
 
-        throw new \Exception(__("Sorry, it was unable to process payment with webpay!"));
+        throw new Exception(__("Sorry, it was unable to process payment with webpay!"));
     }//end createPayment()
 
     /**
-     * @return array
+     * @param  $payment
+     * @return void
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
@@ -128,7 +131,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         if (!$order->getIncrementId()) {
-            throw new \Exception(__("Sorry, we can't create a order with external reference #%1", $orderIncrementalId));
+            throw new Exception(__("Sorry, we can't create a order with external reference #%1", $orderIncrementalId));
         }
 
         $this->_paymentNotification->updateStatusOrderByPayment($payment);
@@ -305,7 +308,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     {
         $items      = [];
         $categoryId = $this->getConfig(ConfigData::PATH_ADVANCED_CATEGORY);
-    
+
         foreach ($quote->getAllVisibleItems() as $item) {
             $items[] = $this->getItem($item, $categoryId, $siteId);
         }
@@ -337,7 +340,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     protected function getItem(Item $item, $categoryId, $siteId)
     {
         $product = $item->getProduct();
-        $image   = $this->_helperImage->init($product, 'image');
+        $image   = $this->_helperImage->init($product, 'product_thumbnail_image');
 
         return [
             'id'          => $item->getSku(),
@@ -351,9 +354,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getItem()
 
     /**
-     * @param  Quote  $quote
-     * @param  $siteId
-     * @return array
+     * @param Quote $quote
+     * @return float
      */
     protected function getDiscountAmount(Quote $quote)
     {
@@ -361,8 +363,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end processDiscount()
 
     /**
-     * @param  Quote  $quote
-     * @param  $siteId
+     * @param Quote $quote
      * @return float
      */
     protected function getTaxAmount(Quote $quote)
@@ -438,8 +439,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getPayer()
 
     /**
-     * @param  Quote             $quote
-     * @param  CustomerInterface $customer
+     * @param Quote $quote
      * @return array
      */
     protected function getShipments(Quote $quote)
@@ -499,11 +499,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end loadOrderById()
 
     /**
-     * @param  $paymentId
-     * @return integer|mixed
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @param $payment
+     * @return OrderInterface
      */
     protected function createOrderByPaymentWithQuote($payment)
     {

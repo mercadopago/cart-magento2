@@ -148,7 +148,7 @@ class Basic extends AbstractMethod
         $difference = [];
         foreach ($order->getAllVisibleItems() as $item) {
             $product = $item->getProduct();
-            $image = $this->_helperImage->init($product, 'image');
+            $image = $this->_helperImage->init($product, 'product_thumbnail_image');
             $items[] = [
                 "id"          => $item->getSku(),
                 "title"       => $product->getName(),
