@@ -9,6 +9,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\Registry;
@@ -24,6 +25,7 @@ use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Model\QuoteRepository;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\ProductMetadataInterface;
@@ -260,28 +262,29 @@ class Payment extends Cc implements GatewayInterface
     protected $_request;
 
     /**
-     * @param MercadopagoData            $helperData
-     * @param CheckoutSession            $checkoutSession
-     * @param Session                    $customerSession
-     * @param OrderFactory               $orderFactory
-     * @param UrlInterface               $urlBuilder
-     * @param Context                    $context
-     * @param Registry                   $registry
+     * @param MercadopagoData $helperData
+     * @param CheckoutSession $checkoutSession
+     * @param Session $customerSession
+     * @param OrderFactory $orderFactory
+     * @param UrlInterface $urlBuilder
+     * @param Context $context
+     * @param Registry $registry
      * @param ExtensionAttributesFactory $extensionFactory
-     * @param AttributeValueFactory      $customAttributeFactory
-     * @param Data                       $paymentData
-     * @param ScopeConfigInterface       $scopeConfig
-     * @param Logger                     $logger
-     * @param ModuleListInterface        $moduleList
-     * @param TimezoneInterface          $localeDate
-     * @param Core                       $coreModel
-     * @param RequestInterface           $request
-     * @param QuoteRepository            $quoteRepository
-     * @param QuoteManagement            $quoteManagement
-     * @param Version                    $version
-     * @param Image                      $helperImage
-     * @param OrderInterface             $order
-     * @param PaymentNotification        $paymentNotification
+     * @param AttributeValueFactory $customAttributeFactory
+     * @param Data $paymentData
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Logger $logger
+     * @param ModuleListInterface $moduleList
+     * @param TimezoneInterface $localeDate
+     * @param Core $coreModel
+     * @param RequestInterface $request
+     * @param QuoteRepository $quoteRepository
+     * @param QuoteManagement $quoteManagement
+     * @param Version $version
+     * @param ProductMetadataInterface $productMetadata
+     * @param Image $helperImage
+     * @param OrderInterface $order
+     * @param PaymentNotification $paymentNotification
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -398,7 +401,7 @@ class Payment extends Cc implements GatewayInterface
     /**
      * @param  string $paymentAction
      * @param  object $stateObject
-     * @return $this|bool|Cc
+     * @return bool
      * @throws LocalizedException
      * @throws Exception
      */
@@ -458,7 +461,7 @@ class Payment extends Cc implements GatewayInterface
 
     /**
      * @param  $preference
-     * @return $this|bool
+     * @return bool
      * @throws LocalizedException
      * @throws Exception
      */
@@ -475,7 +478,9 @@ class Payment extends Cc implements GatewayInterface
             'response' => $response,
             'message'  => $messageErrorToClient,
         ];
+
         $this->_helperData->log('CustomPayment::initialize - The API returned an error while creating the payment, more details: ' . json_encode($arrayLog));
+
         throw new LocalizedException(__($messageErrorToClient));
     }//end createCustomPayment()
 
@@ -494,6 +499,8 @@ class Payment extends Cc implements GatewayInterface
      * Retrieves quote
      *
      * @return Quote
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     protected function _getQuote()
     {
@@ -505,7 +512,7 @@ class Payment extends Cc implements GatewayInterface
      *
      * @param $incrementId
      *
-     * @return mixed
+     * @return Order
      */
     protected function _getOrder($incrementId)
     {
@@ -524,8 +531,9 @@ class Payment extends Cc implements GatewayInterface
     }//end getOrderPlaceRedirectUrl()
 
     /**
-     * @param  CartInterface|null $quote
+     * @param CartInterface|null $quote
      * @return boolean
+     * @throws LocalizedException
      */
     public function isAvailable(CartInterface $quote=null)
     {
@@ -602,15 +610,13 @@ class Payment extends Cc implements GatewayInterface
     /**
      * Get stored customers and cards from api
      *
-     * @return mixed
+     * @return array|bool
+     * @throws LocalizedException
      */
     public function getCustomerAndCards()
     {
         $email = $this->_coreModel->getEmailCustomer();
-
-        $customer = $this->getOrCreateCustomer($email);
-
-        return $customer;
+        return $this->getOrCreateCustomer($email);
     }//end getCustomerAndCards()
 
     /**
@@ -618,6 +624,7 @@ class Payment extends Cc implements GatewayInterface
      *
      * @param $token
      * @param $payment_created
+     * @throws LocalizedException
      */
     public function customerAndCards($token, $payment_created)
     {
@@ -674,7 +681,7 @@ class Payment extends Cc implements GatewayInterface
         }
 
         return false;
-    }//end checkAndcreateCard()
+    }//end checkAndCreateCard()
 
     /**
      * Saves to be used later by OCP

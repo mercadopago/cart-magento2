@@ -9,6 +9,7 @@ use Magento\Customer\Model\Session as customerSession;
 use Magento\Framework\Api\AttributeValueFactory;
 use Magento\Framework\Api\ExtensionAttributesFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Registry;
 use Magento\Framework\UrlInterface;
@@ -20,6 +21,7 @@ use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data as dataHelper;
+use MercadoPago\Core\Helper\SponsorId;
 
 class Basic extends AbstractMethod
 {
@@ -148,7 +150,7 @@ class Basic extends AbstractMethod
         $difference = [];
         foreach ($order->getAllVisibleItems() as $item) {
             $product = $item->getProduct();
-            $image = $this->_helperImage->init($product, 'image');
+            $image = $this->_helperImage->init($product, 'product_thumbnail_image');
             $items[] = [
                 "id"          => $item->getSku(),
                 "title"       => $product->getName(),
@@ -369,21 +371,13 @@ class Basic extends AbstractMethod
     }
 
     /**
-     * @param $config
      * @return int|null
+     * @throws Exception
      */
-    protected function getSponsorId($config)
+    protected function getSponsorId()
     {
-        $sponsor_id = $config['sponsor_id'];
-
-        $this->_helperData->log("Sponsor_id", 'mercadopago-basic.log', $sponsor_id);
-
-        if (!empty($sponsor_id)) {
-            $this->_helperData->log("Sponsor_id identificado", 'mercadopago-basic.log', $sponsor_id);
-            return (int)$sponsor_id;
-        }
-
-        return null;
+        $siteId = mb_strtoupper($this->getConfig()['country']);
+        return SponsorId::getSponsorId($siteId);
     }
 
     /**
@@ -391,7 +385,7 @@ class Basic extends AbstractMethod
      * @param $config
      * @return array
      * @throws Exception
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     protected function createPreference($arr, $config)
     {
@@ -479,7 +473,7 @@ class Basic extends AbstractMethod
                 $arr['auto_return'] = "approved";
             }
 
-            $sponsor_id = $this->getSponsorId($config);
+            $sponsor_id = $this->getSponsorId();
 
             $siteId = strtoupper($config['country']);
 
@@ -499,7 +493,7 @@ class Basic extends AbstractMethod
             $test_mode = true;
 
             if (!empty($sponsor_id) && strpos($payerInfo['email'], "@testuser.com") === false) {
-                $arr['sponsor_id'] = (int)$sponsor_id;
+                $arr['sponsor_id'] = (int) $sponsor_id;
                 $test_mode = false;
             }
 

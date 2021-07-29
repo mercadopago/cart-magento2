@@ -2,6 +2,11 @@
 
 namespace MercadoPago\Core\Model\CustomTicket;
 
+use Magento\Framework\DataObject;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Api\Data\CartInterface;
+
 /**
  * Class Payment
  *
@@ -21,14 +26,14 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     ];
 
     /**
-     * @param \Magento\Framework\DataObject $data
+     * @param DataObject $data
      * @return $this|\MercadoPago\Core\Model\Custom\Payment
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function assignData(\Magento\Framework\DataObject $data)
+    public function assignData(DataObject $data)
     {
-        if (!($data instanceof \Magento\Framework\DataObject)) {
-            $data = new \Magento\Framework\DataObject($data);
+        if (!($data instanceof DataObject)) {
+            $data = new DataObject($data);
         }
 
         $infoForm = $data->getData();
@@ -61,6 +66,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @return bool
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws LocalizedException
      */
     public function initialize($paymentAction, $stateObject)
     {
@@ -116,7 +122,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $this->_helperData->log("CustomPaymentTicket::initialize - Preference to POST", 'mercadopago-custom.log', $preference);
         } catch (\Exception $e) {
             $this->_helperData->log("CustomPaymentTicket::initialize - There was an error retrieving the information to create the payment, more details: " . $e->getMessage());
-            throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
+            throw new LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
             return $this;
         }
 
@@ -140,12 +146,18 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
             $this->_helperData->log("CustomPaymentTicket::initialize - The API returned an error while creating the payment, more details: " . json_encode($arrayLog));
 
-            throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
+            throw new LocalizedException(__($messageErrorToClient));
 
             return $this;
         }
     }
 
+    /**
+     * @param null $usingSecondCardInfo
+     * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
     public function preparePostPayment($usingSecondCardInfo = null)
     {
         $this->_helperData->log("Ticket -> init prepare post payment", 'mercadopago-custom.log');
@@ -203,6 +215,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * Return tickets options availables
      *
      * @return array
+     * @throws LocalizedException
      */
     public function getTicketsOptions()
     {
@@ -212,13 +225,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $payment_methods = $this->_coreModel->getPaymentMethods();
         $tickets = [];
 
-        //percorre todos os payments methods
         foreach ($payment_methods['response'] as $pm) {
-
-            //filtra por tickets
             if ($pm['payment_type_id'] == "ticket" || $pm['payment_type_id'] == "atm") {
-
-                //insert if not exist in list exclude payment method
                 if (!in_array($pm['id'], $listExclude)) {
                     $tickets[] = $pm;
                 }
@@ -228,6 +236,10 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         return $tickets;
     }
 
+    /**
+     * @param $data
+     * @throws LocalizedException
+     */
     public function setOrderSubtotals($data)
     {
         $total = $data['transaction_details']['total_paid_amount'];
@@ -240,11 +252,12 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * is payment method available?
      *
-     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+     * @param CartInterface|null $quote
      *
      * @return bool
+     * @throws LocalizedException
      */
-    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    public function isAvailable(CartInterface $quote = null)
     {
         $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_TICKET_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {

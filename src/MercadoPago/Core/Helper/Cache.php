@@ -2,6 +2,9 @@
 
 namespace MercadoPago\Core\Helper;
 
+use Magento\Framework\App\CacheInterface;
+use Magento\Framework\View\Element\Context;
+
 /**
  * Class Cache
  * @package MercadoPago\Core\Helper
@@ -12,15 +15,15 @@ class Cache
     const IS_VALID_AT = 'IS_VALID_ACCESS_TOKEN';
 
     /**
-     * @var \Magento\Framework\App\CacheInterface
+     * @var CacheInterface
      */
     protected $_cacheManager;
 
     /**
      * Cache constructor.
-     * @param \Magento\Framework\View\Element\Context $context
+     * @param Context $context
      */
-    public function __construct(\Magento\Framework\View\Element\Context $context)
+    public function __construct(Context $context)
     {
         $this->_cacheManager = $context->getCache();
     }
@@ -31,8 +34,7 @@ class Cache
      */
     public function getFromCache($key)
     {
-        $value = $this->_cacheManager->load(self::PREFIX_KEY . $key);
-        return $value;
+        return $this->_cacheManager->load(self::PREFIX_KEY . $key);
     }
 
     /**

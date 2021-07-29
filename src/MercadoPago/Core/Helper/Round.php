@@ -37,13 +37,11 @@ class Round
     /**
      * Get rounded value with site id
      *
-     * @param  float|double $value
-     * @param  string $siteId
-     * @return float|integer
+     * @param float $value
+     * @return float
      */
     public static function roundWithoutSiteId($value)
     {
-        $round = (float) number_format($value, 2, '.', '');
-        return $round;
+        return (float) number_format($value, 2, '.', '');
     }
 }

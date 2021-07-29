@@ -8,7 +8,7 @@ namespace MercadoPago\Core\Helper\Message;
 class StatusMessage extends AbstractMessage
 {
     /**
-     * mapps messages by status
+     * maps messages by status
      *
      * @var array
      */

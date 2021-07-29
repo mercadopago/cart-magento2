@@ -2,6 +2,11 @@
 
 namespace MercadoPago\Core\Model\CustomBankTransfer;
 
+use Magento\Framework\DataObject;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Quote\Api\Data\CartInterface;
+use MercadoPago\Core\Model\Api\V1\Exception;
+
 /**
  * Class Payment
  *
@@ -25,14 +30,14 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     ];
 
     /**
-     * @param  \Magento\Framework\DataObject $data
+     * @param  DataObject $data
      * @return $this|\MercadoPago\Core\Model\Custom\Payment
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function assignData(\Magento\Framework\DataObject $data)
+    public function assignData(DataObject $data)
     {
-        if (!($data instanceof \Magento\Framework\DataObject)) {
-            $data = new \Magento\Framework\DataObject($data);
+        if (!($data instanceof DataObject)) {
+            $data = new DataObject($data);
         }
 
         $infoForm = $data->getData();
@@ -61,9 +66,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * @param  string $paymentAction
      * @param  object $stateObject
-     * @return $this|bool|\Magento\Payment\Model\Method\Cc|\MercadoPago\Core\Model\Custom\Payment
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \MercadoPago\Core\Model\Api\V1\Exception
+     * @return bool
+     * @throws LocalizedException
+     * @throws Exception
      */
     public function initialize($paymentAction, $stateObject)
     {
@@ -105,7 +110,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $this->_helperData->log('CustomPaymentTicket::initialize - Preference to POST', 'mercadopago-custom.log', $preference);
         } catch (\Exception $e) {
             $this->_helperData->log('CustomPaymentTicket::initialize - There was an error retrieving the information to create the payment, more details: '.$e->getMessage());
-            throw new \Magento\Framework\Exception\LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
+            throw new LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
         }//end try
 
         // POST /v1/payments
@@ -123,7 +128,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 'message'  => $messageErrorToClient,
             ];
             $this->_helperData->log('CustomPaymentTicket::initialize - The API returned an error while creating the payment, more details: '.json_encode($arrayLog));
-            throw new \Magento\Framework\Exception\LocalizedException(__($messageErrorToClient));
+            throw new LocalizedException(__($messageErrorToClient));
         }
 
     }//end initialize()
@@ -163,8 +168,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * @param  null $usingSecondCardInfo
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \MercadoPago\Core\Model\Api\V1\Exception
+     * @throws LocalizedException
+     * @throws Exception
      */
     public function preparePostPayment($usingSecondCardInfo=null)
     {
@@ -229,7 +234,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     /**
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getPaymentOptions()
     {
@@ -255,7 +260,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     /**
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getIdentifcationTypes()
     {
@@ -271,6 +276,10 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     }//end getIdentifcationTypes()
 
+    /**
+     * @param $data
+     * @throws LocalizedException
+     */
     public function setOrderSubtotals($data)
     {
         $total = $data['transaction_details']['total_paid_amount'];
@@ -283,11 +292,11 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end setOrderSubtotals()
 
     /**
-     * @param  \Magento\Quote\Api\Data\CartInterface|null $quote
+     * @param  CartInterface|null $quote
      * @return boolean
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote=null)
+    public function isAvailable(CartInterface $quote=null)
     {
         $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {
