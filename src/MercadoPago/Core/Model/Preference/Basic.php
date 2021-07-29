@@ -9,6 +9,7 @@ use Magento\Customer\Model\Session as customerSession;
 use Magento\Framework\Api\AttributeValueFactory;
 use Magento\Framework\Api\ExtensionAttributesFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Registry;
 use Magento\Framework\UrlInterface;
@@ -384,7 +385,7 @@ class Basic extends AbstractMethod
      * @param $config
      * @return array
      * @throws Exception
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     protected function createPreference($arr, $config)
     {
