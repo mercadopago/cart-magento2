@@ -5,6 +5,7 @@ namespace MercadoPago\Core\Controller\CustomWebpay;
 use Exception;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Exception\NoSuchEntityException;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
 use MercadoPago\Core\Model\CustomWebpay\Payment;
 
@@ -34,12 +35,13 @@ class Success extends AbstractAction
 
     /**
      * @inheritDoc
+     * @throws NoSuchEntityException
      */
     public function execute()
     {
-        try {
-            $quoteId = $this->getRequest()->getParam('quote_id', false);
+        $quoteId = $this->getRequest()->getParam('quote_id', false);
 
+        try {
             $body = $this->getRequest()->getContent();
             $body = explode('&', $body);
 
@@ -50,10 +52,12 @@ class Success extends AbstractAction
             }
 
             if (empty($quoteId) || empty($body) || empty($content)) {
+                $this->webpayPayment->persistCartSession($quoteId);
                 throw new Exception('Webpay callback error: missing params');
             }
 
-            if ($content['status'] >= 200 && $content['status'] <= 299) {
+            if ($content['status'] <= 200 || $content['status'] >= 299) {
+                $this->webpayPayment->persistCartSession($quoteId);
                 $this->helperData->log('CustomPaymentWebpay - callback error', self::LOG_NAME, $content);
                 return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
             }
@@ -75,6 +79,7 @@ class Success extends AbstractAction
 
             return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
         } catch (Exception $e) {
+            $this->webpayPayment->persistCartSession($quoteId);
             $this->helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
             return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
         }
