@@ -41,7 +41,6 @@ class Custom extends NotificationBase
         $this->coreModel      = $coreModel;
         $this->_notifications = $notifications;
         parent::__construct($context);
-
     }//end __construct()
 
     /**
@@ -83,15 +82,14 @@ class Custom extends NotificationBase
             $message = 'Mercado Pago - There was a serious error processing the notification. Could not handle the error.';
             $this->setResponseHttp($statusResponse, $message, ['exception_error' => $e->getMessage()]);
         }//end try
-
     }//end execute()
 
     /**
      * @param $httpStatus
      * @param $message
-     * @param array      $data
+     * @param array $data
      */
-    protected function setResponseHttp($httpStatus, $message, $data=[])
+    protected function setResponseHttp($httpStatus, $message, $data = [])
     {
         $response = [
             'status'  => $httpStatus,

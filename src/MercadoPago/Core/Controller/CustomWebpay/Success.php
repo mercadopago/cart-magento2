@@ -2,7 +2,7 @@
 
 namespace MercadoPago\Core\Controller\CustomWebpay;
 
-use Magento\Checkout\Model\Session;
+use Exception;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
@@ -16,27 +16,19 @@ use MercadoPago\Core\Model\CustomWebpay\Payment;
 class Success extends AbstractAction
 {
     /**
-     * @var Session
-     */
-    protected $session;
-
-    /**
-     * Success constructor.
+     * Success constructor
      *
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param Payment $webpayPayment
      * @param MercadopagoData $helperData
-     * @param Session $session
      */
     public function __construct(
         Context $context,
         JsonFactory $resultJsonFactory,
         Payment $webpayPayment,
-        MercadopagoData $helperData,
-        Session $session
+        MercadopagoData $helperData
     ) {
-        $this->session = $session;
         parent::__construct($context, $resultJsonFactory, $webpayPayment, $helperData);
     }
 
@@ -57,11 +49,11 @@ class Success extends AbstractAction
                 $content[$value[0]] = $value[1];
             }
 
-            if (!isset($quoteId) || empty($quoteId) || !isset($body) || empty($content)) {
-                throw new \Exception('Webpay callback error: missing params');
+            if (empty($quoteId) || empty($body) || empty($content)) {
+                throw new Exception('Webpay callback error: missing params');
             }
 
-            if ($content['status'] > 299) {
+            if ($content['status'] >= 200 && $content['status'] <= 299) {
                 $this->helperData->log('CustomPaymentWebpay - callback error', self::LOG_NAME, $content);
                 return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
             }
@@ -82,7 +74,7 @@ class Success extends AbstractAction
             $this->webpayPayment->createOrder($payment['response']);
 
             return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->helperData->log('CustomPaymentWebpay - exception: ' . $e->getMessage(), self::LOG_NAME);
             return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
         }

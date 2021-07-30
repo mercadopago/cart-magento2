@@ -2,6 +2,7 @@
 
 namespace MercadoPago\Core\Controller\CustomWebpay;
 
+use Exception;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
@@ -39,16 +40,14 @@ class Reserve extends AbstractAction
         $response = $this->resultJsonFactory->create();
 
         try {
-            $this->webpayPayment->reserveQuote();
-
             $response->setData(
                 [
-                    'quote_id' => $this->webpayPayment->getReservedQuoteId(),
+                    'quote_id' => $this->webpayPayment->getQuoteId(),
                 ]
             );
 
             return $response;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->messageManager->addExceptionMessage(
                 $e,
                 __('Sorry, we can\'t reserve quote on Webpay Payment.')

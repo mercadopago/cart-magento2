@@ -29,7 +29,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     const SUCCESS_PATH = 'mercadopago/customwebpay/success';
     const FAILURE_PATH = 'mercadopago/customwebpay/failure';
-    const NOTIFICATION_PATH = 'mercadopago/customwebpay/notification';
+    const NOTIFICATION_PATH = 'mercadopago/notifications/custom';
 
     /**
      * Define payment method code
@@ -99,6 +99,11 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end assignData
 
     /**
+     * @param $quoteId
+     * @param $token
+     * @param $paymentMethodId
+     * @param $issuerId
+     * @param $installments
      * @return array
      * @throws LocalizedException
      * @throws NoSuchEntityException
@@ -109,9 +114,17 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $preference = $this->makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments);
         $response   = $this->_coreModel->postPaymentV1($preference);
 
-        if(isset($response['response']['status']) && $response['response']['status'] != 'rejected'){
-            return $response;
+        if (isset($response['status']) && $response['status'] >= 200 && $response['status'] <= 299) {
+            if (isset($response['response']['status']) && $response['response']['status'] != 'rejected') {
+                return $response;
+            }
         }
+
+        $this->_helperData->log(
+            'CustomPaymentWebpay - exception: it was unable to process payment with webpay',
+            self::LOG_NAME,
+            $response
+        );
 
         throw new Exception(__("Sorry, it was unable to process payment with webpay!"));
     }//end createPayment()
@@ -119,6 +132,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * @param  $payment
      * @return void
+     * @throws Exception
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
@@ -149,24 +163,33 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end createOrder()
 
     /**
+     * @param $quoteId
+     * @param $token
+     * @param $paymentMethodId
+     * @param $issuerId
+     * @param $installments
      * @return array
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
     public function makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments)
     {
-        $quote      = $this->getReservedQuote($quoteId);
+        $quote = $this->getReservedQuote($quoteId);
+        $this->activeQuote($quoteId);
+
         $preference = $this->getPreference();
         $customer   = $this->getCustomer($quoteId);
         $siteId     = $preference['metadata']['site'];
 
+        $quote->reserveOrderId();
+
+        $preference['external_reference']       = $quote->getReservedOrderId();
         $preference['additional_info']['items'] = $this->getItems($quote, $siteId);
         $preference['additional_info']['payer'] = $this->getPayer($quote, $customer);
         $preference['token']                    = $token;
         $preference['issuer_id']                = $issuerId;
         $preference['installments']             = (int) $installments;
         $preference['payment_method_id']        = $paymentMethodId;
-        $preference['external_reference']       = $quoteId;
         $preference['payer']['email']           = $preference['additional_info']['payer']['email'];
         $preference['transaction_amount']       = Round::roundWithSiteId($quote->getBaseGrandTotal(), $siteId);
 
@@ -186,6 +209,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         unset($preference['additional_info']['payer']['email']);
 
+        $this->_quoteRepository->save($quote);
+
         return $preference;
     }//end makePreference()
 
@@ -199,23 +224,26 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getCartObject()
 
     /**
-     * @return Quote
-     */
-    public function reserveQuote()
-    {
-        return $this->getCartObject()->getQuote()->reserveOrderId();
-    }//end reserveQuote()
-
-    /**
      * @return string
      */
-    public function getReservedQuoteId()
+    public function getQuoteId()
     {
         return $this->getCartObject()->getQuote()->getId();
-    }//end getReservedQuoteId()
+    }//end getQuoteId()
 
     /**
+     * @param $quoteId
      * @return Quote
+     * @throws NoSuchEntityException
+     */
+    public function activeQuote($quoteId)
+    {
+        return $this->getReservedQuote($quoteId)->setIsActive(true);
+    }
+
+    /**
+     * @param $quoteId
+     * @return CartInterface|Quote
      * @throws NoSuchEntityException
      */
     public function getReservedQuote($quoteId)
@@ -236,7 +264,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 'payer'     => [],
                 'shipments' => [],
             ],
-            'notification_url'     => $this->_urlBuilder->getUrl(self::NOTIFICATION_PATH),
+            'notification_url'     => $this->getNotificationUrl(),
             'statement_descriptor' => $this->getStateDescriptor(),
             'external_reference'   => '',
             'metadata'             => [
@@ -255,10 +283,10 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     /**
      * @param  $path
-     * @param  string $scopeType
+     * @param  $scopeType
      * @return mixed
      */
-    protected function getConfig($path, $scopeType=ScopeInterface::SCOPE_STORE)
+    protected function getConfig($path, $scopeType = ScopeInterface::SCOPE_STORE)
     {
         return $this->_scopeConfig->getValue($path, $scopeType);
     }//end getConfig()
@@ -288,8 +316,28 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getSponsorId()
 
     /**
-     * @param $quoteId
+     * @return string|void
+     */
+    protected function getNotificationUrl()
+    {
+        $params = array(
+            '_query' => array(
+                'source_news' => 'webhooks'
+            )
+        );
+
+        $notification_url = $this->_urlBuilder->getUrl(self::NOTIFICATION_PATH, $params);
+
+        if (strrpos($notification_url, 'localhost')) {
+            return;
+        }
+
+        return $notification_url;
+    }
+
+    /**
      * @return CustomerInterface
+     * @throws LocalizedException
      * @throws NoSuchEntityException
      */
     protected function getCustomer($quoteId)
