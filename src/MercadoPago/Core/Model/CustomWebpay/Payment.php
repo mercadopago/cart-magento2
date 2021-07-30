@@ -224,20 +224,12 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getCartObject()
 
     /**
-     * @return Quote
-     */
-    public function reserveQuote()
-    {
-        return $this->getCartObject()->getQuote()->reserveOrderId();
-    }//end reserveQuote()
-
-    /**
      * @return string
      */
-    public function getReservedQuoteId()
+    public function getQuoteId()
     {
         return $this->getCartObject()->getQuote()->getId();
-    }//end getReservedQuoteId()
+    }//end getQuoteId()
 
     /**
      * @return Quote
