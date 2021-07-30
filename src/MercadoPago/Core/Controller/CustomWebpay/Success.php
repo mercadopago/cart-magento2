@@ -56,7 +56,7 @@ class Success extends AbstractAction
                 throw new Exception('Webpay callback error: missing params');
             }
 
-            if ($content['status'] <= 200 || $content['status'] >= 299) {
+            if ($content['status'] < 200 || $content['status'] > 299) {
                 $this->webpayPayment->persistCartSession($quoteId);
                 $this->helperData->log('CustomPaymentWebpay - callback error', self::LOG_NAME, $content);
                 return $this->resultRedirectFactory->create()->setPath('mercadopago/customwebpay/failure');
