@@ -209,36 +209,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end makePreference()
 
     /**
-     * @return array
-     */
-    protected function getPreference()
-    {
-        $this->_version->afterLoad();
-
-        return [
-            'additional_info' => [
-                'items'     => [],
-                'payer'     => [],
-                'shipments' => [],
-            ],
-            'notification_url'     => $this->getNotificationUrl(),
-            'statement_descriptor' => $this->getStateDescriptor(),
-            'external_reference'   => '',
-            'metadata'             => [
-                'site'             => $this->getSiteId(),
-                'platform'         => 'BP1EF6QIC4P001KBGQ10',
-                'platform_version' => $this->_productMetadata->getVersion(),
-                'module_version'   => $this->_version->getValue(),
-                'sponsor_id'       => $this->getSponsorId(),
-                'test_mode'        => '',
-                'quote_id'         => '',
-                'checkout'         => 'custom',
-                'checkout_type'    => 'webpay',
-            ],
-        ];
-    }//end getPreference()
-
-    /**
      * @return Cart
      */
     public function getCartObject()
@@ -271,6 +241,36 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     {
         return $this->_quoteRepository->get($quoteId);
     }//end getReservedQuote()
+
+    /**
+     * @return array
+     */
+    protected function getPreference()
+    {
+        $this->_version->afterLoad();
+
+        return [
+            'additional_info' => [
+                'items'     => [],
+                'payer'     => [],
+                'shipments' => [],
+            ],
+            'notification_url'     => $this->getNotificationUrl(),
+            'statement_descriptor' => $this->getStateDescriptor(),
+            'external_reference'   => '',
+            'metadata'             => [
+                'site'             => $this->getSiteId(),
+                'platform'         => 'BP1EF6QIC4P001KBGQ10',
+                'platform_version' => $this->_productMetadata->getVersion(),
+                'module_version'   => $this->_version->getValue(),
+                'sponsor_id'       => $this->getSponsorId(),
+                'test_mode'        => '',
+                'quote_id'         => '',
+                'checkout'         => 'custom',
+                'checkout_type'    => 'webpay',
+            ],
+        ];
+    }//end getPreference()
 
     /**
      * @param  $path
