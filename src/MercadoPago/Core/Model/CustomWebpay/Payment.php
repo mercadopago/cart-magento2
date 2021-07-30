@@ -175,7 +175,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     public function makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments)
     {
         $quote = $this->getReservedQuote($quoteId);
-        $quote->setIsActive(true);
+        $this->activeQuote($quoteId);
 
         $preference = $this->getPreference();
         $customer   = $this->getCustomer($quoteId);
@@ -183,6 +183,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         $quote->reserveOrderId();
 
+        $preference['external_reference']       = $quote->getReservedOrderId();
         $preference['additional_info']['items'] = $this->getItems($quote, $siteId);
         $preference['additional_info']['payer'] = $this->getPayer($quote, $customer);
         $preference['token']                    = $token;
@@ -190,7 +191,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $preference['installments']             = (int) $installments;
         $preference['payment_method_id']        = $paymentMethodId;
         $preference['payer']['email']           = $preference['additional_info']['payer']['email'];
-        $preference['external_reference']       = $quote->getReservedOrderId();
         $preference['transaction_amount']       = Round::roundWithSiteId($quote->getBaseGrandTotal(), $siteId);
 
         if (!$customer->getId()) {
@@ -200,8 +200,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $quote->setCustomerLastname($preference['additional_info']['payer']['last_name']);
         }
 
-        $this->_quoteRepository->save($quote);
-
         if ($quote->getShippingAddress()) {
             $preference['additional_info']['shipments'] = $this->getShipments($quote);
         }
@@ -210,6 +208,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $preference['metadata']['quote_id']  = $quote->getId();
 
         unset($preference['additional_info']['payer']['email']);
+
+        $this->_quoteRepository->save($quote);
 
         return $preference;
     }//end makePreference()
@@ -232,7 +232,18 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end getQuoteId()
 
     /**
+     * @param $quoteId
      * @return Quote
+     * @throws NoSuchEntityException
+     */
+    public function activeQuote($quoteId)
+    {
+        return $this->getReservedQuote($quoteId)->setIsActive(true);
+    }
+
+    /**
+     * @param $quoteId
+     * @return CartInterface|Quote
      * @throws NoSuchEntityException
      */
     public function getReservedQuote($quoteId)
