@@ -114,7 +114,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $preference = $this->makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments);
         $response   = $this->_coreModel->postPaymentV1($preference);
 
-        if (isset($response['status']) && ($response['status'] <= 200 || $response['status'] >= 299)) {
+        if (isset($response['status']) && $response['status'] >= 200 && $response['status'] <= 299) {
             if (isset($response['response']['status']) && $response['response']['status'] != 'rejected') {
                 return $response;
             }
