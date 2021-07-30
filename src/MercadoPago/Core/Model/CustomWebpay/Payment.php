@@ -114,7 +114,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $preference = $this->makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments);
         $response   = $this->_coreModel->postPaymentV1($preference);
 
-        if (isset($response['status']) && $response['status'] >= 200 && $response['status'] <= 299) {
+        if (isset($response['status']) && ($response['status'] <= 200 || $response['status'] >= 299)) {
             if (isset($response['response']['status']) && $response['response']['status'] != 'rejected') {
                 return $response;
             }
@@ -161,6 +161,55 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $order->getPayment()->setAdditionalInformation('paymentResponse', $payment);
         $order->save();
     }//end createOrder()
+
+    /**
+     * @return Cart
+     */
+    public function getCartObject()
+    {
+        $objectManager = ObjectManager::getInstance();
+        return $objectManager->get('\Magento\Checkout\Model\Cart');
+    }//end getCartObject()
+
+    /**
+     * @return string
+     */
+    public function getQuoteId()
+    {
+        return $this->getCartObject()->getQuote()->getId();
+    }//end getQuoteId()
+
+    /**
+     * @param $quoteId
+     * @return Quote
+     * @throws NoSuchEntityException
+     */
+    public function activeQuote($quoteId)
+    {
+        return $this->getReservedQuote($quoteId)->setIsActive(true);
+    }
+
+    /**
+     * @param $quoteId
+     * @return CartInterface|Quote
+     * @throws NoSuchEntityException
+     */
+    public function getReservedQuote($quoteId)
+    {
+        return $this->_quoteRepository->get($quoteId);
+    }//end getReservedQuote()
+
+    /**
+     * @param $quoteId
+     * @throws Exception
+     * @throws NoSuchEntityException
+     */
+    public function persistCartSession($quoteId)
+    {
+        $quote = $this->getReservedQuote($quoteId);
+        $quote->setIsActive(true)->setReservedOrderId(null)->save();
+        $this->_checkoutSession->replaceQuote($quote);
+    }
 
     /**
      * @param $quoteId
@@ -213,43 +262,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         return $preference;
     }//end makePreference()
-
-    /**
-     * @return Cart
-     */
-    public function getCartObject()
-    {
-        $objectManager = ObjectManager::getInstance();
-        return $objectManager->get('\Magento\Checkout\Model\Cart');
-    }//end getCartObject()
-
-    /**
-     * @return string
-     */
-    public function getQuoteId()
-    {
-        return $this->getCartObject()->getQuote()->getId();
-    }//end getQuoteId()
-
-    /**
-     * @param $quoteId
-     * @return Quote
-     * @throws NoSuchEntityException
-     */
-    public function activeQuote($quoteId)
-    {
-        return $this->getReservedQuote($quoteId)->setIsActive(true);
-    }
-
-    /**
-     * @param $quoteId
-     * @return CartInterface|Quote
-     * @throws NoSuchEntityException
-     */
-    public function getReservedQuote($quoteId)
-    {
-        return $this->_quoteRepository->get($quoteId);
-    }//end getReservedQuote()
 
     /**
      * @return array
