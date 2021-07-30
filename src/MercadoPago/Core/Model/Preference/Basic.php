@@ -458,13 +458,7 @@ class Basic extends AbstractMethod
             $arr['back_urls']['pending'] = $backUrls['pending'];
             $arr['back_urls']['failure'] = $backUrls['failure'];
 
-            $notification_params = array(
-                '_query' => array(
-                    'source_news' => 'ipn'
-                )
-            );
-
-            $arr['notification_url'] = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL, $notification_params);
+            $arr['notification_url'] = $this->getNotificationUrl();
 
             $arr['payment_methods']['excluded_payment_methods'] = $this->getExcludedPaymentsMethods($config);
             $arr['payment_methods']['installments']             = (int)$config['installments'];
@@ -531,5 +525,25 @@ class Basic extends AbstractMethod
             $this->_helperData->log('Error: ' . $e->getMessage(), 'mercadopago-basic.log');
             return ['status' => 500, 'message' => $e->getMessage()];
         }
+    }
+
+    /**
+     * @return string|void
+     */
+    protected function getNotificationUrl()
+    {
+        $params = array(
+            '_query' => array(
+                'source_news' => 'ipn'
+            )
+        );
+
+        $notification_url = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL, $params);
+
+        if (strrpos($notification_url, 'localhost')) {
+            return;
+        }
+
+        return $notification_url;
     }
 }
