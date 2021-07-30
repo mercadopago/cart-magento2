@@ -40,7 +40,7 @@ abstract class AbstractAction extends Action
     protected $helperData;
 
     /**
-     * AbstractAction constructor.
+     * AbstractAction constructor
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param Payment $webpayPayment
