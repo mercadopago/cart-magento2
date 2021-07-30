@@ -3,7 +3,9 @@
 namespace MercadoPago\Core\Model\CustomWebpay;
 
 use Exception;
+use Magento\Checkout\Model\Cart;
 use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\LocalizedException;
@@ -97,18 +99,19 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end assignData
 
     /**
+     * @param $quoteId
      * @param $token
      * @param $paymentMethodId
      * @param $issuerId
      * @param $installments
      * @return array
-     * @throws Exception
      * @throws LocalizedException
      * @throws NoSuchEntityException
+     * @throws Exception
      */
-    public function createPayment($token, $paymentMethodId, $issuerId, $installments)
+    public function createPayment($quoteId, $token, $paymentMethodId, $issuerId, $installments)
     {
-        $preference = $this->makePreference($token, $paymentMethodId, $issuerId, $installments);
+        $preference = $this->makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments);
         $response   = $this->_coreModel->postPaymentV1($preference);
 
         if (isset($response['status']) && $response['status'] <= 299) {
@@ -160,6 +163,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     }//end createOrder()
 
     /**
+     * @param $quoteId
      * @param $token
      * @param $paymentMethodId
      * @param $issuerId
@@ -168,14 +172,12 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
-    public function makePreference($token, $paymentMethodId, $issuerId, $installments)
+    public function makePreference($quoteId, $token, $paymentMethodId, $issuerId, $installments)
     {
-        $quote      = $this->_getQuote();
+        $quote      = $this->getReservedQuote($quoteId);
         $preference = $this->getPreference();
-        $customer   = $this->getCustomer();
+        $customer   = $this->getCustomer($quoteId);
         $siteId     = $preference['metadata']['site'];
-
-        $quote->reserveOrderId();
 
         $preference['additional_info']['items'] = $this->getItems($quote, $siteId);
         $preference['additional_info']['payer'] = $this->getPayer($quote, $customer);
@@ -193,8 +195,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $quote->setCustomerFirstname($preference['additional_info']['payer']['first_name']);
             $quote->setCustomerLastname($preference['additional_info']['payer']['last_name']);
         }
-
-        $this->_quoteRepository->save($quote);
 
         if ($quote->getShippingAddress()) {
             $preference['additional_info']['shipments'] = $this->getShipments($quote);
@@ -237,6 +237,40 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             ],
         ];
     }//end getPreference()
+
+    /**
+     * @return Cart
+     */
+    public function getCartObject()
+    {
+        $objectManager = ObjectManager::getInstance();
+        return $objectManager->get('\Magento\Checkout\Model\Cart');
+    }//end getCartObject()
+
+    /**
+     * @return Quote
+     */
+    public function reserveQuote()
+    {
+        return $this->getCartObject()->getQuote()->reserveOrderId();
+    }//end reserveQuote()
+
+    /**
+     * @return string
+     */
+    public function getReservedQuoteId()
+    {
+        return $this->getCartObject()->getQuote()->getId();
+    }//end getReservedQuoteId()
+
+    /**
+     * @return Quote
+     * @throws NoSuchEntityException
+     */
+    public function getReservedQuote($quoteId)
+    {
+        return $this->_quoteRepository->get($quoteId);
+    }//end getReservedQuote()
 
     /**
      * @param  $path
@@ -297,9 +331,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
-    protected function getCustomer()
+    protected function getCustomer($quoteId)
     {
-        return $this->_getQuote()->getCustomer();
+        return $this->getReservedQuote($quoteId)->getCustomer();
     }//end getCustomer()
 
     /**

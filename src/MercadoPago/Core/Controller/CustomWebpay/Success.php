@@ -38,6 +38,8 @@ class Success extends AbstractAction
     public function execute()
     {
         try {
+            $quoteId = $this->getRequest()->getParam('quote_id', false);
+
             $body = $this->getRequest()->getContent();
             $body = explode('&', $body);
 
@@ -47,7 +49,7 @@ class Success extends AbstractAction
                 $content[$value[0]] = $value[1];
             }
 
-            if (empty($body) || empty($content)) {
+            if (empty($quoteId) || empty($body) || empty($content)) {
                 throw new Exception('Webpay callback error: missing params');
             }
 
@@ -62,6 +64,7 @@ class Success extends AbstractAction
             $paymentMethodId = $content['payment_method_id'];
 
             $payment = $this->webpayPayment->createPayment(
+                $quoteId,
                 $token,
                 $paymentMethodId,
                 $issuerId,
