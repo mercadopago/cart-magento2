@@ -2,6 +2,7 @@
 
 namespace MercadoPago\Core\Model\Preference;
 
+use Exception;
 use Magento\Catalog\Helper\Image;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Api\Data\CustomerInterface;
@@ -11,6 +12,7 @@ use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Api\ExtensibleDataInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
@@ -27,6 +29,7 @@ use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Round;
+use MercadoPago\Core\Helper\SponsorId;
 use MercadoPago\Core\Lib\Api;
 use MercadoPago\Core\Model\Notifications\Topics\Payment;
 
@@ -176,17 +179,18 @@ class Wallet
 
     /**
      * @param  $merchantOrder
-     * @return integer|OrderInterface|mixed
+     * @return OrderInterface
      * @throws LocalizedException
      * @throws NoSuchEntityException
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws CouldNotSaveException
+     * @throws Exception
      */
     public function processNotification($merchantOrder)
     {
         $preference = $this->loadPreference($merchantOrder['preference_id']);
 
         if (!$preference) {
-            throw new \Exception(__('Preference #%1 not found!', $merchantOrder['preference_id']), 404);
+            throw new Exception(__('Preference #%1 not found!', $merchantOrder['preference_id']), 404);
         }
 
         $totalQuantity = count($merchantOrder['payments']);
@@ -197,7 +201,7 @@ class Wallet
         }
 
         if (!in_array($merchantOrder['order_status'], ['paid', 'partially_paid']) || !$totalQuantity) {
-            throw new \Exception(__('Payment #%1 not found!'), 400);
+            throw new Exception(__('Payment #%1 not found!'), 400);
         }
 
         $lastPayment = $merchantOrder['payments'][($totalQuantity - 1)];
@@ -206,7 +210,7 @@ class Wallet
         $order = $this->createOrderByPaymentWithQuote($payment);
 
         if (!$order->getIncrementId()) {
-            throw new \Exception(__('Error to create. Order #%1 not available yet.', $merchantOrder['external_reference']), 500);
+            throw new Exception(__('Error to create. Order #%1 not available yet.', $merchantOrder['external_reference']), 500);
         }
 
         return $order;
@@ -217,7 +221,7 @@ class Wallet
      * @param  CheckoutSession $session
      * @throws LocalizedException
      * @throws NoSuchEntityException
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws CouldNotSaveException
      */
     public function processSuccessRequest($paymentId, CheckoutSession $session)
     {
@@ -228,12 +232,12 @@ class Wallet
 
         if (!$order->getIncrementId()) {
             $quote = $session->getQuote();
-            $quote->getPayment()->setMethod('mercado_pago_custom');
+            $quote->getPayment()->setMethod('mercadopago_custom');
             $order = $this->createOrderByPaymentWithQuote($payment);
         }
 
         if (!$order->getIncrementId()) {
-            throw new \Exception(__("Sorry, we can't create a order with external reference #%1", $orderIncrementalId));
+            throw new Exception(__("Sorry, we can't create a order with external reference #%1", $orderIncrementalId));
         }
 
         $this->paymentNotification->updateStatusOrderByPayment($payment);
@@ -245,11 +249,11 @@ class Wallet
     }//end processSuccessRequest()
 
     /**
-     * @param  $paymentId
-     * @return integer|mixed
+     * @param $payment
+     * @return OrderInterface
      * @throws LocalizedException
      * @throws NoSuchEntityException
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws CouldNotSaveException
      */
     protected function createOrderByPaymentWithQuote($payment)
     {
@@ -285,7 +289,7 @@ class Wallet
      * @param  $merchantOrderId
      * @return mixed
      * @throws LocalizedException
-     * @throws \Exception
+     * @throws Exception
      */
     protected function loadMerchantOrder($merchantOrderId)
     {
@@ -294,14 +298,14 @@ class Wallet
             return $response['response'];
         }
 
-        throw new \Exception(__('Merchant Order not found or is an notification invalid type.'));
+        throw new Exception(__('Merchant Order not found or is an notification invalid type.'));
     }//end loadMerchantOrder()
 
     /**
      * @param  $preferenceId
      * @return mixed
      * @throws LocalizedException
-     * @throws \Exception
+     * @throws Exception
      */
     protected function loadPreference($preferenceId)
     {
@@ -310,14 +314,14 @@ class Wallet
             return $response['response'];
         }
 
-        throw new \Exception(__('Preference #%1 not found!', $preferenceId));
+        throw new Exception(__('Preference #%1 not found!', $preferenceId));
     }//end loadPreference()
 
     /**
      * @param  $paymentId
      * @return mixed
      * @throws LocalizedException
-     * @throws \Exception
+     * @throws Exception
      */
     protected function loadPayment($paymentId)
     {
@@ -326,7 +330,7 @@ class Wallet
             return $response['response'];
         }
 
-        throw new \Exception(__('Payment #%1 not found!', $paymentId));
+        throw new Exception(__('Payment #%1 not found!', $paymentId));
     }//end loadPayment()
 
     /**
@@ -411,7 +415,7 @@ class Wallet
             'purpose'              => self::PURPOSE_WALLET_PURCHASE,
             'metadata'             => [
                 'site'             => $this->getSiteId(),
-                'platform'         => 'Magento',
+                'platform'         => 'BP1EF6QIC4P001KBGQ10',
                 'platform_version' => $this->productMetadata->getVersion(),
                 'module_version'   => $this->version->getValue(),
                 'sponsor_id'       => $this->getSponsorId(),
@@ -473,7 +477,7 @@ class Wallet
     protected function getBinaryMode()
     {
         $value = $this->getConfig(ConfigData::PATH_CUSTOM_BINARY_MODE);
-        return $value ? true : false;
+        return (bool) $value;
     }//end getBinaryMode()
 
     /**
@@ -485,7 +489,7 @@ class Wallet
     }//end getSiteId()
 
     /**
-     * @return CartInterface|ModelQuote
+     * @return Quote|CartInterface|ModelQuote
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
@@ -533,9 +537,8 @@ class Wallet
     }//end getItems()
 
     /**
-     * @param  Quote  $quote
-     * @param  $siteId
-     * @return array
+     * @param Quote $quote
+     * @return float
      */
     protected function getDiscountAmount(Quote $quote)
     {
@@ -543,8 +546,7 @@ class Wallet
     }//end processDiscount()
 
     /**
-     * @param  Quote  $quote
-     * @param  $siteId
+     * @param Quote $quote
      * @return float
      */
     protected function getTaxAmount(Quote $quote)
@@ -578,7 +580,7 @@ class Wallet
     protected function getItem(Item $item, $categoryId, $siteId)
     {
         $product = $item->getProduct();
-        $image   = $this->helperImage->init($product, 'image');
+        $image   = $this->helperImage->init($product, 'product_thumbnail_image');
 
         return [
             'id'          => $item->getSku(),
@@ -641,17 +643,11 @@ class Wallet
     }//end isTestMode()
 
     /**
-     * @return integer|null
+     * @return int|null
      */
     protected function getSponsorId()
     {
-        $sponsorId = $this->getConfig(ConfigData::PATH_SPONSOR_ID);
-
-        if (!empty($sponsorId)) {
-            return (int) $sponsorId;
-        }
-
-        return null;
+        return SponsorId::getSponsorId($this->getSiteId());
     }//end getSponsorId()
 
     /**
@@ -660,7 +656,7 @@ class Wallet
     protected function getGatewayMode()
     {
         $value = $this->getConfig(ConfigData::PATH_CUSTOM_GATEWAY_MODE);
-        return $value ? true : false;
+        return (bool) $value;
     }//end getGatewayMode()
 
     /**

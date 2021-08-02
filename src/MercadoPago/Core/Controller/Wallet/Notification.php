@@ -57,27 +57,27 @@ class Notification extends NotificationBase
     public function execute()
     {
         $request = $this->getRequest();
+
         try {
             $requestValues = $this->notifications->validateRequest($request);
             $topicClass = $this->notifications->getTopicClass($request);
+
             $data = $this->notifications->getPaymentInformation($topicClass, $requestValues);
             if (empty($data)) {
                 throw new \Exception(__('Error Merchant Order notification is expected'), self::HTTP_RESPONSE_NOT_FOUND);
             }
-            $merchantOrder = $data['merchantOrder'];
 
+            $merchantOrder = $data['merchantOrder'];
             if (is_null($merchantOrder)) {
                 throw new \Exception(__('Merchant Order not found or is an notification invalid type.'), self::HTTP_RESPONSE_NOT_FOUND);
             }
 
             $order = $this->wallet->processNotification($merchantOrder);
-
             if ($order->getStatus() === 'canceled') {
                 throw new \Exception(__('Order already canceled: ') . $merchantOrder["external_reference"], self::HTTP_RESPONSE_BAD_REQUEST);
             }
 
             $data['statusFinal'] = $topicClass->getStatusFinal($data['payments'], $merchantOrder);
-
             if (!$topicClass->validateRefunded($order, $data)) {
                 throw new \Exception(__('Error Order Refund'), self::HTTP_RESPONSE_BAD_REQUEST);
             }
@@ -87,9 +87,11 @@ class Notification extends NotificationBase
             $this->setResponseHttp($statusResponse['code'], $statusResponse['text'], $request->getParams());
         } catch (\Throwable $exception) {
             $code = $exception->getCode();
+
             if ($exception->getCode() < 200 || $exception->getCode() > 500) {
                 $code = self::HTTP_RESPONSE_INTERNAL_ERROR;
             }
+
             $this->setResponseHttp($code, $exception->getMessage(), $request->getParams());
         }
     }

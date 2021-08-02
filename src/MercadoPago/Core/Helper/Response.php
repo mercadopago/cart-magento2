@@ -35,7 +35,6 @@ class Response
     const TOPIC_RECURRING_PAYMENT = 'preapproval';
     const TOPIC_PAYMENT = 'payment';
 
-
     const PAYMENT_CREATION_ERRORS = array(
         "1" => "Params Error.",
         "3" => "Token must be for test.",
