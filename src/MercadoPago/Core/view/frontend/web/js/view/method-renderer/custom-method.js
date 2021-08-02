@@ -14,10 +14,10 @@ define(
     'mage/translate',
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
-    'MPcustom',
-    'MPv1'
+    'MPv2SDKJS'
   ],
-  function ($,
+  function (
+    $,
     Component,
     quote,
     paymentService,
@@ -33,6 +33,9 @@ define(
     cartCache
   ) {
     'use strict';
+
+    var mp = null;
+
     return Component.extend({
       defaults: {
         template: 'MercadoPago_Core/payment/custom_method'
@@ -44,6 +47,7 @@ define(
 
       initApp: function () {
         var self = this;
+
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
           var mercadopago_public_key = window.checkoutConfig.payment[this.getCode()]['public_key']
           var mercadopago_site_id = window.checkoutConfig.payment[this.getCode()]['country']
@@ -53,20 +57,8 @@ define(
             payer_email = quote.guestEmail
           }
 
-          //add actions
-          self.initializeInstallmentsAndIssuer();
-
-          //Initialize MPv1
-          MPv1.Initialize(mercadopago_site_id, mercadopago_public_key, payer_email);
-
-          //change url loading for MPv1
-          MPv1.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
-          MPv1.customer_and_card.default = false;
-
-          // update MPv1 params
-          MPv1.text.choose = $t('Choose');
-          MPv1.text.other_bank = $t('Other Bank');
-          MPv1.gateway_mode = window.checkoutConfig.payment[this.getCode()]['mp_gateway_mode'];
+          //Initialize SDK v2
+          mp = new MercadoPago(this.getPublicKey());
 
           //get action change payment method
           quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
@@ -113,13 +105,12 @@ define(
         return 'mercadopago_custom';
       },
 
-      isActive: function () {
-        return true;
+      getPublicKey: function () {
+        return window.checkoutConfig.payment[this.getCode()]['public_key'];
       },
 
-      getCardListCustomerCards: function () {
-        var cards = [];
-        return cards;
+      isActive: function () {
+        return true;
       },
 
       existBanner: function () {
@@ -279,35 +270,6 @@ define(
         return;
       },
 
-      /**
-       * @override
-       */
-      getData: function () {
-        // data to Post in backend
-        var dataObj = {
-          'method': this.item.method,
-          'additional_data': {
-            'payment[method]': this.getCode(),
-            'card_expiration_month': document.querySelector(MPv1.selectors.cardExpirationMonth).value,
-            'card_expiration_year': document.querySelector(MPv1.selectors.cardExpirationYear).value,
-            'card_holder_name': document.querySelector(MPv1.selectors.cardholderName).value,
-            'doc_type': document.querySelector(MPv1.selectors.docType).value,
-            'doc_number': document.querySelector(MPv1.selectors.docNumber).value,
-            'installments': document.querySelector(MPv1.selectors.installments).value,
-            'total_amount': document.querySelector(MPv1.selectors.amount).value,
-            'amount': document.querySelector(MPv1.selectors.amount).value,
-            'site_id': this.getCountry(),
-            'token': document.querySelector(MPv1.selectors.token).value,
-            'payment_method_id': document.querySelector(MPv1.selectors.paymentMethodId).value,
-            'payment_method_selector': document.querySelector(MPv1.selectors.paymentMethodSelector).value,
-            'one_click_pay': document.querySelector(MPv1.selectors.CustomerAndCard).value,
-            'issuer_id': document.querySelector(MPv1.selectors.issuer).value,
-            'gateway_mode': document.querySelector(MPv1.selectors.MpGatewayMode).value,
-          }
-        };
-        return dataObj;
-      },
-
       afterPlaceOrder: function () {
         window.location = this.getSuccessUrl();
       },
@@ -318,6 +280,7 @@ define(
 
       hasErrors: function () {
         var allMessageErrors = jQuery('.mp-error');
+
         if (allMessageErrors.length > 1) {
           for (var x = 0; x < allMessageErrors.length; x++) {
             if ($(allMessageErrors[x]).css('display') !== 'none') {
@@ -374,29 +337,7 @@ define(
        * Events
        */
       changePaymentMethodSelector: function (paymentMethodSelected) {
-        if (paymentMethodSelected.method != 'mercadopago_custom') {
-        }
-      },
-
-      /*
-       * Customize MPV1
-       */
-      initializeInstallmentsAndIssuer: function () {
-        var issuer = document.querySelector(MPv1.selectors.issuer);
-        var optIssuer = document.createElement('option');
-        optIssuer.value = "-1";
-        optIssuer.innerHTML = $t('Select the Issuer');
-
-        issuer.innerHTML = "";
-        issuer.appendChild(optIssuer);
-
-        var installment = document.querySelector(MPv1.selectors.installments);
-        var optInstallment = document.createElement('option');
-        optInstallment.value = "-1";
-        optInstallment.innerHTML = $t('Select the Installment');
-
-        installment.innerHTML = "";
-        installment.appendChild(optInstallment);
+        if (paymentMethodSelected.method != 'mercadopago_custom') {}
       },
 
       updateSummaryOrder: function () {
