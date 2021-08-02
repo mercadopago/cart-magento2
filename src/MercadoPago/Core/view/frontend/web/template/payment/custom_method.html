@@ -87,18 +87,22 @@
 
             <div id="mercadopago-form">
                 <div class="mp-box-inputs mp-col-100">
-                    <label for="cardNumber">
+                    <label for="mpCardNumber">
                         <!-- ko i18n: 'Credit card number'--><!-- /ko -->
                         <em>*</em>
                     </label>
                     <input
                         type="text"
-                        id="cardNumber"
+                        id="mpCardNumber"
                         data-checkout="cardNumber"
                         autocomplete="off"
-                        maxlength="19"
+                        maxlength="24"
                         minlength="13"
                         required
+                        data-bind="
+                            attr: { 'data-validate': JSON.stringify({ required:true }) },
+                            event: { keyup: maskInput(this, mcc) }
+                        "
                     />
 
                     <div class="mp-payment-methods-container" data-bind="foreach: getPaymentMethods()">
@@ -108,51 +112,38 @@
 
                 <div class="mp-box-inputs mp-line">
                     <div class="mp-box-inputs mp-col-50">
-                        <label for="cardExpirationMonth">
+                        <label for="mpCardExpirationMonth">
                             <!-- ko i18n: 'Expiration month'--><!-- /ko -->
                             <em>*</em>
                         </label>
-                        <select
-                            id="cardExpirationMonth"
+                        <input
+                            type="text"
+                            id="mpCardExpirationMonth"
                             data-checkout="cardExpirationMonth"
-                            name="mercadopago_custom[cardExpirationMonth]"
-                            data-bind="attr:
-                                    { 'data-container': getCode() + '-cc-month', 'data-validate': JSON.stringify({ required:true }) },
-                                    enable: isActive($parents),
-                                    options: getCcMonthsValues(),
-                                    optionsValue: 'value',
-                                    optionsText: 'month',
-                                    optionsCaption: $t('Month')"
-                        ></select>
+                            name="mercadopago_custom[cardExpirationMonth]" />
                     </div>
 
                     <div class="mp-box-inputs mp-col-50">
-                        <label for="cardExpirationYear">
+                        <label for="mpCardExpirationYear">
                             <!-- ko i18n: 'Expiration year'--><!-- /ko -->
                             <em>*</em>
                         </label>
-                        <select
-                            id="cardExpirationYear"
+                        <input
+                            type="text"
+                            id="mpCardExpirationYear"
                             data-checkout="cardExpirationYear"
-                            name="mercadopago_custom[cardExpirationYear]"
-                            data-bind="attr: { 'data-container': getCode() + '-cc-year', 'data-validate': JSON.stringify({ required:true }) },
-                                    enable: isActive($parents),
-                                    options: getCcYearsValues(),
-                                    optionsValue: 'value',
-                                    optionsText: 'year',
-                                    optionsCaption: $t('Year')"
-                        ></select>
+                            name="mercadopago_custom[cardExpirationYear]" />
                     </div>
                 </div>
 
                 <div class="mp-box-inputs mp-col-100">
-                    <label for="cardholderName">
+                    <label for="mpCardholderName">
                         <!-- ko i18n: 'Card holder name'--><!-- /ko -->
                         <em>*</em>
                     </label>
                     <input
                         type="text"
-                        id="cardholderName"
+                        id="mpCardholderName"
                         name="mercadopago_custom[cardholderName]"
                         data-checkout="cardholderName"
                         autocomplete="off"
@@ -162,13 +153,13 @@
 
                 <div class="mp-box-inputs mp-line">
                     <div class="mp-box-inputs mp-col-45">
-                        <label for="securityCode">
+                        <label for="mpSecurityCode">
                             <!-- ko i18n: 'Security code'--><!-- /ko -->
                             <em>*</em>
                         </label>
                         <input
                             type="text"
-                            id="securityCode"
+                            id="mpSecurityCode"
                             data-checkout="securityCode"
                             autocomplete="off"
                             maxlength="4"
@@ -180,21 +171,21 @@
 
                 <div class="mp-box-inputs mp-col-100 mp-doc">
                     <div class="mp-box-inputs mp-col-35 mp-docType">
-                        <label for="docType">
+                        <label for="mpDocType">
                             <!-- ko i18n: 'Document Type'--><!-- /ko -->
                             <em>*</em>
                         </label>
-                        <select id="docType" data-checkout="docType" name="mercadopago_custom[docType]"></select>
+                        <select id="mpDocType" data-checkout="docType" name="mercadopago_custom[docType]"></select>
                     </div>
 
                     <div class="mp-box-inputs mp-col-65 mp-docNumber">
-                        <label for="docNumber">
+                        <label for="mpDocNumber">
                             <!-- ko i18n: 'Document number'--><!-- /ko -->
                             <em>*</em>
                         </label>
                         <input
                             type="text"
-                            id="docNumber"
+                            id="mpDocNumber"
                             data-checkout="docNumber"
                             name="mercadopago_custom[docNumber]"
                             autocomplete="off"
@@ -203,22 +194,22 @@
                 </div>
 
                 <div class="mp-box-inputs mp-col-100 mp-issuer">
-                    <label for="issuer">
+                    <label for="mpIssuer">
                         <!-- ko i18n: 'Issuer'--><!-- /ko -->
                         <em>*</em>
                     </label>
-                    <select id="issuer" data-checkout="issuer" name="mercadopago_custom[issuer]"></select>
+                    <select id="mpIssuer" data-checkout="issuer" name="mercadopago_custom[issuer]"></select>
                 </div>
             </div>
             <!-- end #mercadopago-form -->
 
             <div id="mp-box-installments">
                 <div class="mp-box-inputs mp-col-100" id="mp-box-installments-selector">
-                    <label for="installments">
+                    <label for="mpInstallments">
                         <!-- ko i18n: 'Installments'--><!-- /ko -->
                         <em>*</em>
                     </label>
-                    <select id="installments" data-checkout="installments" name="mercadopago_custom[installments]"></select>
+                    <select id="mpInstallments" data-checkout="installments" name="mercadopago_custom[installments]"></select>
                 </div>
 
                 <div class="mp-box-inputs mp-col-30" id="mp-box-input-tax-cft">
@@ -244,21 +235,6 @@
                     <div id="mp-box-loading"></div>
                 </div>
             </div>
-
-            <div class="mp-box-inputs mp-col-100" id="mercadopago-utilities">
-                <input type="text" id="site_id" name="mercadopago_custom[site_id]" />
-                <input type="text" id="amount" name="mercadopago_custom[amount]" data-bind="attr: { value: getInitialGrandTotal() }" />
-                <input type="hidden" id="campaign_id" name="mercadopago_custom[campaign_id]" />
-                <input type="hidden" id="campaign" name="mercadopago_custom[campaign]" />
-                <input type="hidden" id="discount" name="mercadopago_custom[discount]" />
-                <input type="text" id="paymentMethodId" name="mercadopago_custom[paymentMethodId]" />
-                <input type="text" id="token" name="mercadopago_custom[token]" />
-                <input type="text" id="cardTruncated" name="mercadopago_custom[cardTruncated]" />
-                <input type="text" id="CustomerAndCard" name="mercadopago_custom[CustomerAndCard]" />
-                <input type="text" id="MpGatewayMode" name="mercadopago_custom[MpGatewayMode]"
-                    data-bind="attr: {value: getMpGatewayMode()}" />
-            </div>
-            <!-- END MPV1-->
 
             <div class="payment-method-billing-address mp-custom-display-inline-block">
                 <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->

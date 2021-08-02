@@ -14,7 +14,8 @@ define(
     'mage/translate',
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
-    'MPv2SDKJS'
+    'MPv2SDKJS',
+    'Masks',
   ],
   function (
     $,
@@ -35,6 +36,7 @@ define(
     'use strict';
 
     var mp = null;
+    var mpCardForm = null;
 
     return Component.extend({
       defaults: {
@@ -51,7 +53,89 @@ define(
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
           //Initialize SDK v2
           mp = new MercadoPago(this.getPublicKey());
+
+          mpCardForm = mp.cardForm({
+            amount: String(this.getGrandTotal()),
+            autoMount: true,
+            processingMode: this.getProcessingMode(),
+            form: {
+              id: 'co-mercadopago-form',
+              cardNumber: { id: 'mpCardNumber' },
+              cardholderName: { id: 'mpCardholderName' },
+              cardExpirationMonth: { id: 'mpCardExpirationMonth' },
+              cardExpirationYear: { id: 'mpCardExpirationYear' },
+              securityCode: { id: 'mpSecurityCode' },
+              installments: { id: 'mpInstallments' },
+              identificationType: { id: 'mpDocType' },
+              identificationNumber: { id: 'mpDocNumber' },
+              issuer: { id: 'mpIssuer' }
+            },
+            callbacks: {
+              onFormMounted: error => {
+                if (error) return console.warn('Form Mounted handling error: ', error)
+                console.log('Form mounted')
+              },
+              onFormUnmounted: error => {
+                if (error) return console.warn('Form Unmounted handling error: ', error)
+                console.log('Form unmounted')
+              },
+              onIdentificationTypesReceived: (error, identificationTypes) => {
+                if (error) return console.warn('identificationTypes handling error: ', error)
+                console.log('Identification types available: ', identificationTypes)
+              },
+              onPaymentMethodsReceived: (error, paymentMethods) => {
+                if (error) return console.warn('paymentMethods handling error: ', error)
+                console.log('Payment Methods available: ', paymentMethods)
+              },
+              onIssuersReceived: (error, issuers) => {
+                if (error) return console.warn('issuers handling error: ', error)
+                console.log('Issuers available: ', issuers)
+              },
+              onInstallmentsReceived: (error, installments) => {
+                if (error) return console.warn('installments handling error: ', error)
+                console.log('Installments available: ', installments)
+              },
+              onCardTokenReceived: (error, token) => {
+                if (error) return console.warn('Token handling error: ', error)
+                console.log('Token available: ', token)
+              },
+              onSubmit: (event) => {
+                event.preventDefault();
+                const cardData = cardForm.getCardFormData();
+                console.log('CardForm data available: ', cardData)
+              },
+              onFetching:(resource) => {
+                console.log('Fetching resource: ', resource)
+
+                // Animate progress bar
+                const progressBar = document.querySelector('.progress-bar')
+                progressBar.removeAttribute('value')
+
+                return () => {
+                  progressBar.setAttribute('value', '0')
+                }
+              },
+            },
+          });
+
         }
+      },
+
+      placeOrder: function (data, event) {
+        var self = this;
+
+        if (event) {
+          event.preventDefault();
+        }
+
+        console.log('form data: ', mpCardForm.getCardFormData());
+        this.createCardToken();
+
+        return false;
+      },
+
+      createCardToken: function () {
+        mpCardForm.createCardToken({});
       },
 
       toogleWalletButton: function () {
@@ -268,33 +352,6 @@ define(
         return this.validateHandler();
       },
 
-      placeOrder: function (data, event) {
-        var self = this;
-
-        if (event) {
-          event.preventDefault();
-        }
-
-        if (this.validate() && additionalValidators.validate() && !this.hasErrors()) {
-          this.isPlaceOrderActionAllowed(false);
-
-          this.getPlaceOrderDeferredObject()
-            .fail(
-              function () {
-                self.isPlaceOrderActionAllowed(true);
-              }
-            ).done(function () {
-              self.afterPlaceOrder();
-              if (self.redirectAfterPlaceOrder) {
-                redirectOnSuccessAction.execute();
-              }
-            });
-          return true;
-        }
-
-        return false;
-      },
-
       getPlaceOrderDeferredObject: function () {
         return $.when(
           placeOrderAction(this.getData(), this.messageContainer)
@@ -335,6 +392,14 @@ define(
         }
 
         return customerData.getValidatedEmailValue();
+      },
+
+      getProcessingMode: function () {
+          if (Number(this.getMpGatewayMode())) {
+            return 'gateway';
+          }
+
+          return 'aggregator';
       },
     });
   }
