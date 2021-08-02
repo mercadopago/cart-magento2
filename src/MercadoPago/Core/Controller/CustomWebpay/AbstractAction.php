@@ -88,4 +88,10 @@ abstract class AbstractAction extends Action
         $this->_view->loadLayout(['default', 'mercadopago_custom_webpay_failure']);
         $this->_view->renderLayout();
     }
+
+    protected function renderSuccessPage()
+    {
+        $this->_view->loadLayout(['default', 'mercadopago_custom_webpay_success']);
+        $this->_view->renderLayout();
+    }
 }
