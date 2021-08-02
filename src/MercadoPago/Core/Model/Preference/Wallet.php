@@ -218,10 +218,11 @@ class Wallet
 
     /**
      * @param  $paymentId
-     * @param  CheckoutSession $session
+     * @param CheckoutSession $session
      * @throws LocalizedException
      * @throws NoSuchEntityException
      * @throws CouldNotSaveException
+     * @throws Exception
      */
     public function processSuccessRequest($paymentId, CheckoutSession $session)
     {
@@ -385,12 +386,6 @@ class Wallet
     {
         $this->version->afterLoad();
 
-        $notification_params = array(
-            '_query' => array(
-                'source_news' => 'ipn'
-            )
-        );
-
         return [
             'items'                => [],
             'payer'                => [],
@@ -408,7 +403,7 @@ class Wallet
                 'mode' => 'not_specified',
                 'cost' => 0.00,
             ],
-            'notification_url'     => $this->urlBuilder->getUrl(self::NOTIFICATION_PATH, $notification_params),
+            'notification_url'     => $this->getNotificationUrl(),
             'statement_descriptor' => $this->getStateDescriptor(),
             'external_reference'   => '',
             'binary_mode'          => $this->getBinaryMode(),
@@ -489,7 +484,7 @@ class Wallet
     }//end getSiteId()
 
     /**
-     * @return Quote|CartInterface|ModelQuote
+     * @return CartInterface|Quote
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
@@ -509,7 +504,7 @@ class Wallet
     }//end getCustomer()
 
     /**
-     * @param  Quote  $quote
+     * @param  Quote $quote
      * @param  $siteId
      * @return array
      */
@@ -572,7 +567,7 @@ class Wallet
     }//end getItemDiscountTax()
 
     /**
-     * @param  Item       $item
+     * @param  Item $item
      * @param  $categoryId
      * @param  $siteId
      * @return array
@@ -675,4 +670,24 @@ class Wallet
     {
         return $this->getConfig(ConfigData::PATH_ACCESS_TOKEN);
     }//end getAccessToken()
+
+    /**
+     * @return string|void
+     */
+    protected function getNotificationUrl()
+    {
+        $params = array(
+            '_query' => array(
+                'source_news' => 'ipn'
+            )
+        );
+
+        $notification_url = $this->urlBuilder->getUrl(self::NOTIFICATION_PATH, $params);
+
+        if (strrpos($notification_url, 'localhost')) {
+            return;
+        }
+
+        return $notification_url;
+    }
 }//end class

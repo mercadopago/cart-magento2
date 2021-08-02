@@ -27,7 +27,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     /**
      * Define callback endpoints
      */
-    const SUCCESS_PATH = 'mercadopago/customwebpay/success';
+    const SUCCESS_PATH = 'mercadopago/customwebpay/pay';
     const FAILURE_PATH = 'mercadopago/customwebpay/failure';
     const NOTIFICATION_PATH = 'mercadopago/notifications/custom';
 
