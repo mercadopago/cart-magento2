@@ -14,8 +14,8 @@ define(
     'mage/translate',
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
+    'MercadoPago_Core/js/Masks',
     'MPv2SDKJS',
-    'Masks',
   ],
   function (
     $,
@@ -99,22 +99,6 @@ define(
                 if (error) return console.warn('Token handling error: ', error)
                 console.log('Token available: ', token)
               },
-              onSubmit: (event) => {
-                event.preventDefault();
-                const cardData = cardForm.getCardFormData();
-                console.log('CardForm data available: ', cardData)
-              },
-              onFetching:(resource) => {
-                console.log('Fetching resource: ', resource)
-
-                // Animate progress bar
-                const progressBar = document.querySelector('.progress-bar')
-                progressBar.removeAttribute('value')
-
-                return () => {
-                  progressBar.setAttribute('value', '0')
-                }
-              },
             },
           });
 
@@ -136,6 +120,20 @@ define(
 
       createCardToken: function () {
         mpCardForm.createCardToken({});
+      },
+
+      changeMonthInput: function () {
+        var monthInput = document.getElementById("mpCardExpirationMonth");
+        var monthSelect = document.getElementById("mpCardExpirationMonthSelect");
+
+        monthInput.value = ('0' + monthSelect.value).slice(-2);
+      },
+
+      changeYearInput: function () {
+        var yearInput = document.getElementById("mpCardExpirationYear");
+        var yearSelect = document.getElementById("mpCardExpirationYearSelect");
+
+        yearInput.value = yearSelect.value;
       },
 
       toogleWalletButton: function () {

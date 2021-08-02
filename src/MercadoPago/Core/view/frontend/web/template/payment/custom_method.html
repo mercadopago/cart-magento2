@@ -99,10 +99,7 @@
                         maxlength="24"
                         minlength="13"
                         required
-                        data-bind="
-                            attr: { 'data-validate': JSON.stringify({ required:true }) },
-                            event: { keyup: maskInput(this, mcc) }
-                        "
+                        onkeyup="maskInput(this, mcc)"
                     />
 
                     <div class="mp-payment-methods-container" data-bind="foreach: getPaymentMethods()">
@@ -112,27 +109,45 @@
 
                 <div class="mp-box-inputs mp-line">
                     <div class="mp-box-inputs mp-col-50">
-                        <label for="mpCardExpirationMonth">
+                        <label for="mpCardExpirationMonthSelect">
                             <!-- ko i18n: 'Expiration month'--><!-- /ko -->
                             <em>*</em>
                         </label>
-                        <input
-                            type="text"
-                            id="mpCardExpirationMonth"
-                            data-checkout="cardExpirationMonth"
-                            name="mercadopago_custom[cardExpirationMonth]" />
+                        <select
+                            id="mpCardExpirationMonthSelect"
+                            data-checkout="mpCardExpirationMonthSelect"
+                            name="mercadopago_custom[cardExpirationMonth]"
+                            data-bind="
+                                attr: { 'data-container': getCode() + '-cc-month', 'data-validate': JSON.stringify({ required:true }) },
+                                enable: isActive($parents),
+                                options: getCcMonthsValues(),
+                                optionsValue: 'value',
+                                optionsText: 'month',
+                                optionsCaption: $t('Month'),
+                                event: { change: changeMonthInput }
+                            "
+                        ></select>
                     </div>
 
                     <div class="mp-box-inputs mp-col-50">
-                        <label for="mpCardExpirationYear">
+                        <label for="mpCardExpirationYearSelect">
                             <!-- ko i18n: 'Expiration year'--><!-- /ko -->
                             <em>*</em>
                         </label>
-                        <input
-                            type="text"
-                            id="mpCardExpirationYear"
-                            data-checkout="cardExpirationYear"
-                            name="mercadopago_custom[cardExpirationYear]" />
+                        <select
+                            id="mpCardExpirationYearSelect"
+                            data-checkout="mpCardExpirationYearSelect"
+                            name="mercadopago_custom[cardExpirationYear]"
+                            data-bind="
+                                attr: { 'data-container': getCode() + '-cc-year', 'data-validate': JSON.stringify({ required:true }) },
+                                enable: isActive($parents),
+                                options: getCcYearsValues(),
+                                optionsValue: 'value',
+                                optionsText: 'year',
+                                optionsCaption: $t('Year'),
+                                event: { change: changeYearInput }
+                            "
+                        ></select>
                     </div>
                 </div>
 
@@ -162,9 +177,10 @@
                             id="mpSecurityCode"
                             data-checkout="securityCode"
                             autocomplete="off"
+                            minlength="3"
                             maxlength="4"
                             required
-                            data-bind="attr: {'data-validate': JSON.stringify({ required:true }) }"
+                            onkeyup="maskInput(this, minteger);"
                         />
                     </div>
                 </div>
@@ -240,6 +256,11 @@
                 <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
                     <!-- ko template: getTemplate() --><!-- /ko -->
                 <!--/ko-->
+            </div>
+
+            <div>
+                <input id="mpCardExpirationMonth" type="hidden" />
+                <input id="mpCardExpirationYear" type="hidden">
             </div>
 
             <div class="wb-cho-button-frame"></div>

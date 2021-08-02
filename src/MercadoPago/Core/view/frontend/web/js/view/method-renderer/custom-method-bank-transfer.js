@@ -11,7 +11,6 @@ define(
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/model/payment/additional-validators',
-    'MPcustom',
     'MPv1Ticket'
   ],
   function (
