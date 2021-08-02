@@ -49,19 +49,8 @@ define(
         var self = this;
 
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-          var mercadopago_public_key = window.checkoutConfig.payment[this.getCode()]['public_key']
-          var mercadopago_site_id = window.checkoutConfig.payment[this.getCode()]['country']
-          var payer_email = window.checkoutConfig.payment[this.getCode()]['customer']['email'];
-
-          if (typeof quote == 'object' && typeof quote.guestEmail == 'string') {
-            payer_email = quote.guestEmail
-          }
-
           //Initialize SDK v2
           mp = new MercadoPago(this.getPublicKey());
-
-          //get action change payment method
-          quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
         }
       },
 
@@ -69,6 +58,7 @@ define(
         var existsScriptTag = document.querySelector('#wallet_purchase');
         var existsSubmit = document.querySelector('.mercadopago-button');
         var existsCheckoutWrapper = document.querySelector('.mp-mercadopago-checkout-wrapper');
+
         var scriptTag = document.createElement("script");
         scriptTag.setAttribute('id', 'wallet_purchase');
 
@@ -134,8 +124,7 @@ define(
       },
 
       getInitialGrandTotal: function () {
-        var initialTotal = quote.totals().base_grand_total;
-        return initialTotal;
+        return quote.totals().base_grand_total;
       },
 
       getBaseUrl: function () {
@@ -210,6 +199,7 @@ define(
 
       addWalletButton: function () {
         var self = this;
+
         setPaymentInformationAction(this.messageContainer, { method: 'mercadopago_custom' }).done(() => {
           $.getJSON('/mercadopago/wallet/preference').done(function (response){
             var preferenceId = response.preference.id
@@ -278,25 +268,6 @@ define(
         return this.validateHandler();
       },
 
-      hasErrors: function () {
-        var allMessageErrors = jQuery('.mp-error');
-
-        if (allMessageErrors.length > 1) {
-          for (var x = 0; x < allMessageErrors.length; x++) {
-            if ($(allMessageErrors[x]).css('display') !== 'none') {
-              return true
-            }
-          }
-        } else {
-
-          if (allMessageErrors.css('display') !== 'none') {
-            return true
-          }
-        }
-
-        return false;
-      },
-
       placeOrder: function (data, event) {
         var self = this;
 
@@ -306,6 +277,7 @@ define(
 
         if (this.validate() && additionalValidators.validate() && !this.hasErrors()) {
           this.isPlaceOrderActionAllowed(false);
+
           this.getPlaceOrderDeferredObject()
             .fail(
               function () {
@@ -313,13 +285,13 @@ define(
               }
             ).done(function () {
               self.afterPlaceOrder();
-
               if (self.redirectAfterPlaceOrder) {
                 redirectOnSuccessAction.execute();
               }
             });
           return true;
         }
+
         return false;
       },
 
@@ -333,84 +305,17 @@ define(
         this._super();
       },
 
-      /*
-       * Events
-       */
-      changePaymentMethodSelector: function (paymentMethodSelected) {
-        if (paymentMethodSelected.method != 'mercadopago_custom') {}
-      },
-
       updateSummaryOrder: function () {
         cartCache.set('totals', null);
         defaultTotal.estimateTotals();
       },
 
-      /*
-       * Validation of the main fields to process a payment by credit card
-       */
-      validateCreditCardNumber: function (a, b) {
-        var self = this;
-        self.hideError('E301');
-        var cardNumber = document.querySelector(MPv1.selectors.cardNumber).value;
-        if (cardNumber !== "") {
-          Mercadopago.validateCardNumber(cardNumber, function (response, status) {
-            if (status === false) {
-              self.showError('E301');
-            }
-          })
-        }
-      },
-
-      validateExpirationDate: function (a, b) {
-        var self = this;
-        self.hideError('208');
-        var monthExperitaion = document.querySelector(MPv1.selectors.cardExpirationMonth).value;
-        var yearExperitation = document.querySelector(MPv1.selectors.cardExpirationYear).value;
-
-        if (monthExperitaion !== "" && yearExperitation !== "") {
-          if (Mercadopago.validateExpiryDate(monthExperitaion, yearExperitation) === false) {
-            self.showError('208');
-          }
-        }
-      },
-
-      validateCardHolderName: function (a, b) {
-        var self = this;
-        self.hideError('316');
-        var cardHolderName = document.querySelector(MPv1.selectors.cardholderName).value;
-        if (cardNumber !== "") {
-          if (Mercadopago.validateCardholderName(cardHolderName) === false) {
-            self.showError('316');
-          }
-        }
-      },
-
-      validateSecurityCode: function (a, b) {
-        var self = this;
-        self.hideError('E302');
-        var securityCode = document.querySelector(MPv1.selectors.securityCode).value;
-        if (securityCode !== "" && securityCode.length < 3) {
-          self.showError('E302');
-        }
-      },
-
       onlyNumbersInSecurityCode: function (t, evt) {
         var securityCode = document.querySelector(MPv1.selectors.securityCode);
+
         if (securityCode.value.match(/[^0-9 ]/g)) {
           securityCode.value = securityCode.value.replace(/[^0-9 ]/g, '');
         }
-      },
-
-      showError: function (code) {
-        var $form = MPv1.getForm();
-        var $span = $form.querySelector('#mp-error-' + code);
-        $span.style.display = 'inline-block';
-      },
-
-      hideError: function (code) {
-        var $form = MPv1.getForm();
-        var $span = $form.querySelector('#mp-error-' + code);
-        $span.style.display = 'none';
       },
 
       /**
@@ -422,6 +327,14 @@ define(
           return window.checkoutConfig.payment[this.getCode()]['creditcard_mini'];
         }
         return '';
+      },
+
+      getPayerEmail: function () {
+        if (window.isCustomerLoggedIn) {
+          return window.customerData.email;
+        }
+
+        return customerData.getValidatedEmailValue();
       },
     });
   }

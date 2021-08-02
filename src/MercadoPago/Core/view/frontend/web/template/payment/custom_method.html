@@ -122,8 +122,7 @@
                                     options: getCcMonthsValues(),
                                     optionsValue: 'value',
                                     optionsText: 'month',
-                                    optionsCaption: $t('Month'),
-                                    event: { change: validateExpirationDate }"
+                                    optionsCaption: $t('Month')"
                         ></select>
                     </div>
 
@@ -141,8 +140,7 @@
                                     options: getCcYearsValues(),
                                     optionsValue: 'value',
                                     optionsText: 'year',
-                                    optionsCaption: $t('Year'),
-                                    event: { change: validateExpirationDate }"
+                                    optionsCaption: $t('Year')"
                         ></select>
                     </div>
                 </div>
@@ -158,8 +156,7 @@
                         name="mercadopago_custom[cardholderName]"
                         data-checkout="cardholderName"
                         autocomplete="off"
-                        data-bind="attr: { 'data-validate': JSON.stringify({ required:true }) },
-                                   event: { blur: validateCardHolderName }"
+                        data-bind="attr: { 'data-validate': JSON.stringify({ required:true }) }"
                     />
                 </div>
 
