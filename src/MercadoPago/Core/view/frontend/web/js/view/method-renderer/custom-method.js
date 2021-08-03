@@ -50,6 +50,8 @@ define(
 
       initApp: function () {
         if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
+          setChangeEventOnCardNumber();
+
           // Initialize SDK v2
           mp = new MercadoPago(this.getPublicKey());
 

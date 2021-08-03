@@ -4,6 +4,14 @@ function getFormCustom() {
   return document.querySelector('#co-mercadopago-form');
 }
 
+function setChangeEventOnCardNumber() {
+  document.getElementById('mpCardNumber').addEventListener('keyup', function (e) {
+    if (e.target.value.length <= 4) {
+      clearInputs();
+    }
+  });
+}
+
 function setImageCard(secureThumbnail) {
   document.getElementById('mpCardNumber').style.background = 'url(' + secureThumbnail + ') 98% 50% no-repeat #fff';
 }
