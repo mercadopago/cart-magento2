@@ -101,8 +101,8 @@
                         onkeyup="maskInput(this, mcc)"
                     />
 
-                    <small id="mp-error-205" class="mp-form-error" data-main="#mpCardNumber">Invalid card number</small>
-                    <small id="mp-error-E301" class="mp-form-error mp-error-E301" data-main="#mpCardNumber">Invalid card number</small>
+                    <small id="mp-error-205" class="mp-form-error" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
+                    <small id="mp-error-E301" class="mp-form-error mp-error-E301" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
 
                     <div class="mp-payment-methods-container" data-bind="foreach: getPaymentMethods()">
                         <img data-bind="attr: { src: src, alt: name }" class="img-fluid mp-pm-card-image" />
@@ -130,8 +130,8 @@
                             "
                         ></select>
 
-                        <small id="mp-error-208" class="mp-form-error" data-main="#mpCardExpirationMonthSelect">Invalid card expiration month</small>
-                        <small id="mp-error-325" class="mp-form-error" data-main="#mpCardExpirationMonthSelect">Invalid card expiration month</small>
+                        <small id="mp-error-208" class="mp-form-error" data-main="#mpCardExpirationMonthSelect"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
+                        <small id="mp-error-325" class="mp-form-error" data-main="#mpCardExpirationMonthSelect"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
                     </div>
 
                     <div class="mp-box-inputs mp-col-50">
@@ -154,8 +154,8 @@
                             "
                         ></select>
 
-                        <small id="mp-error-209" class="mp-form-error" data-main="#mpCardExpirationYearSelect">Invalid card expiration year</small>
-                        <small id="mp-error-326" class="mp-form-error" data-main="#mpCardExpirationYearSelect">Invalid card expiration year</small>
+                        <small id="mp-error-209" class="mp-form-error" data-main="#mpCardExpirationYearSelect"><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
+                        <small id="mp-error-326" class="mp-form-error" data-main="#mpCardExpirationYearSelect"><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
                     </div>
                 </div>
 
@@ -172,7 +172,7 @@
                         autocomplete="off"
                     />
 
-                    <small id="mp-error-221" class="mp-form-error" data-main="#mpCardholderName">Invalid cardholder name</small>
+                    <small id="mp-error-221" class="mp-form-error" data-main="#mpCardholderName"><!-- ko i18n: 'Invalid cardholder name'--><!-- /ko --></small>
                 </div>
 
                 <div class="mp-box-inputs mp-line">
@@ -191,8 +191,8 @@
                             onkeyup="maskInput(this, minteger);"
                         />
 
-                        <small id="mp-error-224" class="mp-form-error" data-main="#mpSecurityCode">Invalid security code</small>
-                        <small id="mp-error-E302" class="mp-form-error" data-main="#mpSecurityCode">Invalid security code</small>
+                        <small id="mp-error-224" class="mp-form-error" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
+                        <small id="mp-error-E302" class="mp-form-error" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
                     </div>
                 </div>
 
@@ -218,7 +218,7 @@
                             autocomplete="off"
                         />
 
-                        <small id="mp-error-324" class="mp-form-error" data-main="#mpDocNumber">Invalid document number</small>
+                        <small id="mp-error-324" class="mp-form-error" data-main="#mpDocNumber"><!-- ko i18n: 'Invalid document number'--><!-- /ko --></small>
                     </div>
                 </div>
 
@@ -254,7 +254,7 @@
             <div class="mp-box-inputs mp-col-100">
                 <div class="mp-protect-buy">
                     <img data-bind="attr: { alt: 'Mercado Pago', src: getGrayMinilogo() }" />
-                    <p><!-- ko i18n: 'Payment processed by Mercado Pago'--><!-- /ko --></p>
+                    <p> Pago'<!-- ko i18n: 'Payment processed by Mercado Pago'--><!-- /ko --></p>
                 </div>
 
                 <hr class="mp-custom-hr" />
