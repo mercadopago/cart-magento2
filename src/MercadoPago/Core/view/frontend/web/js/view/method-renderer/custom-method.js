@@ -50,12 +50,11 @@ define(
       initialGrandTotal: null,
 
       initApp: function () {
-        var self = this;
-
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-          //Initialize SDK v2
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
+          // Initialize SDK v2
           mp = new MercadoPago(this.getPublicKey());
 
+          // Instance SDK v2
           mpCardForm = mp.cardForm({
             amount: String(this.getGrandTotal()),
             autoMount: true,
@@ -87,6 +86,8 @@ define(
               },
               onCardTokenReceived: (error, token) => {
                 if (error) return console.warn('Token handling error: ', error);
+
+                console.log('form data: ', mpCardForm.getCardFormData());
               },
               onPaymentMethodsReceived: (error, paymentMethods) => {
                 if (error) {
@@ -115,12 +116,24 @@ define(
 
         this.createCardToken();
 
-        console.log('form data: ', mpCardForm.getCardFormData());
-
         return false;
       },
 
+      getFormCustom: function () {
+        return document.querySelector('#co-mercadopago-form');
+      },
+
       createCardToken: function () {
+        this.hideErrors();
+
+        var fixedInputs = this.validateFixedInputs();
+        var additionalInputs = this.validateAdditionalInputs();
+
+        if (fixedInputs || additionalInputs) {
+          this.focusInputError();
+          return false;
+        }
+
         mpCardForm.createCardToken({});
       },
 
@@ -183,6 +196,7 @@ define(
       },
 
       clearInputs: function () {
+        this.hideErrors();
         document.getElementById('mpCardNumber').style.background = 'no-repeat #fff';
         document.getElementById('mpCardExpirationMonth').value = '';
         document.getElementById('mpCardExpirationMonthSelect').value = '';
@@ -191,6 +205,94 @@ define(
         document.getElementById('mpDocNumber').value = '';
         document.getElementById('mpSecurityCode').value = '';
         document.getElementById('mpCardholderName').value = '';
+      },
+
+      validateFixedInputs: function () {
+        var emptyInputs = false;
+        var form = this.getFormCustom();
+        var formInputs = form.querySelectorAll('[data-checkout]');
+        var fixedInputs = [
+          'mpCardNumber',
+          'mpCardExpirationMonthSelect',
+          'mpCardExpirationYearSelect',
+          'mpSecurityCode',
+          'mpInstallments'
+        ];
+
+        for (var x = 0; x < formInputs.length; x++) {
+          var element = formInputs[x];
+
+          if (fixedInputs.indexOf(element.getAttribute('data-checkout')) > -1) {
+            if (element.value === -1 || element.value === '') {
+              var small = form.querySelectorAll('small[data-main="#' + element.id + '"]');
+
+              if (small.length > 0) {
+                small[0].style.display = 'block';
+              }
+
+              element.classList.add('mp-form-control-error');
+              emptyInputs = true;
+            }
+          }
+        }
+
+        return emptyInputs;
+      },
+
+      validateAdditionalInputs: function () {
+        var emptyInputs = false;
+
+        if (additionalInfoNeeded.issuer) {
+          var inputMpIssuer = document.getElementById('mpIssuer');
+          if (inputMpIssuer.value === '-1' || inputMpIssuer.value === '') {
+            inputMpIssuer.classList.add('mp-form-control-error');
+            emptyInputs = true;
+          }
+        }
+        if (additionalInfoNeeded.cardholder_name) {
+          var inputCardholderName = document.getElementById('mpCardholderName');
+          if (inputCardholderName.value === '-1' || inputCardholderName.value === '') {
+            inputCardholderName.classList.add('mp-form-control-error');
+            document.getElementById('mp-error-221').style.display = 'block';
+            emptyInputs = true;
+          }
+        }
+        if (additionalInfoNeeded.cardholder_identification_type) {
+          var inputDocType = document.getElementById('mpDocType');
+          if (inputDocType.value === '-1' || inputDocType.value === '') {
+            inputDocType.classList.add('mp-form-control-error');
+            emptyInputs = true;
+          }
+        }
+        if (additionalInfoNeeded.cardholder_identification_number) {
+          var docNumber = document.getElementById('mpDocNumber');
+          if (docNumber.value === '-1' || docNumber.value === '') {
+            docNumber.classList.add('mp-form-control-error');
+            document.getElementById('mp-error-324').style.display = 'block';
+            emptyInputs = true;
+          }
+        }
+
+        return emptyInputs;
+      },
+
+      focusInputError: function () {
+        if (document.querySelectorAll('.mp-form-control-error') !== undefined) {
+          var formInputs = document.querySelectorAll('.mp-form-control-error');
+          formInputs[0].focus();
+        }
+      },
+
+      hideErrors: function () {
+        for (var x = 0; x < document.querySelectorAll('[data-checkout]').length; x++) {
+          var field = document.querySelectorAll('[data-checkout]')[x];
+          field.classList.remove('mp-form-control-error');
+        }
+
+        for (var y = 0; y < document.querySelectorAll('.mp-form-error').length; y++) {
+          var small = document.querySelectorAll('.mp-form-error')[y];
+          small.style.display = 'none';
+        }
       },
 
       changeMonthInput: function () {

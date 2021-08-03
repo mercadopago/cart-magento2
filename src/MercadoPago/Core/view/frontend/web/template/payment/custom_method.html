@@ -94,13 +94,15 @@
                     <input
                         type="text"
                         id="mpCardNumber"
-                        data-checkout="cardNumber"
+                        data-checkout="mpCardNumber"
                         autocomplete="off"
                         maxlength="24"
                         minlength="13"
-                        required
                         onkeyup="maskInput(this, mcc)"
                     />
+
+                    <small id="mp-error-205" class="mp-form-error" data-main="#mpCardNumber">Invalid card number</small>
+                    <small id="mp-error-E301" class="mp-form-error mp-error-E301" data-main="#mpCardNumber">Invalid card number</small>
 
                     <div class="mp-payment-methods-container" data-bind="foreach: getPaymentMethods()">
                         <img data-bind="attr: { src: src, alt: name }" class="img-fluid mp-pm-card-image" />
@@ -118,7 +120,7 @@
                             data-checkout="mpCardExpirationMonthSelect"
                             name="mercadopago_custom[cardExpirationMonth]"
                             data-bind="
-                                attr: { 'data-container': getCode() + '-cc-month', 'data-validate': JSON.stringify({ required:true }) },
+                                attr: { 'data-container': getCode() + '-cc-month' },
                                 enable: isActive($parents),
                                 options: getCcMonthsValues(),
                                 optionsValue: 'value',
@@ -127,6 +129,9 @@
                                 event: { change: changeMonthInput }
                             "
                         ></select>
+
+                        <small id="mp-error-208" class="mp-form-error" data-main="#mpCardExpirationMonthSelect">Invalid card expiration month</small>
+                        <small id="mp-error-325" class="mp-form-error" data-main="#mpCardExpirationMonthSelect">Invalid card expiration month</small>
                     </div>
 
                     <div class="mp-box-inputs mp-col-50">
@@ -139,7 +144,7 @@
                             data-checkout="mpCardExpirationYearSelect"
                             name="mercadopago_custom[cardExpirationYear]"
                             data-bind="
-                                attr: { 'data-container': getCode() + '-cc-year', 'data-validate': JSON.stringify({ required:true }) },
+                                attr: { 'data-container': getCode() + '-cc-year' },
                                 enable: isActive($parents),
                                 options: getCcYearsValues(),
                                 optionsValue: 'value',
@@ -148,6 +153,9 @@
                                 event: { change: changeYearInput }
                             "
                         ></select>
+
+                        <small id="mp-error-209" class="mp-form-error" data-main="#mpCardExpirationYearSelect">Invalid card expiration year</small>
+                        <small id="mp-error-326" class="mp-form-error" data-main="#mpCardExpirationYearSelect">Invalid card expiration year</small>
                     </div>
                 </div>
 
@@ -160,9 +168,11 @@
                         type="text"
                         id="mpCardholderName"
                         name="mercadopago_custom[cardholderName]"
-                        data-checkout="cardholderName"
+                        data-checkout="mpCardholderName"
                         autocomplete="off"
                     />
+
+                    <small id="mp-error-221" class="mp-form-error" data-main="#mpCardholderName">Invalid cardholder name</small>
                 </div>
 
                 <div class="mp-box-inputs mp-line">
@@ -174,13 +184,15 @@
                         <input
                             type="text"
                             id="mpSecurityCode"
-                            data-checkout="securityCode"
+                            data-checkout="mpSecurityCode"
                             autocomplete="off"
                             minlength="3"
                             maxlength="4"
-                            required
                             onkeyup="maskInput(this, minteger);"
                         />
+
+                        <small id="mp-error-224" class="mp-form-error" data-main="#mpSecurityCode">Invalid security code</small>
+                        <small id="mp-error-E302" class="mp-form-error" data-main="#mpSecurityCode">Invalid security code</small>
                     </div>
                 </div>
 
@@ -190,7 +202,7 @@
                             <!-- ko i18n: 'Document Type'--><!-- /ko -->
                             <em>*</em>
                         </label>
-                        <select id="mpDocType" data-checkout="docType" name="mercadopago_custom[docType]"></select>
+                        <select id="mpDocType" data-checkout="mpDocType" name="mercadopago_custom[docType]"></select>
                     </div>
 
                     <div class="mp-box-inputs mp-col-65 mp-docNumber" id="mp-doc-number-div">
@@ -201,10 +213,12 @@
                         <input
                             type="text"
                             id="mpDocNumber"
-                            data-checkout="docNumber"
+                            data-checkout="mpDocNumber"
                             name="mercadopago_custom[docNumber]"
                             autocomplete="off"
                         />
+
+                        <small id="mp-error-324" class="mp-form-error" data-main="#mpDocNumber">Invalid document number</small>
                     </div>
                 </div>
 
@@ -213,7 +227,8 @@
                         <!-- ko i18n: 'Issuer'--><!-- /ko -->
                         <em>*</em>
                     </label>
-                    <select id="mpIssuer" data-checkout="issuer" name="mercadopago_custom[issuer]"></select>
+                    <select id="mpIssuer" data-checkout="mpIssuer" name="mercadopago_custom[issuer]"></select>
+                    <small id="id-issuer-status" class="mp-form-error"></small>
                 </div>
             </div>
             <!-- end #mercadopago-form -->
@@ -224,7 +239,8 @@
                         <!-- ko i18n: 'Installments'--><!-- /ko -->
                         <em>*</em>
                     </label>
-                    <select id="mpInstallments" data-checkout="installments" name="mercadopago_custom[installments]"></select>
+                    <select id="mpInstallments" data-checkout="mpInstallments" name="mercadopago_custom[installments]"></select>
+                    <small id="id-installments-status" class="mp-form-error"></small>
                 </div>
 
                 <div class="mp-box-inputs mp-col-30" id="mp-box-input-tax-cft">
