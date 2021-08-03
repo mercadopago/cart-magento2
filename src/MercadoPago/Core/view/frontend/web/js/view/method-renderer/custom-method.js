@@ -405,9 +405,7 @@ define(
       },
 
       getPlaceOrderDeferredObject: function () {
-        return $.when(
-          placeOrderAction(this.getData(), this.messageContainer)
-        );
+        return $.when((this.getData(), this.messageContainer));
       },
 
       validate: function () {
