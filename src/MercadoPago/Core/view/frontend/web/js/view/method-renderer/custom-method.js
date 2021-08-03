@@ -85,8 +85,13 @@ define(
                 if (error) return console.warn('Installments handling error: ', error);
               },
               onCardTokenReceived: (error, token) => {
-                if (error) return console.warn('Token handling error: ', error);
+                if (error) {
+                  this.showErrors(error);
+                  this.focusInputError();
+                  return console.warn('Token handling error: ', error);
+                }
 
+                console.log('token: ', token);
                 console.log('form data: ', mpCardForm.getCardFormData());
               },
               onPaymentMethodsReceived: (error, paymentMethods) => {
@@ -134,7 +139,7 @@ define(
           return false;
         }
 
-        mpCardForm.createCardToken({});
+        mpCardForm.createCardToken();
       },
 
       setImageCard: function (secureThumbnail) {
@@ -249,6 +254,7 @@ define(
             emptyInputs = true;
           }
         }
+
         if (additionalInfoNeeded.cardholder_name) {
           var inputCardholderName = document.getElementById('mpCardholderName');
           if (inputCardholderName.value === '-1' || inputCardholderName.value === '') {
@@ -257,6 +263,7 @@ define(
             emptyInputs = true;
           }
         }
+
         if (additionalInfoNeeded.cardholder_identification_type) {
           var inputDocType = document.getElementById('mpDocType');
           if (inputDocType.value === '-1' || inputDocType.value === '') {
@@ -264,6 +271,7 @@ define(
             emptyInputs = true;
           }
         }
+
         if (additionalInfoNeeded.cardholder_identification_number) {
           var docNumber = document.getElementById('mpDocNumber');
           if (docNumber.value === '-1' || docNumber.value === '') {
@@ -274,6 +282,25 @@ define(
         }
 
         return emptyInputs;
+      },
+
+      showErrors: function (errors) {
+        var form = this.getFormCustom();
+
+        for (var x = 0; x < errors.length; x++) {
+          var code = errors[x].code;
+          var span = undefined;
+
+          span = form.querySelector('#mp-error-' + code);
+
+          if (span !== undefined) {
+            var input = form.querySelector(span.getAttribute('data-main'));
+            span.style.display = 'block';
+            input.classList.add('mp-form-control-error');
+          }
+        }
+
+        return;
       },
 
       focusInputError: function () {
