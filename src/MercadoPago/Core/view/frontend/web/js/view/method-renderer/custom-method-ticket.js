@@ -11,7 +11,8 @@ define(
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/model/payment/additional-validators',
-    'MPv1Ticket'
+    'MercadoPago_Core/js/Masks',
+    'MercadoPago_Core/js/MPv1Ticket'
   ],
   function (
     Component,
@@ -39,41 +40,10 @@ define(
 
       initializeMethod: function () {
         var self = this;
-        var mercadopago_site_id = window.checkoutConfig.payment[this.getCode()]['country']
-        var payer_email = "";
 
-        if (typeof quote == 'object' && typeof quote.guestEmail == 'string') {
-          payer_email = quote.guestEmail
+        if (this.getCountryId() === 'MLB') {
+          validateDocumentInputs(this.getCountryId())
         }
-
-        MPv1Ticket.text.apply = $t('Apply');
-        MPv1Ticket.text.remove = $t('Remove');
-
-        MPv1Ticket.actionsMLB = function () {
-          if (document.querySelector(MPv1Ticket.selectors.docNumber)) {
-            MPv1Ticket.addListenerEvent(document.querySelector(MPv1Ticket.selectors.docNumber), 'keyup', MPv1Ticket.execFormatDocument);
-          }
-          if (document.querySelector(MPv1Ticket.selectors.radioTypeFisica)) {
-            MPv1Ticket.addListenerEvent(document.querySelector(MPv1Ticket.selectors.radioTypeFisica), "change", MPv1Ticket.initializeDocumentPessoaFisica);
-          }
-          if (document.querySelector(MPv1Ticket.selectors.radioTypeFisica)) {
-            MPv1Ticket.addListenerEvent(document.querySelector(MPv1Ticket.selectors.radioTypeJuridica), "change", MPv1Ticket.initializeDocumentPessoaJuridica);
-          }
-          return;
-        }
-
-        if (mercadopago_site_id == 'MLB') {
-          this.setBillingAddress();
-        }
-
-        //change url loading
-        MPv1Ticket.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
-
-        //Initialize MPv1Ticket
-        MPv1Ticket.Initialize(mercadopago_site_id, payer_email);
-
-        //get action change payment method
-        quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
       },
 
       setBillingAddress: function (t) {
@@ -120,7 +90,7 @@ define(
       },
 
       getLogoUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return configPayment['logoUrl'];
         }
         return '';
@@ -135,7 +105,7 @@ define(
       },
 
       existBanner: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           if (window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null) {
             return true;
           }
@@ -144,7 +114,7 @@ define(
       },
 
       getBannerUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['bannerUrl'];
         }
         return '';
@@ -215,15 +185,15 @@ define(
 
         if (this.getCountryId() == 'MLB' && this.getCountTickets() > 0) {
           //febraban rules
-          dataObj.additional_data.firstName = document.querySelector(MPv1Ticket.selectors.firstName).value
-          dataObj.additional_data.lastName = document.querySelector(MPv1Ticket.selectors.lastName).value
-          dataObj.additional_data.docType = MPv1Ticket.getDocTypeSelected();
-          dataObj.additional_data.docNumber = document.querySelector(MPv1Ticket.selectors.docNumber).value
-          dataObj.additional_data.address = document.querySelector(MPv1Ticket.selectors.address).value
-          dataObj.additional_data.addressNumber = document.querySelector(MPv1Ticket.selectors.number).value
-          dataObj.additional_data.addressCity = document.querySelector(MPv1Ticket.selectors.city).value
-          dataObj.additional_data.addressState = document.querySelector(MPv1Ticket.selectors.state).value
-          dataObj.additional_data.addressZipcode = document.querySelector(MPv1Ticket.selectors.zipcode).value
+          // dataObj.additional_data.firstName = document.querySelector(MPv1Ticket.selectors.firstName).value
+          // dataObj.additional_data.lastName = document.querySelector(MPv1Ticket.selectors.lastName).value
+          // dataObj.additional_data.docType = MPv1Ticket.getDocTypeSelected();
+          // dataObj.additional_data.docNumber = document.querySelector(MPv1Ticket.selectors.docNumber).value
+          // dataObj.additional_data.address = document.querySelector(MPv1Ticket.selectors.address).value
+          // dataObj.additional_data.addressNumber = document.querySelector(MPv1Ticket.selectors.number).value
+          // dataObj.additional_data.addressCity = document.querySelector(MPv1Ticket.selectors.city).value
+          // dataObj.additional_data.addressState = document.querySelector(MPv1Ticket.selectors.state).value
+          // dataObj.additional_data.addressZipcode = document.querySelector(MPv1Ticket.selectors.zipcode).value
         }
 
         return dataObj;
@@ -235,15 +205,6 @@ define(
 
       validate: function () {
         return this.validateHandler();
-      },
-
-      /*
-       * Events
-       */
-      changePaymentMethodSelector: function (paymentMethodSelected) {
-        if (paymentMethodSelected.method != 'mercadopago_customticket') {
-
-        }
       },
 
       updateSummaryOrder: function () {

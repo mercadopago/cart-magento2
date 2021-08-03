@@ -34,6 +34,13 @@ function mcc (v) {
   return v;
 }
 
+function mcep (v) {
+  v = v.replace(/\D/g, '');
+  v = v.replace(/^(\d{5})(\d)/g, '$1-$2');
+  return v;
+}
+
+
 // eslint-disable-next-line no-unused-vars
 function mcpf (v) {
   v = v.replace(/\D/g, '');

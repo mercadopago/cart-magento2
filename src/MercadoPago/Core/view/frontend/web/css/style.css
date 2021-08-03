@@ -658,3 +658,12 @@ input.has-error, select.has-error, textarea.has-error {
   padding-left: 2px;
   display: none;
 }
+
+/* helpers */
+.mp-d-flex {
+  display: flex;
+}
+
+.mp-mb-12 {
+  margin-bottom: 12px !important;
+}
