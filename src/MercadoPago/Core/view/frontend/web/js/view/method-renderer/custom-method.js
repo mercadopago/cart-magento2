@@ -37,6 +37,8 @@ define(
 
     var mp = null;
     var mpCardForm = null;
+    var objPaymentMethod = {};
+    var additionalInfoNeeded = {};
 
     return Component.extend({
       defaults: {
@@ -72,36 +74,35 @@ define(
             },
             callbacks: {
               onFormMounted: error => {
-                if (error) return console.warn('Form Mounted handling error: ', error)
-                console.log('Form mounted')
-              },
-              onFormUnmounted: error => {
-                if (error) return console.warn('Form Unmounted handling error: ', error)
-                console.log('Form unmounted')
+                if (error) return console.warn('FormMounted handling error: ', error);
               },
               onIdentificationTypesReceived: (error, identificationTypes) => {
-                if (error) return console.warn('identificationTypes handling error: ', error)
-                console.log('Identification types available: ', identificationTypes)
-              },
-              onPaymentMethodsReceived: (error, paymentMethods) => {
-                if (error) return console.warn('paymentMethods handling error: ', error)
-                console.log('Payment Methods available: ', paymentMethods)
+                if (error) return console.warn('IdentificationTypes handling error: ', error);
               },
               onIssuersReceived: (error, issuers) => {
-                if (error) return console.warn('issuers handling error: ', error)
-                console.log('Issuers available: ', issuers)
+                if (error) return console.warn('Issuers handling error: ', error);
               },
               onInstallmentsReceived: (error, installments) => {
-                if (error) return console.warn('installments handling error: ', error)
-                console.log('Installments available: ', installments)
+                if (error) return console.warn('Installments handling error: ', error);
               },
               onCardTokenReceived: (error, token) => {
-                if (error) return console.warn('Token handling error: ', error)
-                console.log('Token available: ', token)
+                if (error) return console.warn('Token handling error: ', error);
+              },
+              onPaymentMethodsReceived: (error, paymentMethods) => {
+                if (error) {
+                  this.clearInputs();
+                  return console.warn('PaymentMethods handling error: ', error);
+                }
+
+                this.clearInputs();
+
+                objPaymentMethod = paymentMethods[0];
+                this.setImageCard(objPaymentMethod.thumbnail);
+                this.loadAdditionalInfo(objPaymentMethod.additional_info_needed);
+                this.additionalInfoHandler();
               },
             },
           });
-
         }
       },
 
@@ -112,14 +113,84 @@ define(
           event.preventDefault();
         }
 
-        console.log('form data: ', mpCardForm.getCardFormData());
         this.createCardToken();
+
+        console.log('form data: ', mpCardForm.getCardFormData());
 
         return false;
       },
 
       createCardToken: function () {
         mpCardForm.createCardToken({});
+      },
+
+      setImageCard: function (secureThumbnail) {
+        document.getElementById('mpCardNumber').style.background = 'url(' + secureThumbnail + ') 98% 50% no-repeat #fff';
+      },
+
+      loadAdditionalInfo: function (sdkAdditionalInfoNeeded) {
+        additionalInfoNeeded = {
+          issuer: false,
+          cardholder_name: false,
+          cardholder_identification_type: false,
+          cardholder_identification_number: false
+        };
+
+        for (var i = 0; i < sdkAdditionalInfoNeeded.length; i++) {
+          if (sdkAdditionalInfoNeeded[i] === 'issuer_id') {
+            additionalInfoNeeded.issuer = true;
+          }
+          if (sdkAdditionalInfoNeeded[i] === 'cardholder_name') {
+            additionalInfoNeeded.cardholder_name = true;
+          }
+          if (sdkAdditionalInfoNeeded[i] === 'cardholder_identification_type') {
+            additionalInfoNeeded.cardholder_identification_type = true;
+          }
+          if (sdkAdditionalInfoNeeded[i] === 'cardholder_identification_number') {
+            additionalInfoNeeded.cardholder_identification_number = true;
+          }
+        }
+      },
+
+      additionalInfoHandler: function () {
+        if (additionalInfoNeeded.cardholder_name) {
+          document.getElementById('mp-card-holder-div').style.display = 'block';
+        } else {
+          document.getElementById('mp-card-holder-div').style.display = 'none';
+        }
+
+        if (additionalInfoNeeded.issuer) {
+          document.getElementById('mp-issuer-div').style.display = 'block';
+        } else {
+          document.getElementById('mp-issuer-div').style.display = 'none';
+        }
+
+        if (additionalInfoNeeded.cardholder_identification_type) {
+          document.getElementById('mp-doc-type-div').style.display = 'block';
+        } else {
+          document.getElementById('mp-doc-type-div').style.display = 'none';
+        }
+
+        if (additionalInfoNeeded.cardholder_identification_number) {
+          document.getElementById('mp-doc-number-div').style.display = 'block';
+        } else {
+          document.getElementById('mp-doc-number-div').style.display = 'none';
+        }
+
+        if (!additionalInfoNeeded.cardholder_identification_type && !additionalInfoNeeded.cardholder_identification_number) {
+          document.getElementById('mp-doc-div').style.display = 'none';
+        }
+      },
+
+      clearInputs: function () {
+        document.getElementById('mpCardNumber').style.background = 'no-repeat #fff';
+        document.getElementById('mpCardExpirationMonth').value = '';
+        document.getElementById('mpCardExpirationMonthSelect').value = '';
+        document.getElementById('mpCardExpirationYear').value = '';
+        document.getElementById('mpCardExpirationYearSelect').value = '';
+        document.getElementById('mpDocNumber').value = '';
+        document.getElementById('mpSecurityCode').value = '';
+        document.getElementById('mpCardholderName').value = '';
       },
 
       changeMonthInput: function () {
@@ -156,7 +227,6 @@ define(
           existsCheckoutWrapper.remove();
         }
 
-        //insert wallet button on form
         var wb_button = document.querySelector("body");
         wb_button.appendChild(scriptTag);
       },

@@ -151,7 +151,7 @@
                     </div>
                 </div>
 
-                <div class="mp-box-inputs mp-col-100">
+                <div class="mp-box-inputs mp-col-100" id="mp-card-holder-div">
                     <label for="mpCardholderName">
                         <!-- ko i18n: 'Card holder name'--><!-- /ko -->
                         <em>*</em>
@@ -162,12 +162,11 @@
                         name="mercadopago_custom[cardholderName]"
                         data-checkout="cardholderName"
                         autocomplete="off"
-                        data-bind="attr: { 'data-validate': JSON.stringify({ required:true }) }"
                     />
                 </div>
 
                 <div class="mp-box-inputs mp-line">
-                    <div class="mp-box-inputs mp-col-45">
+                    <div class="mp-box-inputs mp-col-35">
                         <label for="mpSecurityCode">
                             <!-- ko i18n: 'Security code'--><!-- /ko -->
                             <em>*</em>
@@ -185,8 +184,8 @@
                     </div>
                 </div>
 
-                <div class="mp-box-inputs mp-col-100 mp-doc">
-                    <div class="mp-box-inputs mp-col-35 mp-docType">
+                <div class="mp-box-inputs mp-col-100 mp-doc" id="mp-doc-div">
+                    <div class="mp-box-inputs mp-col-35 mp-docType" id="mp-doc-type-div">
                         <label for="mpDocType">
                             <!-- ko i18n: 'Document Type'--><!-- /ko -->
                             <em>*</em>
@@ -194,7 +193,7 @@
                         <select id="mpDocType" data-checkout="docType" name="mercadopago_custom[docType]"></select>
                     </div>
 
-                    <div class="mp-box-inputs mp-col-65 mp-docNumber">
+                    <div class="mp-box-inputs mp-col-65 mp-docNumber" id="mp-doc-number-div">
                         <label for="mpDocNumber">
                             <!-- ko i18n: 'Document number'--><!-- /ko -->
                             <em>*</em>
@@ -209,7 +208,7 @@
                     </div>
                 </div>
 
-                <div class="mp-box-inputs mp-col-100 mp-issuer">
+                <div class="mp-box-inputs mp-col-100 mp-issuer" id="mp-issuer-div">
                     <label for="mpIssuer">
                         <!-- ko i18n: 'Issuer'--><!-- /ko -->
                         <em>*</em>
