@@ -87,8 +87,6 @@ define(
                   return console.warn('Installments handling error: ', error)
                 }
 
-                console.log(installments);
-
                 var payer_costs = installments.payer_costs;
                 setChangeEventOnInstallments(this.getCountry(), payer_costs);
               },
@@ -96,12 +94,10 @@ define(
                 if (error) {
                   showErrors(error);
                   focusInputError();
-
                   return console.warn('Token handling error: ', error);
                 }
 
-                console.log('token: ', token);
-                console.log('form data: ', mpCardForm.getCardFormData());
+                this.placeOrder();
               },
               onPaymentMethodsReceived: (error, paymentMethods) => {
                 if (error) {
@@ -117,32 +113,6 @@ define(
             },
           });
         }
-      },
-
-      placeOrder: function (data, event) {
-        var self = this;
-
-        if (event) {
-          event.preventDefault();
-        }
-
-        this.createCardToken();
-
-        return false;
-      },
-
-      createCardToken: function () {
-        hideErrors();
-
-        var fixedInputs = validateFixedInputs();
-        var additionalInputs = validateAdditionalInputs();
-
-        if (fixedInputs || additionalInputs) {
-          focusInputError();
-          return false;
-        }
-
-        mpCardForm.createCardToken();
       },
 
       changeMonthInput: function () {
@@ -183,10 +153,6 @@ define(
         wb_button.appendChild(scriptTag);
       },
 
-      setPlaceOrderHandler: function (handler) {
-        this.placeOrderHandler = handler;
-      },
-
       setValidateHandler: function (handler) {
         this.validateHandler = handler;
       },
@@ -208,7 +174,7 @@ define(
       },
 
       existBanner: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           if (window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null) {
             return true;
           }
@@ -217,7 +183,7 @@ define(
       },
 
       getBannerUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['bannerUrl'];
         }
         return '';
@@ -232,70 +198,70 @@ define(
       },
 
       getBaseUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['base_url'];
         }
         return '';
       },
 
       getRoute: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['route'];
         }
         return '';
       },
 
       getCountry: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['country'];
         }
         return '';
       },
 
       getSuccessUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['success_url'];
         }
         return '';
       },
 
       getCustomer: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['customer'];
         }
         return '';
       },
 
       getLoadingGifUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['loading_gif'];
         }
         return '';
       },
 
       getMpGatewayMode: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['mp_gateway_mode'];
         }
         return 0;
       },
 
       getLogoUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['logoUrl'];
         }
         return '';
       },
 
       getMinilogo: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['minilogo'];
         }
         return '';
       },
 
       getGrayMinilogo: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['gray_minilogo'];
         }
         return '';
@@ -309,7 +275,7 @@ define(
             var preferenceId = response.preference.id
             self.toogleWalletButton();
 
-            if (window.checkoutConfig.payment[self.getCode()] != undefined) {
+            if (window.checkoutConfig.payment[self.getCode()] !== undefined) {
               var wb_link = window.checkoutConfig.payment[self.getCode()]['wallet_button_link'];
               var mp_public_key = window.checkoutConfig.payment[self.getCode()]['public_key'];
               var scriptTag = document.querySelector('#wallet_purchase');
@@ -336,14 +302,14 @@ define(
       },
 
       getMpWalletButton: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['mp_wallet_button'];
         }
         return 0;
       },
 
       getPaymentMethods: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           var thumbnails = [];
           var payment_methods = window.checkoutConfig.payment[this.getCode()]['payment_methods'];
 
@@ -360,22 +326,92 @@ define(
 
           return thumbnails;
         }
+      },
 
-        return;
+      /**
+       * @override
+       */
+      getData: function () {
+        var formData = mpCardForm.getCardFormData();
+
+        var dataObj = {
+          'method': this.item.method,
+          'additional_data': {
+            'payment[method]': this.getCode(),
+            'card_expiration_month': document.getElementById('mpCardExpirationMonth').value,
+            'card_expiration_year': document.getElementById('mpCardExpirationYear').value,
+            'card_holder_name': document.getElementById('mpCardholderName').value,
+            'doc_type': document.getElementById('mpDocType').value,
+            'doc_number': document.getElementById('mpDocNumber').value,
+            'installments': document.getElementById('mpInstallments').value,
+            'total_amount': this.getGrandTotal(),
+            'amount': this.getGrandTotal(),
+            'site_id': this.getCountry(),
+            'token': formData.token,
+            'payment_method_id': formData.paymentMethodId,
+            'issuer_id': formData.issuerId,
+            'gateway_mode': this.getMpGatewayMode(),
+          }
+        };
+
+        return dataObj;
+      },
+
+      prePlaceOrder: function () {
+        hideErrors();
+
+        var fixedInputs = validateFixedInputs();
+        var additionalInputs = validateAdditionalInputs();
+
+        if (fixedInputs || additionalInputs) {
+          focusInputError();
+          return false;
+        }
+
+        mpCardForm.createCardToken();
+      },
+
+      placeOrder: function () {
+        var self = this;
+
+        if (this.validate() && additionalValidators.validate()) {
+          console.log('hey');
+          this.isPlaceOrderActionAllowed(false);
+
+          this.getPlaceOrderDeferredObject()
+            .fail(
+              function () {
+                self.isPlaceOrderActionAllowed(true);
+              }
+            ).done(function () {
+            self.afterPlaceOrder();
+            if (self.redirectAfterPlaceOrder) {
+              redirectOnSuccessAction.execute();
+            }
+          });
+
+          return true;
+        }
+
+        return false;
+      },
+
+      setPlaceOrderHandler: function (handler) {
+        this.placeOrderHandler = handler;
       },
 
       afterPlaceOrder: function () {
         window.location = this.getSuccessUrl();
       },
 
-      validate: function () {
-        return this.validateHandler();
-      },
-
       getPlaceOrderDeferredObject: function () {
         return $.when(
           placeOrderAction(this.getData(), this.messageContainer)
         );
+      },
+
+      validate: function () {
+        return this.validateHandler();
       },
 
       initialize: function () {
@@ -387,16 +423,8 @@ define(
         defaultTotal.estimateTotals();
       },
 
-      onlyNumbersInSecurityCode: function (t, evt) {
-        var securityCode = document.querySelector(MPv1.selectors.securityCode);
-
-        if (securityCode.value.match(/[^0-9 ]/g)) {
-          securityCode.value = securityCode.value.replace(/[^0-9 ]/g, '');
-        }
-      },
-
       getCreditcardMini: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['creditcard_mini'];
         }
         return '';

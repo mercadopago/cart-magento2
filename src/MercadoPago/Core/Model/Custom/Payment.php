@@ -429,9 +429,6 @@ class Payment extends Cc implements GatewayInterface
             $preference                 = $this->_coreModel->makeDefaultPreferencePaymentV1($paymentInfo, $this->_getQuote(), $order);
             $preference['installments'] = (int) $payment->getAdditionalInformation('installments');
             $paymentMethod              = $payment->getAdditionalInformation('payment_method_id');
-            if ($paymentMethod == '') {
-                $paymentMethod = $payment->getAdditionalInformation('payment_method_selector');
-            }
 
             $preference['payment_method_id'] = $paymentMethod;
             $preference['token']             = $payment->getAdditionalInformation('token');

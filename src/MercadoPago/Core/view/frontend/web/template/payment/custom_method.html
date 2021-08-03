@@ -296,7 +296,7 @@
                     id="mp-custom-save-payment"
                     data-bind="attr: {title: $t('Place Order')},
                                enable: (getCode() == isChecked()),
-                               click: placeOrder,
+                               click: prePlaceOrder,
                                css: { disabled: !isPlaceOrderActionAllowed() }"
                     class="action primary checkout"
                     disabled
