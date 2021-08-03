@@ -83,7 +83,14 @@ define(
                 if (error) return console.warn('Issuers handling error: ', error);
               },
               onInstallmentsReceived: (error, installments) => {
-                if (error) return console.warn('Installments handling error: ', error);
+                if (error) {
+                  return console.warn('Installments handling error: ', error)
+                }
+
+                console.log(installments);
+
+                var payer_costs = installments.payer_costs;
+                setChangeEventOnInstallments(this.getCountry(), payer_costs);
               },
               onCardTokenReceived: (error, token) => {
                 if (error) {

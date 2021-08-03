@@ -12,6 +12,14 @@ function setChangeEventOnCardNumber() {
   });
 }
 
+function setChangeEventOnInstallments(siteId, payer_costs) {
+  if (siteId === 'MLA') {
+    document.querySelector('#mpInstallments').addEventListener('change', function (e) {
+      showTaxes(payer_costs);
+    });
+  }
+}
+
 function setImageCard(secureThumbnail) {
   document.getElementById('mpCardNumber').style.background = 'url(' + secureThumbnail + ') 98% 50% no-repeat #fff';
 }
@@ -187,5 +195,28 @@ function hideErrors() {
   for (var y = 0; y < document.querySelectorAll('.mp-form-error').length; y++) {
     var small = document.querySelectorAll('.mp-form-error')[y];
     small.style.display = 'none';
+  }
+}
+
+/**
+ * Show taxes resolution 51/2017 for MLA
+ */
+function showTaxes(payer_costs) {
+  var installmentsSelect = document.querySelector('#mpInstallments');
+
+  for (var i = 0; i < payer_costs.length; i++) {
+    if (payer_costs[i].installments === installmentsSelect.value) {
+      var taxes_split = payer_costs[i].labels[0].split('|');
+      var cft = taxes_split[0].replace('_', ' ');
+      var tea = taxes_split[1].replace('_', ' ');
+
+      if (cft === 'CFT 0,00%' && tea === 'TEA 0,00%') {
+        cft = '';
+        tea = '';
+      }
+
+      document.querySelector('#mp-tax-cft-text').innerHTML = cft;
+      document.querySelector('#mp-tax-tea-text').innerHTML = tea;
+    }
   }
 }
