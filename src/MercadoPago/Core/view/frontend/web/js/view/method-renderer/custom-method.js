@@ -103,7 +103,6 @@ define(
                 }
 
                 clearInputs();
-
                 setImageCard(paymentMethods[0].thumbnail);
                 loadAdditionalInfo(paymentMethods[0].additional_info_needed);
                 additionalInfoHandler();
