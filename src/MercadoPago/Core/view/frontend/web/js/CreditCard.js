@@ -162,21 +162,28 @@ function validateAdditionalInputs() {
   return emptyInputs;
 }
 
-function showErrors(errors) {
+function showErrors(error) {
   var form = this.getFormCustom();
 
-  for (var x = 0; x < errors.length; x++) {
-    var code = errors[x].code;
+  for (var x = 0; x < error.cause.length; x++) {
+    var code = error.cause[x].code;
     var span = undefined;
 
     span = form.querySelector('#mp-error-' + code);
 
     if (span !== undefined) {
-      var input = form.querySelector(span.getAttribute('data-main'));
       span.style.display = 'block';
-      input.classList.add('mp-form-control-error');
+
+      if (code === '301') {
+        form.querySelector('#mpCardExpirationYearSelect').classList.add('mp-form-control-error');
+        form.querySelector('#mpCardExpirationMonthSelect').classList.add('mp-form-control-error');
+      } else {
+        form.querySelector(span.getAttribute('data-main')).classList.add('mp-form-control-error');
+      }
     }
   }
+
+  focusInputError();
 }
 
 function focusInputError() {

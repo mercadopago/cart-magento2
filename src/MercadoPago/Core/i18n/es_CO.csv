@@ -508,6 +508,7 @@
 "Invalid card number", "Numero de tarjeta no válido"
 "Invalid card expiration month", "Mes de vencimiento no válido"
 "Invalid card expiration year", "Año de vencimiento no válido"
+"Invalid card expiration date". "Fecha de vencimiento no válido"
 "Invalid cardholder name", "Nombre del titular no válido"
 "Invalid security code", "Código de seguridad no válido"
 "Invalid document number", "Número de documento no válido"

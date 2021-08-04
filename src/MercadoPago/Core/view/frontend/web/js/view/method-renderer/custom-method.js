@@ -93,7 +93,6 @@ define(
               onCardTokenReceived: (error, token) => {
                 if (error) {
                   showErrors(error);
-                  focusInputError();
                   return console.warn('Token handling error: ', error);
                 }
 
