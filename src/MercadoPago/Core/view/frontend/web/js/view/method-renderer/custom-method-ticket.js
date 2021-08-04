@@ -96,10 +96,6 @@ define(
         return '';
       },
 
-      setPlaceOrderHandler: function (handler) {
-        this.placeOrderHandler = handler;
-      },
-
       getCountryId: function () {
         return configPayment['country'];
       },
@@ -130,33 +126,30 @@ define(
 
       getCountTickets: function () {
         var options = this.getTicketsData();
-
         return options.length;
       },
 
       getFirstTicketId: function () {
-
         var options = this.getTicketsData();
-
         return options[0]['id'];
       },
 
       getInitialGrandTotal: function () {
-        if (configPayment != undefined) {
+        if (configPayment !== undefined) {
           return configPayment['grand_total'];
         }
         return '';
       },
 
       getSuccessUrl: function () {
-        if (configPayment != undefined) {
+        if (configPayment !== undefined) {
           return configPayment['success_url'];
         }
         return '';
       },
 
       getPaymentSelected: function () {
-        if (this.getCountTickets() == 1) {
+        if (this.getCountTickets() === 1) {
           var input = document.getElementsByName("mercadopago_custom_ticket[payment_method_ticket]")[0];
           return input.value;
         }
@@ -199,8 +192,22 @@ define(
         return dataObj;
       },
 
+      prePlaceOrder: function () {
+        if (mercadoPagoFormHandlerTicket(this.getCountryId())) {
+          this.placeOrder();
+        }
+      },
+
+      setPlaceOrderHandler: function (handler) {
+        this.placeOrderHandler = handler;
+      },
+
       afterPlaceOrder: function () {
         window.location = this.getSuccessUrl();
+      },
+
+      getPlaceOrderDeferredObject: function () {
+        return $.when((this.getData(), this.messageContainer));
       },
 
       validate: function () {
@@ -212,12 +219,8 @@ define(
         defaultTotal.estimateTotals();
       },
 
-      /**
-       * Ticket Mini Logo
-       * @returns {string|*}
-       */
       getTicketMini: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['ticket_mini'];
         }
         return '';

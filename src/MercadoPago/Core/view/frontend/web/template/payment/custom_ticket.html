@@ -109,9 +109,11 @@
                             <input
                                 type="text"
                                 name="mercadopago_custom_ticket[firstname]"
+                                data-checkout="mp_firstname"
                                 id="mp_firstname"
                                 class="form-control-mine required-entry-firstname"
                                 data-bind="attr: { title: $t('Name')" />
+                            <small class="mp-form-error" data-main="#mp_firstname" id="mp_error_firstname">This is a required field</small>
                         </div>
 
                         <div class="form-col-6" id="mp_box_lastname">
@@ -119,9 +121,11 @@
                             <input
                                 type="text"
                                 name="mercadopago_custom_ticket[lastname]"
+                                data-checkout="mp_lastname"
                                 id="mp_lastname"
                                 class="form-control-mine required-entry-lastname"
                                 data-bind="attr: { title: $t('Surname') }" />
+                            <small class="mp-form-error" data-main="#mp_lastname" id="error_lastname">This is a required field</small>
                         </div>
                     </div>
 
@@ -136,52 +140,64 @@
                             <input
                                 type="text"
                                 name="mercadopago_custom_ticket[doc-number]"
+                                data-checkout="mp_doc_number"
                                 class="form-control-mine required-entry-doc-number"
                                 id="mp_doc_number"
                                 maxlength="14"
+                                onkeyup="maskInput(this, mcpf)"
                                 data-bind="attr: { title: $t('Document Number') }" />
+                            <small class="mp-form-error" data-main="#mp_doc_number" id="mp_error_doc_number">This is a required field</small>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-col-8">
-                            <label for="MPv1-address" class="require"><!-- ko i18n: 'Address'--><!-- /ko --></label>
+                            <label for="mp_address" class="require"><!-- ko i18n: 'Address'--><!-- /ko --></label>
                             <input
                                 type="text"
                                 name="mercadopago_custom_ticket[address]"
-                                id="MPv1-address"
+                                data-checkout="mp_address"
+                                id="mp_address"
                                 class="form-control-mine required-entry-address"
                                 data-bind="attr: {title: $t('Address')}" />
+                            <small class="mp-form-error" data-main="#mp_address" id="mp_error_address">This is a required field</small>
                         </div>
                         <div class="form-col-4">
-                            <label for="MPv1-number" class="require"><!-- ko i18n: 'Number'--><!-- /ko --></label>
+                            <label for="mp_number" class="require"><!-- ko i18n: 'Number'--><!-- /ko --></label>
                             <input
                                 type="text"
                                 name="mercadopago_custom_ticket[address-number]"
-                                id="MPv1-number"
+                                data-checkout="mp_number"
+                                id="mp_number"
                                 class=" form-control-mine required-entry-address-number"
                                 onkeyup="maskInput(this, minteger)"
                                 data-bind="attr: { title: $t('Number') }" />
+                            <small class="mp-form-error" data-main="#mp_number" id="mp_error_number">This is a required field</small>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-col-6">
-                            <label for="MPv1-city" class="require" ><!-- ko i18n: 'City'--><!-- /ko --></label>
+                            <label for="mp_city" class="require" ><!-- ko i18n: 'City'--><!-- /ko --></label>
                             <input
                                 type="text"
                                 name="mercadopago_custom_ticket[address-city]"
-                                id="MPv1-city"
+                                data-checkout="mp_city"
+                                id="mp_city"
                                 class="form-control-mine required-entry-address-city"
                                 data-bind="attr: { title: $t('City') }" />
+                            <small class="mp-form-error" data-main="#mp_city" id="mp_error_city">This is a required field</small>
                         </div>
 
                         <div class="form-col-6">
-                            <label for="MPv1-state" class="require"><!-- ko i18n: 'State'--><!-- /ko --></label>
-                            <select name="mercadopago_custom_ticket[address-state]"
-                                    id="MPv1-state"
-                                    class="form-control-mine required-entry-address-state"
-                                    data-bind="attr: { title: $t('State') }">
+                            <label for="mp_state" class="require"><!-- ko i18n: 'State'--><!-- /ko --></label>
+                            <select
+                                name="mercadopago_custom_ticket[address-state]"
+                                data-checkout="mp_state"
+                                id="mp_state"
+                                class="form-control-mine required-entry-address-state"
+                                data-bind="attr: { title: $t('State') }"
+                            >
                                 <option value="">
                                     <!-- ko i18n: 'Select'--><!-- /ko -->
                                     ...
@@ -214,20 +230,23 @@
                                 <option value="SE">Sergipe</option>
                                 <option value="TO">Tocantins</option>
                             </select>
+                            <small class="mp-form-error" data-main="#mp_state" id="mp_error_state">This is a required field</small>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-col-12">
-                            <label for="MPv1-zipcode" class="require"><!-- ko i18n: 'Zipcode'--><!-- /ko --></label>
+                            <label for="mp_zipcode" class="require"><!-- ko i18n: 'CEP'--><!-- /ko --></label>
                             <input
                                 type="text"
                                 name="mercadopago_custom_ticket[address-zipcode]"
-                                id="MPv1-zipcode"
+                                data-checkout="mp_zipcode"
+                                id="mp_zipcode"
                                 onkeyup="maskInput(this, mcep)"
                                 maxlength="9"
                                 class="form-control-mine required-entry-address-zipcode"
                                 data-bind="attr: { title: $t('Zipcode') }" />
+                            <small class="mp-form-error" data-main="#mp_zipcode" id="mp_error_zipcode">This is a required field</small>
                         </div>
                     </div>
 
@@ -276,7 +295,7 @@
                     type="submit"
                     data-bind="attr: {title: $t('Place Order')},
                         enable: (getCode() == isChecked()),
-                        click: placeOrder,
+                        click: prePlaceOrder,
                         css: {disabled: !isPlaceOrderActionAllowed()}"
                     class="action primary checkout"
                     disabled>

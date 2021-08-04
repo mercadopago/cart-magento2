@@ -375,7 +375,6 @@ define(
         var self = this;
 
         if (this.validate() && additionalValidators.validate()) {
-          console.log('hey');
           this.isPlaceOrderActionAllowed(false);
 
           this.getPlaceOrderDeferredObject()

@@ -667,3 +667,7 @@ input.has-error, select.has-error, textarea.has-error {
 .mp-mb-12 {
   margin-bottom: 12px !important;
 }
+
+.mp-mb-0 {
+  margin-bottom: 0 !important;
+}
