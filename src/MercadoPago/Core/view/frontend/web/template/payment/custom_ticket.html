@@ -294,9 +294,9 @@
                     data-role="review-save"
                     type="submit"
                     data-bind="attr: {title: $t('Place Order')},
-                        enable: (getCode() == isChecked()),
-                        click: prePlaceOrder,
-                        css: {disabled: !isPlaceOrderActionAllowed()}"
+                               enable: (getCode() == isChecked()),
+                               click: placeOrder,
+                               css: {disabled: !isPlaceOrderActionAllowed()}"
                     class="action primary checkout"
                     disabled>
                     <span data-bind="i18n: 'Place Order'"></span>

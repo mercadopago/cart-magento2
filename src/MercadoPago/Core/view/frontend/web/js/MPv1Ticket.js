@@ -50,17 +50,19 @@ function validateDocumentInputs(siteId) {
 
 function mercadoPagoFormHandlerTicket(siteId) {
     if (siteId === 'MLB') {
-      if (validateInputs() && validateDocumentNumber()) {
-        return true;
-      } else {
-        return false;
-      }
+      var inputs = validateInputs();
+      var documentNumber = validateDocumentNumber();
+
+      console.log(inputs);
+      console.log(documentNumber);
+
+      return inputs && documentNumber;
     }
 
     return true;
 }
 
-function validateInputs () {
+function validateInputs() {
   var form = getFormTicket();
   var formInputs = form.querySelectorAll('[data-checkout]');
   var small = form.querySelectorAll('.mp-form-error');
@@ -85,6 +87,8 @@ function validateInputs () {
       return false;
     }
   }
+
+  return true;
 }
 
 function validateDocumentNumber () {
@@ -154,11 +158,8 @@ function validateCPF (strCPF) {
   if ((Resto === 10) || (Resto === 11)) {
     Resto = 0;
   }
-  if (Resto !== parseInt(strCPF.substring(10, 11))) {
-    return false;
-  }
 
-  return true;
+  return Resto === parseInt(strCPF.substring(10, 11));
 }
 
 function validateCNPJ (strCNPJ) {
@@ -214,9 +215,6 @@ function validateCNPJ (strCNPJ) {
     }
   }
   resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-  if (resultado.toString() !== digitos.charAt(1)) {
-    return false;
-  }
 
-  return true;
+  return resultado.toString() === digitos.charAt(1);
 }

@@ -382,12 +382,13 @@ define(
               function () {
                 self.isPlaceOrderActionAllowed(true);
               }
-            ).done(function () {
-            self.afterPlaceOrder();
-            if (self.redirectAfterPlaceOrder) {
-              redirectOnSuccessAction.execute();
-            }
-          });
+            )
+            .done(function () {
+              self.afterPlaceOrder();
+              if (self.redirectAfterPlaceOrder) {
+                redirectOnSuccessAction.execute();
+              }
+            });
 
           return true;
         }

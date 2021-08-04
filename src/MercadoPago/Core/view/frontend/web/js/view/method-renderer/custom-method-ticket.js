@@ -11,6 +11,7 @@ define(
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/model/payment/additional-validators',
+    'Magento_Checkout/js/action/place-order',
     'MercadoPago_Core/js/Masks',
     'MercadoPago_Core/js/MPv1Ticket'
   ],
@@ -24,9 +25,12 @@ define(
     fullScreenLoader,
     $t,
     defaultTotal,
-    cartCache
+    cartCache,
+    additionalValidators,
+    placeOrderAction,
   ) {
     'use strict';
+
     var configPayment = window.checkoutConfig.payment.mercadopago_customticket;
 
     return Component.extend({
@@ -39,8 +43,6 @@ define(
       validateHandler: null,
 
       initializeMethod: function () {
-        var self = this;
-
         if (this.getCountryId() === 'MLB') {
           validateDocumentInputs(this.getCountryId())
         }
@@ -192,10 +194,36 @@ define(
         return dataObj;
       },
 
-      prePlaceOrder: function () {
-        if (mercadoPagoFormHandlerTicket(this.getCountryId())) {
-          this.placeOrder();
+      placeOrder: function (data, event) {
+        var self = this;
+        var validateInputs = mercadoPagoFormHandlerTicket(this.getCountryId());
+
+        if (event) {
+          event.preventDefault();
         }
+
+        if (this.validate() && additionalValidators.validate() && validateInputs) {
+          this.isPlaceOrderActionAllowed(false);
+
+          this.getPlaceOrderDeferredObject()
+            .fail(
+              function () {
+                self.isPlaceOrderActionAllowed(true);
+              }
+            ).done(
+            function () {
+              self.afterPlaceOrder();
+
+              if (self.redirectAfterPlaceOrder) {
+                redirectOnSuccessAction.execute();
+              }
+            }
+          );
+
+          return true;
+        }
+
+        return false;
       },
 
       setPlaceOrderHandler: function (handler) {
@@ -207,7 +235,9 @@ define(
       },
 
       getPlaceOrderDeferredObject: function () {
-        return $.when((this.getData(), this.messageContainer));
+        return $.when(
+          placeOrderAction(this.getData(), this.messageContainer)
+        );
       },
 
       validate: function () {
