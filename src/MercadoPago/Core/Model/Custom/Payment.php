@@ -190,37 +190,37 @@ class Payment extends Cc implements GatewayInterface
     /**
      * @var QuoteRepository
      */
-    protected $quoteRepository;
+    protected $_quoteRepository;
 
     /**
      * @var CartManagement
      */
-    protected $quoteManagement;
+    protected $_quoteManagement;
 
     /**
      * @var Version
      */
-    protected $version;
+    protected $_version;
 
     /**
      * @var ProductMetadataInterface
      */
-    protected $productMetadata;
+    protected $_productMetadata;
 
     /**
      * @var Image
      */
-    protected $helperImage;
+    protected $_helperImage;
 
     /**
      * @var OrderInterface
      */
-    protected $order;
+    protected $_order;
 
     /**
      * @var PaymentNotification
      */
-    protected $paymentNotification;
+    protected $_paymentNotification;
 
     /**
      *

@@ -2,60 +2,79 @@
 
 namespace MercadoPago\Core\Block;
 
+use Exception;
+use Magento\Checkout\Model\Session;
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Asset\Repository;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Quote\Model\QuoteFactory;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Payment;
+use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Pix;
+use MercadoPago\Core\Helper\Round;
+use MercadoPago\Core\Model\CoreFactory;
 
 /**
  * Class AbstractSuccess
  *
  * @package MercadoPago\Core\Block
  */
-class AbstractSuccess extends \Magento\Framework\View\Element\Template
+class AbstractSuccess extends Template
 {
-
     /**
-     * @var \MercadoPago\Core\Model\Factory
+     * @var CoreFactory
      */
     protected $_coreFactory;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var OrderFactory
      */
     protected $_orderFactory;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $_checkoutSession;
 
     /**
-     * @var Magento\Store\Model\ScopeInterface
+     * @var ScopeInterface
      */
     protected $_scopeConfig;
 
-      /**
-       * @var Repository
-       */
+    /**
+     * @var Repository
+     */
     protected $_assetRepo;
 
+    /**
+     * @var QuoteFactory
+     */
+    protected $_quoteFactory;
 
     /**
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \MercadoPago\Core\Model\CoreFactory              $coreFactory
-     * @param \Magento\Sales\Model\OrderFactory                $orderFactory
-     * @param \Magento\Checkout\Model\Session                  $checkoutSession
-     * @param \Magento\Store\Model\ScopeInterface              $scopeConfig
-     * @param array                                            $data
+     * @param Context $context
+     * @param CoreFactory $coreFactory
+     * @param OrderFactory $orderFactory
+     * @param Session $checkoutSession
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Repository $assetRepo
+     * @param QuoteFactory $quoteFactory
+     * @param array $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
-        \MercadoPago\Core\Model\CoreFactory $coreFactory,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        Context $context,
+        CoreFactory $coreFactory,
+        OrderFactory $orderFactory,
+        Session $checkoutSession,
+        ScopeConfigInterface $scopeConfig,
         Repository $assetRepo,
+        QuoteFactory $quoteFactory,
         array $data=[]
     ) {
         $this->_coreFactory     = $coreFactory;
@@ -63,13 +82,26 @@ class AbstractSuccess extends \Magento\Framework\View\Element\Template
         $this->_checkoutSession = $checkoutSession;
         $this->_scopeConfig     = $scopeConfig;
         $this->_assetRepo       = $assetRepo;
+        $this->_quoteFactory    = $quoteFactory;
+
         parent::__construct(
             $context,
             $data
         );
-
     }//end __construct()
 
+    /**
+     * @throws Exception
+     */
+    public function persistCartSession() {
+        $order = $this->_checkoutSession->getLastRealOrder();
+        $quote = $this->_quoteFactory->create()->loadByIdWithoutStore($order->getQuoteId());
+
+        if ($quote->getId()) {
+            $quote->setIsActive(true)->setReservedOrderId(null)->save();
+            $this->_checkoutSession->replaceQuote($quote);
+        }
+    }
 
     /**
      * @return string
@@ -77,57 +109,43 @@ class AbstractSuccess extends \Magento\Framework\View\Element\Template
     public function getConfigExpirationInfo()
     {
         $expirations = array_flip(Pix::EXPIRATION_TIME);
-        $minutes        = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_EXPIRATION_MINUTES, ScopeInterface::SCOPE_STORE);
+        $minutes     = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_EXPIRATION_MINUTES, ScopeInterface::SCOPE_STORE);
 
         if (isset($expirations[$minutes])) {
             return $expirations[$minutes];
         }
 
         return 'N/A';
-
     }//end getConfigExpirationInfo()
-
 
     /**
      * @return string
      */
     public function getPixImg()
     {
-        $pixImg = $this->_assetRepo->getUrl('MercadoPago_Core::images/logo_pix.png');
-
-        return $pixImg;
-
+        return $this->_assetRepo->getUrl('MercadoPago_Core::images/logo_pix.png');
     }//end getPixImg()
 
-
     /**
-     * @return \Magento\Sales\Model\Order\Payment
+     * @return Payment
      */
     public function getPayment()
     {
-        $order   = $this->getOrder();
-        $payment = $order->getPayment();
-
-        return $payment;
-
+        $order = $this->getOrder();
+        return $order->getPayment();
     }//end getPayment()
 
-
     /**
-     * @return \Magento\Sales\Model\Order
+     * @return Order
      */
     public function getOrder()
     {
         $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
-        $order            = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
-
-        return $order;
-
+        return $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
     }//end getOrder()
 
-
     /**
-     * @return float|string
+     * @return float
      */
     public function getTotal()
     {
@@ -138,12 +156,8 @@ class AbstractSuccess extends \Magento\Framework\View\Element\Template
             $total = ($order->getBasePrice() + $order->getBaseShippingAmount());
         }
 
-        $total = number_format($total, 2, '.', '');
-
-        return $total;
-
+        return Round::roundWithoutSiteId($total);
     }//end getTotal()
-
 
     /**
      * @return mixed
@@ -151,22 +165,16 @@ class AbstractSuccess extends \Magento\Framework\View\Element\Template
     public function getEntityId()
     {
         return $this->getOrder()->getEntityId();
-
     }//end getEntityId()
-
 
     /**
      * @return string
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getPaymentMethod()
     {
-        $payment_method = $this->getPayment()->getMethodInstance()->getCode();
-
-        return $payment_method;
-
+        return $this->getPayment()->getMethodInstance()->getCode();
     }//end getPaymentMethod()
-
 
     /**
      * @return array
@@ -177,15 +185,12 @@ class AbstractSuccess extends \Magento\Framework\View\Element\Template
         $info_payments = $this->_coreFactory->create()->getInfoPaymentByOrder($order_id);
 
         return $info_payments;
-
     }//end getInfoPayment()
-
 
     /**
      * Return a message to show in success page
      *
      * @param object $payment
-     *
      * @return string
      */
     public function getMessageByStatus($payment)
@@ -197,32 +202,26 @@ class AbstractSuccess extends \Magento\Framework\View\Element\Template
         $installments   = $payment['installments'] != '' ? $payment['installments'] : '';
 
         return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $installments, $amount);
-
     }//end getMessageByStatus()
 
-
     /**
-     * Return a url to go to order detail page
+     * Return url to go to order detail page
      *
      * @return string
      */
     public function getOrderUrl()
     {
         $params = ['order_id' => $this->_checkoutSession->getLastRealOrder()->getId()];
-        $url    = $this->_urlBuilder->getUrl('sales/order/view', $params);
-
-        return $url;
-
+        return $this->_urlBuilder->getUrl('sales/order/view', $params);
     }//end getOrderUrl()
 
-
-    public function getReOrderUrl()
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public function getCheckoutUrl()
     {
-        $params = ['order_id' => $this->_checkoutSession->getLastRealOrder()->getId()];
-        $url    = $this->_urlBuilder->getUrl('sales/order/reorder', $params);
-        return $url;
-
+        $this->persistCartSession();
+        return $this->getUrl('checkout', ['_secure' => true]);
     }//end getReOrderUrl()
-
-
 }//end class
