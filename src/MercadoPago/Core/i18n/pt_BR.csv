@@ -500,3 +500,4 @@ Cannot operate between users from different countries.", "Não é possível oper
 "Invalid cardholder name", "Nome do titular inválido"
 "Invalid security code", "Código de segurança inválido"
 "Invalid document number", "Número de documento inválido"
+"This is a required field", "Este é um campo obrigatório"

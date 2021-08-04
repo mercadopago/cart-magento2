@@ -44,12 +44,23 @@
                     <!-- ko i18n: 'There are no payment methods available, please contact the seller.'--><!-- /ko -->
                 <!-- /ko -->
 
-                <!-- ko if: (getCountTickets() == 1)-->
-                <input type="hidden"
-                       name="mercadopago_custom_ticket[payment_method_ticket]"
-                       class="optionsTicketMp"
-                       data-bind="'attr':{value: getFirstTicketId()}"
-                       id="payment_method_ticket" />
+                <!-- ko if: (getCountTickets() == 1) -->
+                <ul id="mercadopago-payment-methods-ticket">
+                    <!-- ko foreach: {data: getTicketsData(), as: 'ticket'} -->
+                    <li class="mercadopago-ticket-option">
+                        <input
+                            type="radio"
+                            class="optionsTicketMp"
+                            name="mercadopago_custom_ticket[payment_method_ticket]"
+                            data-bind="'attr':{ value: ticket.id, checked: true, 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true }) }" />
+
+                        <label class="mercadopago-ticket-label">
+                            <img data-bind="'attr':{src: ticket.secure_thumbnail, alt: ticket.name}" />
+                            <label class="mercadopago-ticket-label" data-bind="text: ticket.name"></label>
+                        </label>
+                    </li>
+                    <!--/ko-->
+                </ul>
                 <!-- /ko -->
 
                 <!-- ko if: (getCountTickets() > 1) -->
@@ -113,7 +124,7 @@
                                 id="mp_firstname"
                                 class="form-control-mine required-entry-firstname"
                                 data-bind="attr: { title: $t('Name')" />
-                            <small class="mp-form-error" data-main="#mp_firstname" id="mp_error_firstname">This is a required field</small>
+                            <small class="mp-form-error" data-main="#mp_firstname" id="mp_error_firstname"><!-- ko i18n: 'This is a required field'--><!-- /ko --></small>
                         </div>
 
                         <div class="form-col-6" id="mp_box_lastname">
@@ -125,7 +136,7 @@
                                 id="mp_lastname"
                                 class="form-control-mine required-entry-lastname"
                                 data-bind="attr: { title: $t('Surname') }" />
-                            <small class="mp-form-error" data-main="#mp_lastname" id="error_lastname">This is a required field</small>
+                            <small class="mp-form-error" data-main="#mp_lastname" id="error_lastname"><!-- ko i18n: 'This is a required field'--><!-- /ko --></small>
                         </div>
                     </div>
 
@@ -146,7 +157,7 @@
                                 maxlength="14"
                                 onkeyup="maskInput(this, mcpf)"
                                 data-bind="attr: { title: $t('Document Number') }" />
-                            <small class="mp-form-error" data-main="#mp_doc_number" id="mp_error_doc_number">This is a required field</small>
+                            <small class="mp-form-error" data-main="#mp_doc_number" id="mp_error_doc_number"><!-- ko i18n: 'Invalid document number'--><!-- /ko --></small>
                         </div>
                     </div>
 
@@ -160,7 +171,7 @@
                                 id="mp_address"
                                 class="form-control-mine required-entry-address"
                                 data-bind="attr: {title: $t('Address')}" />
-                            <small class="mp-form-error" data-main="#mp_address" id="mp_error_address">This is a required field</small>
+                            <small class="mp-form-error" data-main="#mp_address" id="mp_error_address"><!-- ko i18n: 'This is a required field'--><!-- /ko --></small>
                         </div>
                         <div class="form-col-4">
                             <label for="mp_number" class="require"><!-- ko i18n: 'Number'--><!-- /ko --></label>
@@ -172,7 +183,7 @@
                                 class=" form-control-mine required-entry-address-number"
                                 onkeyup="maskInput(this, minteger)"
                                 data-bind="attr: { title: $t('Number') }" />
-                            <small class="mp-form-error" data-main="#mp_number" id="mp_error_number">This is a required field</small>
+                            <small class="mp-form-error" data-main="#mp_number" id="mp_error_number"><!-- ko i18n: 'This is a required field'--><!-- /ko --></small>
                         </div>
                     </div>
 
@@ -186,7 +197,7 @@
                                 id="mp_city"
                                 class="form-control-mine required-entry-address-city"
                                 data-bind="attr: { title: $t('City') }" />
-                            <small class="mp-form-error" data-main="#mp_city" id="mp_error_city">This is a required field</small>
+                            <small class="mp-form-error" data-main="#mp_city" id="mp_error_city"><!-- ko i18n: 'This is a required field'--><!-- /ko --></small>
                         </div>
 
                         <div class="form-col-6">
@@ -230,7 +241,7 @@
                                 <option value="SE">Sergipe</option>
                                 <option value="TO">Tocantins</option>
                             </select>
-                            <small class="mp-form-error" data-main="#mp_state" id="mp_error_state">This is a required field</small>
+                            <small class="mp-form-error" data-main="#mp_state" id="mp_error_state"><!-- ko i18n: 'This is a required field'--><!-- /ko --></small>
                         </div>
                     </div>
 
@@ -246,7 +257,7 @@
                                 maxlength="9"
                                 class="form-control-mine required-entry-address-zipcode"
                                 data-bind="attr: { title: $t('Zipcode') }" />
-                            <small class="mp-form-error" data-main="#mp_zipcode" id="mp_error_zipcode">This is a required field</small>
+                            <small class="mp-form-error" data-main="#mp_zipcode" id="mp_error_zipcode"><!-- ko i18n: 'This is a required field'--><!-- /ko --></small>
                         </div>
                     </div>
 

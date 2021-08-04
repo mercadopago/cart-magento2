@@ -511,3 +511,4 @@
 "Invalid cardholder name", "Nombre del titular no válido"
 "Invalid security code", "Código de seguridad no válido"
 "Invalid document number", "Número de documento no válido"
+"This is a required field", "Este es un campo obligatorio"
