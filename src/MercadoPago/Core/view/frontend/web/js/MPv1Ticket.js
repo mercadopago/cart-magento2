@@ -53,9 +53,6 @@ function mercadoPagoFormHandlerTicket(siteId) {
       var inputs = validateInputs();
       var documentNumber = validateDocumentNumber();
 
-      console.log(inputs);
-      console.log(documentNumber);
-
       return inputs && documentNumber;
     }
 

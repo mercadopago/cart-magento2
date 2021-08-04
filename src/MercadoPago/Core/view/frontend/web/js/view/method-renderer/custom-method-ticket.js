@@ -44,7 +44,8 @@ define(
 
       initializeMethod: function () {
         if (this.getCountryId() === 'MLB') {
-          validateDocumentInputs(this.getCountryId())
+          this.setBillingAddress();
+          validateDocumentInputs(this.getCountryId());
         }
       },
 
@@ -63,14 +64,14 @@ define(
             }
           }
 
-          document.querySelector(MPv1Ticket.selectors.firstName).value = "firstname" in billingAddress ? billingAddress.firstname : '';
-          document.querySelector(MPv1Ticket.selectors.lastName).value = "lastname" in billingAddress ? billingAddress.lastname : '';
-          document.querySelector(MPv1Ticket.selectors.address).value = address;
-          document.querySelector(MPv1Ticket.selectors.number).value = number;
-          document.querySelector(MPv1Ticket.selectors.city).value = "city" in billingAddress ? billingAddress.city : '';
-          document.querySelector(MPv1Ticket.selectors.state).value = "regionCode" in billingAddress ? billingAddress.regionCode : '';
-          document.querySelector(MPv1Ticket.selectors.zipcode).value = "postcode" in billingAddress ? billingAddress.postcode : '';
-          document.querySelector(MPv1Ticket.selectors.docNumber).value  = "vatId" in billingAddress ? billingAddress.vatId : '';
+          document.getElementById('mp_number').value = number;
+          document.getElementById('mp_address').value = address;
+          document.getElementById('mp_doc_number').value  = "vatId" in billingAddress ? billingAddress.vatId : '';
+          document.getElementById('mp_firstname').value = "firstname" in billingAddress ? billingAddress.firstname : '';
+          document.getElementById('mp_lastname').value = "lastname" in billingAddress ? billingAddress.lastname : '';
+          document.getElementById('mp_state').value = "regionCode" in billingAddress ? billingAddress.regionCode : '';
+          document.getElementById('mp_zipcode').value = "postcode" in billingAddress ? billingAddress.postcode : '';
+          document.getElementById('mp_city').value = "city" in billingAddress ? billingAddress.city : '';
         }
       },
 
@@ -179,19 +180,28 @@ define(
         };
 
         if (this.getCountryId() == 'MLB' && this.getCountTickets() > 0) {
-          //febraban rules
-          // dataObj.additional_data.firstName = document.querySelector(MPv1Ticket.selectors.firstName).value
-          // dataObj.additional_data.lastName = document.querySelector(MPv1Ticket.selectors.lastName).value
-          // dataObj.additional_data.docType = MPv1Ticket.getDocTypeSelected();
-          // dataObj.additional_data.docNumber = document.querySelector(MPv1Ticket.selectors.docNumber).value
-          // dataObj.additional_data.address = document.querySelector(MPv1Ticket.selectors.address).value
-          // dataObj.additional_data.addressNumber = document.querySelector(MPv1Ticket.selectors.number).value
-          // dataObj.additional_data.addressCity = document.querySelector(MPv1Ticket.selectors.city).value
-          // dataObj.additional_data.addressState = document.querySelector(MPv1Ticket.selectors.state).value
-          // dataObj.additional_data.addressZipcode = document.querySelector(MPv1Ticket.selectors.zipcode).value
+          dataObj.additional_data.firstName = document.getElementById('mp_firstname').value;
+          dataObj.additional_data.lastName = document.getElementById('mp_lastname').value;
+          dataObj.additional_data.docType = this.getDocumentType();
+          dataObj.additional_data.docNumber = document.getElementById('mp_doc_number').value;
+          dataObj.additional_data.address = document.getElementById('mp_address').value;
+          dataObj.additional_data.addressNumber = document.getElementById('mp_number').value;
+          dataObj.additional_data.addressCity = document.getElementById('mp_city').value;
+          dataObj.additional_data.addressState = document.getElementById('mp_state').value;
+          dataObj.additional_data.addressZipcode = document.getElementById('mp_zipcode').value;
         }
 
         return dataObj;
+      },
+
+      getDocumentType: function () {
+        var docType = document.getElementsByName('mercadopago_custom_ticket[doc-type]');
+
+        for (var i = 0; i < docType.length; i++) {
+          if (docType[i].checked) {
+            return docType[i].value;
+          }
+        }
       },
 
       placeOrder: function (data, event) {
