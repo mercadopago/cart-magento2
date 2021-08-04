@@ -490,7 +490,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
                 'street_number' => '',
             ],
             'phone' => [
-                "area_code" => '00',
+                "area_code" => '-',
                 "number"    => $shipping['telephone']
             ],
         ];

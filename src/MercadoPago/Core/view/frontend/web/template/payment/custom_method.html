@@ -1,19 +1,16 @@
-<div
-    class="payment-method"
-    data-bind="css: {'_active': (getCode() == isChecked())}"
->
+<div class="payment-method" data-bind="css: { '_active': (getCode() == isChecked()) }">
     <div class="payment-method-title field choice">
         <input
             type="radio"
             name="payment[method]"
             class="radio"
-            data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"
+            data-bind="attr: { 'id': getCode() }, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"
         />
-        <label class="label" data-bind="attr: {'for': getCode()}">
+        <label class="label" data-bind="attr: { 'for': getCode() }">
             <!-- Mercado Pago Logo -->
             <img
-                data-bind="attr: {alt: 'Mercado Pago',src:getCreditcardMini()}"
                 class="payment-icon mercadopago-payment-icon"
+                data-bind="attr: { alt: 'Mercado Pago', src:getCreditcardMini() }"
             />
             <!-- Mercado Pago Logo -->
             <span data-bind="text: getTitle()"></span>
@@ -22,8 +19,8 @@
         <!-- ko if: (existBanner() == true)-->
         <div class="class-custom-banner-checkout">
             <img
-                data-bind="attr: {alt: 'MercadoPago Banner', src: getBannerUrl()}"
                 class="payment-banner-checkout"
+                data-bind="attr: { alt: 'MercadoPago Banner', src: getBannerUrl() }"
             />
         </div>
         <!--/ko-->
@@ -31,7 +28,7 @@
 
     <div class="payment-method-content">
         <!-- ko foreach: getRegion('messages') -->
-        <!-- ko template: getTemplate() --><!-- /ko -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
         <!-- ko if: (getMpWalletButton() != 0)-->
         <div class="mp-wb-card">
@@ -44,9 +41,7 @@
 
             <div class="mp-wb-body">
                 <div class="wp-wb-logo-frame">
-                    <img
-                        data-bind="attr: { alt: 'Mercado Pago', src: getMinilogo() }"
-                    />
+                    <img data-bind="attr: { alt: 'Mercado Pago', src: getMinilogo() }" />
                 </div>
 
                 <p class="mp-wb-body-title">
@@ -73,7 +68,7 @@
             action="#"
             method="post"
             data-bind="mageInit: {
-                    'transparent':{
+                      'transparent':{
                         'context': context(),
                         'controller': getControllerName(),
                         'gateway': getCode(),
@@ -82,7 +77,7 @@
                         'dateDelim': getDateDelim(),
                         'cardFieldsMap': getCardFieldsMap(),
                         'nativeAction': getSaveOrderUrl()
-                    }, 'validation':[]}"
+                      }, 'validation':[]}"
         >
             <!-- ko if: (getMpWalletButton() != 0)-->
             <p class="mp-custom-title">
@@ -90,401 +85,176 @@
             </p>
             <!--/ko-->
 
-            <div id="mercadopago-form-customer-and-card">
-                <div class="mp-box-inputs mp-line">
-                    <label for="paymentMethodIdSelector">
-                        <!-- ko i18n: 'Payment Method'--><!-- /ko -->
-                        <em>*</em>
-                    </label>
-                    <select
-                        id="paymentMethodSelector"
-                        name="mercadopago_custom[paymentMethodSelector]"
-                        data-checkout="cardId"
-                    >
-                        <optgroup
-                            data-bind='attr: {label: $t("Your Card")}, foreach: getCardListCustomerCards()'
-                            id="payment-methods-for-customer-and-cards"
-                        >
-                            <option
-                                data-bind="text: text,  attr: { first_six_digits: first_six_digits, last_four_digits: last_four_digits, security_code_length: security_code_length, type_checkout: type_checkout, payment_method_id: payment_method_id, value: id}"
-                            ></option>
-                        </optgroup>
-
-                        <optgroup
-                            id="payment-methods-list-other-cards"
-                            data-bind="attr: {label: $t('Other Cards')}"
-                        >
-                            <option value="-1">
-                                <!-- ko i18n: 'Other Card'--><!-- /ko -->
-                            </option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <div
-                    class="mp-box-inputs mp-line"
-                    id="mp-securityCode-customer-and-card"
-                >
-                    <div class="mp-box-inputs mp-col-45">
-                        <label for="customer-and-card-securityCode">
-                            <!-- ko i18n: 'Security code'--><!-- /ko -->
-                            <em>*</em>
-                        </label>
-                        <input
-                            type="text"
-                            id="customer-and-card-securityCode"
-                            data-checkout="securityCode"
-                            autocomplete="off"
-                            maxlength="4"
-                            data-bind="attr: {
-                                    'data-validate': JSON.stringify({required:true})},
-                                    event: { keyup: onlyNumbersInSecurityCode, blur: validateSecurityCode }"
-                        />
-
-                        <span
-                            class="mp-error"
-                            id="mp-error-224"
-                            data-main="#customer-and-card-securityCode"
-                        >
-                            <!-- ko i18n: 'Parameter securityCode can not be null/empty'-->
-                            <!-- /ko -->
-                        </span>
-                        <span
-                            class="mp-error"
-                            id="mp-error-E302"
-                            data-main="#customer-and-card-securityCode"
-                        >
-                            <!-- ko i18n: 'Invalid Security Code'-->
-                            <!-- /ko -->
-                        </span>
-                        <span
-                            class="mp-error"
-                            id="mp-error-E203"
-                            data-main="#customer-and-card-securityCode"
-                        >
-                            <!-- ko i18n: 'Invalid Security Code'-->
-                            <!-- /ko -->
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <!--  end mercadopago-form-osc -->
-
             <div id="mercadopago-form">
                 <div class="mp-box-inputs mp-col-100">
-                    <label for="cardNumber">
+                    <label for="mpCardNumber">
                         <!-- ko i18n: 'Credit card number'--><!-- /ko -->
                         <em>*</em>
                     </label>
                     <input
                         type="text"
-                        id="cardNumber"
-                        data-checkout="cardNumber"
+                        id="mpCardNumber"
+                        data-checkout="mpCardNumber"
                         autocomplete="off"
-                        maxlength="19"
+                        maxlength="24"
                         minlength="13"
-                        required
-                        data-bind="event: { blur: validateCreditCardNumber }"
+                        onkeyup="maskInput(this, mcc)"
                     />
 
-                    <span
-                        class="mp-error"
-                        id="mp-error-205"
-                        data-main="#cardNumber"
-                    >
-                        <!-- ko i18n: 'Parameter cardNumber can not be null/empty'-->
-                        <!-- /ko -->
-                    </span>
-                    <span
-                        class="mp-error"
-                        id="mp-error-E301"
-                        data-main="#cardNumber"
-                    >
-                        <!-- ko i18n: 'Invalid Card Number'-->
-                        <!-- /ko -->
-                    </span>
+                    <small id="mp-error-205" class="mp-form-error" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
+                    <small id="mp-error-E301" class="mp-form-error mp-error-E301" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
 
-                    <div
-                        class="mp-payment-methods-container"
-                        data-bind="foreach: getPaymentMethods()"
-                    >
-                        <img
-                            data-bind="attr: {src: src, alt: name}"
-                            class="img-fluid mp-pm-card-image"
-                        />
+                    <div class="mp-payment-methods-container" data-bind="foreach: getPaymentMethods()">
+                        <img data-bind="attr: { src: src, alt: name }" class="img-fluid mp-pm-card-image" />
                     </div>
                 </div>
 
                 <div class="mp-box-inputs mp-line">
                     <div class="mp-box-inputs mp-col-50">
-                        <label for="cardExpirationMonth">
+                        <label for="mpCardExpirationMonthSelect">
                             <!-- ko i18n: 'Expiration month'--><!-- /ko -->
                             <em>*</em>
                         </label>
                         <select
-                            id="cardExpirationMonth"
-                            data-checkout="cardExpirationMonth"
+                            id="mpCardExpirationMonthSelect"
+                            data-checkout="mpCardExpirationMonthSelect"
                             name="mercadopago_custom[cardExpirationMonth]"
-                            data-bind="attr:
-                                    {'data-container': getCode() + '-cc-month', 'data-validate': JSON.stringify({required:true})},
-                                    enable: isActive($parents),
-                                    options: getCcMonthsValues(),
-                                    optionsValue: 'value',
-                                    optionsText: 'month',
-                                    optionsCaption: $t('Month'),
-                                    event: { change: validateExpirationDate }"
+                            data-bind="
+                                attr: { 'data-container': getCode() + '-cc-month' },
+                                enable: isActive($parents),
+                                options: getCcMonthsValues(),
+                                optionsValue: 'value',
+                                optionsText: 'month',
+                                optionsCaption: $t('Month'),
+                                event: { change: changeMonthInput }
+                            "
                         ></select>
+
+                        <small id="mp-error-208" class="mp-form-error" data-main="#mpCardExpirationMonthSelect"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
+                        <small id="mp-error-325" class="mp-form-error" data-main="#mpCardExpirationMonthSelect"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
                     </div>
 
                     <div class="mp-box-inputs mp-col-50">
-                        <label for="cardExpirationYear">
+                        <label for="mpCardExpirationYearSelect">
                             <!-- ko i18n: 'Expiration year'--><!-- /ko -->
                             <em>*</em>
                         </label>
                         <select
-                            id="cardExpirationYear"
-                            data-checkout="cardExpirationYear"
+                            id="mpCardExpirationYearSelect"
+                            data-checkout="mpCardExpirationYearSelect"
                             name="mercadopago_custom[cardExpirationYear]"
-                            data-bind="attr:
-                                    {'data-container': getCode() + '-cc-year', 'data-validate': JSON.stringify({required:true})},
-                                    enable: isActive($parents),
-                                    options: getCcYearsValues(),
-                                    optionsValue: 'value',
-                                    optionsText: 'year',
-                                    optionsCaption: $t('Year'),
-                                    event: { change: validateExpirationDate }"
+                            data-bind="
+                                attr: { 'data-container': getCode() + '-cc-year' },
+                                enable: isActive($parents),
+                                options: getCcYearsValues(),
+                                optionsValue: 'value',
+                                optionsText: 'year',
+                                optionsCaption: $t('Year'),
+                                event: { change: changeYearInput }
+                            "
                         ></select>
+
+                        <small id="mp-error-209" class="mp-form-error" data-main="#mpCardExpirationYearSelect"><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
+                        <small id="mp-error-326" class="mp-form-error" data-main="#mpCardExpirationYearSelect"><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
                     </div>
-
-                    <span
-                        class="mp-error"
-                        id="mp-error-208"
-                        data-main="#cardExpirationMonth"
-                    >
-                        <!-- ko i18n: 'Invalid Expiration Date'-->
-                        <!-- /ko -->
-                    </span>
-
-                    <span
-                        class="mp-error"
-                        id="mp-error-208"
-                        data-main="#cardExpirationMonth"
-                    >
-                        <!-- ko i18n: 'Invalid Expiration Date'-->
-                        <!-- /ko -->
-                    </span>
-
-                    <span
-                        class="mp-error"
-                        id="mp-error-325"
-                        data-main="#cardExpirationMonth"
-                    >
-                        <!-- ko i18n: 'Invalid Expiration Date'-->
-                        <!-- /ko -->
-                    </span>
-
-                    <span
-                        class="mp-error"
-                        id="mp-error-209"
-                        data-main="#cardExpirationYear"
-                    >
-                    </span>
-                    <span
-                        class="mp-error"
-                        id="mp-error-326"
-                        data-main="#cardExpirationYear"
-                    >
-                    </span>
                 </div>
 
-                <div class="mp-box-inputs mp-col-100">
-                    <label for="cardholderName">
+                <div class="mp-box-inputs mp-col-100" id="mp-card-holder-div">
+                    <label for="mpCardholderName">
                         <!-- ko i18n: 'Card holder name'--><!-- /ko -->
                         <em>*</em>
                     </label>
                     <input
                         type="text"
-                        id="cardholderName"
+                        id="mpCardholderName"
                         name="mercadopago_custom[cardholderName]"
-                        data-checkout="cardholderName"
+                        data-checkout="mpCardholderName"
                         autocomplete="off"
-                        data-bind="attr:
-                                    {'data-validate': JSON.stringify({required:true})},
-                                    event: { blur: validateCardHolderName }"
                     />
 
-                    <span
-                        class="mp-error"
-                        id="mp-error-221"
-                        data-main="#cardholderName"
-                    >
-                        <!-- ko i18n: 'Parameter cardholderName can not be null/empty'-->
-                        <!-- /ko -->
-                    </span>
-                    <span
-                        class="mp-error"
-                        id="mp-error-316"
-                        data-main="#cardholderName"
-                    >
-                        <!-- ko i18n: 'Invalid Card Holder Name'-->
-                        <!-- /ko -->
-                    </span>
+                    <small id="mp-error-221" class="mp-form-error" data-main="#mpCardholderName"><!-- ko i18n: 'Invalid cardholder name'--><!-- /ko --></small>
                 </div>
 
                 <div class="mp-box-inputs mp-line">
-                    <div class="mp-box-inputs mp-col-45">
-                        <label for="securityCode">
+                    <div class="mp-box-inputs mp-col-35">
+                        <label for="mpSecurityCode">
                             <!-- ko i18n: 'Security code'--><!-- /ko -->
                             <em>*</em>
                         </label>
                         <input
                             type="text"
-                            id="securityCode"
-                            data-checkout="securityCode"
+                            id="mpSecurityCode"
+                            data-checkout="mpSecurityCode"
                             autocomplete="off"
+                            minlength="3"
                             maxlength="4"
-                            required
-                            data-bind="attr:
-                                    {'data-validate': JSON.stringify({required:true})},
-                                    event: { keyup: onlyNumbersInSecurityCode, blur: validateSecurityCode }"
+                            onkeyup="maskInput(this, minteger);"
                         />
 
-                        <span
-                            class="mp-error"
-                            id="mp-error-224"
-                            data-main="#securityCode"
-                        >
-                            <!-- ko i18n: 'Parameter securityCode can not be null/empty'-->
-                            <!-- /ko -->
-                        </span>
-                        <span
-                            class="mp-error"
-                            id="mp-error-E302"
-                            data-main="#securityCode"
-                        >
-                            <!-- ko i18n: 'Invalid Security Code'-->
-                            <!-- /ko -->
-                        </span>
+                        <small id="mp-error-224" class="mp-form-error" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
+                        <small id="mp-error-E302" class="mp-form-error" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
                     </div>
                 </div>
 
-                <div class="mp-box-inputs mp-col-100 mp-doc">
-                    <div class="mp-box-inputs mp-col-35 mp-docType">
-                        <label for="docType">
+                <div class="mp-box-inputs mp-col-100 mp-doc" id="mp-doc-div">
+                    <div class="mp-box-inputs mp-col-35 mp-docType" id="mp-doc-type-div">
+                        <label for="mpDocType">
                             <!-- ko i18n: 'Document Type'--><!-- /ko -->
                             <em>*</em>
                         </label>
-                        <select
-                            id="docType"
-                            data-checkout="docType"
-                            name="mercadopago_custom[docType]"
-                        ></select>
-
-                        <span
-                            class="mp-error"
-                            id="mp-error-212"
-                            data-main="#docType"
-                        >
-                            <!-- ko i18n: 'Parameter docType can not be null/empty'-->
-                            <!-- /ko -->
-                        </span>
-                        <span
-                            class="mp-error"
-                            id="mp-error-322"
-                            data-main="#docType"
-                        >
-                            <!-- ko i18n: 'Invalid Document Type'-->
-                            <!-- /ko -->
-                        </span>
+                        <select id="mpDocType" data-checkout="mpDocType" name="mercadopago_custom[docType]"></select>
                     </div>
 
-                    <div class="mp-box-inputs mp-col-65 mp-docNumber">
-                        <label for="docNumber">
+                    <div class="mp-box-inputs mp-col-65 mp-docNumber" id="mp-doc-number-div">
+                        <label for="mpDocNumber">
                             <!-- ko i18n: 'Document number'--><!-- /ko -->
                             <em>*</em>
                         </label>
                         <input
                             type="text"
-                            id="docNumber"
-                            data-checkout="docNumber"
+                            id="mpDocNumber"
+                            data-checkout="mpDocNumber"
                             name="mercadopago_custom[docNumber]"
                             autocomplete="off"
                         />
 
-                        <span
-                            class="mp-error"
-                            id="mp-error-214"
-                            data-main="#docNumber"
-                        >
-                            <!-- ko i18n: 'Parameter docNumber can not be null/empty'-->
-                            <!-- /ko -->
-                        </span>
-                        <span
-                            class="mp-error"
-                            id="mp-error-324"
-                            data-main="#docNumber"
-                        >
-                            <!-- ko i18n: 'Invalid Document Number'-->
-                            <!-- /ko -->
-                        </span>
+                        <small id="mp-error-324" class="mp-form-error" data-main="#mpDocNumber"><!-- ko i18n: 'Invalid document number'--><!-- /ko --></small>
                     </div>
                 </div>
 
-                <div class="mp-box-inputs mp-col-100 mp-issuer">
-                    <label for="issuer">
+                <div class="mp-box-inputs mp-col-100 mp-issuer" id="mp-issuer-div">
+                    <label for="mpIssuer">
                         <!-- ko i18n: 'Issuer'--><!-- /ko -->
                         <em>*</em>
                     </label>
-                    <select
-                        id="issuer"
-                        data-checkout="issuer"
-                        name="mercadopago_custom[issuer]"
-                    ></select>
-                    <span
-                        class="mp-error"
-                        id="mp-error-220"
-                        data-main="#issuer"
-                    >
-                        <!-- ko i18n: 'Parameter cardIssuerId can not be null/empty'-->
-                        <!-- /ko -->
-                    </span>
+                    <select id="mpIssuer" data-checkout="mpIssuer" name="mercadopago_custom[issuer]"></select>
+                    <small id="id-issuer-status" class="mp-form-error"></small>
                 </div>
             </div>
             <!-- end #mercadopago-form -->
 
             <div id="mp-box-installments">
-                <div
-                    class="mp-box-inputs mp-col-100"
-                    id="mp-box-installments-selector"
-                >
-                    <label for="installments">
+                <div class="mp-box-inputs mp-col-100" id="mp-box-installments-selector">
+                    <label for="mpInstallments">
                         <!-- ko i18n: 'Installments'--><!-- /ko -->
                         <em>*</em>
                     </label>
-                    <select
-                        id="installments"
-                        data-checkout="installments"
-                        name="mercadopago_custom[installments]"
-                    ></select>
+                    <select id="mpInstallments" data-checkout="mpInstallments" name="mercadopago_custom[installments]"></select>
+                    <small id="id-installments-status" class="mp-form-error"></small>
                 </div>
 
-                <div class="mp-box-inputs mp-col-30" id="mp-box-input-tax-cft">
+                <div id="mp-box-input-tax-cft">
+                    <div id="mp-box-input-tax-tea">
+                        <div id="mp-tax-tea-text"></div>
+                    </div>
                     <div id="mp-tax-cft-text"></div>
-                </div>
-
-                <div class="mp-box-inputs mp-col-100" id="mp-box-input-tax-tea">
-                    <div id="mp-tax-tea-text"></div>
                 </div>
             </div>
 
             <div class="mp-box-inputs mp-col-100">
                 <div class="mp-protect-buy">
-                    <img
-                        data-bind="attr: { alt: 'Mercado Pago', src: getGrayMinilogo() }"
-                    />
-                    <p>
-                        <!-- ko i18n: 'Payment processed by Mercado Pago'--><!-- /ko -->
-                    </p>
+                    <img data-bind="attr: { alt: 'Mercado Pago', src: getGrayMinilogo() }" />
+                    <p> Pago'<!-- ko i18n: 'Payment processed by Mercado Pago'--><!-- /ko --></p>
                 </div>
 
                 <hr class="mp-custom-hr" />
@@ -496,83 +266,25 @@
                 </div>
             </div>
 
-            <div class="mp-box-inputs mp-col-100" id="mercadopago-utilities">
-                <input
-                    type="text"
-                    id="site_id"
-                    name="mercadopago_custom[site_id]"
-                />
-                <input
-                    type="text"
-                    id="amount"
-                    name="mercadopago_custom[amount]"
-                    data-bind="attr: {value: getInitialGrandTotal()}"
-                />
-                <input
-                    type="hidden"
-                    id="campaign_id"
-                    name="mercadopago_custom[campaign_id]"
-                />
-                <input
-                    type="hidden"
-                    id="campaign"
-                    name="mercadopago_custom[campaign]"
-                />
-                <input
-                    type="hidden"
-                    id="discount"
-                    name="mercadopago_custom[discount]"
-                />
-                <input
-                    type="text"
-                    id="paymentMethodId"
-                    name="mercadopago_custom[paymentMethodId]"
-                />
-                <input
-                    type="text"
-                    id="token"
-                    name="mercadopago_custom[token]"
-                />
-                <input
-                    type="text"
-                    id="cardTruncated"
-                    name="mercadopago_custom[cardTruncated]"
-                />
-                <input
-                    type="text"
-                    id="CustomerAndCard"
-                    name="mercadopago_custom[CustomerAndCard]"
-                />
-                <input
-                    type="text"
-                    id="MpGatewayMode"
-                    name="mercadopago_custom[MpGatewayMode]"
-                    data-bind="attr: {value: getMpGatewayMode()}"
-                />
-            </div>
-            <!-- END MPV1-->
-
-            <div
-                class="
-                    payment-method-billing-address
-                    mp-custom-display-inline-block
-                "
-            >
+            <div class="payment-method-billing-address mp-custom-display-inline-block">
                 <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
-                <!-- ko template: getTemplate() -->
-                <!-- /ko -->
+                    <!-- ko template: getTemplate() --><!-- /ko -->
                 <!--/ko-->
+            </div>
+
+            <div>
+                <input id="mpCardExpirationMonth" type="hidden" />
+                <input id="mpCardExpirationYear" type="hidden">
             </div>
 
             <div class="wb-cho-button-frame"></div>
         </form>
 
-        <div data-bind="template: {afterRender: initApp()}"></div>
+        <div data-bind="template: { afterRender: initApp() }"></div>
 
         <div class="checkout-agreements-block">
             <!-- ko foreach: $parent.getRegion('before-place-order') -->
-            <!-- ko template: getTemplate() -->
-            <!-- /ko -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
             <!--/ko-->
         </div>
 
@@ -583,9 +295,9 @@
                     type="submit"
                     id="mp-custom-save-payment"
                     data-bind="attr: {title: $t('Place Order')},
-                            enable: (getCode() == isChecked()),
-                            click: placeOrder,
-                            css: {disabled: !isPlaceOrderActionAllowed()}"
+                               enable: (getCode() == isChecked()),
+                               click: prePlaceOrder,
+                               css: { disabled: !isPlaceOrderActionAllowed() }"
                     class="action primary checkout"
                     disabled
                 >
