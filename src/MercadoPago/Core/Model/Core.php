@@ -588,7 +588,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             ];
 
             $preference['additional_info']['payer']['phone'] = [
-                "area_code" => "0",
+                "area_code" => "-",
                 "number" => $shipping['telephone']
             ];
         }
