@@ -13,7 +13,7 @@ define(
     'Magento_Checkout/js/model/payment/additional-validators',
     'Magento_Checkout/js/action/place-order',
     'MercadoPago_Core/js/Masks',
-    'MercadoPago_Core/js/Ticket.js'
+    'MercadoPago_Core/js/Ticket'
   ],
   function (
     Component,

@@ -11,7 +11,7 @@ define(
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/model/payment/additional-validators',
-    'MercadoPago_Core/js/Ticket.js'
+    'MercadoPago_Core/js/Ticket'
   ],
   function (
     Component,
