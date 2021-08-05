@@ -75,6 +75,8 @@
 "The successful page of the Mercado Pago module is prepared to show messages for each Payment status, this page is also prepared to show the payment button with ticket. If you use the default page of Magento, you will have to customize it to show the button for payment of the Ticket.","La página de sucesso de pago de Mercado Pago está preparada para mostrar mensajes para cada estado de pago, esta página también esta preparada para mostrar el botón de pago para medios offline. Si utilizas la página de Magento, deberás personalizar para mostrar el botón de pago de los medios de pago offline."
 "Show Discount Coupon","Mostrar valor del cupón de descuento"
 "Enabling this option will show the discount coupon amount in the order details","Si habilitas esta opción se mostrará el monto del cupón de descuento en el detalle de la orden"
+"Integrator ID","ID de integrador"
+"With this number, we identify all your transactions and know how many sales we process with your account.","Con este número, identificamos todas sus transacciones y sabemos cuántas ventas procesamos con su cuenta."
 "Email Options","Opciones de email"
 "Order creation email","Email de creación de orden"
 "Email sent when the order is created does not mean that the payment has been approved","Un email será enviado cuando la orden sea creada, no implica que el pago haya sido aprobado "
