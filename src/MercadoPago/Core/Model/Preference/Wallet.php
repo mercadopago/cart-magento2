@@ -517,13 +517,11 @@ class Wallet
         }
 
         $discount = $this->getDiscountAmount($quote, $siteId);
-
         if ($discount < 0) {
             $items[] = $this->getItemDiscountTax(__('Discount'), $discount, $siteId);
         }
 
-        $tax = $this->getTaxAmount($quote, $siteId);
-
+        $tax = $this->getTaxAmount($quote);
         if ($tax > 0) {
             $items[] = $this->getItemDiscountTax(__('Tax'), $tax, $siteId);
         }
@@ -583,7 +581,7 @@ class Wallet
             'description' => $product->getName(),
             'picture_url' => $image->getUrl(),
             'category_id' => $categoryId,
-            'quantity'    => (int) number_format($item->getQty(), 0, '.', ''),
+            'quantity'    => Round::roundInteger($item->getQty()),
             'unit_price'  => Round::roundWithSiteId($item->getPrice(), $siteId),
         ];
     }//end getItem()

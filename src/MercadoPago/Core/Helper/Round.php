@@ -2,8 +2,6 @@
 
 namespace MercadoPago\Core\Helper;
 
-use MercadoPago\Core\Helper\ConfigData;
-
 class Round
 {
     /**
@@ -19,7 +17,7 @@ class Round
     /**
      * Get rounded value with site id
      *
-     * @param  float|double $value
+     * @param  float $value
      * @param  string $siteId
      * @return float|integer
      */
@@ -43,5 +41,16 @@ class Round
     public static function roundWithoutSiteId($value)
     {
         return (float) number_format($value, 2, '.', '');
+    }
+
+    /**
+     * Get rounded value with site id
+     *
+     * @param float $value
+     * @return integer
+     */
+    public static function roundInteger($value)
+    {
+        return (int) number_format($value, 0, '.', '');
     }
 }

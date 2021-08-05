@@ -23,7 +23,6 @@ class Failure extends Template
 
     /**
      * @return string
-     * @throws NoSuchEntityException
      */
     public function getCheckoutUrl()
     {

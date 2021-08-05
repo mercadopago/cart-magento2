@@ -128,6 +128,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         // POST /v1/payments
         $response = $this->_coreModel->postPaymentV1($preference);
+        $this->_helperData->log("CustomPaymentTicket::initialize - Preference", self::LOG_NAME, $preference);
         $this->_helperData->log("CustomPaymentTicket::initialize - POST /v1/payments RESPONSE", self::LOG_NAME, $response);
 
         if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {

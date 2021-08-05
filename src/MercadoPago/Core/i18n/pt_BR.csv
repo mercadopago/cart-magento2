@@ -497,6 +497,7 @@ Cannot operate between users from different countries.", "Não é possível oper
 "Invalid card number", "Número do cartão inválido"
 "Invalid card expiration month", "Mês de validade inválido"
 "Invalid card expiration year", "Ano de validade inválido"
+"Invalid card expiration date". "Data de validade inválida"
 "Invalid cardholder name", "Nome do titular inválido"
 "Invalid security code", "Código de segurança inválido"
 "Invalid document number", "Número de documento inválido"

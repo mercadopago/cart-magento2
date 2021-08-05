@@ -93,7 +93,6 @@ define(
               onCardTokenReceived: (error, token) => {
                 if (error) {
                   showErrors(error);
-                  focusInputError();
                   return console.warn('Token handling error: ', error);
                 }
 
@@ -405,7 +404,9 @@ define(
       },
 
       getPlaceOrderDeferredObject: function () {
-        return $.when((this.getData(), this.messageContainer));
+        return $.when(
+          placeOrderAction(this.getData(), this.messageContainer)
+        );
       },
 
       validate: function () {

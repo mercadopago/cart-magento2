@@ -371,7 +371,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $items[] = $this->getItem($item, $categoryId, $siteId);
         }
 
-        $discount = $this->getDiscountAmount($quote, $siteId);
+        $discount = $this->getDiscountAmount($quote);
         if ($discount < 0) {
             $items[] = $this->getItemDiscountTax(__('Discount'), $discount, $siteId);
         }
@@ -406,7 +406,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             'description' => $product->getName(),
             'picture_url' => $image->getUrl(),
             'category_id' => $categoryId,
-            'quantity'    => (int) number_format($item->getQty(), 0, '.', ''),
+            'quantity'    => Round::roundInteger($item->getQty()),
             'unit_price'  => Round::roundWithSiteId($item->getPrice(), $siteId),
         ];
     }//end getItem()

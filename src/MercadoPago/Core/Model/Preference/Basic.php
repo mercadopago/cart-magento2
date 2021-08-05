@@ -5,10 +5,12 @@ namespace MercadoPago\Core\Model\Preference;
 use Exception;
 use Magento\Catalog\Helper\Image;
 use Magento\Checkout\Model\Session;
+use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\Session as customerSession;
 use Magento\Framework\Api\AttributeValueFactory;
 use Magento\Framework\Api\ExtensionAttributesFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Registry;
@@ -16,11 +18,13 @@ use Magento\Framework\UrlInterface;
 use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\Method\AbstractMethod;
 use Magento\Payment\Model\Method\Logger;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data as dataHelper;
+use MercadoPago\Core\Helper\Round;
 use MercadoPago\Core\Helper\SponsorId;
 
 class Basic extends AbstractMethod
@@ -39,8 +43,9 @@ class Basic extends AbstractMethod
     protected $_coreHelper;
     protected $_version;
     protected $_productMetadata;
+
     /**
-     * @var \Magento\Framework\App\ProductMetadataInterface
+     * @var ProductMetadataInterface
      */
     private $_productMetaData;
 
@@ -59,7 +64,7 @@ class Basic extends AbstractMethod
         Data $paymentData,
         Logger $logger,
         Version $version,
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata
+        ProductMetadataInterface $productMetadata
     ) {
         parent::__construct(
             $context,
@@ -85,7 +90,7 @@ class Basic extends AbstractMethod
     }
 
     /**
-     * @return \Magento\Sales\Model\Order
+     * @return Order
      * @throws Exception
      */
     protected function getOrderInfo()
@@ -98,7 +103,7 @@ class Basic extends AbstractMethod
     }
 
     /**
-     * @return \Magento\Customer\Model\Customer
+     * @return Customer
      * @throws Exception
      */
     protected function getCustomerInfo()
@@ -146,19 +151,21 @@ class Basic extends AbstractMethod
      */
     protected function getItems($order, $config)
     {
-        $items = [];
+        $items      = [];
         $difference = [];
+
         foreach ($order->getAllVisibleItems() as $item) {
             $product = $item->getProduct();
             $image = $this->_helperImage->init($product, 'product_thumbnail_image');
+
             $items[] = [
                 "id"          => $item->getSku(),
                 "title"       => $product->getName(),
                 "description" => $product->getName(),
                 "picture_url" => $image->getUrl(),
                 "category_id" => $config['category_id'],
-                "quantity"    => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
-                "unit_price"  => (float)number_format($item->getPrice(), 2, '.', '')
+                "quantity"    => Round::roundInteger($item->getQtyOrdered()),
+                "unit_price"  => Round::roundWithSiteId($item->getPrice(), $this->getSiteId())
             ];
         }
 
@@ -166,11 +173,14 @@ class Basic extends AbstractMethod
         $this->calculateBaseTaxAmount($items, $order, $config);
 
         $total_item   = $this->getTotalItems($items);
-        $total_item  += (float)$order->getBaseShippingAmount();
-        $order_amount = (float)$order->getBaseGrandTotal();
+        $total_item  += Round::roundWithSiteId($order->getBaseShippingAmount(), $this->getSiteId());
+        $order_amount = Round::roundWithSiteId($order->getBaseGrandTotal(), $this->getSiteId());
 
         if (!$order_amount) {
-            $order_amount = (float)$order->getBasePrice() + $order->getBaseShippingAmount();
+            $order_amount = Round::roundWithSiteId(
+                $order->getBasePrice() + $order->getBaseShippingAmount(),
+                $this->getSiteId()
+            );
         }
 
         if ($total_item > $order_amount || $total_item < $order_amount) {
@@ -181,7 +191,7 @@ class Basic extends AbstractMethod
                 "description" => "Difference amount of the items with a total",
                 "category_id" => $config['category_id'],
                 "quantity"    => 1,
-                "unit_price"  => (float)$diff_price
+                "unit_price"  => Round::roundWithSiteId($diff_price, $this->getSiteId())
             ];
 
             $this->_helperData->log("Total items: " . $total_item, 'mercadopago-basic.log');
@@ -193,9 +203,7 @@ class Basic extends AbstractMethod
             throw new Exception(__('Error on create preference Checkout Pro - Exception on getItems'));
         }
 
-        $result = ['items' => $items, 'difference' => $difference];
-
-        return $result;
+        return ['items' => $items, 'difference' => $difference];
     }
 
     /**
@@ -212,7 +220,7 @@ class Basic extends AbstractMethod
                 "description" => "Store discount coupon",
                 "category_id" => $config['category_id'],
                 "quantity"    => 1,
-                "unit_price"  => (float)$order->getDiscountAmount()
+                "unit_price"  => Round::roundWithSiteId($order->getDiscountAmount(), $this->getSiteId())
             ];
         }
 
@@ -235,7 +243,7 @@ class Basic extends AbstractMethod
                 "description" => "Store taxes",
                 "category_id" => $config['category_id'],
                 "quantity"    => 1,
-                "unit_price"  => (float)$order->getBaseTaxAmount()
+                "unit_price"  => Round::roundWithSiteId($order->getBaseTaxAmount(), $this->getSiteId())
             ];
         }
 
@@ -261,7 +269,7 @@ class Basic extends AbstractMethod
             throw new Exception(__('Error on create preference Checkout Pro - Exception on getTotalItems'));
         }
 
-        return $total;
+        return Round::roundWithSiteId($total, $this->getSiteId());
     }
 
     /**
@@ -437,7 +445,7 @@ class Basic extends AbstractMethod
                     "description" => "Shipment cost",
                     "category_id" => $config['category_id'],
                     "quantity"    => 1,
-                    "unit_price"  => (float)$order->getBaseShippingAmount()
+                    "unit_price"  => Round::roundWithSiteId($order->getBaseShippingAmount(), $this->getSiteId())
                 ];
             }
 
@@ -546,4 +554,15 @@ class Basic extends AbstractMethod
 
         return $notification_url;
     }
+
+    /**
+     * @return false|string|string[]
+     */
+    protected function getSiteId()
+    {
+        return mb_strtoupper($this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        ));
+    }//end getSiteId()
 }

@@ -22,8 +22,10 @@ use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
+use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Message\MessageInterface;
+use MercadoPago\Core\Helper\Round;
 use MercadoPago\Core\Helper\SponsorId;
 use MercadoPago\Core\Lib\Api;
 
@@ -165,10 +167,12 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * @var \Magento\Checkout\Model\Session
      */
     protected $_checkoutSession;
+
     /**
      * @var Session
      */
     protected $_customerSession;
+
     /**
      * @var UrlInterface
      */
@@ -270,7 +274,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Retrieves Order
      *
      * @param integer $incrementId
-     *
      * @return Order
      */
     public function _getOrder($incrementId)
@@ -282,7 +285,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Return array with data of payment of order loaded with order_id param
      *
      * @param $order_id
-     *
      * @return array
      */
     // @REFACTOR
@@ -330,7 +332,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Check if status is final in case of multiple card payment
      *
      * @param $status
-     *
      * @return string
      */
     protected function validStatusTwoPayments($status)
@@ -338,6 +339,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $array_status = explode(" | ", $status);
         $status_verif = true;
         $status_final = "";
+
         foreach ($array_status as $status) {
             if ($status_final == "") {
                 $status_final = $status;
@@ -363,7 +365,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * @param $payment_method
      * @param $installment
      * @param $amount
-     *
      * @return array
      */
     public function getMessageByStatus($status, $status_detail, $payment_method, $installment, $amount)
@@ -399,7 +400,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @param $customer
      * @param $order
-     *
      * @return array
      */
     protected function getCustomerInfo($customer, $order)
@@ -426,10 +426,10 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Return info about items of order
      *
      * @param $order
-     *
+     * @param $quote
      * @return array
      */
-    protected function getItemsInfo($order)
+    protected function getItemsInfo($order, $quote)
     {
         $dataItems = [];
         foreach ($order->getAllVisibleItems() as $item) {
@@ -441,8 +441,8 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
                 "title"       => $product->getName(),
                 "description" => $product->getName(),
                 "picture_url" => $image->getUrl(),
-                "quantity"    => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
-                "unit_price"  => (float)number_format($item->getPrice(), 2, '.', ''),
+                "quantity"    => Round::roundInteger($item->getQtyOrdered()),
+                "unit_price"  => Round::roundWithSiteId($item->getPrice(), $this->getSiteId()),
                 "category_id" => $this->_scopeConfig->getValue(
                     \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CATEGORY,
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE
@@ -450,15 +450,14 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             ];
         }
 
-        /* verify discount and add it like an item */
-        $discount = $this->getDiscount();
-
+        $discount = $this->getDiscountAmount($quote);
         if ($discount != 0) {
             $dataItems[] = [
-                "title"       => "Discount by the Store",
-                "description" => "Discount by the Store",
+                "id"          => __('Discount'),
+                "title"       => __('Discount'),
+                "description" => __('Discount'),
                 "quantity"    => 1,
-                "unit_price"  => (float)number_format($discount, 2, '.', '')
+                "unit_price"  => Round::roundWithSiteId($discount, $this->getSiteId())
             ];
         }
 
@@ -466,11 +465,19 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     /**
+     * @param Quote $quote
+     * @return float
+     */
+    protected function getDiscountAmount(Quote $quote)
+    {
+        return ($quote->getSubtotalWithDiscount() - $quote->getBaseSubtotal());
+    }//end processDiscount()
+
+    /**
      * Return info of a coupon applied
      *
      * @param $coupon
      * @param $coupon_code
-     *
      * @return array
      */
     protected function getCouponInfo($coupon, $coupon_code)
@@ -508,6 +515,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * @param null $order
      * @return array
      * @throws NoSuchEntityException
+     * @throws LocalizedException
      */
     public function makeDefaultPreferencePaymentV1($paymentInfo = [], $quote = null, $order = null)
     {
@@ -525,7 +533,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $billing_address = $quote->getBillingAddress()->getData();
         $customerInfo    = $this->getCustomerInfo($customer, $order);
 
-        /* INIT PREFERENCE */
         $preference = [];
 
         $notification_params = array(
@@ -534,9 +541,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             )
         );
 
-        // Check if notification URL contains localhost
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom', $notification_params);
-
         if (isset($notification_url) && !strrpos($notification_url, 'localhost')) {
             $preference['notification_url'] = $notification_url;
         }
@@ -547,7 +552,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $this->_storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK)
         );
 
-        $preference['transaction_amount'] = round((float) $this->getAmount(), 2);
+        $preference['transaction_amount'] = $this->getAmount();
         $preference['external_reference'] = $order->getIncrementId();
         $preference['payer']['email']     = $customerInfo['email'];
 
@@ -556,7 +561,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $preference['payer']['identification']['number'] = $paymentInfo['identification_number'];
         }
 
-        $preference['additional_info']['items']               = $this->getItemsInfo($order);
+        $preference['additional_info']['items']               = $this->getItemsInfo($order, $quote);
         $preference['additional_info']['payer']['first_name'] = $customerInfo['first_name'];
         $preference['additional_info']['payer']['last_name']  = $customerInfo['last_name'];
 
@@ -583,17 +588,15 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             ];
 
             $preference['additional_info']['payer']['phone'] = [
-                "area_code" => "0",
+                "area_code" => "-",
                 "number" => $shipping['telephone']
             ];
         }
 
         $this->_coreHelper->log("==> makeDefaultPreferencePaymentV1 -> preference", 'mercadopago-standard.log', $preference);
-
         $this->_coreHelper->log("==> makeDefaultPreferencePaymentV1", 'mercadopago-standard.log', $paymentInfo);
 
         $sponsorId = $this->getSponsorId();
-
         $this->_coreHelper->log("Sponsor_id", 'mercadopago-standard.log', $sponsorId);
 
         $test_mode = false;
@@ -637,7 +640,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Get message error by response API
      *
      * @param $response
-     *
      * @return string
      */
     public function getMessageError($response)
@@ -668,7 +670,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      *  Return info of payment returned by MP api
      *
      * @param $payment_id
-     *
      * @return array
      * @throws LocalizedException
      */
@@ -697,6 +698,8 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
     /**
      * @return mixed|string
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getEmailCustomer()
     {
@@ -711,7 +714,10 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     /**
+     * @param  Quote|null $quote
      * @return float
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getAmount($quote = null)
     {
@@ -721,7 +727,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         $total = $quote->getBaseGrandTotal();
 
-        return (float) $total;
+        return Round::roundWithSiteId($total, $this->getSiteId());
     }
 
     /**
@@ -729,7 +735,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @param $coupon_id
      * @param $email
-     *
      * @return array
      * @throws LocalizedException
      */
@@ -749,7 +754,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $coupon_code
         );
 
-        //add value on return api discount
         $details_discount['response']['transaction_amount'] = $transaction_amount;
         $details_discount['response']['params'] = [
             "transaction_amount" => $transaction_amount,
@@ -764,7 +768,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Return info of order returned by MP api
      *
      * @param $merchant_order_id
-     *
      * @return array
      * @throws LocalizedException
      */
@@ -773,6 +776,11 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         return $this->getMercadoPagoInstance()->get("/merchant_orders/" . $merchant_order_id);
     }
 
+    /**
+     * @param $payment_id
+     * @return array
+     * @throws LocalizedException
+     */
     public function getPayment($payment_id)
     {
         return $this->getMercadoPagoInstance()->get("/v1/payments/" . $payment_id);
@@ -811,4 +819,15 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         return SponsorId::getSponsorId($siteId);
     }//end getSponsorId()
+
+    /**
+     * @return false|string|string[]
+     */
+    protected function getSiteId()
+    {
+        return mb_strtoupper($this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        ));
+    }//end getSiteId()
 }
