@@ -499,6 +499,7 @@
 "Shipping", "Envío"
 "Sorry, we can\'t reserve quote on Webpay Payment.", "Lo sentimos, no fue posible reservar el quote en el pago con Webpay."
 "It was unable to complete payment with Webpay!", "¡No fue posible completar el pago con Webpay!"
+"It was unable to complete payment with Mercado Pago!", "¡No fue posible completar el pago con Mercado Pago!"
 "Click on the button below to try the payment again:", "Haga clic en el botón de abajo para volver a intentar hacer el pago:"
 "Retry payment", "Reintentar pago"
 "Retry order", "Rehacer pedido"

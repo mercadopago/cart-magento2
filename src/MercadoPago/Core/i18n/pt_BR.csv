@@ -488,6 +488,7 @@ Cannot operate between users from different countries.", "Não é possível oper
 "Shipping", "Envio"
 "Sorry, we can\'t reserve quote on Webpay Payment.", "Desculpe, não foi possível reservar um quote no pagamento com Webpay."
 "It was unable to complete payment with Webpay!", "Não foi possível concluir o pagamento com Webpay!"
+"It was unable to complete payment with Mercado Pago!", "Não foi possível concluir o pagamento com Mercado Pago!"
 "Click on the button below to try the payment again:", "Clique no botão abaixo para tentar realizar o pagamento novamente:"
 "Retry payment", "Retentar pagamento"
 "Retry order", "Repetir pedido"
