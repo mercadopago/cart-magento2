@@ -4,7 +4,6 @@ namespace MercadoPago\Core\Block;
 
 use Exception;
 use Magento\Checkout\Model\Session;
-use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Asset\Repository;
