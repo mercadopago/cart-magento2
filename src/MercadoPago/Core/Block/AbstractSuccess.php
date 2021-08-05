@@ -181,10 +181,8 @@ class AbstractSuccess extends Template
      */
     public function getInfoPayment()
     {
-        $order_id      = $this->_checkoutSession->getLastRealOrderId();
-        $info_payments = $this->_coreFactory->create()->getInfoPaymentByOrder($order_id);
-
-        return $info_payments;
+        $order_id = $this->_checkoutSession->getLastRealOrderId();
+        return $this->_coreFactory->create()->getInfoPaymentByOrder($order_id);
     }//end getInfoPayment()
 
     /**
