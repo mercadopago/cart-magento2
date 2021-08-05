@@ -131,8 +131,7 @@ class AbstractSuccess extends Template
      */
     public function getPayment()
     {
-        $order = $this->getOrder();
-        return $order->getPayment();
+        return $this->getOrder()->getPayment();
     }//end getPayment()
 
     /**
