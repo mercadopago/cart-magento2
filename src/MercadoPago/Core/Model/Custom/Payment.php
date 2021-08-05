@@ -465,28 +465,29 @@ class Payment extends Cc implements GatewayInterface
     public function createCustomPayment($preference)
     {
         $response = $this->_coreModel->postPaymentV1($preference);
+
         if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
-        
-        $isActiveStop = $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_STOP_REJECTED, ScopeInterface::SCOPE_STORE);
-            if ($isActiveStop == TRUE) {
-                $text = $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_STOP_REJECTED_TEXT, ScopeInterface::SCOPE_STORE) ?? '';
-                if(isset($response['response']['status']) && $response['response']['status'] == 'rejected'){
-                $this->_helperData->log('postPaymentV1::GDW'. json_encode($response));
-                    throw new LocalizedException(__(($text != '' ? $text : $response['response']['status_detail'])));
-                }
+            if(isset($response['response']['status']) && $response['response']['status'] == 'rejected'){
+                $errorMessage = __(__('Create payment error: ') . $response['response']['status_detail']);
+                $this->_helperData->log('postPaymentV1::CreatePayment rejected status', self::LOG_NAME);
+                throw new LocalizedException($errorMessage);
             }
-            
+
             $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $response['response']);
             return true;
         }
 
         $messageErrorToClient = $this->_coreModel->getMessageError($response);
-        $arrayLog             = [
+        $arrayLog = [
             'response' => $response,
             'message'  => $messageErrorToClient,
         ];
 
-        $this->_helperData->log('CustomPayment::initialize - The API returned an error while creating the payment, more details: ' . json_encode($arrayLog));
+        $this->_helperData->log(
+            'CustomPayment::initialize - The API returned an error while creating the payment',
+            self::LOG_NAME,
+            $arrayLog
+        );
 
         throw new LocalizedException(__($messageErrorToClient));
     }//end createCustomPayment()
