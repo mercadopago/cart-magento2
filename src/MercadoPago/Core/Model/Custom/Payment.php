@@ -413,7 +413,8 @@ class Payment extends Cc implements GatewayInterface
         }
 
         $preference = $this->createCustomPreference();
-        return $this->createCustomPayment($preference);
+
+        return $this->createCustomPayment($preference, 'CustomPayment', self::LOG_NAME);
     }//end initialize()
 
     /**
@@ -457,19 +458,25 @@ class Payment extends Cc implements GatewayInterface
     }//end createCustomPreference()
 
     /**
-     * @param  $preference
+     * @param $preference
+     * @param $gateway
+     * @param $logName
      * @return bool
      * @throws LocalizedException
-     * @throws Exception
      */
-    public function createCustomPayment($preference)
+    public function createCustomPayment($preference, $gateway, $logName)
     {
         $response = $this->_coreModel->postPaymentV1($preference);
+        $this->_helperData->log(
+            $gateway . '::initialize - POST /v1/payments RESPONSE',
+            $logName,
+            $response
+        );
 
-        if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
+        if (isset($response['status']) && ((int) $response['status'] == 200 || (int) $response['status'] == 201)) {
             if(isset($response['response']['status']) && $response['response']['status'] == 'rejected'){
                 $errorMessage = __(__('Create payment error: ') . $response['response']['status_detail']);
-                $this->_helperData->log('postPaymentV1::CreatePayment rejected status', self::LOG_NAME);
+                $this->_helperData->log('PostPaymentV1::CreatePayment rejected status', $logName);
                 throw new LocalizedException($errorMessage);
             }
 
@@ -485,7 +492,7 @@ class Payment extends Cc implements GatewayInterface
 
         $this->_helperData->log(
             'CustomPayment::initialize - The API returned an error while creating the payment',
-            self::LOG_NAME,
+            $logName,
             $arrayLog
         );
 

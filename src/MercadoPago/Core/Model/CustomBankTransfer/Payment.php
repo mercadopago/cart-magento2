@@ -60,7 +60,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $this;
-
     }//end assignData()
 
     /**
@@ -113,24 +112,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             throw new LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
         }//end try
 
-        // POST /v1/payments
-        $response = $this->_coreModel->postPaymentV1($preference);
-        $this->_helperData->log('CustomPaymentTicket::initialize - POST /v1/payments RESPONSE', self::LOG_NAME, $response);
-
-        if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
-            $payment = $response['response'];
-            $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $payment);
-            return true;
-        } else {
-            $messageErrorToClient = $this->_coreModel->getMessageError($response);
-            $arrayLog             = [
-                'response' => $response,
-                'message'  => $messageErrorToClient,
-            ];
-            $this->_helperData->log('CustomPaymentTicket::initialize - The API returned an error while creating the payment, more details: '.json_encode($arrayLog));
-            throw new LocalizedException(__($messageErrorToClient));
-        }
-
+        return $this->createCustomPayment($preference, 'CustomBankTransfer', self::LOG_NAME);
     }//end initialize()
 
     /**
@@ -162,16 +144,15 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $ip;
-
     }//end getIpAddress()
 
     /**
      * @param  null $usingSecondCardInfo
-     * @return array
+     * @return bool|Payment
      * @throws LocalizedException
      * @throws Exception
      */
-    public function preparePostPayment($usingSecondCardInfo=null)
+    public function preparePostPayment($usingSecondCardInfo = null)
     {
         $this->_helperData->log('Ticket -> init prepare post payment', 'mercadopago-custom.log');
         $quote   = $this->_getQuote();
@@ -194,7 +175,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         if ($payment->getAdditionalInformation('docType') != '') {
             $preference['payer']['identification']['type'] = $payment->getAdditionalInformation('docType');
-            // remove last-name pessoa juridica
             if ($preference['payer']['identification']['type'] == 'CNPJ') {
                 $preference['payer']['last_name'] = '';
             }
@@ -225,11 +205,13 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $preference['payer']['address']['zip_code'] = $payment->getAdditionalInformation('addressZipcode');
         }
 
-        $this->_helperData->log('Ticket -> PREFERENCE to POST /v1/payments', 'mercadopago-custom.log', $preference);
+        $this->_helperData->log(
+            'BankTransfer -> PREFERENCE to POST /v1/payments',
+            self::LOG_NAME,
+            $preference
+        );
 
-        // POST /v1/payments
-        return $this->_coreModel->postPaymentV1($preference);
-
+        return $this->createCustomPayment($preference, 'CustomBankTransfer', self::LOG_NAME);
     }//end preparePostPayment()
 
     /**
@@ -243,11 +225,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $payment_methods       = $this->_coreModel->getPaymentMethods();
         $paymentOptions        = [];
 
-        // each all payment methods
         foreach ($payment_methods['response'] as $pm) {
-            // filter by bank transfer payment methods
             if ($pm['payment_type_id'] == 'bank_transfer') {
-                // insert if not exist in list exclude payment method
                 if (!in_array($pm['id'], $listExclude)) {
                     $paymentOptions[] = $pm;
                 }
@@ -255,7 +234,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $paymentOptions;
-
     }//end getPaymentOptions()
 
     /**
@@ -273,7 +251,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $identificationTypes;
-
     }//end getIdentifcationTypes()
 
     /**
@@ -283,12 +260,12 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     public function setOrderSubtotals($data)
     {
         $total = $data['transaction_details']['total_paid_amount'];
+
         $order = $this->getInfoInstance()->getOrder();
         $order->setGrandTotal($total);
         $order->setBaseGrandTotal($total);
 
         $this->getInfoInstance()->setOrder($order);
-
     }//end setOrderSubtotals()
 
     /**
@@ -299,12 +276,11 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     public function isAvailable(CartInterface $quote=null)
     {
         $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
         if (empty($isActive)) {
             return false;
         }
 
         return parent::isAvailableMethod($quote);
-
     }//end isAvailable()
-
 }//end class
