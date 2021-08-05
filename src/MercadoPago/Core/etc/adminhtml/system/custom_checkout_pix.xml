@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-    <group id="custom_checkout_pix" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+    <group id="custom_checkout_pix" translate="label" type="text" sortOrder="33" showInDefault="1" showInWebsite="1" showInStore="1">
         <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
         <label>Custom Checkout - Payment via Pix</label>
 
@@ -18,7 +18,7 @@
         <field id="banner_checkout" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Banner Checkout</label>
             <config_path>payment/mercadopago_custom_pix/banner_checkout</config_path>
-            <comment>By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.</comment>
+            <comment>Add the URL of an image that you want to insert in the checkout.</comment>
         </field>
 
         <field id="expiration_minutes" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">

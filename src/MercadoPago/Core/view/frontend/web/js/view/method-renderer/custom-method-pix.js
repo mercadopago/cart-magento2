@@ -26,6 +26,7 @@ define(
     cartCache
   ) {
     'use strict';
+
     var configPayment = window.checkoutConfig.payment.mercadopago_custom_pix;
 
     return Component.extend({

@@ -6,8 +6,7 @@ namespace MercadoPago\Core\Helper\Message;
  * Map Payment Messages with the Credit Card Payment response detail
  * @package MercadoPago\Core\Helper
  */
-class StatusDetailMessage
-    extends AbstractMessage
+class StatusDetailMessage extends AbstractMessage
 {
     /**
      * Map error messages
@@ -20,7 +19,7 @@ class StatusDetailMessage
         "cc_rejected_bad_filled_other" => 'Check the data.',
         "cc_rejected_bad_filled_security_code" => 'Check the security code.',
         "cc_rejected_blacklist" => 'We could not process your payment.',
-        "cc_rejected_call_for_authorize" => 'You must authorize to %1 the payment of $ %2 to Mercado Pago.',
+        "cc_rejected_call_for_authorize" => 'Contact your card issuer and authorize the payment to Mercado Pago.',
         "cc_rejected_card_disabled" => 'Call %1 to activate your card.<br/>The phone is on the back of your card.',
         "cc_rejected_card_error" => 'We could not process your payment.',
         "cc_rejected_duplicated_payment" => 'You already made a payment by that value.<br/>If you need to repay, use another card or other payment method.',
@@ -40,5 +39,4 @@ class StatusDetailMessage
     {
         return $this->messagesMap;
     }
-
 }

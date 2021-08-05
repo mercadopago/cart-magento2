@@ -2,13 +2,14 @@
 
 namespace MercadoPago\Core\Block\Custom;
 
+use MercadoPago\Core\Block\AbstractSuccess;
+
 /**
  * Class Success
  *
  * @package MercadoPago\Core\Block\Custom
  */
-class Success
-    extends \MercadoPago\Core\Block\AbstractSuccess
+class Success extends AbstractSuccess
 {
     /**
      * Class constructor

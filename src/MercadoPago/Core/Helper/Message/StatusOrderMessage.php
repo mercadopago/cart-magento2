@@ -5,8 +5,7 @@ namespace MercadoPago\Core\Helper\Message;
 /**
  * Map Payment Messages with the Payment response
  */
-class StatusOrderMessage
-    extends AbstractMessage
+class StatusOrderMessage extends AbstractMessage
 {
     /**
      * Message by status order
