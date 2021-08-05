@@ -466,6 +466,16 @@ class Payment extends Cc implements GatewayInterface
     {
         $response = $this->_coreModel->postPaymentV1($preference);
         if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
+        
+        $isActiveStop = $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_STOP_REJECTED, ScopeInterface::SCOPE_STORE);
+            if ($isActiveStop == TRUE) {
+                $text = $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_STOP_REJECTED_TEXT, ScopeInterface::SCOPE_STORE) ?? '';
+                if(isset($response['response']['status']) && $response['response']['status'] == 'rejected'){
+                $this->_helperData->log('postPaymentV1::GDW'. json_encode($response));
+                    throw new LocalizedException(__(($text != '' ? $text : $response['response']['status_detail'])));
+                }
+            }
+            
             $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $response['response']);
             return true;
         }
