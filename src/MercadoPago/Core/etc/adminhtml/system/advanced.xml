@@ -34,6 +34,12 @@
             <comment>Enabling this option will show the discount coupon amount in the order details</comment>
         </field>
 
+        <field id="integrator_id" translate="label comment" type="text" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Integrator ID</label>
+            <config_path>payment/mercadopago/integrator_id</config_path>
+            <comment>With this number, we identify all your transactions and know how many sales we process with your account.</comment>
+        </field>
+        
         <field id="heading_email" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1">
             <label>Email Options</label>
             <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
