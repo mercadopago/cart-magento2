@@ -12,6 +12,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Module\ModuleListInterface;
+use Magento\Framework\Phrase;
 use Magento\Framework\Registry;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Framework\UrlInterface;
@@ -33,6 +34,7 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Catalog\Helper\Image;
 use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Message\StatusDetailMessage;
 use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
 use MercadoPago\Core\Model\Api\V1\Exception;
@@ -223,7 +225,7 @@ class Payment extends Cc implements GatewayInterface
     protected $_paymentNotification;
 
     /**
-     *
+     * @const Log name
      */
     const LOG_NAME = 'custom_payment';
 
@@ -255,11 +257,14 @@ class Payment extends Cc implements GatewayInterface
     protected $_infoBlockType = 'MercadoPago\Core\Block\Info';
 
     /**
-     * Request object
-     *
      * @var RequestInterface
      */
     protected $_request;
+
+    /**
+     * @var StatusDetailMessage
+     */
+    protected $_statusDetailMessage;
 
     /**
      * @param MercadopagoData $helperData
@@ -285,6 +290,7 @@ class Payment extends Cc implements GatewayInterface
      * @param Image $helperImage
      * @param OrderInterface $order
      * @param PaymentNotification $paymentNotification
+     * @param StatusDetailMessage $statusDetailMessage
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -310,7 +316,8 @@ class Payment extends Cc implements GatewayInterface
         ProductMetadataInterface $productMetadata,
         Image $helperImage,
         OrderInterface $order,
-        PaymentNotification $paymentNotification
+        PaymentNotification $paymentNotification,
+        StatusDetailMessage $statusDetailMessage
     ) {
         parent::__construct(
             $context,
@@ -339,6 +346,7 @@ class Payment extends Cc implements GatewayInterface
         $this->_helperImage         = $helperImage;
         $this->_order               = $order;
         $this->_paymentNotification = $paymentNotification;
+        $this->_statusDetailMessage = $statusDetailMessage;
     }//end __construct()
 
     /**
@@ -475,9 +483,14 @@ class Payment extends Cc implements GatewayInterface
 
         if (isset($response['status']) && ((int) $response['status'] == 200 || (int) $response['status'] == 201)) {
             if(isset($response['response']['status']) && $response['response']['status'] == 'rejected'){
-                $errorMessage = __(__('Create payment error: ') . $response['response']['status_detail']);
-                $this->_helperData->log('PostPaymentV1::CreatePayment rejected status', $logName);
-                throw new LocalizedException($errorMessage);
+                $statusDetail = $response['response']['status_detail'];
+
+                $this->_helperData->log(
+                    'PostPaymentV1::CreatePayment rejected status: ' . $statusDetail,
+                    $logName
+                );
+
+                throw new LocalizedException($this->getRejectedStatusDetailMessage($statusDetail));
             }
 
             $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $response['response']);
@@ -498,6 +511,15 @@ class Payment extends Cc implements GatewayInterface
 
         throw new LocalizedException(__($messageErrorToClient));
     }//end createCustomPayment()
+
+    /**
+     * @param $status_detail
+     * @return Phrase
+     */
+    public function getRejectedStatusDetailMessage($status_detail)
+    {
+        return __($this->_statusDetailMessage->getMessage($status_detail));
+    }
 
     /**
      * @return $this
