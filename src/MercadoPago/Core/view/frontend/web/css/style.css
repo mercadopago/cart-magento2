@@ -563,6 +563,10 @@ input.has-error, select.has-error, textarea.has-error {
   display: inline-block !important;
 }
 
+.mp-pix-display-inline-block {
+  display: inline-block !important;
+}
+
 .mp-mt-16 {
   margin-top: 16px !important;
 }
