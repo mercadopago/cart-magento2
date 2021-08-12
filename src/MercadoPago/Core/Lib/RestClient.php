@@ -1,6 +1,10 @@
 <?php
 
 namespace MercadoPago\Core\Lib;
+
+use MercadoPago\Core\Helper\ConfigData;
+use Magento\Framework\App\ObjectManager;
+
 /**
  * MercadoPago cURL RestClient
  */
@@ -50,7 +54,7 @@ class RestClient
         if ($method == 'POST') {
             $header_opt[] = "x-product-id: " . self::PRODUCT_ID;
             $header_opt[] = 'x-platform-id:' . self::PLATAFORM_ID;
-            $header_opt[] = 'x-integrator-id:' . self::$sponsor_id;
+            $header_opt[] = 'x-integrator-id:' . self::getIntegratorID();
 
         }
 
@@ -195,6 +199,12 @@ class RestClient
     static $country_initial = "";
     static $sponsor_id = "";
     static $check_loop = 0;
+
+    public static function getIntegratorID() 
+    {
+        $objectManager = ObjectManager::getInstance();
+        return $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue(ConfigData::PATH_ADVANCED_INTEGRATOR);
+    }
 
     public static function setSponsorID($sponsor_id)
     {

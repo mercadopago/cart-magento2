@@ -49,6 +49,11 @@
             <p><!-- ko i18n: 'When finalizing or ordering, you will see the code to order or pay.'--><!-- /ko --></p>
         </div>
 
+        <div class="payment-method-billing-address mp-pix-display-inline-block mp-mt-16">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
 
         <div class="actions-toolbar">
             <div class="primary">

@@ -70,6 +70,7 @@ class ConfigData
     const PATH_ADVANCED_CATEGORY = 'payment/mercadopago/category_id';
     const PATH_ADVANCED_SUCCESS_PAGE = 'payment/mercadopago/use_successpage_mp';
     const PATH_ADVANCED_CONSIDER_DISCOUNT = 'payment/mercadopago/consider_discount';
+    const PATH_ADVANCED_INTEGRATOR = 'payment/mercadopago/integrator_id';
     const PATH_ADVANCED_EMAIL_CREATE = 'payment/mercadopago/email_order_create';
     const PATH_ADVANCED_EMAIL_UPDATE = 'payment/mercadopago/email_order_update';
 }
