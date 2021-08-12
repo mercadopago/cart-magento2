@@ -8,8 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.9.3] - 2021-08-12
 
 ### Added
+- Added billing address on checkout pix for digital products
 - Added order ID to PIX purchase success page
 - Added integrator ID field in admin screen
+
+### Changed
+- Changed min length of card number field to 13 digits
 
 ## [3.9.2] - 2021-07-14
 
