@@ -53,5 +53,16 @@
             <config_path>payment/mercadopago_custom/wallet_button</config_path>
             <comment>Make more sales by allowing your customers to pay quickly using the cards saved in their account.</comment>
         </field>
+
+        <field id="installment_info" translate="label comment" type="label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Set up your installment and interest payments</label>
+            <comment>At Mercado Pago you can choose the fee you pay for each purchase and also offer interest-free installments to your customer.</comment>
+        </field>
+
+        <field id="installment_button" translate="button_label" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+            <button_label>Set up installment and interest</button_label>
+            <button_url><![CDATA[https://www.mercadopago.sufix/costs-section#from-section=menu]]></button_url>
+            <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Button</frontend_model>
+        </field>
     </group>
 </include>
