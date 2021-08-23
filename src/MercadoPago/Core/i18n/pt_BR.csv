@@ -36,9 +36,6 @@
 "By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.","Por padrão, o módulo do Mercado Pago irá configurar um banner com os métodos disponíveis de acordo com o seu país, se você quiser personalizá-lo, basta alterar o URL da imagem."
 "Cards saved in Mercado Pago","Cartões salvos no Mercado Pago"
 "Make more sales by allowing your customers to pay quickly using the cards saved in their account.","Consiga mais vendas, permitindo aos seus clientes pagar rapidamente usando os cartões salvos em suas contas."
-"Set up your installment and interest payments","Configure seu parcelamento e juros"
-"At Mercado Pago you can choose the fee you pay for each purchase and also offer interest-free installments to your customer.","No Mercado Pago você pode escolher a taxa que vai pagar em cada compra e também oferecer parcelas sem juros para seu cliente."
-"Set up installment and interest","Configurar parcelamento e juros"
 
 "==================== CUSTOM CHECKOUT OFFLINE CONFIGURATION PAGE =====================","================================================"
 "Custom Checkout - Offline Payments Methods (Ticket)","Custom Checkout - Métodos de Pagamento Offline (Boleto e PEC)"
@@ -508,3 +505,8 @@ Cannot operate between users from different countries.", "Não é possível oper
 "refunded", "pagamento reembolsado"
 "charged_back", "pagamento devolvido"
 "Generate Ticket", "Gerar Boleto"
+
+"==================== INSTALLMENT AND INTEREST PAYMENTS =====================", "====================================================="
+"Set up your installment and interest payments","Configure seu parcelamento e juros"
+"At Mercado Pago you can choose the fee you pay for each purchase and also offer interest-free installments to your customer.","No Mercado Pago você pode escolher a taxa que vai pagar em cada compra e também oferecer parcelas sem juros para seu cliente."
+"Set up installment and interest","Configurar parcelamento e juros"

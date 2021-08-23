@@ -36,9 +36,6 @@
 "By default the module of Mercado Pago will configure a banner with the methods available according to your country, in case you want to customize it simply change the url of the image.","Por defecto el módulo de Mercado Pago configurará un banner con los métodos disponibles de acuerdo a su país, si desea personalizarlo basta cambiar la url de la imagen."
 "Cards saved in Mercado Pago","Tarjetas guardadas en Mercado Pago"
 "Make more sales by allowing your customers to pay quickly using the cards saved in their account.","Logra más ventas permitiendo que tus clientes paguen rápido usando las tarjetas guardadas en su cuenta."
-"Set up your installment and interest payments","Configura meses sin intereses"
-"At Mercado Pago you can choose the fee you pay for each purchase and also offer interest-free installments to your customer.","En Mercado Pago puedes elegir la tarifa que pagas en cada compra y también ofrecer meses sin intereses a tu cliente."
-"Set up installment and interest","Configurar cuotas e intereses"
 
 "==================== CUSTOM CHECKOUT OFFLINE CONFIGURATION PAGE =====================","================================================"
 "Custom Checkout - Offline Payments Methods (Ticket)","Custom Checkout - Medios de Pago OFF (Ticket)"
@@ -502,3 +499,8 @@
 "refunded", "pago reembolsado"
 "charged_back", "pago contracargo"
 "Generate Ticket", "Generar Ticket"
+
+"==================== INSTALLMENT AND INTEREST PAYMENTS =====================", "====================================================="
+"Set up your installment and interest payments","Configura meses sin intereses"
+"At Mercado Pago you can choose the fee you pay for each purchase and also offer interest-free installments to your customer.","En Mercado Pago puedes elegir la tarifa que pagas en cada compra y también ofrecer meses sin intereses a tu cliente."
+"Set up installment and interest","Configurar cuotas e intereses"

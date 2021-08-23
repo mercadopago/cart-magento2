@@ -27,11 +27,11 @@ class Button extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Remove scope label
-     *
-     * @param  AbstractElement $element
-     * @return string
-     */
+    * Remove scope label
+    *
+    * @param  AbstractElement $element
+    * @return string
+    */
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
@@ -39,18 +39,17 @@ class Button extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Generate button html
-     *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
-     * @return string
-     */
+    * Generate button html
+    *
+    * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+    * @return string
+    */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $originalData = $element->getOriginalData();
         $this->addData(
             [
                 'button_label' => __($originalData['button_label']),
-                'button_url' => $originalData['button_url'],
                 'html_id' => $element->getHtmlId(),
             ]
         );

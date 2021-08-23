@@ -61,7 +61,6 @@
 
         <field id="installment_button" translate="button_label" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
             <button_label>Set up installment and interest</button_label>
-            <button_url><![CDATA[https://www.mercadopago.sufix/costs-section#from-section=menu]]></button_url>
             <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Button</frontend_model>
         </field>
     </group>

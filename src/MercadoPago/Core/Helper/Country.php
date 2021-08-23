@@ -60,7 +60,7 @@ class Country
      * @param String
      * @return String
      */
-    public static function changeUrlByCountry($url) {
+    public static function changeUrlByCountry() {
 
         $objectManager = ObjectManager::getInstance();
         $siteId = strtoupper(
@@ -69,6 +69,6 @@ class Country
 
         $country = self::getCountryToMp($siteId);
 
-        return str_replace("sufix", $country['sufix_url'], $url);
+        return "https://www.mercadopago." . $country['sufix_url'] . "/costs-section#from-section=menu";
     }
 }
