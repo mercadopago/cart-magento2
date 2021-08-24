@@ -27,7 +27,6 @@ atlassian*
 /app/i18n/magento
 /app/*.*
 
-/bin
 
 /dev/shell
 
@@ -83,4 +82,6 @@ atlassian*
 !/.gitignore
 !/CHANGELOG.md
 !/.editorconfig
+!/.github
+!/bin
 
