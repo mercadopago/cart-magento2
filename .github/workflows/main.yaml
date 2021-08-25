@@ -1,0 +1,65 @@
+name: Module Tests
+
+on: [pull_request]
+
+jobs:
+  magento2-unit-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_DATABASE: magento_test
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_USER: magento
+          MYSQL_PASSWORD: p@ssw0rd1
+          MYSQL_ROOT_PASSWORD: p@ssw0rd1
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.3"
+          extensions: curl, dom, intl, json, openssl
+          coverage: xdebug
+
+      - name: Verify PHP Installation
+        run: php -v
+
+      - name: Composer downgrade to version 1
+        id: composer-downgrade
+        run: composer self-update --1
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Setup cache
+        uses: pat-s/always-upload-cache@v1.1.4
+        env:
+          COMPOSER_AUTH: ${{secrets.COMPOSER_AUTH}}
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          # Use the hash of composer.json as the key for your cache if you do not commit composer.lock.
+          # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install & Build Magento
+        id: build-magento
+        run: bash bin/install-mg2.sh
+
+      - name: Install MP Plugin
+        id: install-plugin
+        run: mv src/* magento2/app/code
+
+      - name: Run Test
+        id: unit-test
+        run: magento2/vendor/phpunit/phpunit/phpunit --whitelist magento2/app/code/MercadoPago/Core  --coverage-text magento2/app/code/MercadoPago/Test
