@@ -64,6 +64,6 @@ jobs:
         id: unit-test
         run: magento2/vendor/phpunit/phpunit/phpunit --colors=always --whitelist magento2/app/code/MercadoPago/Core --coverage-clover clover.xml --coverage-text  magento2/app/code/MercadoPago/Test
 
-      - name: Pull Request Test Coverage
-        id: pr-coverage
+      - name: Repository Minimum Test Coverage
+        id: repo-coverage
         run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
