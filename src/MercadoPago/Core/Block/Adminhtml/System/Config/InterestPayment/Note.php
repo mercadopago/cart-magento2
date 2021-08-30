@@ -59,7 +59,7 @@ class Note extends Field
 
     /**
     *
-    * Switches the button according to site_id
+    * Switches the note according to site_id
     *
     * @param  $siteId
     * @param  $originalData
