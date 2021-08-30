@@ -2,9 +2,6 @@
 
 namespace MercadoPago\Core\Helper;
 
-use Magento\Framework\App\ObjectManager;
-use MercadoPago\Core\Helper\ConfigData;
-
 /**
  * Class Country
  * @package MercadoPago\Core\Helper
@@ -51,24 +48,5 @@ class Country
         );
 
         return array_key_exists( $country, $mpCountries ) ? $mpCountries[$country] : $mpCountries['MLA'];
-    }
-
-    /**
-     *
-     * Change URL by country suffix
-     *
-     * @param String
-     * @return String
-     */
-    public static function changeUrlByCountry() {
-
-        $objectManager = ObjectManager::getInstance();
-        $siteId = strtoupper(
-            $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue(ConfigData::PATH_SITE_ID),
-        );
-
-        $country = self::getCountryToMp($siteId);
-
-        return "https://www.mercadopago." . $country['sufix_url'] . "/costs-section#from-section=menu";
     }
 }

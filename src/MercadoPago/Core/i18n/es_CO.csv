@@ -500,7 +500,10 @@
 "charged_back", "pago contracargo"
 "Generate Ticket", "Generar Ticket"
 
-"==================== INSTALLMENT AND INTEREST PAYMENTS =====================", "====================================================="
+"==================== INTEREST PAYMENT =====================", "====================================================="
 "Set up your installment and interest payments","Configura meses sin intereses"
 "At Mercado Pago you can choose the fee you pay for each purchase and also offer interest-free installments to your customer.","En Mercado Pago puedes elegir la tarifa que pagas en cada compra y también ofrecer meses sin intereses a tu cliente."
 "Set up installment and interest","Configurar cuotas e intereses"
+"Set up your interest payments","Configura pagos"
+"At Mercado Pago you can choose the fee you pay for each purchase.","En Mercado Pago puedes elegir la tarifa que pagas en cada venta."
+"Set up interest payments","Configurar tasas y plazos"

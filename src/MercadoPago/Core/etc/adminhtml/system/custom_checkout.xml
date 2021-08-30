@@ -54,14 +54,28 @@
             <comment>Make more sales by allowing your customers to pay quickly using the cards saved in their account.</comment>
         </field>
 
-        <field id="installment_info" translate="label comment" type="label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="interest_payment_default_info" translate="label comment" type="label" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Set up your installment and interest payments</label>
             <comment>At Mercado Pago you can choose the fee you pay for each purchase and also offer interest-free installments to your customer.</comment>
+            <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\InterestPayment\Note</frontend_model>
         </field>
 
-        <field id="installment_button" translate="button_label" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="interest_payment_default_button" translate="button_label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
             <button_label>Set up installment and interest</button_label>
-            <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\Button</frontend_model>
+            <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\InterestPayment\Button</frontend_model>
         </field>
+
+        <!--Fields enabled only for MCO, because the functionality of interest-free installment payment does not yet exist in Colombia-->
+        <field id="interest_payment_info" translate="label comment" type="label" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Set up your interest payments</label>
+            <comment>At Mercado Pago you can choose the fee you pay for each purchase.</comment>
+            <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\InterestPayment\Note</frontend_model>
+        </field>
+
+        <field id="interest_payment_button" translate="button_label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+            <button_label>Set up interest payments</button_label>
+            <frontend_model>MercadoPago\Core\Block\Adminhtml\System\Config\InterestPayment\Button</frontend_model>
+        </field>
+        <!-- -->
     </group>
 </include>
