@@ -505,3 +505,11 @@ Cannot operate between users from different countries.", "Não é possível oper
 "refunded", "pagamento reembolsado"
 "charged_back", "pagamento devolvido"
 "Generate Ticket", "Gerar Boleto"
+
+"==================== INTEREST PAYMENT =====================", "====================================================="
+"Set up your installment and interest payments","Configure seu parcelamento e juros"
+"At Mercado Pago you can choose the fee you pay for each purchase and also offer interest-free installments to your customer.","No Mercado Pago você pode escolher a tarifa que vai pagar em cada compra e também oferecer parcelas sem juros para seu cliente."
+"Set up installment and interest","Configurar parcelamento e juros"
+"Set up your interest payments","Configure tarifas"
+"At Mercado Pago you can choose the fee you pay for each purchase.","No Mercado Pago você pode escolher a tarifa que vai pagar em cada compra."
+"Set up interest payments","Configurar tarifas"
