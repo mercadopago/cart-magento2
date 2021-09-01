@@ -122,7 +122,8 @@ class Payment extends Fieldset
     protected function hideBankTransfer($paymentId, $siteId)
     {
         if (strpos($paymentId, 'custom_checkout_bank_transfer') !== false) {
-            if ($siteId !== "MCO") {
+            //hide payment method if not Chile or Colombia
+            if ($siteId !== "MLC" && $siteId !== "MCO") {
                 $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
                 return true;
             }
