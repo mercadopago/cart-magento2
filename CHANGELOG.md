@@ -5,12 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.3] - 2021-08-12
+
+### Added
+- Added billing address on checkout pix for digital products
+- Added order ID to PIX purchase success page
+- Added integrator ID field in admin screen
+
+### Changed
+- Changed min length of card number field to 13 digits
+
+## [3.9.2] - 2021-07-14
+
+### Added
+- Added MFTF compliance for reviews on marketplace
+- Added MCO on available_transparent_ticket method config to save MCO payment methods (Baloto and Efecty)
+- Added Round helper
+
+### Changed
+- Disabled checkouts on plugin install
+- Renamed placeOrder method name on basic checkout template
+
+### Fixed
+- Fixed rounding of values to avoid problems with fraud status
+
 ## [3.9.1] - 2021-07-01
+
 ### Fixed
 - Prevented PIX base64 code from being placed on the invoice
 - Adjusted the placeholder for translations
 
 ## [3.9.0] - 2021-06-02
+
+### Added
 - Improvements for Pix
   - Created a controller to render pix qrcode image.
   - Created a custom info template for pix gateway.
