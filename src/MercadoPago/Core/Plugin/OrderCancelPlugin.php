@@ -85,7 +85,7 @@ class OrderCancelPlugin
             || $paymentMethod === 'mercadopago_custom_bank_transfer'
             || $paymentMethod === 'mercadopago_basic'
             || $paymentMethod === 'mercadopago_custom_pix'
-            || $paymentMethod === 'mercadopago_custom_webpay')
+            )
         ) {
             return;
         }

@@ -7,8 +7,5 @@
         <referenceContainer name="page.messages">
             <block class="Magento\Framework\View\Element\Messages" name="messages" as="messages"/>
         </referenceContainer>
-        <referenceContainer name="content">
-            <block class="MercadoPago\Core\Block\CustomWebpay\Failure" name="mercadopago_custom_webpay_failure" cacheable="false"/>
-        </referenceContainer>
     </body>
 </page>
