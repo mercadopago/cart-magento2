@@ -165,14 +165,6 @@ function validateAdditionalInputs() {
 function showErrors(error) {
   var form = this.getFormCustom();
 
-  if (error[0].code === "324"){
-    span = form.querySelector('#mp-error-324');
-    span.style.display = 'block';
-    form.querySelector(span.getAttribute('data-main')).classList.add('mp-form-control-error');
-    focusInputError();
-    return
-  }
-
   for (var x = 0; x < error.cause.length; x++) {
     var code = error.cause[x].code;
     var span = undefined;
