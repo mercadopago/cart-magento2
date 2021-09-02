@@ -131,6 +131,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             throw new LocalizedException(__($messageErrorToClient));
         }
 
+        return $this->createCustomPayment($preference, 'CustomBankTransfer', self::LOG_NAME);
+
     }//end initialize()
 
     /**
