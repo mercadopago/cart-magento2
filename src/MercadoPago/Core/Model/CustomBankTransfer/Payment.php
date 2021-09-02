@@ -113,24 +113,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             throw new LocalizedException(__(\MercadoPago\Core\Helper\Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
         }//end try
 
-        // POST /v1/payments
-        $response = $this->_coreModel->postPaymentV1($preference);
-        $this->_helperData->log('CustomPaymentTicket::initialize - POST /v1/payments RESPONSE', self::LOG_NAME, $response);
-
-        if (isset($response['status']) && ($response['status'] == 200 || $response['status'] == 201)) {
-            $payment = $response['response'];
-            $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $payment);
-            return true;
-        } else {
-            $messageErrorToClient = $this->_coreModel->getMessageError($response);
-            $arrayLog             = [
-                'response' => $response,
-                'message'  => $messageErrorToClient,
-            ];
-            $this->_helperData->log('CustomPaymentTicket::initialize - The API returned an error while creating the payment, more details: '.json_encode($arrayLog));
-            throw new LocalizedException(__($messageErrorToClient));
-        }
-
         return $this->createCustomPayment($preference, 'CustomBankTransfer', self::LOG_NAME);
 
     }//end initialize()
