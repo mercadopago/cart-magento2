@@ -1,6 +1,7 @@
 "==================== CREDENTIALS CONFIGURATION PAGE =====================","================================================"
 "Credentials","Credenciales"
 "Get your credentials access_token and public_key, visit the country in which your account was created: <a href=""https://www.mercadopago.com/mla/account/credentials"" target=""_blank"">Argentina</a>, <a href=""https://www.mercadopago.com/mlb/account/credentials"" target=""_blank"">Brazil</a>, <a href=""https://www.mercadopago.com/mlc/account/credentials"" target=""_blank"">Chile</a>, <a href=""https://www.mercadopago.com/mco/account/credentials"" target=""_blank"">Colombia</a>, <a href=""https://www.mercadopago.com/mlm/account/credentials"" target=""_blank"">Mexico</a>, <a href=""https://www.mercadopago.com/mlu/account/credentials"" target=""_blank"">Uruguay</a> and <a href=""https://www.mercadopago.com/mpe/account/credentials"" target=""_blank"">Peru</a>.","Obtené tus credeciales access_token y public_key de Mercado Pago, según el país en el que hayas creado tu cuenta: <a href=""https://www.mercadopago.com/mla/account/credentials"" target=""_blank"">Argentina</a>, <a href=""https://www.mercadopago.com/mlb/account/credentials"" target=""_blank"">Brazil</a>, <a href=""https://www.mercadopago.com/mlc/account/credentials"" target=""_blank"">Chile</a>, <a href=""https://www.mercadopago.com/mco/account/credentials"" target=""_blank"">Colombia</a>, <a href=""https://www.mercadopago.com/mlm/account/credentials"" target=""_blank"">Mexico</a>, <a href=""https://www.mercadopago.com/mlu/account/credentials"" target=""_blank"">Uruguay</a> o <a href=""https://www.mercadopago.com/mpe/account/credentials"" target=""_blank"">Peru</a>."
+
 "==================== ORDER MANAGEMENT CONFIGURATION PAGE =====================","================================================"
 "Order Management","Administración de orden"
 "Automatic update of Order Status (Webhooks)","Actualización automática del estado de la orden (webhooks)"
@@ -20,7 +21,7 @@
 "Enable automatic cancellation of Payment in the Mercado Pago when an order is canceled. Payment is only canceled when payment is pending or in_process.","Habilitar la cancelación automática de pagos en Mercado Pago cuando una orden es cancelada. El pago sólo será cancelado cuando el estado del pago sea pending o in_process."
 
 "==================== CUSTOM CHECKOUT CONFIGURATION PAGE =====================","================================================"
-"Custom Checkout - Credit and Debit Card","Custom Checkout - Tarjetas de Credito y Debito"
+"Custom Checkout - Credit and Debit Card","Custom Checkout - Tarjetas de Credito y Débito"
 "Enabled","Habilitado"
 "It is a requirement that you have a SSL certificate, and the payment form to be provided under an HTTPS page. During the sandbox mode tests, you can operate over HTTP, but for homologation you'll need to acquire the certificate in case you don't have it.","Es necesario que tenga un certificado SSL y el formulario de entrega se proporcione dentro de una página HTTPS. Durante las pruebas de nivel de vida de Sandbox, se puede utilizar con HTTP, pero es la homologación que tendrá que adquirir el certificado en caso de que no lo tiene."
 "Payment Title","Título del metodo de pago"
@@ -58,7 +59,7 @@
 "Redirect Payer","Redirigir Comprador"
 "By enabling this option the buyer will be automatically redirected to the payment page of the bank, it will not go through an intermediate page of your store.","Al habilitar esta opción el comprador será redirigido automáticamente a la página de pago del banco, no pasará por una página intermedia de su tienda."
 
-"==================== v3.3.1 Checkout Pro PAGE =====================","================================================"
+"==================== v3.3.1 CHECKOUT PRO PAGE =====================","================================================"
 "Checkout Pro","Checkout Pro - Redireccionado"
 "Auto Return","Redireccionamiento automático"
 "Redirect buyer automatically to your store when payment is approved.","Redirecciona automáticamente el comprador a su tienda cuando se aprueba el pago."
@@ -116,16 +117,13 @@
 "Select the Installment","Seleccione el banco"
 
 "Parameter cardNumber can not be null/empty","Ingresa una numero de tarjeta válido"
-"Invalid Card Number","Ingresa una numero de tarjeta válido"
 "Invalid Expiration Date","Ingresa una fecha de expiración válida"
 "Parameter cardholderName can not be null/empty","Ingresa un nombre válido"
 "Invalid Card Holder Name","Ingresa un nombre válido."
 "Parameter securityCode can not be null/empty","Ingresa un código de seguridad válido"
-"Invalid Security Code","Ingresa un código de seguridad válido"
 "Parameter docType can not be null/empty","Ingresa un tipo de documento válido"
 "Invalid Document Type","Ingresa un tipo de documento válido"
 "Parameter docNumber can not be null/empty","Ingresa un documento válido"
-"Invalid Document Number","Ingresa un documento válido"
 "The parameter cardholder.document.subtype can not be null or empty","Ingresa un tipo de documento válido"
 "Invalid Document Sub Type","Ingresa un tipo de documento válido"
 "Parameter cardIssuerId can not be null/empty","Ingresa un banco válido"
@@ -152,7 +150,6 @@
 "State required","Obligatorio completar el Estado"
 "Zipcode required","Obligatorio completar el Código postal"
 
-
 "==================== v3.1.0 PAYMENT BANK TRANSFER FORM =====================","================================================"
 
 "Identification Type","Tipo de Documento"
@@ -162,7 +159,7 @@
 "Natural", "Natural"
 "Jurídica", "Jurídica"
 
-"==================== 3.3.1 - Checkout Pro Checkout FLOW =====================","================================================"
+"==================== 3.3.1 - CHECKOUT PRO FLOW =====================","================================================"
 
 "Quiero pagar con Mercado Pago sin costo Adicional.", "Quiero pagar con Mercado Pago sin costo Adicional."
 "Usa el medio de pago que prefieras","Usa el medio de pago que prefieras"
@@ -182,7 +179,6 @@
 "Terms and Conditions of Use","Términos y Condiciones de uso"
 "Coupon discount of the Mercado Pago", "Cupón de descuento del Mercado Pago"
 
-
 "An error has occurred, please try again. If the error persists, please contact the seller.", "Ha ocurrido un error. Por favor intente otra vez. Si el error persiste, contacte el vendedor."
 "doesn't find a campaign", "Campaña no encontrada."
 "doesn't find a campaign with the given code", "Cupón de descuento invalido."
@@ -194,7 +190,6 @@
 "Amount exceeded limit campaign", "La campaña ya superó el límite de descuentos."
 "Exceeded number of coupons", "La campaña ya superó el límite de cupones de descuentos."
 "payer_email should be an email", "No se pudo identificar su email, inicie la sesión en la tienda e inténtelo de nuevo."
-
 
 "==================== SUCCESS PAGE =====================","================================================"
 
@@ -223,7 +218,6 @@
 "Payment Status: %1","Estado del Pago: %1"
 "Payment Status Detail: %1","Estado Detallado del Pago: %1"
 
-
 "========= v3.1.0 =========","========= v3.1.0 ========="
 "Pay","Pagar"
 "The payment will be credited in less than 1 hour.","El pago se acreditará en menos de 1 hora."
@@ -241,7 +235,6 @@
 "Payment Status Detail","Estado Detallado del Pago"
 
 "====================== ERRORS PAYMENT FORM ==========================","================================================"
-
 
 "Params Error.", "Error de parámetros"
 "Token must be for test.", "El token debe ser de prueba"
@@ -286,8 +279,6 @@
 "Invalid card_id for this payment_method_id.", "Card_id inválido para el payment_method_id"
 "Invalid payment_type_id.", "Payment_type_id inválido"
 "Invalid payment_method_id.", "Payment_method_id inválido"
-"Invalid card expiration month.", "El mes de expiración de la tarjeta es inválido"
-"Invalid card expiration year.", "El año de expiración de la tarjeta es inválido"
 "card atributte can't be null.", "El parámetro card no puede ser nulo"
 "payment_method_id atributte can't be null.", "El parámetro payment_method_id no puede ser nulo"
 "transaction_amount atributte can't be null.", "El parámetro transaction_amount no puede ser nulo"
@@ -329,7 +320,7 @@
 "Verify the form data or wait until the validation of the payment data.", "Verifique los datos del formulario o espere hasta la validación de los datos de pago."
 "There was an internal error when creating the payment.", "Hubo un error interno al crear el pago."
 
-"=============== Cancellation FLOW =================================","================================================"
+"=============== CANCELLATION FLOW =================================","================================================"
 
 "Payment canceled.", "Pago Cancelado."
 "Payment was not canceled because the status is rejected.","El pago no fue cancelado, ya que está rechazado."
@@ -339,7 +330,7 @@
 "The payment has not been canceled, you can only cancel payments with status pending or in_process. The payment status is", "No se pudo ejecutar la cancelación, solo puede cancelar los pagos con estado pending o in_process. El estado de pago es "
 "An error occurred while getting the status of the payment in the API Mercado Pago.", "Se produjo un error al obtener el estado del pago en el API de Mercado Pago."
 
-"=============== Refund FLOW =================================","================================================"
+"=============== REFUND FLOW =================================","================================================"
 
 "Refund of %1 was processed successfully.", "El reembolso de %1 se ha procesado correctamente."
 "The refunded amount must be greater than 0.", "El monto reembolsado debe ser superior a 0."
@@ -362,7 +353,7 @@
 "<br/> Status: %1","<br/> Estado: %1"
 "<br/> Status Detail: %1","<br/> Detalle del Estado: %1"
 
-"=====================BACK END ===========================","================================================"
+"===================== BACK END ===========================","================================================"
 
 "The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.", "El ACCESS_TOKEN no se ha configurado, sin esta credencial el módulo no funcionará correctamente."
 
@@ -375,7 +366,7 @@
 "Check the security code.","Revisa el código de seguridad."
 "We could not process your payment.","No pudimos procesar tu pago."
 
-"You must authorize to %1 the payment of $ %2 to Mercado Pago.","Debes llamar y autorizar ante %1 el pago de $ %2 a Mercado Pago"
+"Contact your card issuer and authorize the payment to Mercado Pago.","Contacta con el emisor de tu tarjeta y autoriza el pago a Mercado Pago."
 "Call %1 to activate your card.<br/>The phone is on the back of your card.","Llama a %1 para que active tu tarjeta. El teléfono está al dorso de tu tarjeta."
 "We could not process your payment.","No pudimos procesar tu pago."
 "You already made a payment by that value.<br/>If you need to repay, use another card or other payment method.","Ya hiciste un pago por ese valor. Si necesitas volver a pagar usa otra tarjeta u otro medio de pago."
@@ -486,20 +477,31 @@
 "Pay with Pix - Mercado Pago", "Pagar con Pix - Mercado Pago"
 "Discount", "Descuento"
 "Tax", "Tasa"
-"==================== Checkout PRO =====================","================================================"
+
+"==================== CHECKOUT PRO =====================","================================================"
 "I want to pay with Mercado Pago at no additional cost.", "Quiero pagar con Mercado Pago, sin costo adicional."
+
 "==================== STATUS ===========================", "==============================================="
-"pending", "pago pendiente"
-"approved", "pago aprobado"
-"authorized", "pago autorizado"
-"in_process", "pago en proceso"
-"in_mediation", "pago en mediación"
-"rejected", "pago rechazado"
-"cancelled", "pago cancelado"
-"refunded", "pago reembolsado"
-"charged_back", "pago contracargo"
+"pending", "Pago pendiente"
+"approved", "Pago aprobado"
+"authorized", "Pago autorizado"
+"in_process", "Pago en proceso"
+"in_mediation", "Pago en mediación"
+"rejected", "Pago rechazado"
+"cancelled", "Pago cancelado"
+"refunded", "Pago reembolsado"
+"charged_back", "Pago contracargado"
 "Generate Ticket", "Generar Ticket"
 
+"==================== SDK V2 =====================","================================================"
+"Invalid card number", "Numero de tarjeta no válido"
+"Invalid card expiration month", "Mes de vencimiento no válido"
+"Invalid card expiration year", "Año de vencimiento no válido"
+"Invalid card expiration date". "Fecha de vencimiento no válido"
+"Invalid cardholder name", "Nombre del titular no válido"
+"Invalid security code", "Código de seguridad no válido"
+"Invalid document number", "Número de documento no válido"
+"This is a required field", "Este es un campo obligatorio"
 "==================== INTEREST PAYMENT =====================", "====================================================="
 "Set up your installment and interest payments","Configura meses sin intereses"
 "At Mercado Pago you can choose the fee you pay for each purchase and also offer interest-free installments to your customer.","En Mercado Pago puedes elegir la tarifa que pagas en cada compra y también ofrecer meses sin intereses a tu cliente."

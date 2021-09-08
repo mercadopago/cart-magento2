@@ -30,7 +30,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      */
     protected $_infoBlockType = 'MercadoPago\Core\Block\CustomPix\Info';
 
-
     /**
      * @param  DataObject $data
      * @return $this|\MercadoPago\Core\Model\Custom\Payment
@@ -54,9 +53,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $this;
-
     }//end assignData()
-
 
     /**
      * @param string $paymentAction
@@ -159,7 +156,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     }//end initialize()
 
-
     /**
      * @param  $data
      * @throws LocalizedException
@@ -175,13 +171,13 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
     }//end setOrderSubtotals()
 
-
     /**
      * is payment method available?
      *
      * @param CartInterface|null $quote
      *
      * @return boolean
+     * @throws LocalizedException
      */
     public function isAvailable(CartInterface $quote=null)
     {
@@ -191,12 +187,11 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return parent::isAvailableMethod($quote);
-
     }//end isAvailable()
 
-
     /**
-     * @return false|string
+     * @return string
+     * @throws Exception
      */
     protected function getDateOfExpiration()
     {
@@ -206,11 +201,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $minutes = 30;
         }
 
-        $dateOfExpiration = $this->_localeDate->date()->add(new \DateInterval(sprintf('PT%dM', $minutes)))->format('Y-m-d\TH:i:s.000O');
-
-        return $dateOfExpiration;
-
+        return $this->_localeDate->date()->add(new \DateInterval(sprintf('PT%dM', $minutes)))->format('Y-m-d\TH:i:s.000O');
     }//end getDateOfExpiration()
-
-
 }//end class

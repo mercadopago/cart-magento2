@@ -5,11 +5,10 @@ namespace MercadoPago\Core\Helper\Message;
 /**
  * Payment response user friendly messages
  */
-class StatusMessage
-    extends AbstractMessage
+class StatusMessage extends AbstractMessage
 {
     /**
-     * mapps messages by status
+     * maps messages by status
      *
      * @var array
      */

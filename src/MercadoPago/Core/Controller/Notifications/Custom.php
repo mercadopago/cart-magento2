@@ -27,13 +27,13 @@ class Custom extends NotificationBase
 
     protected $_notifications;
 
-
     /**
      * Custom constructor.
      *
      * @param Context $context
-     * @param Data    $coreHelper
-     * @param Core    $coreModel
+     * @param Data $coreHelper
+     * @param Core $coreModel
+     * @param Notifications $notifications
      */
     public function __construct(Context $context, Data $coreHelper, Core $coreModel, Notifications $notifications)
     {
@@ -41,9 +41,7 @@ class Custom extends NotificationBase
         $this->coreModel      = $coreModel;
         $this->_notifications = $notifications;
         parent::__construct($context);
-
     }//end __construct()
-
 
     /**
      * Controller Action
@@ -70,7 +68,9 @@ class Custom extends NotificationBase
 
             $payment  = $response['response'];
             $response = $topicClass->updateStatusOrderByPayment($payment);
+
             $this->setResponseHttp($response['httpStatus'], $response['message'], $response['data']);
+
             return;
         } catch (\Exception $e) {
             $statusResponse = Response::HTTP_INTERNAL_ERROR;
@@ -82,16 +82,14 @@ class Custom extends NotificationBase
             $message = 'Mercado Pago - There was a serious error processing the notification. Could not handle the error.';
             $this->setResponseHttp($statusResponse, $message, ['exception_error' => $e->getMessage()]);
         }//end try
-
     }//end execute()
-
 
     /**
      * @param $httpStatus
      * @param $message
-     * @param array      $data
+     * @param array $data
      */
-    protected function setResponseHttp($httpStatus, $message, $data=[])
+    protected function setResponseHttp($httpStatus, $message, $data = [])
     {
         $response = [
             'status'  => $httpStatus,
@@ -104,8 +102,5 @@ class Custom extends NotificationBase
         $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
         $this->getResponse()->setBody(json_encode($response));
         $this->getResponse()->setHttpResponseCode($httpStatus);
-
     }//end setResponseHttp()
-
-
 }//end class

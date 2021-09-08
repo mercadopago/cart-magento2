@@ -11,7 +11,6 @@ define(
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/model/payment/additional-validators',
-    'MPcustom',
   ],
   function (
     Component,
@@ -26,6 +25,7 @@ define(
     cartCache
   ) {
     'use strict';
+
     var configPayment = window.checkoutConfig.payment.mercadopago_custom_pix;
 
     return Component.extend({

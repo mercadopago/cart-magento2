@@ -4,7 +4,8 @@
 *
 */
 
-#mercadopago_checkout_custom, #mercadopago_checkout_custom_second_card {
+#mercadopago_checkout_custom,
+#mercadopago_checkout_custom_second_card {
   border: 1px solid #cccccc;
   box-sizing: border-box;
   margin: 0 0 10px;
@@ -33,7 +34,8 @@
   text-decoration: none;
 }
 
-#co-mercadopago-form h3, #co-mercadopago-form-ticket h3 {
+#co-mercadopago-form h3,
+#co-mercadopago-form-ticket h3 {
   margin-top: 0;
   text-transform: uppercase;
 }
@@ -52,23 +54,27 @@
   float: left;
 }
 
-#mercadopago_checkout_custom ul li input, #mercadopago_checkout_custom ul li select {
+#mercadopago_checkout_custom ul li input,
+#mercadopago_checkout_custom ul li select {
   height: 20px;
 }
 
-#cardId, #second_card_cardId {
+#cardId,
+#second_card_cardId {
   background-color: #fff !important;
   background-position: 93% 50% !important;
   height: 32px !important;
 }
 
-#cardNumber, #second_card_cardNumber {
+#cardNumber,
+#second_card_cardNumber {
   background-color: #fff !important;
   background-position: 98% 50% !important;
   width: 100%;
 }
 
-#securityCode, #securityCodeOCP {
+#securityCode,
+#securityCodeOCP {
   width: 53px;
 }
 
@@ -97,7 +103,8 @@
 }
 
 @media screen and (max-width: 767px) {
-  .cvv .field-tooltip .field-tooltip-content:before, .cvv .field-tooltip .field-tooltip-content:after {
+  .cvv .field-tooltip .field-tooltip-content:before,
+  .cvv .field-tooltip .field-tooltip-content:after {
     left: 64px;
     right: auto;
     top: 2px;
@@ -108,20 +115,23 @@
   left: 65px;
 }
 
-#doc_type__mp, #second_card_doc_type__mp {
+#doc_type__mp,
+#second_card_doc_type__mp {
   display: inline-block;
   margin-right: 1px;
   margin-top: 28px;
   width: 90px;
 }
 
-#doc_number__mp, #second_card_doc_number__mp {
+#doc_number__mp,
+#second_card_doc_number__mp {
   display: inline-block;
   vertical-align: top;
   width: 120px;
 }
 
-#doc_number__mp .control, #second_card_doc_number__mp .control {
+#doc_number__mp .control,
+#second_card_doc_number__mp .control {
   margin-top: 28px;
 }
 
@@ -140,29 +150,33 @@
 }
 
 .document-box.required label:after {
-  content: '*';
+  content: "*";
   color: #e02b27;
   font-size: 1.2rem;
   margin: 0 0 0 5px;
 }
 
-#docNumber.mage-error, #second_card_docNumber.mage-error {
+#docNumber.mage-error,
+#second_card_docNumber.mage-error {
   margin-bottom: 24px;
 }
 
-#docNumber-error, #second_card_docNumber-error {
+#docNumber-error,
+#second_card_docNumber-error {
   bottom: 0;
   position: absolute;
   left: 0;
   white-space: nowrap;
 }
 
-#box_month, #box_year {
+#box_month,
+#box_year {
   width: 130px;
   float: left;
 }
 
-#box_month select, #box_year select {
+#box_month select,
+#box_year select {
   width: 130px;
 }
 
@@ -184,7 +198,9 @@
   margin-top: 7px;
 }
 
-input.has-error, select.has-error, textarea.has-error {
+input.has-error,
+select.has-error,
+textarea.has-error {
   border-color: #ed8380;
 }
 
@@ -235,18 +251,24 @@ input.has-error, select.has-error, textarea.has-error {
 }
 
 .btn-boleto {
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
   font-weight: 400;
-  background-color: #36A1F1;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #36A1F1), color-stop(100%, #0F79C9));
-  background-image: -webkit-linear-gradient(#36A1F1, #0F79C9);
-  background-image: -moz-linear-gradient(#36A1F1, #0F79C9);
-  background-image: -o-linear-gradient(#36A1F1, #0F79C9);
-  background-image: linear-gradient(#36A1F1, #0F79C9);
-  -webkit-box-shadow: inset 0 1px #97DCFF;
-  box-shadow: 0 1px #97DCFF inset;
-  color: #FFF !important;
-  border: 1px solid #0D6FB9;
+  background-color: #36a1f1;
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0%, #36a1f1),
+    color-stop(100%, #0f79c9)
+  );
+  background-image: -webkit-linear-gradient(#36a1f1, #0f79c9);
+  background-image: -moz-linear-gradient(#36a1f1, #0f79c9);
+  background-image: -o-linear-gradient(#36a1f1, #0f79c9);
+  background-image: linear-gradient(#36a1f1, #0f79c9);
+  -webkit-box-shadow: inset 0 1px #97dcff;
+  box-shadow: 0 1px #97dcff inset;
+  color: #fff !important;
+  border: 1px solid #0d6fb9;
   border-radius: 4px 4px 4px 4px;
   cursor: pointer;
   display: inline-block;
@@ -325,7 +347,8 @@ input.has-error, select.has-error, textarea.has-error {
   display: none;
 }
 
-.mercadopago-coupon-action-apply, .mercadopago-coupon-action-remove {
+.mercadopago-coupon-action-apply,
+.mercadopago-coupon-action-remove {
   cursor: pointer;
   float: left;
   font-size: 10px;
@@ -333,7 +356,7 @@ input.has-error, select.has-error, textarea.has-error {
   text-transform: uppercase;
   padding: 2px 7px;
   border-radius: 5px;
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   margin: 5px 0 0 0;
 }
 
@@ -354,7 +377,7 @@ input.has-error, select.has-error, textarea.has-error {
 .discount-ok {
   padding: 10px;
   border: 1px solid #cecece;
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   float: left;
 }
 
@@ -388,7 +411,7 @@ input.has-error, select.has-error, textarea.has-error {
 }
 
 .cft-info {
-  color: #A0A0A0;
+  color: #a0a0a0;
   font-weight: bold;
   font-size: 40px;
   padding: 5px;
@@ -396,7 +419,7 @@ input.has-error, select.has-error, textarea.has-error {
 }
 
 .tea-info {
-  color: #A0A0A0;
+  color: #a0a0a0;
   padding: 5px;
   margin-bottom: -12px !important;
 }
@@ -406,7 +429,7 @@ input.has-error, select.has-error, textarea.has-error {
 }
 
 .total_buy_price:before {
-  content: '$';
+  content: "$";
 }
 
 #mercadopago_calculator_link {
@@ -414,7 +437,8 @@ input.has-error, select.has-error, textarea.has-error {
   margin: 5px 0 15px;
 }
 
-#mercadopago_calculator_link a, #mercadopago_calculator_link img {
+#mercadopago_calculator_link a,
+#mercadopago_calculator_link img {
   display: inline-block;
   vertical-align: middle;
 }
@@ -430,7 +454,8 @@ input.has-error, select.has-error, textarea.has-error {
 }
 
 @media screen and (max-width: 900px) {
-  #mercadopago_checkout_custom, #mercadopago_checkout_custom_second_card {
+  #mercadopago_checkout_custom,
+  #mercadopago_checkout_custom_second_card {
     margin: 0 0 15px;
     width: 100%;
   }
@@ -446,13 +471,15 @@ input.has-error, select.has-error, textarea.has-error {
 }
 
 @media screen and (max-width: 767px) {
-  #mercadopago_checkout_custom, #mercadopago_checkout_custom_second_card {
+  #mercadopago_checkout_custom,
+  #mercadopago_checkout_custom_second_card {
     width: 49%;
   }
 }
 
 @media screen and (max-width: 540px) {
-  #mercadopago_checkout_custom, #mercadopago_checkout_custom_second_card {
+  #mercadopago_checkout_custom,
+  #mercadopago_checkout_custom_second_card {
     width: 100%;
   }
 }
@@ -575,7 +602,7 @@ input.has-error, select.has-error, textarea.has-error {
   background-color: rgba(65, 137, 230, 0.1);
   padding: 5px 8px;
   border-radius: 10px;
-  color: #3483FA;
+  color: #3483fa;
   font-size: 0.8em;
   float: right;
 }
@@ -591,4 +618,35 @@ input.has-error, select.has-error, textarea.has-error {
 .pix-checkout p {
   font-size: 1.2em;
   color: #787878;
+}
+
+/* errors */
+.mp-form-control-error {
+  border: 2px solid #f04449 !important;
+}
+
+.mp-form-error {
+  font-family: sans-serif !important;
+  font-weight: normal !important;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.29;
+  letter-spacing: normal;
+  color: #f04449 !important;
+  padding-top: 5px;
+  padding-left: 2px;
+  display: none;
+}
+
+/* helpers */
+.mp-d-flex {
+  display: flex;
+}
+
+.mp-mb-12 {
+  margin-bottom: 12px !important;
+}
+
+.mp-mb-0 {
+  margin-bottom: 0 !important;
 }

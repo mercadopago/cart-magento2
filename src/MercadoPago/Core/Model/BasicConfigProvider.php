@@ -58,7 +58,6 @@ class BasicConfigProvider implements ConfigProviderInterface
         $this->_methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
         $this->_checkoutSession = $checkoutSession;
         $this->_productMetaData = $productMetadata;
-
     }
 
     /**
@@ -144,14 +143,12 @@ class BasicConfigProvider implements ConfigProviderInterface
         $excludePaymentMethods = explode(",", $excludePaymentMethods);
 
         try {
-
-            $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
-
-            //validate active payments methods
             $debit = 0;
             $credit = 0;
             $ticket = 0;
             $choMethods = array();
+
+            $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
 
             foreach ($paymentMethods['response'] as $pm) {
                 if (!in_array($pm['id'], $excludePaymentMethods)) {
@@ -170,12 +167,11 @@ class BasicConfigProvider implements ConfigProviderInterface
                 "debit" => $debit,
                 "credit" => $credit,
                 "ticket" => $ticket,
+                "installments" => $maxInstallments,
                 "checkout_methods" => $choMethods,
-                "installments" => $maxInstallments
             );
 
             return $parameters;
-
         } catch (\Exception $e) {
             $this->_coreHelper->log(
                 "makeBannerCheckout:: An error occurred at the time of obtaining the payment methods banner: " . $e
