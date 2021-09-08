@@ -91,12 +91,12 @@ $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 
 <div class="primary button-success">
     <?php if (!empty($paymentResponse) && $paymentResponse['status'] == 'rejected'): ?>
-        <a class="action primary continue"
-           href="<?php echo $block->escapeUrl($block->getReOrderUrl()) ?>"><span><?php /* @escapeNotVerified */
-                echo __('Retry order') ?></span></a>
+        <a class="action primary continue" href="<?php echo $block->escapeUrl($block->getCheckoutUrl()) ?>">
+            <span><?php /* @escapeNotVerified */ echo __('Retry payment') ?></span>
+        </a>
     <?php else: ?>
-        <a class="action primary continue"
-           href="<?php echo $block->escapeUrl($block->getUrl()) ?>"><span><?php /* @escapeNotVerified */
-                echo __('Continue Shopping') ?></span></a>
+        <a class="action primary continue" href="<?php echo $block->escapeUrl($block->getUrl()) ?>">
+            <span><?php /* @escapeNotVerified */ echo __('Continue Shopping') ?></span>
+        </a>
     <?php endif; ?>
 </div>

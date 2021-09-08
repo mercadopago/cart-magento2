@@ -37,7 +37,6 @@ class Basic extends NotificationBase
 
     protected $_notifications;
 
-
     /**
      * Basic constructor.
      *
@@ -65,29 +64,28 @@ class Basic extends NotificationBase
 
     }//end __construct()
 
-
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
      */
     public function execute()
     {
         $request = $this->getRequest();
+
         try {
             $requestValues = $this->_notifications->validateRequest($request);
             $topicClass    = $this->_notifications->getTopicClass($request);
+
             $data          = $this->_notifications->getPaymentInformation($topicClass, $requestValues);
             if (empty($data)) {
                 throw new Exception(__('Error Merchant Order notification is expected'), 400);
             }
 
             $merchantOrder = $data['merchantOrder'];
-
             if (is_null($merchantOrder)) {
                 throw new Exception(__('Merchant Order not found or is an notification invalid type.'), 400);
             }
 
             $order = $this->_orderFactory->create()->loadByIncrementId($merchantOrder['external_reference']);
-
             if (empty($order) || empty($order->getId())) {
                 throw new Exception(__('Error Order Not Found in Magento: ').$merchantOrder['external_reference'], 400);
             }
@@ -97,7 +95,6 @@ class Basic extends NotificationBase
             }
 
             $data['statusFinal'] = $topicClass->getStatusFinal($data['payments'], $merchantOrder);
-
             if (!$topicClass->validateRefunded($order, $data)) {
                 throw new Exception(__('Error Order Refund'), 400);
             }
@@ -110,7 +107,6 @@ class Basic extends NotificationBase
         }//end try
 
     }//end execute()
-
 
     /**
      * @param $httpStatus
@@ -136,6 +132,4 @@ class Basic extends NotificationBase
         $this->getResponse()->setHttpResponseCode($httpStatus);
 
     }//end setResponseHttp()
-
-
 }//end class

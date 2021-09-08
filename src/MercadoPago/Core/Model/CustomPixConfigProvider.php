@@ -58,6 +58,7 @@ class CustomPixConfigProvider implements ConfigProviderInterface
      * @var Repository
      */
     protected $_assetRepo;
+
     /**
      * @var UrlInterface
      */

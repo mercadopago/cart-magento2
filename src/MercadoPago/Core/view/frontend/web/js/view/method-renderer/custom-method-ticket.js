@@ -11,8 +11,9 @@ define(
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
     'Magento_Checkout/js/model/payment/additional-validators',
-    'MPcustom',
-    'MPv1Ticket'
+    'Magento_Checkout/js/action/place-order',
+    'MercadoPago_Core/js/Masks',
+    'MercadoPago_Core/js/Ticket'
   ],
   function (
     Component,
@@ -24,9 +25,12 @@ define(
     fullScreenLoader,
     $t,
     defaultTotal,
-    cartCache
+    cartCache,
+    additionalValidators,
+    placeOrderAction,
   ) {
     'use strict';
+
     var configPayment = window.checkoutConfig.payment.mercadopago_customticket;
 
     return Component.extend({
@@ -39,42 +43,10 @@ define(
       validateHandler: null,
 
       initializeMethod: function () {
-        var self = this;
-        var mercadopago_site_id = window.checkoutConfig.payment[this.getCode()]['country']
-        var payer_email = "";
-
-        if (typeof quote == 'object' && typeof quote.guestEmail == 'string') {
-          payer_email = quote.guestEmail
-        }
-
-        MPv1Ticket.text.apply = $t('Apply');
-        MPv1Ticket.text.remove = $t('Remove');
-
-        MPv1Ticket.actionsMLB = function () {
-          if (document.querySelector(MPv1Ticket.selectors.docNumber)) {
-            MPv1Ticket.addListenerEvent(document.querySelector(MPv1Ticket.selectors.docNumber), 'keyup', MPv1Ticket.execFormatDocument);
-          }
-          if (document.querySelector(MPv1Ticket.selectors.radioTypeFisica)) {
-            MPv1Ticket.addListenerEvent(document.querySelector(MPv1Ticket.selectors.radioTypeFisica), "change", MPv1Ticket.initializeDocumentPessoaFisica);
-          }
-          if (document.querySelector(MPv1Ticket.selectors.radioTypeFisica)) {
-            MPv1Ticket.addListenerEvent(document.querySelector(MPv1Ticket.selectors.radioTypeJuridica), "change", MPv1Ticket.initializeDocumentPessoaJuridica);
-          }
-          return;
-        }
-
-        if (mercadopago_site_id == 'MLB') {
+        if (this.getCountryId() === 'MLB') {
           this.setBillingAddress();
+          validateDocumentInputs(this.getCountryId());
         }
-
-        //change url loading
-        MPv1Ticket.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
-
-        //Initialize MPv1Ticket
-        MPv1Ticket.Initialize(mercadopago_site_id, payer_email);
-
-        //get action change payment method
-        quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
       },
 
       setBillingAddress: function (t) {
@@ -92,14 +64,14 @@ define(
             }
           }
 
-          document.querySelector(MPv1Ticket.selectors.firstName).value = "firstname" in billingAddress ? billingAddress.firstname : '';
-          document.querySelector(MPv1Ticket.selectors.lastName).value = "lastname" in billingAddress ? billingAddress.lastname : '';
-          document.querySelector(MPv1Ticket.selectors.address).value = address;
-          document.querySelector(MPv1Ticket.selectors.number).value = number;
-          document.querySelector(MPv1Ticket.selectors.city).value = "city" in billingAddress ? billingAddress.city : '';
-          document.querySelector(MPv1Ticket.selectors.state).value = "regionCode" in billingAddress ? billingAddress.regionCode : '';
-          document.querySelector(MPv1Ticket.selectors.zipcode).value = "postcode" in billingAddress ? billingAddress.postcode : '';
-          document.querySelector(MPv1Ticket.selectors.docNumber).value  = "vatId" in billingAddress ? billingAddress.vatId : '';
+          document.getElementById('mp_number').value = number;
+          document.getElementById('mp_address').value = address;
+          document.getElementById('mp_doc_number').value  = "vatId" in billingAddress ? billingAddress.vatId : '';
+          document.getElementById('mp_firstname').value = "firstname" in billingAddress ? billingAddress.firstname : '';
+          document.getElementById('mp_lastname').value = "lastname" in billingAddress ? billingAddress.lastname : '';
+          document.getElementById('mp_state').value = "regionCode" in billingAddress ? billingAddress.regionCode : '';
+          document.getElementById('mp_zipcode').value = "postcode" in billingAddress ? billingAddress.postcode : '';
+          document.getElementById('mp_city').value = "city" in billingAddress ? billingAddress.city : '';
         }
       },
 
@@ -121,14 +93,10 @@ define(
       },
 
       getLogoUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return configPayment['logoUrl'];
         }
         return '';
-      },
-
-      setPlaceOrderHandler: function (handler) {
-        this.placeOrderHandler = handler;
       },
 
       getCountryId: function () {
@@ -136,7 +104,7 @@ define(
       },
 
       existBanner: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           if (window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null) {
             return true;
           }
@@ -145,7 +113,7 @@ define(
       },
 
       getBannerUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['bannerUrl'];
         }
         return '';
@@ -161,33 +129,30 @@ define(
 
       getCountTickets: function () {
         var options = this.getTicketsData();
-
         return options.length;
       },
 
       getFirstTicketId: function () {
-
         var options = this.getTicketsData();
-
         return options[0]['id'];
       },
 
       getInitialGrandTotal: function () {
-        if (configPayment != undefined) {
+        if (configPayment !== undefined) {
           return configPayment['grand_total'];
         }
         return '';
       },
 
       getSuccessUrl: function () {
-        if (configPayment != undefined) {
+        if (configPayment !== undefined) {
           return configPayment['success_url'];
         }
         return '';
       },
 
       getPaymentSelected: function () {
-        if (this.getCountTickets() == 1) {
+        if (this.getCountTickets() === 1) {
           var input = document.getElementsByName("mercadopago_custom_ticket[payment_method_ticket]")[0];
           return input.value;
         }
@@ -215,36 +180,78 @@ define(
         };
 
         if (this.getCountryId() == 'MLB' && this.getCountTickets() > 0) {
-          //febraban rules
-          dataObj.additional_data.firstName = document.querySelector(MPv1Ticket.selectors.firstName).value
-          dataObj.additional_data.lastName = document.querySelector(MPv1Ticket.selectors.lastName).value
-          dataObj.additional_data.docType = MPv1Ticket.getDocTypeSelected();
-          dataObj.additional_data.docNumber = document.querySelector(MPv1Ticket.selectors.docNumber).value
-          dataObj.additional_data.address = document.querySelector(MPv1Ticket.selectors.address).value
-          dataObj.additional_data.addressNumber = document.querySelector(MPv1Ticket.selectors.number).value
-          dataObj.additional_data.addressCity = document.querySelector(MPv1Ticket.selectors.city).value
-          dataObj.additional_data.addressState = document.querySelector(MPv1Ticket.selectors.state).value
-          dataObj.additional_data.addressZipcode = document.querySelector(MPv1Ticket.selectors.zipcode).value
+          dataObj.additional_data.firstName = document.getElementById('mp_firstname').value;
+          dataObj.additional_data.lastName = document.getElementById('mp_lastname').value;
+          dataObj.additional_data.docType = this.getDocumentType();
+          dataObj.additional_data.docNumber = document.getElementById('mp_doc_number').value;
+          dataObj.additional_data.address = document.getElementById('mp_address').value;
+          dataObj.additional_data.addressNumber = document.getElementById('mp_number').value;
+          dataObj.additional_data.addressCity = document.getElementById('mp_city').value;
+          dataObj.additional_data.addressState = document.getElementById('mp_state').value;
+          dataObj.additional_data.addressZipcode = document.getElementById('mp_zipcode').value;
         }
 
         return dataObj;
+      },
+
+      getDocumentType: function () {
+        var docType = document.getElementsByName('mercadopago_custom_ticket[doc-type]');
+
+        for (var i = 0; i < docType.length; i++) {
+          if (docType[i].checked) {
+            return docType[i].value;
+          }
+        }
+      },
+
+      placeOrder: function (data, event) {
+        var self = this;
+        var validateInputs = mercadoPagoFormHandlerTicket(this.getCountryId());
+
+        if (event) {
+          event.preventDefault();
+        }
+
+        if (this.validate() && additionalValidators.validate() && validateInputs) {
+          this.isPlaceOrderActionAllowed(false);
+
+          this.getPlaceOrderDeferredObject()
+            .fail(
+              function () {
+                self.isPlaceOrderActionAllowed(true);
+              }
+            ).done(
+            function () {
+              self.afterPlaceOrder();
+
+              if (self.redirectAfterPlaceOrder) {
+                redirectOnSuccessAction.execute();
+              }
+            }
+          );
+
+          return true;
+        }
+
+        return false;
+      },
+
+      setPlaceOrderHandler: function (handler) {
+        this.placeOrderHandler = handler;
       },
 
       afterPlaceOrder: function () {
         window.location = this.getSuccessUrl();
       },
 
-      validate: function () {
-        return this.validateHandler();
+      getPlaceOrderDeferredObject: function () {
+        return $.when(
+          placeOrderAction(this.getData(), this.messageContainer)
+        );
       },
 
-      /*
-       * Events
-       */
-      changePaymentMethodSelector: function (paymentMethodSelected) {
-        if (paymentMethodSelected.method != 'mercadopago_customticket') {
-
-        }
+      validate: function () {
+        return this.validateHandler();
       },
 
       updateSummaryOrder: function () {
@@ -252,12 +259,8 @@ define(
         defaultTotal.estimateTotals();
       },
 
-      /**
-       * Ticket Mini Logo
-       * @returns {string|*}
-       */
       getTicketMini: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['ticket_mini'];
         }
         return '';
