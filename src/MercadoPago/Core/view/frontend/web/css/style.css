@@ -586,6 +586,10 @@ textarea.has-error {
   color: #333333 !important;
 }
 
+.mp-basic-display-inline-block {
+  display: inline-block !important;
+}
+
 .mp-ticket-display-inline-block {
   display: inline-block !important;
 }
