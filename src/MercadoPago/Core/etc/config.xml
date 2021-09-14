@@ -9,7 +9,7 @@
                 <max_installments>12</max_installments>
                 <auto_return>1</auto_return>
                 <binary_mode>0</binary_mode>
-                <sort_order>-4</sort_order>
+                <sort_order>-5</sort_order>
                 <payment_action>authorize</payment_action>
                 <gateway_mode>0</gateway_mode>
             </mercadopago_basic>
@@ -23,7 +23,7 @@
                 <title translate="label">Credit Card - Mercado Pago</title>
                 <allowspecific>0</allowspecific>
                 <banner_checkout></banner_checkout>
-                <sort_order>-3</sort_order>
+                <sort_order>-4</sort_order>
                 <payment_action>authorize</payment_action>
                 <binary_mode>0</binary_mode>
                 <gateway_mode>0</gateway_mode>

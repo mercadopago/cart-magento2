@@ -8,7 +8,6 @@ namespace MercadoPago\Core\Helper;
  */
 class Pix
 {
-
     /**
      * Pix expiration minutes
      *
@@ -21,5 +20,4 @@ class Pix
          '12 hours'   => '720',
          '24 hours'   => '1440',
      ];
-
 }//end class

@@ -6,20 +6,19 @@ Thumbs.db
 
 #IDEs
 nbproject
-/.idea
+.idea/
 .vscode/
 
 #General
-/.buildpath
-/.cache
-/.metadata
-/.project
-/.settings
+.buildpath/
+.cache/
+.metadata/
+.project/
+.settings/
 atlassian*
 /nbproject
 /sitemap
-/.idea
-/.gitattributes
+.gitattributes/
 
 /app/code/Magento
 /app/design/*/Magento
@@ -27,7 +26,6 @@ atlassian*
 /app/i18n/magento
 /app/*.*
 
-/bin
 
 /dev/shell
 
@@ -83,4 +81,6 @@ atlassian*
 !/.gitignore
 !/CHANGELOG.md
 !/.editorconfig
+!.github/
+!/bin
 

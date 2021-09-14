@@ -14,10 +14,12 @@ define(
     'mage/translate',
     'Magento_Checkout/js/model/cart/totals-processor/default',
     'Magento_Checkout/js/model/cart/cache',
-    'MPcustom',
-    'MPv1'
+    'MercadoPago_Core/js/Masks',
+    'MercadoPago_Core/js/CreditCard',
+    'MPv2SDKJS',
   ],
-  function ($,
+  function (
+    $,
     Component,
     quote,
     paymentService,
@@ -33,6 +35,10 @@ define(
     cartCache
   ) {
     'use strict';
+
+    var mp = null;
+    var mpCardForm = null;
+
     return Component.extend({
       defaults: {
         template: 'MercadoPago_Core/payment/custom_method'
@@ -43,40 +49,90 @@ define(
       initialGrandTotal: null,
 
       initApp: function () {
-        var self = this;
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
-          var mercadopago_public_key = window.checkoutConfig.payment[this.getCode()]['public_key']
-          var mercadopago_site_id = window.checkoutConfig.payment[this.getCode()]['country']
-          var payer_email = window.checkoutConfig.payment[this.getCode()]['customer']['email'];
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
+          setChangeEventOnCardNumber();
 
-          if (typeof quote == 'object' && typeof quote.guestEmail == 'string') {
-            payer_email = quote.guestEmail
-          }
+          // Initialize SDK v2
+          mp = new MercadoPago(this.getPublicKey());
 
-          //add actions
-          self.initializeInstallmentsAndIssuer();
+          // Instance SDK v2
+          mpCardForm = mp.cardForm({
+            amount: String(this.getGrandTotal()),
+            autoMount: true,
+            processingMode: this.getProcessingMode(),
+            form: {
+              id: 'co-mercadopago-form',
+              cardNumber: { id: 'mpCardNumber' },
+              cardholderName: { id: 'mpCardholderName' },
+              cardExpirationMonth: { id: 'mpCardExpirationMonth' },
+              cardExpirationYear: { id: 'mpCardExpirationYear' },
+              securityCode: { id: 'mpSecurityCode' },
+              installments: { id: 'mpInstallments' },
+              identificationType: { id: 'mpDocType' },
+              identificationNumber: { id: 'mpDocNumber' },
+              issuer: { id: 'mpIssuer' }
+            },
+            callbacks: {
+              onFormMounted: error => {
+                if (error) return console.warn('FormMounted handling error: ', error);
+              },
+              onIdentificationTypesReceived: (error, identificationTypes) => {
+                if (error) return console.warn('IdentificationTypes handling error: ', error);
+              },
+              onIssuersReceived: (error, issuers) => {
+                if (error) return console.warn('Issuers handling error: ', error);
+              },
+              onInstallmentsReceived: (error, installments) => {
+                if (error) {
+                  return console.warn('Installments handling error: ', error)
+                }
 
-          //Initialize MPv1
-          MPv1.Initialize(mercadopago_site_id, mercadopago_public_key, payer_email);
+                var payer_costs = installments.payer_costs;
+                setChangeEventOnInstallments(this.getCountry(), payer_costs);
+              },
+              onCardTokenReceived: (error, token) => {
+                if (error) {
+                  showErrors(error);
+                  return console.warn('Token handling error: ', error);
+                }
 
-          //change url loading for MPv1
-          MPv1.paths.loading = window.checkoutConfig.payment[this.getCode()]['loading_gif'];
-          MPv1.customer_and_card.default = false;
+                this.placeOrder();
+              },
+              onPaymentMethodsReceived: (error, paymentMethods) => {
+                if (error) {
+                  clearInputs();
+                  return console.warn('PaymentMethods handling error: ', error);
+                }
 
-          // update MPv1 params
-          MPv1.text.choose = $t('Choose');
-          MPv1.text.other_bank = $t('Other Bank');
-          MPv1.gateway_mode = window.checkoutConfig.payment[this.getCode()]['mp_gateway_mode'];
-
-          //get action change payment method
-          quote.paymentMethod.subscribe(self.changePaymentMethodSelector, null, 'change');
+                clearInputs();
+                setImageCard(paymentMethods[0].thumbnail);
+                loadAdditionalInfo(paymentMethods[0].additional_info_needed);
+                additionalInfoHandler();
+              },
+            },
+          });
         }
+      },
+
+      changeMonthInput: function () {
+        var monthInput = document.getElementById("mpCardExpirationMonth");
+        var monthSelect = document.getElementById("mpCardExpirationMonthSelect");
+
+        monthInput.value = ('0' + monthSelect.value).slice(-2);
+      },
+
+      changeYearInput: function () {
+        var yearInput = document.getElementById("mpCardExpirationYear");
+        var yearSelect = document.getElementById("mpCardExpirationYearSelect");
+
+        yearInput.value = yearSelect.value;
       },
 
       toogleWalletButton: function () {
         var existsScriptTag = document.querySelector('#wallet_purchase');
         var existsSubmit = document.querySelector('.mercadopago-button');
         var existsCheckoutWrapper = document.querySelector('.mp-mercadopago-checkout-wrapper');
+
         var scriptTag = document.createElement("script");
         scriptTag.setAttribute('id', 'wallet_purchase');
 
@@ -92,13 +148,8 @@ define(
           existsCheckoutWrapper.remove();
         }
 
-        //insert wallet button on form
         var wb_button = document.querySelector("body");
         wb_button.appendChild(scriptTag);
-      },
-
-      setPlaceOrderHandler: function (handler) {
-        this.placeOrderHandler = handler;
       },
 
       setValidateHandler: function (handler) {
@@ -113,17 +164,16 @@ define(
         return 'mercadopago_custom';
       },
 
+      getPublicKey: function () {
+        return window.checkoutConfig.payment[this.getCode()]['public_key'];
+      },
+
       isActive: function () {
         return true;
       },
 
-      getCardListCustomerCards: function () {
-        var cards = [];
-        return cards;
-      },
-
       existBanner: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           if (window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null) {
             return true;
           }
@@ -132,7 +182,7 @@ define(
       },
 
       getBannerUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['bannerUrl'];
         }
         return '';
@@ -143,75 +193,74 @@ define(
       },
 
       getInitialGrandTotal: function () {
-        var initialTotal = quote.totals().base_grand_total;
-        return initialTotal;
+        return quote.totals().base_grand_total;
       },
 
       getBaseUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['base_url'];
         }
         return '';
       },
 
       getRoute: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['route'];
         }
         return '';
       },
 
       getCountry: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['country'];
         }
         return '';
       },
 
       getSuccessUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['success_url'];
         }
         return '';
       },
 
       getCustomer: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['customer'];
         }
         return '';
       },
 
       getLoadingGifUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['loading_gif'];
         }
         return '';
       },
 
       getMpGatewayMode: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['mp_gateway_mode'];
         }
         return 0;
       },
 
       getLogoUrl: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['logoUrl'];
         }
         return '';
       },
 
       getMinilogo: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['minilogo'];
         }
         return '';
       },
 
       getGrayMinilogo: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['gray_minilogo'];
         }
         return '';
@@ -219,11 +268,13 @@ define(
 
       addWalletButton: function () {
         var self = this;
-        setPaymentInformationAction(this.messageContainer, {method: 'mercadopago_custom'}).done(() => {
+
+        setPaymentInformationAction(this.messageContainer, { method: 'mercadopago_custom' }).done(() => {
           $.getJSON('/mercadopago/wallet/preference').done(function (response){
             var preferenceId = response.preference.id
             self.toogleWalletButton();
-            if (window.checkoutConfig.payment[self.getCode()] != undefined) {
+
+            if (window.checkoutConfig.payment[self.getCode()] !== undefined) {
               var wb_link = window.checkoutConfig.payment[self.getCode()]['wallet_button_link'];
               var mp_public_key = window.checkoutConfig.payment[self.getCode()]['public_key'];
               var scriptTag = document.querySelector('#wallet_purchase');
@@ -240,6 +291,7 @@ define(
               };
 
               var mercadopago_button = document.querySelector('.mercadopago-button');
+
               if (mercadopago_button !== null || mercadopago_button !== undefined) {
                 mercadopago_button.click();
               }
@@ -249,14 +301,14 @@ define(
       },
 
       getMpWalletButton: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['mp_wallet_button'];
         }
         return 0;
       },
 
       getPaymentMethods: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           var thumbnails = [];
           var payment_methods = window.checkoutConfig.payment[this.getCode()]['payment_methods'];
 
@@ -273,89 +325,82 @@ define(
 
           return thumbnails;
         }
-
-        return;
       },
 
       /**
        * @override
        */
       getData: function () {
-        // data to Post in backend
+        var formData = mpCardForm.getCardFormData();
+
         var dataObj = {
           'method': this.item.method,
           'additional_data': {
             'payment[method]': this.getCode(),
-            'card_expiration_month': document.querySelector(MPv1.selectors.cardExpirationMonth).value,
-            'card_expiration_year': document.querySelector(MPv1.selectors.cardExpirationYear).value,
-            'card_holder_name': document.querySelector(MPv1.selectors.cardholderName).value,
-            'doc_type': document.querySelector(MPv1.selectors.docType).value,
-            'doc_number': document.querySelector(MPv1.selectors.docNumber).value,
-            'installments': document.querySelector(MPv1.selectors.installments).value,
-            'total_amount': document.querySelector(MPv1.selectors.amount).value,
-            'amount': document.querySelector(MPv1.selectors.amount).value,
+            'card_expiration_month': document.getElementById('mpCardExpirationMonth').value,
+            'card_expiration_year': document.getElementById('mpCardExpirationYear').value,
+            'card_holder_name': document.getElementById('mpCardholderName').value,
+            'doc_type': document.getElementById('mpDocType').value,
+            'doc_number': document.getElementById('mpDocNumber').value,
+            'installments': document.getElementById('mpInstallments').value,
+            'total_amount': this.getGrandTotal(),
+            'amount': this.getGrandTotal(),
             'site_id': this.getCountry(),
-            'token': document.querySelector(MPv1.selectors.token).value,
-            'payment_method_id': document.querySelector(MPv1.selectors.paymentMethodId).value,
-            'payment_method_selector': document.querySelector(MPv1.selectors.paymentMethodSelector).value,
-            'one_click_pay': document.querySelector(MPv1.selectors.CustomerAndCard).value,
-            'issuer_id': document.querySelector(MPv1.selectors.issuer).value,
-            'gateway_mode': document.querySelector(MPv1.selectors.MpGatewayMode).value,
+            'token': formData.token,
+            'payment_method_id': formData.paymentMethodId,
+            'issuer_id': formData.issuerId,
+            'gateway_mode': this.getMpGatewayMode(),
           }
         };
+
         return dataObj;
       },
 
-      afterPlaceOrder: function () {
-        window.location = this.getSuccessUrl();
-      },
+      prePlaceOrder: function () {
+        hideErrors();
 
-      validate: function () {
-        return this.validateHandler();
-      },
+        var fixedInputs = validateFixedInputs();
+        var additionalInputs = validateAdditionalInputs();
 
-      hasErrors: function () {
-        var allMessageErrors = jQuery('.mp-error');
-        if (allMessageErrors.length > 1) {
-          for (var x = 0; x < allMessageErrors.length; x++) {
-            if ($(allMessageErrors[x]).css('display') !== 'none') {
-              return true
-            }
-          }
-        } else {
-
-          if (allMessageErrors.css('display') !== 'none') {
-            return true
-          }
+        if (fixedInputs || additionalInputs) {
+          focusInputError();
+          return false;
         }
 
-        return false;
+        mpCardForm.createCardToken();
       },
 
-      placeOrder: function (data, event) {
+      placeOrder: function () {
         var self = this;
 
-        if (event) {
-          event.preventDefault();
-        }
-
-        if (this.validate() && additionalValidators.validate() && !this.hasErrors()) {
+        if (this.validate() && additionalValidators.validate()) {
           this.isPlaceOrderActionAllowed(false);
+
           this.getPlaceOrderDeferredObject()
             .fail(
               function () {
                 self.isPlaceOrderActionAllowed(true);
               }
-            ).done(function () {
+            )
+            .done(function () {
               self.afterPlaceOrder();
-
               if (self.redirectAfterPlaceOrder) {
                 redirectOnSuccessAction.execute();
               }
             });
+
           return true;
         }
+
         return false;
+      },
+
+      setPlaceOrderHandler: function (handler) {
+        this.placeOrderHandler = handler;
+      },
+
+      afterPlaceOrder: function () {
+        window.location = this.getSuccessUrl();
       },
 
       getPlaceOrderDeferredObject: function () {
@@ -364,37 +409,12 @@ define(
         );
       },
 
+      validate: function () {
+        return this.validateHandler();
+      },
+
       initialize: function () {
         this._super();
-      },
-
-      /*
-       * Events
-       */
-      changePaymentMethodSelector: function (paymentMethodSelected) {
-        if (paymentMethodSelected.method != 'mercadopago_custom') {
-        }
-      },
-
-      /*
-       * Customize MPV1
-       */
-      initializeInstallmentsAndIssuer: function () {
-        var issuer = document.querySelector(MPv1.selectors.issuer);
-        var optIssuer = document.createElement('option');
-        optIssuer.value = "-1";
-        optIssuer.innerHTML = $t('Select the Issuer');
-
-        issuer.innerHTML = "";
-        issuer.appendChild(optIssuer);
-
-        var installment = document.querySelector(MPv1.selectors.installments);
-        var optInstallment = document.createElement('option');
-        optInstallment.value = "-1";
-        optInstallment.innerHTML = $t('Select the Installment');
-
-        installment.innerHTML = "";
-        installment.appendChild(optInstallment);
       },
 
       updateSummaryOrder: function () {
@@ -402,83 +422,27 @@ define(
         defaultTotal.estimateTotals();
       },
 
-      /*
-       * Validation of the main fields to process a payment by credit card
-       */
-      validateCreditCardNumber: function (a, b) {
-        var self = this;
-        self.hideError('E301');
-        var cardNumber = document.querySelector(MPv1.selectors.cardNumber).value;
-        if (cardNumber !== "") {
-          Mercadopago.validateCardNumber(cardNumber, function (response, status) {
-            if (status === false) {
-              self.showError('E301');
-            }
-          })
-        }
-      },
-
-      validateExpirationDate: function (a, b) {
-        var self = this;
-        self.hideError('208');
-        var monthExperitaion = document.querySelector(MPv1.selectors.cardExpirationMonth).value;
-        var yearExperitation = document.querySelector(MPv1.selectors.cardExpirationYear).value;
-
-        if (monthExperitaion !== "" && yearExperitation !== "") {
-          if (Mercadopago.validateExpiryDate(monthExperitaion, yearExperitation) === false) {
-            self.showError('208');
-          }
-        }
-      },
-
-      validateCardHolderName: function (a, b) {
-        var self = this;
-        self.hideError('316');
-        var cardHolderName = document.querySelector(MPv1.selectors.cardholderName).value;
-        if (cardNumber !== "") {
-          if (Mercadopago.validateCardholderName(cardHolderName) === false) {
-            self.showError('316');
-          }
-        }
-      },
-
-      validateSecurityCode: function (a, b) {
-        var self = this;
-        self.hideError('E302');
-        var securityCode = document.querySelector(MPv1.selectors.securityCode).value;
-        if (securityCode !== "" && securityCode.length < 3) {
-          self.showError('E302');
-        }
-      },
-
-      onlyNumbersInSecurityCode: function (t, evt) {
-        var securityCode = document.querySelector(MPv1.selectors.securityCode);
-        if (securityCode.value.match(/[^0-9 ]/g)) {
-          securityCode.value = securityCode.value.replace(/[^0-9 ]/g, '');
-        }
-      },
-
-      showError: function (code) {
-        var $form = MPv1.getForm();
-        var $span = $form.querySelector('#mp-error-' + code);
-        $span.style.display = 'inline-block';
-      },
-
-      hideError: function (code) {
-        var $form = MPv1.getForm();
-        var $span = $form.querySelector('#mp-error-' + code);
-        $span.style.display = 'none';
-      },
-
-      /**
-       * Creditcard Mini Logo
-       * @returns {string|*}
-       */
       getCreditcardMini: function () {
-        if (window.checkoutConfig.payment[this.getCode()] != undefined) {
+        if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['creditcard_mini'];
         }
         return '';
+      },
+
+      getPayerEmail: function () {
+        if (window.isCustomerLoggedIn) {
+          return window.customerData.email;
+        }
+
+        return customerData.getValidatedEmailValue();
+      },
+
+      getProcessingMode: function () {
+          if (Number(this.getMpGatewayMode())) {
+            return 'gateway';
+          }
+
+          return 'aggregator';
       },
     });
   }

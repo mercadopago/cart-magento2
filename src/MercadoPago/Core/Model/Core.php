@@ -2,6 +2,33 @@
 
 namespace MercadoPago\Core\Model;
 
+use Magento\Catalog\Helper\Image;
+use Magento\Customer\Model\Session;
+use Magento\Framework\Api\AttributeValueFactory;
+use Magento\Framework\Api\ExtensionAttributesFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\DB\TransactionFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Registry;
+use Magento\Framework\UrlInterface;
+use Magento\Payment\Model\Method\Logger;
+use Magento\Quote\Model\Quote;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
+use Magento\Sales\Model\OrderFactory;
+use Magento\Store\Model\StoreManagerInterface;
+use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
+use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Data;
+use MercadoPago\Core\Helper\Message\MessageInterface;
+use MercadoPago\Core\Helper\Round;
+use MercadoPago\Core\Helper\SponsorId;
+use MercadoPago\Core\Lib\Api;
+
 /**
  * Core Model of MP plugin, used by all payment methods
  *
@@ -77,22 +104,22 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     protected $_canReviewPayment = true;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     protected $_storeManager;
 
     /**
-     * @var \MercadoPago\Core\Helper\Data
+     * @var Data
      */
     protected $_coreHelper;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $_scopeConfig;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var OrderFactory
      */
     protected $_orderFactory;
 
@@ -112,27 +139,27 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     protected $_clientSecret;
 
     /**
-     * @var \MercadoPago\Core\Helper\Message\MessageInterface
+     * @var MessageInterface
      */
     protected $_statusMessage;
 
     /**
-     * @var \MercadoPago\Core\Helper\Message\MessageInterface
+     * @var MessageInterface
      */
     protected $_statusDetailMessage;
 
     /**
-     * @var \Magento\Framework\DB\TransactionFactory
+     * @var TransactionFactory
      */
     protected $_transactionFactory;
 
     /**
-     * @var \Magento\Sales\Model\Order\Email\Sender\InvoiceSender
+     * @var InvoiceSender
      */
     protected $_invoiceSender;
 
     /**
-     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     * @var OrderSender
      */
     protected $_orderSender;
 
@@ -140,75 +167,79 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * @var \Magento\Checkout\Model\Session
      */
     protected $_checkoutSession;
+
     /**
-     * @var \Magento\Customer\Model\Session
+     * @var Session
      */
     protected $_customerSession;
+
     /**
-     * @var \Magento\Framework\UrlInterface
+     * @var UrlInterface
      */
     protected $_urlBuilder;
 
     /**
-     * @var \Magento\Catalog\Helper\Image
+     * @var Image
      */
     protected $_helperImage;
 
     /**
-     * @var \Magento\Framework\App\ProductMetadataInterface
+     * @var ProductMetadataInterface
      */
     protected $_productMetaData;
 
     /**
-     * @var \MercadoPago\Core\Block\Adminhtml\System\Config\Version
+     * @var Version
      */
     protected $_version;
 
     /**
      * Core constructor.
      *
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \MercadoPago\Core\Helper\Data $coreHelper
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
-     * @param \MercadoPago\Core\Helper\Message\MessageInterface $statusMessage
-     * @param \MercadoPago\Core\Helper\Message\MessageInterface $statusDetailMessage
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
-     * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
-     * @param \Magento\Payment\Model\Method\Logger $logger
+     * @param StoreManagerInterface $storeManager
+     * @param Data $coreHelper
+     * @param OrderFactory $orderFactory
+     * @param MessageInterface $statusMessage
+     * @param MessageInterface $statusDetailMessage
+     * @param Context $context
+     * @param Registry $registry
+     * @param ExtensionAttributesFactory $extensionFactory
+     * @param AttributeValueFactory $customAttributeFactory
+     * @param Logger $logger
      * @param \Magento\Payment\Helper\Data $paymentData
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Framework\DB\TransactionFactory $transactionFactory
-     * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender
-     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
-     * @param \Magento\Customer\Model\Session $customerSession
-     * @param \Magento\Framework\UrlInterface $urlBuilder
-     * @param \Magento\Catalog\Helper\Image $helperImage
+     * @param ScopeConfigInterface $scopeConfig
+     * @param TransactionFactory $transactionFactory
+     * @param InvoiceSender $invoiceSender
+     * @param OrderSender $orderSender
+     * @param Session $customerSession
+     * @param UrlInterface $urlBuilder
+     * @param Image $helperImage
      * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param Version $version
+     * @param ProductMetadataInterface $productMetadata
      */
     public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \MercadoPago\Core\Helper\Data $coreHelper,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \MercadoPago\Core\Helper\Message\MessageInterface $statusMessage,
-        \MercadoPago\Core\Helper\Message\MessageInterface $statusDetailMessage,
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-        \Magento\Payment\Model\Method\Logger $logger,
+        StoreManagerInterface $storeManager,
+        Data $coreHelper,
+        OrderFactory $orderFactory,
+        MessageInterface $statusMessage,
+        MessageInterface $statusDetailMessage,
+        Context $context,
+        Registry $registry,
+        ExtensionAttributesFactory $extensionFactory,
+        AttributeValueFactory $customAttributeFactory,
+        Logger $logger,
         \Magento\Payment\Helper\Data $paymentData,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\DB\TransactionFactory $transactionFactory,
-        \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
-        \Magento\Customer\Model\Session $customerSession,
-        \Magento\Framework\UrlInterface $urlBuilder,
-        \Magento\Catalog\Helper\Image $helperImage,
+        ScopeConfigInterface $scopeConfig,
+        TransactionFactory $transactionFactory,
+        InvoiceSender $invoiceSender,
+        OrderSender $orderSender,
+        Session $customerSession,
+        UrlInterface $urlBuilder,
+        Image $helperImage,
         \Magento\Checkout\Model\Session $checkoutSession,
-        \MercadoPago\Core\Block\Adminhtml\System\Config\Version $version,
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata
+        Version $version,
+        ProductMetadataInterface $productMetadata
     ) {
         parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
         $this->_storeManager = $storeManager;
@@ -230,9 +261,9 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Retrieves Quote
      *
-     * @param integer $quoteId
-     *
-     * @return \Magento\Quote\Model\Quote
+     * @return Quote
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     protected function _getQuote()
     {
@@ -243,8 +274,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Retrieves Order
      *
      * @param integer $incrementId
-     *
-     * @return \Magento\Sales\Model\Order
+     * @return Order
      */
     public function _getOrder($incrementId)
     {
@@ -255,7 +285,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Return array with data of payment of order loaded with order_id param
      *
      * @param $order_id
-     *
      * @return array
      */
     // @REFACTOR
@@ -303,7 +332,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Check if status is final in case of multiple card payment
      *
      * @param $status
-     *
      * @return string
      */
     protected function validStatusTwoPayments($status)
@@ -311,6 +339,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $array_status = explode(" | ", $status);
         $status_verif = true;
         $status_final = "";
+
         foreach ($array_status as $status) {
             if ($status_final == "") {
                 $status_final = $status;
@@ -336,7 +365,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * @param $payment_method
      * @param $installment
      * @param $amount
-     *
      * @return array
      */
     public function getMessageByStatus($status, $status_detail, $payment_method, $installment, $amount)
@@ -356,7 +384,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             if ($status_detail == 'cc_rejected_invalid_installments') {
                 $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail), strtoupper($payment_method), $installment);
             } elseif ($status_detail == 'cc_rejected_call_for_authorize') {
-                $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail), strtoupper($payment_method), $amount);
+                $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail));
             } else {
                 $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail), strtoupper($payment_method));
             }
@@ -372,7 +400,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @param $customer
      * @param $order
-     *
      * @return array
      */
     protected function getCustomerInfo($customer, $order)
@@ -399,23 +426,23 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Return info about items of order
      *
      * @param $order
-     *
+     * @param $quote
      * @return array
      */
-    protected function getItemsInfo($order)
+    protected function getItemsInfo($order, $quote)
     {
         $dataItems = [];
         foreach ($order->getAllVisibleItems() as $item) {
             $product = $item->getProduct();
-            $image = $this->_helperImage->init($product, 'image');
+            $image = $this->_helperImage->init($product, 'product_thumbnail_image');
 
             $dataItems[] = [
                 "id"          => $item->getSku(),
                 "title"       => $product->getName(),
                 "description" => $product->getName(),
                 "picture_url" => $image->getUrl(),
-                "quantity"    => (int)number_format($item->getQtyOrdered(), 0, '.', ''),
-                "unit_price"  => (float)number_format($item->getPrice(), 2, '.', ''),
+                "quantity"    => Round::roundInteger($item->getQtyOrdered()),
+                "unit_price"  => Round::roundWithSiteId($item->getPrice(), $this->getSiteId()),
                 "category_id" => $this->_scopeConfig->getValue(
                     \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CATEGORY,
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE
@@ -423,15 +450,14 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             ];
         }
 
-        /* verify discount and add it like an item */
-        $discount = $this->getDiscount();
-
+        $discount = $this->getDiscountAmount($quote);
         if ($discount != 0) {
             $dataItems[] = [
-                "title"       => "Discount by the Store",
-                "description" => "Discount by the Store",
+                "id"          => __('Discount'),
+                "title"       => __('Discount'),
+                "description" => __('Discount'),
                 "quantity"    => 1,
-                "unit_price"  => (float)number_format($discount, 2, '.', '')
+                "unit_price"  => Round::roundWithSiteId($discount, $this->getSiteId())
             ];
         }
 
@@ -439,11 +465,19 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     /**
+     * @param Quote $quote
+     * @return float
+     */
+    protected function getDiscountAmount(Quote $quote)
+    {
+        return ($quote->getSubtotalWithDiscount() - $quote->getBaseSubtotal());
+    }//end processDiscount()
+
+    /**
      * Return info of a coupon applied
      *
      * @param $coupon
      * @param $coupon_code
-     *
      * @return array
      */
     protected function getCouponInfo($coupon, $coupon_code)
@@ -476,9 +510,12 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * Return array with preference data by default to custom method
      *
-     * @param array $payment_info
-     *
+     * @param array $paymentInfo
+     * @param null $quote
+     * @param null $order
      * @return array
+     * @throws NoSuchEntityException
+     * @throws LocalizedException
      */
     public function makeDefaultPreferencePaymentV1($paymentInfo = [], $quote = null, $order = null)
     {
@@ -496,7 +533,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $billing_address = $quote->getBillingAddress()->getData();
         $customerInfo    = $this->getCustomerInfo($customer, $order);
 
-        /* INIT PREFERENCE */
         $preference = [];
 
         $notification_params = array(
@@ -505,9 +541,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             )
         );
 
-        // Check if notification URL contains localhost
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom', $notification_params);
-
         if (isset($notification_url) && !strrpos($notification_url, 'localhost')) {
             $preference['notification_url'] = $notification_url;
         }
@@ -515,10 +549,10 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $preference['description'] = __(
             "Order # %1 in store %2",
             $order->getIncrementId(),
-            $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK)
+            $this->_storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK)
         );
 
-        $preference['transaction_amount'] = round((float) $this->getAmount(), 2);
+        $preference['transaction_amount'] = $this->getAmount();
         $preference['external_reference'] = $order->getIncrementId();
         $preference['payer']['email']     = $customerInfo['email'];
 
@@ -527,7 +561,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $preference['payer']['identification']['number'] = $paymentInfo['identification_number'];
         }
 
-        $preference['additional_info']['items']               = $this->getItemsInfo($order);
+        $preference['additional_info']['items']               = $this->getItemsInfo($order, $quote);
         $preference['additional_info']['payer']['first_name'] = $customerInfo['first_name'];
         $preference['additional_info']['payer']['last_name']  = $customerInfo['last_name'];
 
@@ -554,17 +588,15 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             ];
 
             $preference['additional_info']['payer']['phone'] = [
-                "area_code" => "0",
+                "area_code" => "-",
                 "number" => $shipping['telephone']
             ];
         }
 
         $this->_coreHelper->log("==> makeDefaultPreferencePaymentV1 -> preference", 'mercadopago-standard.log', $preference);
-
         $this->_coreHelper->log("==> makeDefaultPreferencePaymentV1", 'mercadopago-standard.log', $paymentInfo);
 
-        $sponsorId = $this->_scopeConfig->getValue('payment/mercadopago/sponsor_id', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-
+        $sponsorId = $this->getSponsorId();
         $this->_coreHelper->log("Sponsor_id", 'mercadopago-standard.log', $sponsorId);
 
         $test_mode = false;
@@ -578,7 +610,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $this->_version->afterLoad();
 
         $preference['metadata'] = [
-            "platform"         => "Magento",
+            "platform"         => "BP1EF6QIC4P001KBGQ10",
             "platform_version" => $this->_productMetaData->getVersion(),
             "module_version"   => $this->_version->getValue(),
             "sponsor_id"       => $sponsorId,
@@ -597,7 +629,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @param $preference
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function postPaymentV1($preference)
     {
@@ -608,7 +640,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Get message error by response API
      *
      * @param $response
-     *
      * @return string
      */
     public function getMessageError($response)
@@ -639,9 +670,8 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      *  Return info of payment returned by MP api
      *
      * @param $payment_id
-     *
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getPaymentV1($payment_id)
     {
@@ -650,7 +680,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
     /**
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getPaymentMethods()
     {
@@ -659,7 +689,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
     /**
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getIdentificationTypes()
     {
@@ -668,6 +698,8 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
     /**
      * @return mixed|string
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getEmailCustomer()
     {
@@ -682,7 +714,10 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     /**
+     * @param  Quote|null $quote
      * @return float
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getAmount($quote = null)
     {
@@ -692,7 +727,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         $total = $quote->getBaseGrandTotal();
 
-        return (float) $total;
+        return Round::roundWithSiteId($total, $this->getSiteId());
     }
 
     /**
@@ -700,9 +735,8 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @param $coupon_id
      * @param $email
-     *
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function validCoupon($coupon_id, $email = null)
     {
@@ -720,7 +754,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             $coupon_code
         );
 
-        //add value on return api discount
         $details_discount['response']['transaction_amount'] = $transaction_amount;
         $details_discount['response']['params'] = [
             "transaction_amount" => $transaction_amount,
@@ -735,15 +768,19 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      * Return info of order returned by MP api
      *
      * @param $merchant_order_id
-     *
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getMerchantOrder($merchant_order_id)
     {
         return $this->getMercadoPagoInstance()->get("/merchant_orders/" . $merchant_order_id);
     }
 
+    /**
+     * @param $payment_id
+     * @return array
+     * @throws LocalizedException
+     */
     public function getPayment($payment_id)
     {
         return $this->getMercadoPagoInstance()->get("/v1/payments/" . $payment_id);
@@ -751,7 +788,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
     /**
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function getUserMe()
     {
@@ -759,8 +796,8 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     /**
-     * @return \MercadoPago\Core\Lib\Api
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return Api
+     * @throws LocalizedException
      */
     protected function getMercadoPagoInstance()
     {
@@ -769,4 +806,28 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         }
         return $this->_coreHelper->getApiInstance($this->_accessToken);
     }
+
+    /**
+     * @return int|null
+     */
+    protected function getSponsorId()
+    {
+        $siteId = $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return SponsorId::getSponsorId($siteId);
+    }//end getSponsorId()
+
+    /**
+     * @return false|string|string[]
+     */
+    protected function getSiteId()
+    {
+        return mb_strtoupper($this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        ));
+    }//end getSiteId()
 }

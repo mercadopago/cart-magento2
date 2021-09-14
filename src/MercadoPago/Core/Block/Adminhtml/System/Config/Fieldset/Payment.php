@@ -16,8 +16,7 @@ use MercadoPago\Core\Helper\ConfigData;
 /**
  * Config form FieldSet renderer
  */
-class Payment
-    extends Fieldset
+class Payment extends Fieldset
 {
     /**
      * @var ScopeConfigInterface
@@ -68,6 +67,7 @@ class Payment
     {
         //get id element
         $paymentId = $element->getId();
+
         //get country (Site id for Mercado Pago)
         $siteId = strtoupper(
             $this->scopeConfig->getValue(
@@ -81,7 +81,7 @@ class Payment
             return "";
         }
 
-        //check is bank transfer
+        //check is pix
         if ($this->hidePix($paymentId, $siteId)) {
             return "";
         }
@@ -98,21 +98,25 @@ class Payment
             $paymentActivePath,
             ScopeInterface::SCOPE_STORE
         );
+
         //check is active for disable
         if ($statusPaymentMethod) {
             $value = 0;
+
             if ($this->switcher->getWebsiteId() == 0) {
                 $this->configResource->saveConfig($paymentActivePath, $value, 'default', 0);
             } else {
-                $this->configResource->saveConfig($paymentActivePath, $value, 'websites',
-                    $this->switcher->getWebsiteId());
+                $this->configResource->saveConfig(
+                    $paymentActivePath, $value, 'websites',
+                    $this->switcher->getWebsiteId()
+                );
             }
         }
     }
 
     /**
-     * @param $paymentId
-     * @param $siteId
+     * @param  $paymentId
+     * @param  $siteId
      * @return bool
      */
     protected function hideBankTransfer($paymentId, $siteId)
@@ -124,12 +128,13 @@ class Payment
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * @param $paymentId
-     * @param $siteId
+     * @param  $paymentId
+     * @param  $siteId
      * @return bool
      */
     protected function hidePix($paymentId, $siteId)
@@ -140,6 +145,8 @@ class Payment
                 return true;
             }
         }
+
         return false;
     }
+
 }
