@@ -44,12 +44,14 @@ class Success extends AbstractAction
             }
 
             $this->walletPreference->processSuccessRequest($paymentId, $this->session);
+
             return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
         } catch (\Throwable $exception) {
             $this->messageManager->addExceptionMessage(
                 $exception,
                 __('Sorry, we can\'t finish Mercado Pago Wallet Payment.')
             );
+
             return $this->resultRedirectFactory->create()->setPath('checkout/cart');
         }
     }

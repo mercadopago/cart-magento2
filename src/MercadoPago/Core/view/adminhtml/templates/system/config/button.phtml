@@ -1,0 +1,15 @@
+<?php
+
+use MercadoPago\Core\Block\Adminhtml\System\Config\InterestPayment\Button;
+
+/**
+ * @var Button $block
+ * @see Button
+ */
+?>
+<div class="interest_payment_button">
+    <button onclick="javascript:window.open('<?= $block->escapeUrl(Button::changeUrlByCountry()) ?>'); return false;"
+            class="scalable" type="button" id="<?= /* @noEscape */ $block->getHtmlId() ?>">
+        <span><span><span><?= $block->escapeHtml($block->getButtonLabel()) ?></span></span></span>
+    </button>
+</div>

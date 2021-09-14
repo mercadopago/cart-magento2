@@ -8,7 +8,7 @@
         }
     ],
     "type": "magento2-module",
-    "version": "3.9.3",
+    "version": "3.10.0",
     "license": [
         "OSL-3.0",
         "AFL-3.0"
@@ -19,19 +19,6 @@
             "url": "https://repo.magento.com/"
         }
     ],
-    "require": {
-        "ext-json": "*"
-    },
-    "require-dev": {
-        "magento/product-community-edition": "2.*",
-        "phpunit/phpunit": "4.1.0",
-        "squizlabs/php_codesniffer": "1.5.3",
-        "phpmd/phpmd": "@stable",
-        "pdepend/pdepend": "2.2.2",
-        "sjparkinson/static-review": "~4.1",
-        "fabpot/php-cs-fixer": "~1.2",
-        "lusitanian/oauth": "~0.3 <=0.7.0"
-    },
     "autoload": {
         "psr-4": {
             "MercadoPago\\Core\\": "src/MercadoPago/Core"
@@ -39,5 +26,11 @@
         "files": [
             "src/MercadoPago/Core/registration.php"
         ]
+    },
+    "require": {
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "magento/magento-coding-standard": "^6.0"
     }
 }

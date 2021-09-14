@@ -1,7 +1,16 @@
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
-        <input type="radio" name="payment[method]" class="radio"
-               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="
+                    attr: {'id': getCode()},
+                    value: getCode(),
+                    checked: isChecked,
+                    click: selectPaymentMethod,
+                    visible: isRadioButtonVisible()
+                " />
+
         <label class="label" data-bind="attr: {'for': getCode()}">
             <!-- Mercado Pago Logo -->
             <img data-bind="attr: {alt: 'Mercado Pago',src:getBankTransferMini()}"
@@ -12,8 +21,7 @@
 
         <!-- ko if: (existBanner() == true)-->
         <div class="class-custom-banner-checkout">
-            <img data-bind="attr: {alt: 'MercadoPago Banner', src: getBannerUrl()}"
-                 class="payment-banner-checkout"/>
+            <img data-bind="attr: {alt: 'MercadoPago Banner', src: getBannerUrl()}" class="payment-banner-checkout" />
         </div>
         <!--/ko-->
     </div>
@@ -39,7 +47,6 @@
 
             <div id="mercadopago-bank-transfer">
                 <div class="form-row">
-
                     <div class="form-col-12">
                         <!-- ko if: (getLengthPaymentMethods() == 0)-->
                         <!-- ko i18n: 'There are no payment methods available, please contact the seller.'-->
@@ -47,8 +54,10 @@
                         <!-- /ko -->
 
                         <!-- ko if: (getLengthPaymentMethods() == 1)-->
-                        <input type="hidden" name="mercadopago_custom_bank_transfer[payment_method_id]"
-                               data-bind="'attr':{value: getFirstPaymentMethod()}" id="payment_method_id"/>
+                        <input type="hidden"
+                               name="mercadopago_custom_bank_transfer[payment_method_id]"
+                               data-bind="'attr':{value: getFirstPaymentMethod()}"
+                               id="payment_method_id" />
                         <!-- /ko -->
 
                         <!-- ko if: (getLengthPaymentMethods() > 1) -->
@@ -65,24 +74,21 @@
                                   }">
 
                                 <label class="mercadopago-ticket-label">
-                                    <img
-                                        data-bind="'attr':{src: payment_method.secure_thumbnail, alt: payment_method.name}">
-                                    <label class="mercadopago-ticket-label"
-                                           data-bind="text: payment_method.name"></label>
+                                    <img data-bind="'attr':{src: payment_method.secure_thumbnail, alt: payment_method.name}">
+                                    <label class="mercadopago-ticket-label" data-bind="text: payment_method.name"></label>
                                 </label>
                             </li>
                             <!--/ko-->
                         </ul>
                         <!-- /ko -->
-
                     </div><!-- end .form-col-12 -->
                 </div><!-- end .form-row -->
 
                 <div class="form-row">
                     <div class="form-col-6">
-                        <label for="identificationType" class="require"><!-- ko i18n: 'Identification Type'-->
-                            <!-- /ko --></label>
-
+                        <label for="identificationType" class="require">
+                            <!-- ko i18n: 'Identification Type'--><!-- /ko -->
+                        </label>
                         <select id="identificationType"
                                 name="mercadopago_custom_bank_transfer[identification_type]"
                                 data-bind="attr: {
@@ -94,12 +100,12 @@
                                optionsValue: 'id',
                                optionsText: 'name'">
                         </select>
-
-
                     </div> <!-- end .form-col-6 -->
+
                     <div class="form-col-6">
-                        <label for="identificationNumber" class="require"><!-- ko i18n: 'Identification Number'-->
-                            <!-- /ko --></label>
+                        <label for="identificationNumber" class="require">
+                            <!-- ko i18n: 'Identification Number'--> <!-- /ko -->
+                        </label>
                         <input type="text"
                                id="identificationNumber"
                                name="mercadopago_custom_bank_transfer[identification_number]"
@@ -110,10 +116,12 @@
                               }">
                     </div> <!-- end .form-col-6 -->
                 </div><!-- end .form-row -->
+
                 <div class="form-row">
                     <div class="form-col-6">
-                        <label for="financialInstitutions" class="require"> <!-- ko i18n: 'Financial Institutions'-->
-                            <!-- /ko --></label>
+                        <label for="financialInstitutions" class="require">
+                            <!-- ko i18n: 'Financial Institutions'--><!-- /ko -->
+                        </label>
                         <select id="financialInstitutions"
                                 name="mercadopago_custom_bank_transfer[financial_institution]"
                                 data-bind="attr: {
@@ -126,6 +134,7 @@
                                optionsText: 'description'">
                         </select>
                     </div> <!-- end .form-col-6 -->
+
                     <div class="form-col-6">
                         <label for="entityType" class="require"> <!-- ko i18n: 'Type of Person'--><!-- /ko --></label>
                         <select id="entityType"
@@ -141,14 +150,10 @@
                         </select>
                     </div> <!-- end .form-col-6 -->
                 </div><!-- end .form-row -->
-
-
         </form>
-
     </div><!-- end #mercadopago-bank-transfer -->
 
     <div data-bind="template: {afterRender: initializeMethod()}"></div>
-
 
     <div class="checkout-agreements-block">
         <!-- ko foreach: $parent.getRegion('before-place-order') -->
@@ -156,23 +161,20 @@
         <!--/ko-->
     </div>
 
-
     <div class="actions-toolbar">
         <div class="primary">
             <button data-role="review-save"
                     type="submit"
                     data-bind="
-                         attr: {title: $t('Place Order')},
-                         enable: (getCode() == isChecked()),
-                         click: placeOrder,
-                         css: {disabled: !isPlaceOrderActionAllowed()}
-                         "
+                            attr: {title: $t('Place Order')},
+                            enable: (getCode() == isChecked()),
+                            click: placeOrder,
+                            css: {disabled: !isPlaceOrderActionAllowed()}
+                        "
                     class="action primary checkout"
                     disabled>
                 <span data-bind="i18n: 'Place Order'"></span>
             </button>
         </div>
     </div>
-
-</div>
 </div>
