@@ -128,7 +128,7 @@ class Button extends Field
 
         $objectManager = ObjectManager::getInstance();
         $siteId = strtoupper(
-            $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue(ConfigData::PATH_SITE_ID),
+            $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue(ConfigData::PATH_SITE_ID)
         );
         $country = Country::getCountryToMp($siteId);
 
