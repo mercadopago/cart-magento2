@@ -7,10 +7,6 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use MercadoPago\Core\Model\Preference\Wallet;
 
-/**
- * Class Success
- * @package MercadoPago\Core\Controller\Wallet
- */
 class Success extends AbstractAction
 {
     /**
@@ -25,7 +21,11 @@ class Success extends AbstractAction
      * @param Wallet $walletPreference
      * @param Session $session
      */
-    public function __construct(Context $context, JsonFactory $resultJsonFactory, Wallet $walletPreference, Session $session)
+    public function __construct(
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        Wallet $walletPreference,
+        Session $session)
     {
         $this->session = $session;
         parent::__construct($context, $resultJsonFactory, $walletPreference);
