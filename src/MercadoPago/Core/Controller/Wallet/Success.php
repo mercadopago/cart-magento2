@@ -26,7 +26,7 @@ class Success extends AbstractAction
         JsonFactory $resultJsonFactory,
         Wallet $walletPreference,
         Session $session
-        ) {
+    ) {
         $this->session = $session;
         parent::__construct($context, $resultJsonFactory, $walletPreference);
     }
