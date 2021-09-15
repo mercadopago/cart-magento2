@@ -69,7 +69,7 @@ jobs:
         run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
 
       - name: Fixing Standard Errors Automatically
-        run: magento2/vendor/bin/phpcbf --report-diff=magento2/app/code/MercadoPago/changes.diff --standard=Magento2
+        run: magento2/vendor/bin/phpcbf --report-diff=magento2/app/code/MercadoPago/changes.diff --standard=Magento2 magento2/app/code/MercadoPago/
 
       - name: Detect Coding Standard Violations
         run: magento2/vendor/bin/phpcs -q --report=checkstyle --standard=Magento2 magento2/app/code/MercadoPago/
