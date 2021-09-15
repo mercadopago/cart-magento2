@@ -69,4 +69,4 @@ jobs:
         run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
 
       - name: Detect coding standard violations
-        run: vendor/bin/phpcs -q --report=checkstyle --standard=phpcs.xml includes templates woocommerce-mercadopago.php | cs2pr --graceful-warnings
+        run: magento2/vendor/bin/phpcs -q --report=checkstyle --standard=Magento2 magento2/app/code/MercadoPago/
