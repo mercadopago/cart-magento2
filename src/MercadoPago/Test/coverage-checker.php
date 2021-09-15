@@ -25,10 +25,10 @@ $coverage = ($checkedElements / $totalElements) * 100;
 if ($coverage >= $percentage) {
 
     print_r('Code coverage is ' . $coverage);
-    print_r('\033[01;32m -> Pull Request OK \033[0m');
+    print_r('-> Pull Request OK');
     return;
 }
 print_r('Code coverage is ' . round($coverage, 2) . '%, which is below the accepted ' . $percentage . '%');
-print_r('\033[01;31m -> Pull Request Rejected \033[0m');
+print_r('-> Pull Request Rejected');
 // when we want to fail the pull request, just uncomment the line below
 // exit(1);
