@@ -9,8 +9,7 @@ use Magento\Framework\Event\ObserverInterface;
  *
  * @package MercadoPago\Core\Observer
  */
-class RefundObserverBeforeSave
-    implements ObserverInterface
+class RefundObserverBeforeSave implements ObserverInterface
 {
 
     /**
@@ -47,13 +46,11 @@ class RefundObserverBeforeSave
         \Magento\Framework\App\Action\Context $context,
         \MercadoPago\Core\Helper\Data $dataHelper,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    )
-    {
+    ) {
         $this->session = $session;
         $this->messageManager = $context->getMessageManager();
         $this->dataHelper = $dataHelper;
         $this->scopeConfig = $scopeConfig;
-
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
@@ -77,13 +74,11 @@ class RefundObserverBeforeSave
         //get payment order object
         $paymentOrder = $order->getPayment();
         $paymentMethod = $paymentOrder->getMethodInstance()->getCode();
-        if (!(
-            $paymentMethod == 'mercadopago_basic'
+        if (!($paymentMethod == 'mercadopago_basic'
             || $paymentMethod == 'mercadopago_custom'
             || $paymentMethod == 'mercadopago_customticket'
             || $paymentMethod == 'mercadopago_custom_bank_transfer'
-            || $paymentMethod == 'mercadopago_custom_pix'
-        )) {
+            || $paymentMethod == 'mercadopago_custom_pix')) {
             return;
         }
 
@@ -149,11 +144,9 @@ class RefundObserverBeforeSave
                 } else {
                     $this->throwRefundException(__("Could not process the refund, The Mercado Pago API returned an unexpected error. Check the log files."), $responseRefund);
                 }
-
             } else {
                 $this->throwRefundException(__("The payment has not been refunded, you can only refund payments with status approved. The payment status is ") . $response['response']['status'] . ".");
             }
-
         } else {
             $this->throwRefundException(__("An error occurred while getting the status of the payment in the API Mercado Pago."), $response);
         }
@@ -168,5 +161,4 @@ class RefundObserverBeforeSave
         $this->messageManager->addErrorMessage('Mercado Pago - ' . $message);
         throw new \Magento\Framework\Exception\LocalizedException(new \Magento\Framework\Phrase('Mercado Pago - ' . $message));
     }
-
 }

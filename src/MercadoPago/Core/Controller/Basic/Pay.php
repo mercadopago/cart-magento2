@@ -88,7 +88,11 @@ class Pay extends Action implements ViewInterface
                 $resultRedirect->setUrl($array_assign['init_point']);
             } else {
                 $this->_messageManager->addError(__($array_assign['message']));
-                $resultRedirect->setUrl($this->_url->getUrl($this->_scopeConfig->getValue(ConfigData::PATH_BASIC_URL_FAILURE)));
+                $resultRedirect->setUrl(
+                    $this->_url->getUrl(
+                        $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_URL_FAILURE)
+                    )
+                );
             }
             return $resultRedirect;
         } catch (Exception $e) {

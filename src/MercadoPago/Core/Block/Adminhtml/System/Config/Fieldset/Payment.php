@@ -107,7 +107,9 @@ class Payment extends Fieldset
                 $this->configResource->saveConfig($paymentActivePath, $value, 'default', 0);
             } else {
                 $this->configResource->saveConfig(
-                    $paymentActivePath, $value, 'websites',
+                    $paymentActivePath,
+                    $value,
+                    'websites',
                     $this->switcher->getWebsiteId()
                 );
             }
@@ -148,5 +150,4 @@ class Payment extends Fieldset
 
         return false;
     }
-
 }

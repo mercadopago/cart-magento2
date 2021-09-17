@@ -22,5 +22,4 @@ interface MessageInterface
      * @return string
      */
     public function getMessage($key);
-
 }

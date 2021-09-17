@@ -60,22 +60,25 @@ class Notification extends NotificationBase
 
             $data = $this->notifications->getPaymentInformation($topicClass, $requestValues);
             if (empty($data)) {
-                throw new \Exception(__('Error Merchant Order notification is expected'),
-                 self::HTTP_RESPONSE_NOT_FOUND
+                throw new \Exception(
+                    __('Error Merchant Order notification is expected'),
+                    self::HTTP_RESPONSE_NOT_FOUND
                 );
             }
 
             $merchantOrder = $data['merchantOrder'];
             if ($merchantOrder === null) {
-                throw new \Exception(__('Merchant Order not found or is an notification invalid type.'),
-                 self::HTTP_RESPONSE_NOT_FOUND
+                throw new \Exception(
+                    __('Merchant Order not found or is an notification invalid type.'),
+                    self::HTTP_RESPONSE_NOT_FOUND
                 );
             }
 
             $order = $this->wallet->processNotification($merchantOrder);
             if ($order->getStatus() === 'canceled') {
-                throw new \Exception(__('Order already canceled: ') . $merchantOrder["external_reference"],
-                 self::HTTP_RESPONSE_BAD_REQUEST
+                throw new \Exception(
+                    __('Order already canceled: ') . $merchantOrder["external_reference"],
+                    self::HTTP_RESPONSE_BAD_REQUEST
                 );
             }
 

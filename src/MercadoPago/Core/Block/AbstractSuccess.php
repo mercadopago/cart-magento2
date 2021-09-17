@@ -74,7 +74,7 @@ class AbstractSuccess extends Template
         ScopeConfigInterface $scopeConfig,
         Repository $assetRepo,
         QuoteFactory $quoteFactory,
-        array $data=[]
+        array $data = []
     ) {
         $this->_coreFactory     = $coreFactory;
         $this->_orderFactory    = $orderFactory;
@@ -87,12 +87,13 @@ class AbstractSuccess extends Template
             $context,
             $data
         );
-    }//end __construct()
+    } //end __construct()
 
     /**
      * @throws Exception
      */
-    public function persistCartSession() {
+    public function persistCartSession()
+    {
         $order = $this->_checkoutSession->getLastRealOrder();
         $quote = $this->_quoteFactory->create()->loadByIdWithoutStore($order->getQuoteId());
 
@@ -115,7 +116,7 @@ class AbstractSuccess extends Template
         }
 
         return 'N/A';
-    }//end getConfigExpirationInfo()
+    } //end getConfigExpirationInfo()
 
     /**
      * @return string
@@ -123,7 +124,7 @@ class AbstractSuccess extends Template
     public function getPixImg()
     {
         return $this->_assetRepo->getUrl('MercadoPago_Core::images/logo_pix.png');
-    }//end getPixImg()
+    } //end getPixImg()
 
     /**
      * @return Payment
@@ -131,7 +132,7 @@ class AbstractSuccess extends Template
     public function getPayment()
     {
         return $this->getOrder()->getPayment();
-    }//end getPayment()
+    } //end getPayment()
 
     /**
      * @return Order
@@ -140,7 +141,7 @@ class AbstractSuccess extends Template
     {
         $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
         return $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
-    }//end getOrder()
+    } //end getOrder()
 
     /**
      * @return float
@@ -155,7 +156,7 @@ class AbstractSuccess extends Template
         }
 
         return Round::roundWithoutSiteId($total);
-    }//end getTotal()
+    } //end getTotal()
 
     /**
      * @return mixed
@@ -163,7 +164,7 @@ class AbstractSuccess extends Template
     public function getEntityId()
     {
         return $this->getOrder()->getEntityId();
-    }//end getEntityId()
+    } //end getEntityId()
 
     /**
      * @return string
@@ -172,7 +173,7 @@ class AbstractSuccess extends Template
     public function getPaymentMethod()
     {
         return $this->getPayment()->getMethodInstance()->getCode();
-    }//end getPaymentMethod()
+    } //end getPaymentMethod()
 
     /**
      * @return array
@@ -181,7 +182,7 @@ class AbstractSuccess extends Template
     {
         $order_id = $this->_checkoutSession->getLastRealOrderId();
         return $this->_coreFactory->create()->getInfoPaymentByOrder($order_id);
-    }//end getInfoPayment()
+    } //end getInfoPayment()
 
     /**
      * Return a message to show in success page
@@ -198,7 +199,7 @@ class AbstractSuccess extends Template
         $installments   = $payment['installments'] != '' ? $payment['installments'] : '';
 
         return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $installments, $amount);
-    }//end getMessageByStatus()
+    } //end getMessageByStatus()
 
     /**
      * Return url to go to order detail page
@@ -209,7 +210,7 @@ class AbstractSuccess extends Template
     {
         $params = ['order_id' => $this->_checkoutSession->getLastRealOrder()->getId()];
         return $this->_urlBuilder->getUrl('sales/order/view', $params);
-    }//end getOrderUrl()
+    } //end getOrderUrl()
 
     /**
      * @return string
@@ -219,5 +220,5 @@ class AbstractSuccess extends Template
     {
         $this->persistCartSession();
         return $this->getUrl('checkout', ['_secure' => true]);
-    }//end getReOrderUrl()
+    } //end getReOrderUrl()
 }//end class

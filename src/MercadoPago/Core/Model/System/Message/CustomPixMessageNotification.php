@@ -85,8 +85,7 @@ class CustomPixMessageNotification implements MessageInterface
         $this->switcher          = $switcher;
         $this->cacheTypeList     = $cacheTypeList;
         $this->cacheFrontendPool = $cacheFrontendPool;
-
-    }//end __construct()
+    } //end __construct()
 
 
     /**
@@ -95,8 +94,7 @@ class CustomPixMessageNotification implements MessageInterface
     public function getIdentity()
     {
         return self::MESSAGE_IDENTITY;
-
-    }//end getIdentity()
+    } //end getIdentity()
 
 
     /**
@@ -119,8 +117,7 @@ class CustomPixMessageNotification implements MessageInterface
         $this->hidePix();
 
         return true;
-
-    }//end isDisplayed()
+    } //end isDisplayed()
 
 
     /**
@@ -134,8 +131,7 @@ class CustomPixMessageNotification implements MessageInterface
             self::PIX_INFORMATION_LINK,
             __('Read more')
         );
-
-    }//end getText()
+    } //end getText()
 
 
     /**
@@ -144,8 +140,7 @@ class CustomPixMessageNotification implements MessageInterface
     public function getSeverity()
     {
         self::SEVERITY_NOTICE;
-
-    }//end getSeverity()
+    } //end getSeverity()
 
 
     /**
@@ -162,8 +157,7 @@ class CustomPixMessageNotification implements MessageInterface
         }
 
         return false;
-
-    }//end canConfigurePixGateway()
+    } //end canConfigurePixGateway()
 
 
     /**
@@ -182,8 +176,7 @@ class CustomPixMessageNotification implements MessageInterface
         }
 
         return false;
-
-    }//end pixAvalaiblePaymentPix()
+    } //end pixAvalaiblePaymentPix()
 
 
     /**
@@ -209,16 +202,14 @@ class CustomPixMessageNotification implements MessageInterface
                 );
             }
         }
-
-    }//end disablePayment()
+    } //end disablePayment()
 
 
     protected function hidePix()
     {
         $this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
         $this->cleanConfigCache();
-
-    }//end hidePix()
+    } //end hidePix()
 
 
     protected function cleanConfigCache()
@@ -227,8 +218,7 @@ class CustomPixMessageNotification implements MessageInterface
         foreach ($this->cacheFrontendPool as $cacheFrontend) {
             $cacheFrontend->getBackend()->clean();
         }
-
-    }//end cleanConfigCache()
+    } //end cleanConfigCache()
 
 
 }//end class

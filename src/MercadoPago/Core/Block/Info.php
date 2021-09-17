@@ -27,12 +27,11 @@ class Info extends \Magento\Payment\Block\Info
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Sales\Model\OrderFactory $orderFactory,
-        array $data=[]
+        array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_orderFactory = $orderFactory;
-
-    }//end __construct()
+    } //end __construct()
 
 
     /**
@@ -41,7 +40,7 @@ class Info extends \Magento\Payment\Block\Info
      * @param  null | array $transport
      * @return \Magento\Framework\DataObject
      */
-    protected function _prepareSpecificInformation($transport=null)
+    protected function _prepareSpecificInformation($transport = null)
     {
         $transport = parent::_prepareSpecificInformation($transport);
         $data      = [];
@@ -54,11 +53,11 @@ class Info extends \Magento\Payment\Block\Info
         }
 
         if (isset($paymentResponse['card']) && isset($paymentResponse['card']['first_six_digits']) && isset($paymentResponse['card']['last_four_digits'])) {
-            $data['Card Number'] = $paymentResponse['card']['first_six_digits'].'xxxxxx'.$paymentResponse['card']['last_four_digits'];
+            $data['Card Number'] = $paymentResponse['card']['first_six_digits'] . 'xxxxxx' . $paymentResponse['card']['last_four_digits'];
         }
 
         if (isset($paymentResponse['card']) && isset($paymentResponse['card']['expiration_month']) && isset($paymentResponse['card']['expiration_year'])) {
-            $data['Expiration Date'] = $paymentResponse['card']['expiration_month'].'/'.$paymentResponse['card']['expiration_year'];
+            $data['Expiration Date'] = $paymentResponse['card']['expiration_month'] . '/' . $paymentResponse['card']['expiration_year'];
         }
 
         if (isset($paymentResponse['card']) && isset($paymentResponse['card']['cardholder']) && isset($paymentResponse['card']['cardholder']['name'])) {
@@ -90,8 +89,5 @@ class Info extends \Magento\Payment\Block\Info
         }
 
         return $transport->setData(array_merge($data, $transport->getData()));
-
-    }//end _prepareSpecificInformation()
-
-
+    } //end _prepareSpecificInformation()
 }//end class

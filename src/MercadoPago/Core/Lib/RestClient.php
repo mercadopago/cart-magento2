@@ -55,7 +55,6 @@ class RestClient
             $header_opt[] = "x-product-id: " . self::PRODUCT_ID;
             $header_opt[] = 'x-platform-id:' . self::PLATAFORM_ID;
             $header_opt[] = 'x-integrator-id:' . self::getIntegratorID();
-
         }
 
         if (count($extra_params) > 0) {
@@ -117,7 +116,7 @@ class RestClient
         $api_http_code = curl_getinfo($connect, CURLINFO_HTTP_CODE);
 
         if ($api_result === FALSE) {
-            throw new \Exception (curl_error($connect));
+            throw new \Exception(curl_error($connect));
         }
 
         $response = array(
@@ -200,7 +199,7 @@ class RestClient
     static $sponsor_id = "";
     static $check_loop = 0;
 
-    public static function getIntegratorID() 
+    public static function getIntegratorID()
     {
         $objectManager = ObjectManager::getInstance();
         return $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue(ConfigData::PATH_ADVANCED_INTEGRATOR);

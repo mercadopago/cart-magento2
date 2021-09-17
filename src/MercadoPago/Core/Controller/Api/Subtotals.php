@@ -2,14 +2,8 @@
 
 namespace MercadoPago\Core\Controller\Api;
 
-
-/**
- * Class Coupon
- *
- * @package Mercadopago\Core\Controller\Notifications
- */
 class Subtotals
-    extends \Magento\Framework\App\Action\Action
+extends \Magento\Framework\App\Action\Action
 
 {
     /**
@@ -43,8 +37,7 @@ class Subtotals
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
         \Magento\Framework\Registry $registry
-    )
-    {
+    ) {
         parent::__construct($context);
         $this->_checkoutSession = $checkoutSession;
         $this->quoteRepository = $quoteRepository;
@@ -66,5 +59,4 @@ class Subtotals
         $this->quoteRepository->save($quote->collectTotals());
         return;
     }
-
 }

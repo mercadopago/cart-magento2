@@ -17,11 +17,11 @@ class Note extends Field
 {
 
     /**
-    * @param Context $context
-    * @param ScopeConfigInterface $scopeConfig
-    * @param Config $configResource
-    * @param array $data
-    */
+     * @param Context $context
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Config $configResource
+     * @param array $data
+     */
     public function __construct(
         Context $context,
         ScopeConfigInterface $scopeConfig,
@@ -34,12 +34,12 @@ class Note extends Field
     }
 
     /**
-    *
-    * Rendering the elements
-    *
-    * @param  AbstractElement $element
-    * @return string
-    */
+     *
+     * Rendering the elements
+     *
+     * @param  AbstractElement $element
+     * @return string
+     */
     public function render(AbstractElement $element)
     {
 
@@ -58,17 +58,18 @@ class Note extends Field
     }
 
     /**
-    *
-    * Switches the note according to site_id
-    *
-    * @param  $siteId
-    * @param  $originalData
-    * @return bool
-    */
+     *
+     * Switches the note according to site_id
+     *
+     * @param  $siteId
+     * @param  $originalData
+     * @return bool
+     */
     protected function hideInterestPayment($siteId, $originalData)
     {
-        if ( ($siteId == "MCO" && $originalData['id'] == 'interest_payment_default_info') ||
-            ($siteId != "MCO" && $originalData['id'] == 'interest_payment_info') ) {
+        if (($siteId == "MCO" && $originalData['id'] == 'interest_payment_default_info') ||
+            ($siteId != "MCO" && $originalData['id'] == 'interest_payment_info')
+        ) {
             return true;
         }
 

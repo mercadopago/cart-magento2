@@ -7,8 +7,7 @@ namespace MercadoPago\Core\Block\CustomBankTransfer;
  *
  * @package MercadoPago\Core\Block\CustomBankTransfer
  */
-class Success
-    extends \MercadoPago\Core\Block\AbstractSuccess
+class Success extends \MercadoPago\Core\Block\AbstractSuccess
 {
     /**
      * Constructor

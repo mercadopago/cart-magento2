@@ -9,8 +9,7 @@ use Magento\Sales\Model\Order;
  *
  * @package MercadoPago\Core\Block\Sales\Order\Totals
  */
-class FinanceCost
-    extends \Magento\Framework\View\Element\Template
+class FinanceCost extends \Magento\Framework\View\Element\Template
 {
 
     /**
@@ -33,8 +32,10 @@ class FinanceCost
      */
     public function initTotals()
     {
-        if ((float)$this->getSource()->getFinanceCostAmount() == 0
-            || !$this->_scopeConfig->isSetFlag('payment/mercadopago/financing_cost', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)) {
+        if (
+            (float)$this->getSource()->getFinanceCostAmount() == 0
+            || !$this->_scopeConfig->isSetFlag('payment/mercadopago/financing_cost', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+        ) {
             return $this;
         }
         $total = new \Magento\Framework\DataObject([

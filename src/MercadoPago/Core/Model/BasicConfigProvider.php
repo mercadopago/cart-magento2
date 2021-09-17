@@ -49,8 +49,7 @@ class BasicConfigProvider implements ConfigProviderInterface
         PaymentHelper $paymentHelper,
         ScopeConfigInterface $scopeConfig,
         ProductMetadataInterface $productMetadata
-    )
-    {
+    ) {
         $this->_context = $context;
         $this->_assetRepo = $assetRepo;
         $this->_coreHelper = $coreHelper;
@@ -127,18 +126,18 @@ class BasicConfigProvider implements ConfigProviderInterface
     {
         $accessToken = $this->_scopeConfig->getValue(
             ConfigData::PATH_ACCESS_TOKEN,
-            ScopeInterface::SCOPE_WEBSITE)
-        ;
+            ScopeInterface::SCOPE_WEBSITE
+        );
 
         $maxInstallments = $this->_scopeConfig->getValue(
             ConfigData::PATH_BASIC_MAX_INSTALLMENTS,
-            ScopeInterface::SCOPE_STORE)
-        ;
+            ScopeInterface::SCOPE_STORE
+        );
 
         $excludePaymentMethods = $this->_scopeConfig->getValue(
             ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS,
-            ScopeInterface::SCOPE_STORE)
-        ;
+            ScopeInterface::SCOPE_STORE
+        );
 
         $excludePaymentMethods = explode(",", $excludePaymentMethods);
 

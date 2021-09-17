@@ -19,16 +19,16 @@ class Button extends Field
 {
 
     /**
-    * Path to template
-    */
+     * Path to template
+     */
     const TEMPLATE = 'MercadoPago_Core::system/config/button.phtml';
 
     /**
-    * @param Context $context
-    * @param ScopeConfigInterface $scopeConfig
-    * @param Config $configResource
-    * @param array $data
-    */
+     * @param Context $context
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Config $configResource
+     * @param array $data
+     */
     public function __construct(
         Context $context,
         ScopeConfigInterface $scopeConfig,
@@ -41,11 +41,11 @@ class Button extends Field
     }
 
     /**
-    *
-    * Set template
-    *
-    * @return $this
-    */
+     *
+     * Set template
+     *
+     * @return $this
+     */
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
@@ -56,12 +56,12 @@ class Button extends Field
     }
 
     /**
-    *
-    * Remove scope label and rendering the elements
-    *
-    * @param  AbstractElement $element
-    * @return string
-    */
+     *
+     * Remove scope label and rendering the elements
+     *
+     * @param  AbstractElement $element
+     * @return string
+     */
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
@@ -82,11 +82,11 @@ class Button extends Field
 
     /**
      *
-    * Generate button html
-    *
-    * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
-    * @return string
-    */
+     * Generate button html
+     *
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @return string
+     */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $originalData = $element->getOriginalData();
@@ -103,14 +103,15 @@ class Button extends Field
      *
      * Switches the button according to site_id
      *
-    * @param  $siteId
-    * @param  $originalData
-    * @return bool
-    */
+     * @param  $siteId
+     * @param  $originalData
+     * @return bool
+     */
     protected function hideInterestPayment($siteId, $originalData)
     {
-        if ( ($siteId != "MCO" && $originalData['id'] == 'interest_payment_button') ||
-            ($siteId == "MCO" && $originalData['id'] == 'interest_payment_default_button') ) {
+        if (($siteId != "MCO" && $originalData['id'] == 'interest_payment_button') ||
+            ($siteId == "MCO" && $originalData['id'] == 'interest_payment_default_button')
+        ) {
             return true;
         }
 
@@ -118,13 +119,14 @@ class Button extends Field
     }
 
     /**
-    *
-    * Change URL by country suffix
-    *
-    * @param string
-    * @return string
-    */
-    public static function changeUrlByCountry() {
+     *
+     * Change URL by country suffix
+     *
+     * @param string
+     * @return string
+     */
+    public static function changeUrlByCountry()
+    {
 
         $objectManager = ObjectManager::getInstance();
         $siteId = strtoupper(

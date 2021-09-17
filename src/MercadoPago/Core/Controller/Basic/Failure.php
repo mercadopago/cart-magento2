@@ -8,7 +8,6 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
-
 class Failure extends Action implements ViewInterface
 {
     /**
@@ -31,7 +30,6 @@ class Failure extends Action implements ViewInterface
         $this->_context = $context;
         $this->_scopeConfig = $scopeConfig;
         parent::__construct($context);
-
     }
 
     /**

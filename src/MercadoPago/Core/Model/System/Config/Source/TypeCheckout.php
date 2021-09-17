@@ -7,8 +7,7 @@ namespace MercadoPago\Core\Model\System\Config\Source;
  *
  * @package MercadoPago\Core\Model\System\Config\Source
  */
-class TypeCheckout
-    implements \Magento\Framework\Option\ArrayInterface
+class TypeCheckout implements \Magento\Framework\Option\ArrayInterface
 {
     /**
      * Return available checkout types

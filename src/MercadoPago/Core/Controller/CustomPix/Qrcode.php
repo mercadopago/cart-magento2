@@ -18,7 +18,6 @@ class Qrcode extends Action
      */
     protected $order;
 
-
     /**
      * Qrcode constructor.
      *
@@ -32,9 +31,7 @@ class Qrcode extends Action
             $context
         );
         $this->order = $order;
-
-    }//end __construct()
-
+    } //end __construct()
 
     /**
      * Controller action
@@ -53,8 +50,7 @@ class Qrcode extends Action
         $image = $this->getImage($base64ImageString);
 
         return $this->getRawResponse($image);
-
-    }//end execute()
+    } //end execute()
 
 
     /**
@@ -82,7 +78,8 @@ class Qrcode extends Action
 
         $base64Image = false;
 
-        if (isset($paymentResponse['point_of_interaction'])
+        if (
+            isset($paymentResponse['point_of_interaction'])
             && isset($paymentResponse['point_of_interaction']['transaction_data'])
         ) {
             if (isset($paymentResponse['point_of_interaction']['transaction_data']['qr_code_base64'])) {
@@ -92,8 +89,7 @@ class Qrcode extends Action
 
 
         return $base64Image;
-
-    }//end getImageBase64String()
+    } //end getImageBase64String()
 
 
     /**
@@ -112,8 +108,7 @@ class Qrcode extends Action
         ob_end_clean();
 
         return $image;
-
-    }//end getImage()
+    } //end getImage()
 
 
     /**
@@ -127,8 +122,7 @@ class Qrcode extends Action
         $result->setContents($content);
 
         return $result;
-
-    }//end getRawResponse()
+    } //end getRawResponse()
 
 
 }//end class

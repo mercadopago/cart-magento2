@@ -36,8 +36,7 @@ class PixExpirationMinutes implements OptionSourceInterface
         }
 
         return $values;
-
-    }//end toOptionArray()
+    } //end toOptionArray()
 
 
 }//end class

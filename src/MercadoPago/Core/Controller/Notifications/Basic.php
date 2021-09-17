@@ -61,8 +61,7 @@ class Basic extends NotificationBase
         $this->_orderFactory   = $orderFactory;
         $this->_notifications  = $notifications;
         parent::__construct($context);
-
-    }//end __construct()
+    } //end __construct()
 
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
@@ -81,17 +80,17 @@ class Basic extends NotificationBase
             }
 
             $merchantOrder = $data['merchantOrder'];
-            if (is_null($merchantOrder)) {
+            if ($merchantOrder === null) {
                 throw new Exception(__('Merchant Order not found or is an notification invalid type.'), 400);
             }
 
             $order = $this->_orderFactory->create()->loadByIncrementId($merchantOrder['external_reference']);
             if (empty($order) || empty($order->getId())) {
-                throw new Exception(__('Error Order Not Found in Magento: ').$merchantOrder['external_reference'], 400);
+                throw new Exception(__('Error Order Not Found in Magento: ') . $merchantOrder['external_reference'], 400);
             }
 
             if ($order->getStatus() == 'canceled') {
-                throw new Exception(__('Order already canceled: ').$merchantOrder['external_reference'], 400);
+                throw new Exception(__('Order already canceled: ') . $merchantOrder['external_reference'], 400);
             }
 
             $data['statusFinal'] = $topicClass->getStatusFinal($data['payments'], $merchantOrder);
@@ -104,16 +103,16 @@ class Basic extends NotificationBase
             $this->setResponseHttp($statusResponse['code'], $statusResponse['text'], $request->getParams());
         } catch (\Exception $e) {
             $this->setResponseHttp($e->getCode(), $e->getMessage(), $request->getParams());
-        }//end try
+        } //end try
 
-    }//end execute()
+    } //end execute()
 
     /**
      * @param $httpStatus
      * @param $message
      * @param array      $data
      */
-    protected function setResponseHttp($httpStatus, $message, $data=[])
+    protected function setResponseHttp($httpStatus, $message, $data = [])
     {
         if ($httpStatus < 200 || $httpStatus > 500) {
             $httpStatus = 500;
@@ -125,11 +124,10 @@ class Basic extends NotificationBase
             'data'    => $data,
         ];
 
-        $this->coreHelper->log('NotificationsBasic::setResponseHttp - Response: '.json_encode($response), self::LOG_NAME);
+        $this->coreHelper->log('NotificationsBasic::setResponseHttp - Response: ' . json_encode($response), self::LOG_NAME);
 
         $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
         $this->getResponse()->setBody(json_encode($response));
         $this->getResponse()->setHttpResponseCode($httpStatus);
-
-    }//end setResponseHttp()
+    } //end setResponseHttp()
 }//end class
