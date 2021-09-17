@@ -9,12 +9,6 @@ use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
 
-
-/**
- * Class Custom
- *
- * @package MercadoPago\Core\Controller\Notifications
- */
 class Custom extends NotificationBase
 {
     const LOG_NAME = 'custom_notification';

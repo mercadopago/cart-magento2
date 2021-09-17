@@ -90,7 +90,8 @@ class Basic extends NotificationBase
             }
 
             if ($order->getStatus() == 'canceled') {
-                throw new Exception(__('Order already canceled: ') . $merchantOrder['external_reference'], 400);
+                throw new Exception(__('Order already canceled: ')
+                . $merchantOrder['external_reference'], 400);
             }
 
             $data['statusFinal'] = $topicClass->getStatusFinal($data['payments'], $merchantOrder);
@@ -104,7 +105,6 @@ class Basic extends NotificationBase
         } catch (\Exception $e) {
             $this->setResponseHttp($e->getCode(), $e->getMessage(), $request->getParams());
         } //end try
-
     } //end execute()
 
     /**
@@ -124,7 +124,10 @@ class Basic extends NotificationBase
             'data'    => $data,
         ];
 
-        $this->coreHelper->log('NotificationsBasic::setResponseHttp - Response: ' . json_encode($response), self::LOG_NAME);
+        $this->coreHelper->log(
+            'NotificationsBasic::setResponseHttp - Response: ' . json_encode($response),
+             self::LOG_NAME
+        );
 
         $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
         $this->getResponse()->setBody(json_encode($response));

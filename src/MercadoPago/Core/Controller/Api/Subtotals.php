@@ -2,9 +2,7 @@
 
 namespace MercadoPago\Core\Controller\Api;
 
-class Subtotals
-extends \Magento\Framework\App\Action\Action
-
+class Subtotals extends \Magento\Framework\App\Action\Action
 {
     /**
      * @var \Magento\Checkout\Model\Session
@@ -22,7 +20,6 @@ extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\Registry
      */
     protected $_registry;
-
 
     /**
      * Coupon constructor.
@@ -57,6 +54,5 @@ extends \Magento\Framework\App\Action\Action
         //save value to DiscountCoupon collect
         $this->_registry->register('mercadopago_total_amount', $total);
         $this->quoteRepository->save($quote->collectTotals());
-        return;
     }
 }
