@@ -99,11 +99,17 @@ class Payment extends TopicsAbstract
         $newOrderStatus       = parent::getConfigStatus($payment, $order->canCreditmemo());
         $currentOrderStatus   = $order->getState();
         $orderTotal           = Round::roundWithoutSiteId($order->getGrandTotal());
+        $couponMP = $payment['coupon_amount'];
+        $paidTotal = $payment['transaction_details']['total_paid_amount'];
+            
+        if($couponMP > 0){
+            $paidTotal += $couponMP;
+        }
 
-        if ($orderTotal > $payment['transaction_details']['total_paid_amount']) {
+        if ($orderTotal > $paidTotal) {
             $newOrderStatus = 'fraud';
             $message       .= __('<br/> Order total: %1', $order->getGrandTotal());
-            $message       .= __('<br/> Paid: %1', $payment['transaction_details']['total_paid_amount']);
+            $message       .= __('<br/> Paid: %1', $paidTotal);
         }
 
         if ($statusAlreadyUpdated) {
