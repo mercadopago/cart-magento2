@@ -9,7 +9,6 @@ use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
 
-
 /**
  * Class Custom
  *

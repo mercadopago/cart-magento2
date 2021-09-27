@@ -145,7 +145,7 @@ class BasicConfigProvider implements ConfigProviderInterface
             $debit = 0;
             $credit = 0;
             $ticket = 0;
-            $choMethods = array();
+            $choMethods = [];
 
             $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
 
@@ -162,13 +162,13 @@ class BasicConfigProvider implements ConfigProviderInterface
                 }
             }
 
-            $parameters = array(
+            $parameters = [
                 "debit" => $debit,
                 "credit" => $credit,
                 "ticket" => $ticket,
                 "installments" => $maxInstallments,
                 "checkout_methods" => $choMethods,
-            );
+            ];
 
             return $parameters;
         } catch (\Exception $e) {

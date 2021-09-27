@@ -78,8 +78,7 @@ class Qrcode extends Action
 
         $base64Image = false;
 
-        if (
-            isset($paymentResponse['point_of_interaction'])
+        if (isset($paymentResponse['point_of_interaction'])
             && isset($paymentResponse['point_of_interaction']['transaction_data'])
         ) {
             if (isset($paymentResponse['point_of_interaction']['transaction_data']['qr_code_base64'])) {
@@ -123,6 +122,4 @@ class Qrcode extends Action
 
         return $result;
     } //end getRawResponse()
-
-
 }//end class

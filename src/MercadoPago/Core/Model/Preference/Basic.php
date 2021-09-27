@@ -333,8 +333,8 @@ class Basic extends AbstractMethod
 
         $result['date_created'] = date(
             'Y-m-d',
-            $customer->getCreatedAtTimestamp()) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp()
-        );
+            $customer->getCreatedAtTimestamp()
+        ) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp());
 
         $result['email']      = $customer->getId() ? htmlentities($customer->getEmail()) : htmlentities($billingAddress['email']);
         $result['first_name'] = $customer->getId() ? htmlentities($customer->getFirstname()) : htmlentities($billingAddress['firstname']);
@@ -540,11 +540,11 @@ class Basic extends AbstractMethod
      */
     protected function getNotificationUrl()
     {
-        $params = array(
-            '_query' => array(
+        $params = [
+            '_query' => [
                 'source_news' => 'ipn'
-            )
-        );
+            ]
+        ];
 
         $notification_url = $this->_urlBuilder->getUrl(self::NOTIFICATION_URL, $params);
 

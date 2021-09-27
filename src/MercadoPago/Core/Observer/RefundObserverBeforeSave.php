@@ -131,9 +131,9 @@ class RefundObserverBeforeSave implements ObserverInterface
                     $responseRefund = $mp->post("/v1/payments/$paymentID/refunds", null);
                 } else {
                     //partial refund
-                    $params = array(
+                    $params = [
                         "amount" => $amountRefund,
-                    );
+                    ];
                     $responseRefund = $mp->post("/v1/payments/$paymentID/refunds", $params);
                 }
 
@@ -155,7 +155,7 @@ class RefundObserverBeforeSave implements ObserverInterface
     /**
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function throwRefundException($message, $data = array())
+    protected function throwRefundException($message, $data = [])
     {
         $this->dataHelper->log("RefundObserverBeforeSave::sendRefundRequest - " . $message, 'mercadopago-custom.log', $data);
         $this->messageManager->addErrorMessage('Mercado Pago - ' . $message);

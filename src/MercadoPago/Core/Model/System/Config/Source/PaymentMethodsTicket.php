@@ -98,6 +98,4 @@ class PaymentMethodsTicket implements ArrayInterface
 
         return $methods;
     } //end toOptionArray()
-
-
 }//end class

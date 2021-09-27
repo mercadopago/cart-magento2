@@ -2,9 +2,7 @@
 
 namespace MercadoPago\Core\Controller\Api;
 
-class Subtotals
-extends \Magento\Framework\App\Action\Action
-
+class Subtotals extends \Magento\Framework\App\Action\Action
 {
     /**
      * @var \Magento\Checkout\Model\Session

@@ -60,7 +60,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $this;
-
     }//end assignData()
 
     /**
@@ -114,7 +113,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }//end try
 
         return $this->createCustomPayment($preference, 'CustomBankTransfer', self::LOG_NAME);
-
     }//end initialize()
 
     /**
@@ -146,7 +144,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $ip;
-
     }//end getIpAddress()
 
     /**
@@ -155,7 +152,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @throws LocalizedException
      * @throws Exception
      */
-    public function preparePostPayment($usingSecondCardInfo=null)
+    public function preparePostPayment($usingSecondCardInfo = null)
     {
         $this->_helperData->log('Ticket -> init prepare post payment', 'mercadopago-custom.log');
         $quote   = $this->_getQuote();
@@ -213,7 +210,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
         // POST /v1/payments
         return $this->_coreModel->postPaymentV1($preference);
-
     }//end preparePostPayment()
 
     /**
@@ -239,7 +235,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $paymentOptions;
-
     }//end getPaymentOptions()
 
     /**
@@ -257,7 +252,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return $identificationTypes;
-
     }//end getIdentifcationTypes()
 
     /**
@@ -272,7 +266,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $order->setBaseGrandTotal($total);
 
         $this->getInfoInstance()->setOrder($order);
-
     }//end setOrderSubtotals()
 
     /**
@@ -280,7 +273,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @return boolean
      * @throws LocalizedException
      */
-    public function isAvailable(CartInterface $quote=null)
+    public function isAvailable(CartInterface $quote = null)
     {
         $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {
@@ -288,7 +281,5 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         }
 
         return parent::isAvailableMethod($quote);
-
     }//end isAvailable()
-
 }//end class

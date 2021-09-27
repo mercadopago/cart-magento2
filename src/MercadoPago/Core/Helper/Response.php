@@ -35,7 +35,7 @@ class Response
     const TOPIC_RECURRING_PAYMENT = 'preapproval';
     const TOPIC_PAYMENT = 'payment';
 
-    const PAYMENT_CREATION_ERRORS = array(
+    const PAYMENT_CREATION_ERRORS = [
         "1" => "Params Error.",
         "3" => "Token must be for test.",
         "4" => "The caller is not authorized to access this resource.",
@@ -124,5 +124,5 @@ class Response
         "TOKEN_EMPTY" => "Verify the form data or wait until the validation of the payment data.",
         "INTERNAL_ERROR_MODULE" => "There was an internal error when creating the payment."
 
-    );
+    ];
 }

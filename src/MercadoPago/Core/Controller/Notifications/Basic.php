@@ -104,7 +104,6 @@ class Basic extends NotificationBase
         } catch (\Exception $e) {
             $this->setResponseHttp($e->getCode(), $e->getMessage(), $request->getParams());
         } //end try
-
     } //end execute()
 
     /**

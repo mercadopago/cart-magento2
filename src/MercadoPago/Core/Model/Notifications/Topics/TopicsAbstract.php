@@ -62,8 +62,7 @@ abstract class TopicsAbstract
         TransactionFactory $transactionFactory,
         InvoiceSender $invoiceSender,
         InvoiceService $invoiceService
-    )
-    {
+    ) {
         $this->_dataHelper = $dataHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_orderFactory = $orderFactory;
