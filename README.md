@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# Magento 2 - Mercado Pago Module (v3.10.2)
+# Magento 2 - Mercado Pago Module (v3.11.0)
 
 The Mercado Pago plugin for Magento 2 allows you to expand the functionalities of your online store and offer a unique payment experience for your customers.
 
