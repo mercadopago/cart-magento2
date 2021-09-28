@@ -430,10 +430,10 @@ abstract class TopicsAbstract
             $statusOrder = $this->getConfigStatus($payment, $order->canCreditmemo());
             $orderTotal  = Round::roundWithSiteId($order->getGrandTotal(), $this->getSiteId());
 
-            if ($orderTotal > $payment['transaction_details']['total_paid_amount']) {
+            if ($orderTotal > $paidTotal) {
                 $statusOrder = 'fraud';
                 $message .= __('<br/> Order total: %1', $order->getGrandTotal());
-                $message .= __('<br/> Paid: %1', $payment['transaction_details']['total_paid_amount']);
+                $message .= __('<br/> Paid: %1', $paidTotal);
             }
 
             $emailAlreadySent = false;

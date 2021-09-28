@@ -9,13 +9,14 @@ $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 $payment_method = $this->getPaymentMethod();
 $pixImg = $this->getPixImg();
 $expirationInfo = $this->getConfigExpirationInfo();
+$link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>';
 ?>
 
 <div id="box-mercadopago">
 		<?php if ($payment_method == 'mercadopago_custom_pix') { ?>
 
 			<p class="mp-details-title">
-				<?php echo __('Now you just need to pay with Pix to finalize your purchase'); ?>
+            <?php echo __('Order %1 received! Now you just need to pay with Pix to finalize your purchase', $link_to_order); ?>
 			</p>
 
 			<div class="mp-details-pix">

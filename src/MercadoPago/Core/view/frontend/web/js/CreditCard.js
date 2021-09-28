@@ -152,7 +152,7 @@ function validateAdditionalInputs() {
 
   if (additionalInfoNeeded.cardholder_identification_number) {
     var docNumber = document.getElementById('mpDocNumber');
-    if (docNumber.value === '-1' || docNumber.value === '') {
+    if (docNumber.value === '-1' || docNumber.value === '' || ! /^[a-zA-Z0-9]+$/.test(docNumber.value)) {
       docNumber.classList.add('mp-form-control-error');
       document.getElementById('mp-error-324').style.display = 'block';
       emptyInputs = true;
