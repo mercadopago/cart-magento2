@@ -86,11 +86,6 @@ class Payment extends Fieldset
             return "";
         }
 
-        //check is webpay
-        if ($this->hideWebpay($paymentId, $siteId)) {
-            return "";
-        }
-
         return parent::render($element);
     }
 
@@ -146,23 +141,6 @@ class Payment extends Fieldset
         if (strpos($paymentId, 'custom_checkout_pix') !== false) {
             if ($siteId !== "MLB") {
                 $this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param  $paymentId
-     * @param  $siteId
-     * @return bool
-     */
-    protected function hideWebpay($paymentId, $siteId)
-    {
-        if (strpos($paymentId, 'custom_checkout_webpay') !== false) {
-            if ($siteId !== "MLC") {
-                $this->disablePayment(ConfigData::PATH_CUSTOM_WEBPAY_ACTIVE);
                 return true;
             }
         }

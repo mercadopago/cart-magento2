@@ -50,10 +50,6 @@ class ConfigData
     const PATH_CUSTOM_PIX_BANNER = 'payment/mercadopago_custom_pix/banner_checkout';
     const PATH_CUSTOM_PIX_EXPIRATION_MINUTES = 'payment/mercadopago_custom_pix/expiration_minutes';
 
-    //custom method webpay
-    const PATH_CUSTOM_WEBPAY_ACTIVE = 'payment/mercadopago_custom_webpay/active';
-    const PATH_CUSTOM_WEBPAY_BANNER = 'payment/mercadopago_custom_webpay/banner_checkout';
-
     //order configuration
     const PATH_ORDER_APPROVED = 'payment/mercadopago/order_status_approved';
     const PATH_ORDER_IN_PROCESS = 'payment/mercadopago/order_status_in_process';

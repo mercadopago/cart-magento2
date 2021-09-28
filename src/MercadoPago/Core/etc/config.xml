@@ -29,15 +29,6 @@
                 <gateway_mode>0</gateway_mode>
                 <wallet_button>0</wallet_button>
             </mercadopago_custom>
-            <mercadopago_custom_webpay>
-                <active>0</active>
-                <model>MercadoPago\Core\Model\CustomWebpay\Payment</model>
-                <title translate="label">Debit Card/Redcompra - Mercado Pago</title>
-                <allowspecific>0</allowspecific>
-                <sort_order>-3</sort_order>
-                <payment_action>authorize</payment_action>
-                <cctypes>AE,VI,MC,DI,JCB</cctypes>
-            </mercadopago_custom_webpay>
             <mercadopago_customticket>
                 <active>0</active>
                 <model>MercadoPago\Core\Model\CustomTicket\Payment</model>
