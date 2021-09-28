@@ -66,7 +66,7 @@
 "Max Installments","Número máximo de cuotas aceptadas"
 "Maximum number of installments accept the payment flow.","Número máximo de cuotas aceptadas en el flujo de pago."
 "Expiration Time Preference","Tiempo de expiración del link del checkout"
-"Time in days to expiration preference.","Cantidad de días para expirar el link del checkout."
+"Time in hours to expiration preference.","Cantidad de horas para expirar el link del checkout."
 
 "==================== ADVANCED CONFIGURATION PAGE =====================","================================================"
 "Advanced","Avanzado"
