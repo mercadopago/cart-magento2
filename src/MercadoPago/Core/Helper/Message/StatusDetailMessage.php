@@ -20,18 +20,18 @@ class StatusDetailMessage extends AbstractMessage
         "cc_rejected_bad_filled_security_code" => 'Check the security code.',
         "cc_rejected_blacklist" => 'We could not process your payment.',
         "cc_rejected_call_for_authorize" => 'Contact your card issuer and authorize the payment to Mercado Pago.',
-        "cc_rejected_card_disabled" => 'Call %1 to activate your card.<br/>The phone is on the back of your card.',
+        "cc_rejected_card_disabled" => 'Contact your card issuer to activate your card. The phone is on the back of your card.',
         "cc_rejected_card_error" => 'We could not process your payment.',
-        "cc_rejected_duplicated_payment" => 'You already made a payment by that value.<br/>If you need to repay, use another card or other payment method.',
-        "cc_rejected_high_risk" => 'Your payment was rejected.<br/>Choose another payment method, we recommend cash methods.',
-        "cc_rejected_insufficient_amount" => 'Your %1 do not have sufficient funds.',
-        "cc_rejected_invalid_installments" => '%1 does not process payments in %2 installments.',
-        "cc_rejected_max_attempts" => 'You have got to the limit of allowed attempts.<br/>Choose another card or another payment method.',
-        "cc_rejected_other_reason" => '%1 did not process the payment.',
+        "cc_rejected_duplicated_payment" => 'You already made a payment by that value. If you need to repay, use another card or other payment method.',
+        "cc_rejected_high_risk" => 'Your payment was rejected. Choose another payment method, we recommend cash methods.',
+        "cc_rejected_insufficient_amount" => 'Card with insufficient limit.',
+        "cc_rejected_invalid_installments" => 'The card does not process payments with this number of installments.',
+        "cc_rejected_max_attempts" => 'You have got to the limit of allowed attempts. Choose another card or another payment method.',
+        "cc_rejected_other_reason" => 'The card company did not process the payment. Please contact your card issue.',
     ];
 
     /**
-     * Return array map error mesages
+     * Return array map error messages
      *
      * @return array
      */

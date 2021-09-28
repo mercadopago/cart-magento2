@@ -357,7 +357,7 @@
 
 "The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.", "El ACCESS_TOKEN no se ha configurado, sin esta credencial el módulo no funcionará correctamente."
 
-"================================================","================================================"
+"====================== PAYMENT STATUS DETAIL ==========================","===================================="
 
 "Payment information", "Información de pago"
 "Check the card number.","Revisa el número de la tarjeta."
@@ -366,15 +366,17 @@
 "Check the security code.","Revisa el código de seguridad."
 "We could not process your payment.","No pudimos procesar tu pago."
 
-"Contact your card issuer and authorize the payment to Mercado Pago.","Contacta con el emisor de tu tarjeta y autoriza el pago a Mercado Pago."
-"Call %1 to activate your card.<br/>The phone is on the back of your card.","Llama a %1 para que active tu tarjeta. El teléfono está al dorso de tu tarjeta."
-"We could not process your payment.","No pudimos procesar tu pago."
-"You already made a payment by that value.<br/>If you need to repay, use another card or other payment method.","Ya hiciste un pago por ese valor. Si necesitas volver a pagar usa otra tarjeta u otro medio de pago."
-"Your payment was rejected.<br/>Choose another payment method, we recommend cash methods.","Tu pago fue rechazado. Elige otro de los medios de pago, te recomendamos con medios de pago en efectivo."
-"Your %1 do not have sufficient funds.","Tu %1 no tiene fondos suficientes."
-"%1 does not process payments in %2 installments.","%1 no procesa pagos en %2 cuotas."
-"You have got to the limit of allowed attempts.<br/>Choose another card or another payment method.","Llegaste al límite de intentos permitidos. Elige otra tarjeta u otro medio de pago."
-"%1 did not process the payment.","%1 no procesó el pago."
+"We could not process your payment.", "No hemos podido procesar tu pago."
+"Contact your card issuer and authorize the payment to Mercado Pago.", "Contacta con el emisor de tu tarjeta y autoriza el pago a Mercado Pago."
+"Contact your card issuer to activate your card. The phone is on the back of your card.", "Contacta con el emisor de tu tarjeta para que active tu tarjeta. El teléfono está al dorso de tu tarjeta."
+"You already made a payment by that value. If you need to repay, use another card or other payment method.", "Ya hiciste un pago por ese valor. Si necesitas volver a pagar usa otra tarjeta u otro medio de pago."
+"Your payment was rejected. Choose another payment method, we recommend cash methods.", "Tu pago fue rechazado. Elige otro de los medios de pago, te recomendamos con medios de pago en efectivo."
+"Card with insufficient limit.", "Tarjeta con límite insuficiente."
+"The card does not process payments with this number of installments.", "La tarjeta no procesa pagos con con esta cantidad de cuotas.
+"You have got to the limit of allowed attempts. Choose another card or another payment method.", "Llegaste al límite de intentos permitidos. Elige otra tarjeta u otro medio de pago."
+"The card company did not process the payment. Please contact your card issue.", "El emisor de la tarjeta no procesó el pago. Ponte en contacto con el emisor."
+
+"Oops, there was an error processing the payment! Try again...", "¡Se produjo un error al procesar el pago! Intentar otra vez..."
 
 "You can not make payments to users in other countries.","No puedes realizar pagos a usuarios de otros países."
 "Payment Method selected does not process payments in installments selected. Choose another card or another payment method.","El medio de pago seleccionado no procesa pagos en la cuota seleccionada. Elige otra tarjeta u otro medio de pago."
@@ -492,6 +494,20 @@
 "refunded", "Pago reembolsado"
 "charged_back", "Pago contracargado"
 "Generate Ticket", "Generar Ticket"
+
+"==================== WEBPAY GATEWAY =====================","================================================"
+"Add the URL of an image that you want to insert in the checkout.", "Añade la url de una imagen que quieras insertar en el checkout."
+"Custom Checkout - Debit Card (Webpay/Redcompra)", "Custom Checkout - Tarjetas de Débito (Webpay/Redcompra)"
+"Debit Card/Redcompra - Mercado Pago", "Tarjetas de Débito/Redcompra - Mercado Pago"
+"We will redirect you to the Webpay site to complete your payment.", "Te redirigiremos al sitio de Webpay para que completes tu pago."
+"Shipping", "Envío"
+"Sorry, we can\'t reserve quote on Webpay Payment.", "Lo sentimos, no fue posible reservar el quote en el pago con Webpay."
+"It was unable to complete payment with Webpay!", "¡No fue posible completar el pago con Webpay!"
+"It was unable to complete payment with Mercado Pago!", "¡No fue posible completar el pago con Mercado Pago!"
+"Click on the button below to try the payment again:", "Haga clic en el botón de abajo para volver a intentar hacer el pago:"
+"Retry payment", "Reintentar pago"
+"Retry order", "Rehacer pedido"
+"Continue Shopping", "Seguir comprando"
 
 "==================== SDK V2 =====================","================================================"
 "Invalid card number", "Numero de tarjeta no válido"
