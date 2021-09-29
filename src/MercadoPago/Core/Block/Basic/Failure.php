@@ -2,8 +2,11 @@
 
 namespace MercadoPago\Core\Block\Basic;
 
+use Exception;
+use Magento\Checkout\Model\Session;
 use Magento\Framework\View\Element\Template;
-use MercadoPago\Core\Model\Api\Exception as MercadoPagoException;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Quote\Model\QuoteFactory;
 
 /**
  * Class Failure
@@ -12,28 +15,50 @@ use MercadoPago\Core\Model\Api\Exception as MercadoPagoException;
 class Failure extends Template
 {
     /**
-     * Failure construct
+     * @var Session
      */
-    protected function _construct()
+    protected $_checkoutSession;
+
+    /**
+     * @var QuoteFactory
+     */
+    protected $_quoteFactory;
+
+    /**
+     * Failure construct
+     *
+     * @param Context $context
+     * @param Session $checkoutSession
+     * @param QuoteFactory $quoteFactory
+     */
+    public function __construct(Context $context, Session $checkoutSession, QuoteFactory $quoteFactory)
     {
-        parent::_construct();
+        parent::__construct($context);
+        $this->_quoteFactory = $quoteFactory;
+        $this->_checkoutSession = $checkoutSession;
         $this->setTemplate('basic/failure.phtml');
     }
 
     /**
-     * @return string
+     * @throws Exception
      */
-    public function getErrorMessage()
-    {
-        return MercadoPagoException::GENERIC_API_EXCEPTION_MESSAGE;
+    public function persistCartSession() {
+        $order = $this->_checkoutSession->getLastRealOrder();
+        $quote = $this->_quoteFactory->create()->loadByIdWithoutStore($order->getQuoteId());
+
+        if ($quote->getId()) {
+            $quote->setIsActive(true)->setReservedOrderId(null)->save();
+            $this->_checkoutSession->replaceQuote($quote);
+        }
     }
 
     /**
-     * @return mixed
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return string
+     * @throws Exception
      */
-    public function getUrlHome()
+    public function getCheckoutUrl()
     {
-        return $this->_storeManager->getStore()->getBaseUrl();
+        $this->persistCartSession();
+        return $this->getUrl('checkout', ['_secure' => true]);
     }
 }

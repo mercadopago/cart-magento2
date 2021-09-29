@@ -50,7 +50,7 @@
         <field id="exp_time_pref" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>Expiration Time Preference</label>
             <config_path>payment/mercadopago_basic/exp_time_pref</config_path>
-            <comment>Time in days to expiration preference.</comment>
+            <comment>Time in hours to expiration preference.</comment>
         </field>
 
         <field id="gateway_mode" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">

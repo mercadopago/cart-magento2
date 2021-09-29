@@ -164,9 +164,10 @@ function validateAdditionalInputs() {
 
 function showErrors(error) {
   var form = this.getFormCustom();
+  var serializedError = error.cause || error;
 
-  for (var x = 0; x < error.cause.length; x++) {
-    var code = error.cause[x].code;
+  for (var x = 0; x < serializedError.length; x++) {
+    var code = serializedError[x].code;
     var span = undefined;
 
     span = form.querySelector('#mp-error-' + code);

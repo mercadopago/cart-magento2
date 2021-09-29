@@ -24,18 +24,27 @@ use MercadoPago\Core\Model\Core;
 
 class Payment extends TopicsAbstract
 {
-    const LOG_NAME    = 'notification_payment';
+    const LOG_NAME = 'notification_payment';
+
     const TYPES_TOPIC = [
         'payment',
         'merchant_order',
     ];
 
+    /**
+     * @var mpHelper
+     */
     protected $_mpHelper;
 
+    /**
+     * @var ScopeConfigInterface
+     */
     protected $_scopeConfig;
 
+    /**
+     * @var Core
+     */
     protected $_coreModel;
-
 
     /**
      * Payment constructor.
@@ -72,9 +81,7 @@ class Payment extends TopicsAbstract
         $this->_coreModel   = $coreModel;
 
         parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService);
-
     }//end __construct()
-
 
     /**
      * @param  $payment
@@ -98,12 +105,18 @@ class Payment extends TopicsAbstract
         $statusAlreadyUpdated = $this->checkStatusAlreadyUpdated($payment, $order);
         $newOrderStatus       = parent::getConfigStatus($payment, $order->canCreditmemo());
         $currentOrderStatus   = $order->getState();
-        $orderTotal           = Round::roundWithoutSiteId($order->getGrandTotal());
+        $orderTotal           = Round::roundWithSiteId($order->getGrandTotal(), $this->getSiteId());
+        $couponMP = $payment['coupon_amount'];
+        $paidTotal = $payment['transaction_details']['total_paid_amount'];
 
-        if ($orderTotal > $payment['transaction_details']['total_paid_amount']) {
+        if($couponMP > 0){
+            $paidTotal += $couponMP;
+        }
+
+        if ($orderTotal > $paidTotal) {
             $newOrderStatus = 'fraud';
             $message       .= __('<br/> Order total: %1', $order->getGrandTotal());
-            $message       .= __('<br/> Paid: %1', $payment['transaction_details']['total_paid_amount']);
+            $message       .= __('<br/> Paid: %1', $paidTotal);
         }
 
         if ($statusAlreadyUpdated) {
@@ -150,9 +163,7 @@ class Payment extends TopicsAbstract
                 'created_invoice'  => $responseInvoice,
             ],
         ];
-
     }//end updateStatusOrderByPayment()
-
 
     /**
      * @param  $paymentResponse
@@ -171,9 +182,7 @@ class Payment extends TopicsAbstract
         }
 
         return $orderUpdated;
-
     }//end checkStatusAlreadyUpdated()
-
 
     /**
      * @param $order
@@ -197,9 +206,7 @@ class Payment extends TopicsAbstract
                 $this->_orderCommentSender->send($order, $notify = '1', str_replace('<br/>', '', $message));
             }
         }
-
     }//end sendEmailCreateOrUpdate()
-
 
     /**
      * @param  $order
@@ -224,9 +231,7 @@ class Payment extends TopicsAbstract
         }
 
         return false;
-
     }//end createInvoice()
-
 
     /**
      * @param  $paymentResponse
@@ -251,12 +256,11 @@ class Payment extends TopicsAbstract
                 'issuer_id'         => $issuer_id,
                 'payment_method_id' => $payment_method_id,
             ];
-            $card        = RestClient::post('/v1/customers/'.$customer_id.'/cards', $request, null, ['Authorization: Bearer '.$accessToken]);
-            return $card;
+
+            return RestClient::post('/v1/customers/'.$customer_id.'/cards', $request, null, ['Authorization: Bearer '.$accessToken]);
         }
 
     }//end addCardInCustomer()
-
 
     /**
      * @param  $id
@@ -286,7 +290,6 @@ class Payment extends TopicsAbstract
         }
 
     }//end getPaymentData()
-
 
     /**
      * @param Order $order
@@ -320,8 +323,16 @@ class Payment extends TopicsAbstract
         $additionalInformation['status_detail'] = $payment['status_detail'];
 
         $order->getPayment()->setAdditionalInformation('paymentResponse', $additionalInformation);
-
     }//end updateAdditionalInformation()
 
-
+    /**
+     * @return false|string|string[]
+     */
+    protected function getSiteId()
+    {
+        return mb_strtoupper($this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        ));
+    }//end getSiteId()
 }//end class
