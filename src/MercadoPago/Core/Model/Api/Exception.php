@@ -8,8 +8,7 @@ namespace MercadoPago\Core\Model\Api;
  *
  * @package MercadoPago\Core\Model\Api\Exception
  */
-class Exception
-    extends \Magento\Framework\Exception\LocalizedException
+class Exception extends \Magento\Framework\Exception\LocalizedException
 {
 
     /**
@@ -38,8 +37,7 @@ class Exception
     public function __construct(
         \Magento\Framework\Phrase $phrase,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    )
-    {
+    ) {
         parent::__construct($phrase);
         $this->_scopeConfig = $scopeConfig;
     }

@@ -35,7 +35,7 @@ class RestClient
      * @return resource
      * @throws Exception
      */
-    private static function get_connect($uri, $method, $content_type, $extra_params = array())
+    private static function get_connect($uri, $method, $content_type, $extra_params = [])
     {
         if (!extension_loaded("curl")) {
             throw new \Exception("cURL extension not found. You need to enable cURL in your php.ini or another configuration you have.");
@@ -48,7 +48,7 @@ class RestClient
         curl_setopt($connect, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($connect, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 
-        $header_opt = array("Accept: application/json", "Content-Type: " . $content_type);
+        $header_opt = ["Accept: application/json", "Content-Type: " . $content_type];
 
         //set x_product_id
         if ($method == 'POST') {
@@ -115,14 +115,14 @@ class RestClient
         $api_result = curl_exec($connect);
         $api_http_code = curl_getinfo($connect, CURLINFO_HTTP_CODE);
 
-        if ($api_result === FALSE) {
+        if ($api_result === false) {
             throw new \Exception(curl_error($connect));
         }
 
-        $response = array(
+        $response = [
             "status" => $api_http_code,
             "response" => json_decode($api_result, true)
-        );
+        ];
 
         self::$check_loop = 0;
 
@@ -139,7 +139,7 @@ class RestClient
      * @return array
      * @throws Exception
      */
-    public static function get($uri, $content_type = "application/json", $extra_params = array())
+    public static function get($uri, $content_type = "application/json", $extra_params = [])
     {
         return self::exec("GET", $uri, null, $content_type, $extra_params);
     }
@@ -153,7 +153,7 @@ class RestClient
      * @return array
      * @throws Exception
      */
-    public static function post($uri, $data, $content_type = "application/json", $extra_params = array())
+    public static function post($uri, $data, $content_type = "application/json", $extra_params = [])
     {
         return self::exec("POST", $uri, $data, $content_type, $extra_params);
     }
@@ -167,7 +167,7 @@ class RestClient
      * @return array
      * @throws Exception
      */
-    public static function put($uri, $data, $content_type = "application/json", $extra_params = array())
+    public static function put($uri, $data, $content_type = "application/json", $extra_params = [])
     {
         return self::exec("PUT", $uri, $data, $content_type, $extra_params);
     }
@@ -180,7 +180,7 @@ class RestClient
      * @return array
      * @throws Exception
      */
-    public static function delete($uri, $content_type = "application/json", $extra_params = array())
+    public static function delete($uri, $content_type = "application/json", $extra_params = [])
     {
         return self::exec("DELETE", $uri, null, $content_type, $extra_params);
     }

@@ -72,7 +72,6 @@ class Payment extends TopicsAbstract
         $this->_coreModel   = $coreModel;
 
         parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService);
-
     }//end __construct()
 
 
@@ -150,7 +149,6 @@ class Payment extends TopicsAbstract
                 'created_invoice'  => $responseInvoice,
             ],
         ];
-
     }//end updateStatusOrderByPayment()
 
 
@@ -171,7 +169,6 @@ class Payment extends TopicsAbstract
         }
 
         return $orderUpdated;
-
     }//end checkStatusAlreadyUpdated()
 
 
@@ -197,7 +194,6 @@ class Payment extends TopicsAbstract
                 $this->_orderCommentSender->send($order, $notify = '1', str_replace('<br/>', '', $message));
             }
         }
-
     }//end sendEmailCreateOrUpdate()
 
 
@@ -224,7 +220,6 @@ class Payment extends TopicsAbstract
         }
 
         return false;
-
     }//end createInvoice()
 
 
@@ -254,7 +249,6 @@ class Payment extends TopicsAbstract
             $card        = RestClient::post('/v1/customers/'.$customer_id.'/cards', $request, null, ['Authorization: Bearer '.$accessToken]);
             return $card;
         }
-
     }//end addCardInCustomer()
 
 
@@ -263,7 +257,7 @@ class Payment extends TopicsAbstract
      * @param  null $type
      * @return array
      */
-    public function getPaymentData($id, $type=null)
+    public function getPaymentData($id, $type = null)
     {
         try {
             $response = $this->_coreModel->getPayment($id);
@@ -284,7 +278,6 @@ class Payment extends TopicsAbstract
         } catch (\Exception $e) {
             $this->_mpHelper->log(__('ERROR - Notifications Payment getPaymentData'), self::LOG_NAME, $e->getMessage());
         }
-
     }//end getPaymentData()
 
 
@@ -320,8 +313,5 @@ class Payment extends TopicsAbstract
         $additionalInformation['status_detail'] = $payment['status_detail'];
 
         $order->getPayment()->setAdditionalInformation('paymentResponse', $additionalInformation);
-
     }//end updateAdditionalInformation()
-
-
 }//end class

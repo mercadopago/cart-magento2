@@ -80,8 +80,7 @@ class OrderCancelPlugin
         }
 
         $paymentMethod = $this->order->getPayment()->getMethodInstance()->getCode();
-        if (
-            false === ($paymentMethod === 'mercadopago_custom'
+        if (false === ($paymentMethod === 'mercadopago_custom'
                 || $paymentMethod === 'mercadopago_customticket'
                 || $paymentMethod === 'mercadopago_custom_bank_transfer'
                 || $paymentMethod === 'mercadopago_basic'

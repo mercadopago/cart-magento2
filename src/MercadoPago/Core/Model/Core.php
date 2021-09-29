@@ -535,11 +535,11 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         $preference = [];
 
-        $notification_params = array(
-            '_query' => array(
+        $notification_params = [
+            '_query' => [
                 'source_news' => 'webhooks'
-            )
-        );
+            ]
+        ];
 
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom', $notification_params);
         if (isset($notification_url) && !strrpos($notification_url, 'localhost')) {
@@ -652,8 +652,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         //set default error
         $messageErrorToClient = $errors['NOT_IDENTIFIED'];
 
-        if (
-            isset($response['response']) &&
+        if (isset($response['response']) &&
             isset($response['response']['cause']) &&
             count($response['response']['cause']) > 0
         ) {

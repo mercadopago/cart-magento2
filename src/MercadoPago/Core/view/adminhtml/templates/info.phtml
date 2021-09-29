@@ -13,17 +13,17 @@ $paymentTitle = $block->getMethod()->getConfigData('title', $block->getInfo()->g
 ?>
 <?= $block->escapeHtml($paymentTitle) ?>
 
-<?php if ($specificInfo) : ?>
+<?php if ($specificInfo): ?>
     <table class="data-table admin__table-secondary">
-    <?php foreach ($specificInfo as $label => $value) : ?>
+    <?php foreach ($specificInfo as $label => $value): ?>
         <tr>
             <th><?= $block->escapeHtml(__($label)) ?>:</th>
             <td>
-                <?php if ($label === 'Link') : ?>
+                <?php if ($label === 'Link'): ?>
                     <a href="<?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray($value, true)))) ?>" target="_blank" >
                         <?= __('Generate Ticket') ?>
                     </a>
-                <?php else : ?>
+                <?php else: ?>
                     <?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray(__($value), true)))) ?>
                 <?php endif; ?>
             </td>

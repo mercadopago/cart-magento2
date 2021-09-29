@@ -66,8 +66,7 @@ class Info extends \Magento\Payment\Block\Info
             $data['Payment id (Mercado Pago)'] = $paymentResponse['id'];
         }
 
-        if (
-            isset($paymentResponse['point_of_interaction'])
+        if (isset($paymentResponse['point_of_interaction'])
             && isset($paymentResponse['point_of_interaction']['transaction_data'])
         ) {
             $transactionData = $paymentResponse['point_of_interaction']['transaction_data'];

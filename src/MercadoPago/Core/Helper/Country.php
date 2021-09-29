@@ -17,36 +17,36 @@ class Country
      */
     public static function getCountryToMp($country)
     {
-        $mpCountries = array(
-            'MLA' => array( // Argentinian.
+        $mpCountries = [
+            'MLA' => [ // Argentinian.
                 'sufix_url' => 'com.ar',
                 'translate' => 'es',
-            ),
-            'MLB' => array( // Brazil.
+            ],
+            'MLB' => [ // Brazil.
                 'sufix_url' => 'com.br',
                 'translate' => 'pt',
-            ),
-            'MLC' => array( // Chile.
+            ],
+            'MLC' => [ // Chile.
                 'sufix_url' => 'cl',
                 'translate' => 'es',
-            ),
-            'MCO' => array( // Colombia.
+            ],
+            'MCO' => [ // Colombia.
                 'sufix_url' => 'com.co',
                 'translate' => 'es',
-            ),
-            'MLM' => array( // Mexico.
+            ],
+            'MLM' => [ // Mexico.
                 'sufix_url' => 'com.mx',
                 'translate' => 'es',
-            ),
-            'MPE' => array( // Peru.
+            ],
+            'MPE' => [ // Peru.
                 'sufix_url' => 'com.pe',
                 'translate' => 'es',
-            ),
-            'MLU' => array( // Uruguay.
+            ],
+            'MLU' => [ // Uruguay.
                 'sufix_url' => 'com.uy',
                 'translate' => 'es',
-            ),
-        );
+            ],
+        ];
 
         return array_key_exists($country, $mpCountries) ? $mpCountries[$country] : $mpCountries['MLA'];
     }

@@ -219,6 +219,4 @@ class CustomPixMessageNotification implements MessageInterface
             $cacheFrontend->getBackend()->clean();
         }
     } //end cleanConfigCache()
-
-
 }//end class

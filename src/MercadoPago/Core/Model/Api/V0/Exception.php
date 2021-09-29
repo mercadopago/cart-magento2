@@ -16,7 +16,7 @@ class Exception extends \MercadoPago\Core\Model\Api\Exception
      * @var array
      */
     protected $messagesMap =
-        array(
+        [
             106 => 'Cannot operate between users from different countries.',
             109 => 'Payment method does not process installments.',
             129 => 'Cannot pay this amount with this paymentMethod.',
@@ -25,6 +25,5 @@ class Exception extends \MercadoPago\Core\Model\Api\Exception
             204 => 'Unavailable paymentmethod currently.',
             801 => 'Already posted the same request in the last minute.',
             'campaign_code_doesnt_match' => "Doesn't find a campaign with the given code."
-        );
-
+        ];
 }

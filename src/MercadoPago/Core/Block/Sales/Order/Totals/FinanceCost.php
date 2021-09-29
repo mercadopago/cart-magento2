@@ -32,8 +32,7 @@ class FinanceCost extends \Magento\Framework\View\Element\Template
      */
     public function initTotals()
     {
-        if (
-            (float)$this->getSource()->getFinanceCostAmount() == 0
+        if ((float)$this->getSource()->getFinanceCostAmount() == 0
             || !$this->_scopeConfig->isSetFlag('payment/mercadopago/financing_cost', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
         ) {
             return $this;
