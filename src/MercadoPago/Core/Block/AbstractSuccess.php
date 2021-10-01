@@ -193,11 +193,8 @@ class AbstractSuccess extends Template
     {
         $status         = $payment['status'] != '' ? $payment['status'] : '';
         $status_detail  = $payment['status_detail'] != '' ? $payment['status_detail'] : '';
-        $payment_method = $payment['payment_method_id'] != '' ? $payment['payment_method_id'] : '';
-        $amount         = $payment['transaction_amount'] != '' ? $payment['transaction_amount'] : '';
-        $installments   = $payment['installments'] != '' ? $payment['installments'] : '';
 
-        return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail, $payment_method, $installments, $amount);
+        return $this->_coreFactory->create()->getMessageByStatus($status, $status_detail);
     }//end getMessageByStatus()
 
     /**

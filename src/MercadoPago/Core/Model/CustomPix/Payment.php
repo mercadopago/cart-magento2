@@ -59,7 +59,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @param string $paymentAction
      * @param object $stateObject
      *
-     * @return boolean
+     * @return Payment
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @throws                                        LocalizedException
@@ -128,32 +128,9 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         } catch (Exception $e) {
             $this->_helperData->log('CustomPaymentPix::initialize - There was an error retrieving the information to create the payment, more details: '.$e->getMessage());
             throw new LocalizedException(__(Response::PAYMENT_CREATION_ERRORS['INTERNAL_ERROR_MODULE']));
-            return $this;
         }//end try
 
-        // POST /v1/payments
-        $response = $this->_coreModel->postPaymentV1($preference);
-        $this->_helperData->log('CustomPaymentPix::initialize - POST /v1/payments RESPONSE', self::LOG_NAME, $response);
-
-        if (isset($response['status']) && ((int) $response['status'] === 200 || (int) $response['status'] === 201)) {
-            $payment = $response['response'];
-
-            $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $payment);
-
-            return true;
-        } else {
-            $messageErrorToClient = $this->_coreModel->getMessageError($response);
-
-            $arrayLog = [
-                'response' => $response,
-                'message'  => $messageErrorToClient,
-            ];
-
-            $this->_helperData->log('CustomPaymentPix::initialize - The API returned an error while creating the payment, more details: '.json_encode($arrayLog));
-
-            throw new LocalizedException(__($messageErrorToClient));
-        }
-
+        return $this->createCustomPayment($preference, 'CustomPix', self::LOG_NAME);
     }//end initialize()
 
     /**

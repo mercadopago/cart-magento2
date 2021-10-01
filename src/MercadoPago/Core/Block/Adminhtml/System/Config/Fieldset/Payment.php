@@ -148,5 +148,4 @@ class Payment extends Fieldset
 
         return false;
     }
-
 }
