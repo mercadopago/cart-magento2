@@ -429,6 +429,12 @@ abstract class TopicsAbstract
         if ($order->getState() !== Order::STATE_COMPLETE) {
             $statusOrder = $this->getConfigStatus($payment, $order->canCreditmemo());
             $orderTotal  = Round::roundWithSiteId($order->getGrandTotal(), $this->getSiteId());
+            $couponMP = $payment['coupon_amount'];
+            $paidTotal = $payment['transaction_details']['total_paid_amount'];
+
+            if($couponMP > 0){
+                $paidTotal += $couponMP;
+            }
 
             if ($orderTotal > $paidTotal) {
                 $statusOrder = 'fraud';
