@@ -3,6 +3,9 @@
 namespace MercadoPago\Core\Model\Notifications\Topics;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DB\TransactionFactory;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\CreditmemoFactory;
 use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
@@ -10,31 +13,72 @@ use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\ResourceModel\Status\Collection as StatusFactory;
+use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Helper\Round;
-use Magento\Framework\DB\TransactionFactory;
-use Magento\Sales\Model\Service\InvoiceService;
-use mysql_xdevapi\Exception;
 
 abstract class TopicsAbstract
 {
     public $_statusUpdatedFlag;
+
+    /**
+     * @var ScopeConfigInterface
+     */
     protected $_scopeConfig;
+
+    /**
+     * @var Data
+     */
     protected $_dataHelper;
+
+    /**
+     * @var OrderFactory
+     */
     protected $_orderFactory;
+
+    /**
+     * @var CreditmemoFactory
+     */
     protected $_creditmemoFactory;
+
+    /**
+     * @var MessageInterface
+     */
     protected $_messageInterface;
+
+    /**
+     * @var StatusFactory
+     */
     protected $_statusFactory;
+
+    /**
+     * @var OrderSender
+     */
     protected $_orderSender;
+
+    /**
+     * @var OrderCommentSender
+     */
     protected $_orderCommentSender;
+
+    /**
+     * @var TransactionFactory
+     */
     protected $_transactionFactory;
+
+    /**
+     * @var InvoiceSender
+     */
     protected $_invoiceSender;
+
+    /**
+     * @var InvoiceService
+     */
     protected $_invoiceService;
-    protected $_transaction;
 
     /**
      * TopicsAbstract constructor.
@@ -87,7 +131,7 @@ abstract class TopicsAbstract
 
     /**
      * @param $paymentResponse
-     * @return \Magento\Framework\Phrase|string
+     * @return string
      */
     public function getMessage($paymentResponse)
     {
@@ -191,7 +235,7 @@ abstract class TopicsAbstract
      * @param $order
      * @param $data
      * @return bool
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws AlreadyExistsException
      */
     public function validateRefunded($order, $data)
     {
@@ -209,7 +253,7 @@ abstract class TopicsAbstract
      * @param $payment
      * @param $order
      * @return Order\Creditmemo|null
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws AlreadyExistsException
      */
     public function generateCreditMemo($payment, $order)
     {
@@ -225,12 +269,15 @@ abstract class TopicsAbstract
         $amount = $payment['amount_refunded'] - $previousRefund;
         if ($amount > 0) {
             $order->setExternalType('partial');
+
             $creditmemo = $this->_creditmemoFactory->createByOrder($order, [-1]);
+
             if (count($creditMemos) > 0) {
                 $creditmemo->setAdjustmentPositive($amount);
             } else {
                 $creditmemo->setAdjustmentNegative($amount);
             }
+
             $creditmemo->setGrandTotal($amount);
             $creditmemo->setBaseGrandTotal($amount);
             $creditmemo->setState(2);
@@ -315,10 +362,10 @@ abstract class TopicsAbstract
     }
 
     /**
+     * @param $paymentResponse
      * @param $order
-     * @param $data
+     * @return bool
      */
-
     public function checkStatusAlreadyUpdated($paymentResponse, $order)
     {
         $orderUpdated = false;
@@ -332,7 +379,6 @@ abstract class TopicsAbstract
 
         return $orderUpdated;
     }
-
 
     /**
      * @param $order
@@ -381,16 +427,25 @@ abstract class TopicsAbstract
     {
         if ($order->getState() !== Order::STATE_COMPLETE) {
             $statusOrder = $this->getConfigStatus($payment, $order->canCreditmemo());
-            $orderTotal  = Round::roundWithoutSiteId($order->getGrandTotal());
+            $orderTotal  = Round::roundWithSiteId($order->getGrandTotal(), $this->getSiteId());
+            $couponMP = $payment['coupon_amount'];
+            $paidTotal = $payment['transaction_details']['total_paid_amount'];
 
-            if ($orderTotal > $payment['transaction_details']['total_paid_amount']) {
+            if($couponMP > 0){
+                $paidTotal += $couponMP;
+            }
+
+            if ($orderTotal > $paidTotal) {
                 $statusOrder = 'fraud';
                 $message .= __('<br/> Order total: %1', $order->getGrandTotal());
-                $message .= __('<br/> Paid: %1', $payment['transaction_details']['total_paid_amount']);
+                $message .= __('<br/> Paid: %1', $paidTotal);
             }
 
             $emailAlreadySent = false;
-            $emailOrderCreate = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_CREATE, ScopeInterface::SCOPE_STORE);
+            $emailOrderCreate = $this->_scopeConfig->getValue(
+                ConfigData::PATH_ADVANCED_EMAIL_CREATE,
+                ScopeInterface::SCOPE_STORE
+            );
 
             if ($statusOrder == 'canceled') {
                 $order->cancel();
@@ -447,7 +502,8 @@ abstract class TopicsAbstract
 
     /**
      * @param $order
-     * @param $message
+     * @return bool
+     * @throws LocalizedException
      */
     public function _createInvoice($order)
     {
@@ -464,13 +520,20 @@ abstract class TopicsAbstract
 
             $this->_invoiceSender->send($invoice);
 
-//           $message = $this->getMessageInvoice($order, $invoice);
-//           $order->addStatusHistoryComment(__($message, $invoice->getId()))
-//             ->setIsCustomerNotified(true)
-//             ->save();
             return true;
         }
 
         return false;
     }
+
+    /**
+     * @return false|string|string[]
+     */
+    protected function getSiteId()
+    {
+        return mb_strtoupper($this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        ));
+    }//end getSiteId()
 }

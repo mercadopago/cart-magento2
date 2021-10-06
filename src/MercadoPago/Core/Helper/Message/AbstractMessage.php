@@ -19,17 +19,17 @@ abstract class AbstractMessage implements MessageInterface
     /**
      * Get message text from array based on key
      *
-     * @param      $key
-     *
+     * @param $key
      * @return string
      */
     public function getMessage($key)
     {
         $messageMap = $this->getMessageMap();
+
         if (isset($messageMap[$key])) {
             return $messageMap[$key];
         }
 
-        return '';
+        return 'Oops, there was an error processing the payment! Try again...';
     }
 }

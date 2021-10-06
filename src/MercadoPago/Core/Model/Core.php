@@ -362,12 +362,9 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @param $status
      * @param $status_detail
-     * @param $payment_method
-     * @param $installment
-     * @param $amount
      * @return array
      */
-    public function getMessageByStatus($status, $status_detail, $payment_method, $installment, $amount)
+    public function getMessageByStatus($status, $status_detail)
     {
         $status = $this->validStatusTwoPayments($status);
         $status_detail = $this->validStatusTwoPayments($status_detail);
@@ -381,13 +378,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         $message['title'] = __($rawMessage['title']);
 
         if ($status == 'rejected') {
-            if ($status_detail == 'cc_rejected_invalid_installments') {
-                $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail), strtoupper($payment_method), $installment);
-            } elseif ($status_detail == 'cc_rejected_call_for_authorize') {
-                $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail));
-            } else {
-                $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail), strtoupper($payment_method));
-            }
+            $message['message'] = __($this->_statusDetailMessage->getMessage($status_detail));
         } else {
             $message['message'] = __($rawMessage['message']);
         }

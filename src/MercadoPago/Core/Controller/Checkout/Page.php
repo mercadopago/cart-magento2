@@ -9,6 +9,7 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Registry;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
@@ -144,14 +145,12 @@ class Page extends Action
     }
 
     /**
-     * @return mixed
+     * @return Order
      */
     protected function _getOrder()
     {
         $orderIncrementId = $this->_checkoutSession->getLastRealOrderId();
-        $order = $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
-
-        return $order;
+        return $this->_orderFactory->create()->loadByIncrementId($orderIncrementId);
     }
 
     /**
@@ -163,11 +162,12 @@ class Page extends Action
     {
         $handle = '';
         $order = $this->_getOrder();
+
         if (!empty($order->getId())) {
             $handle = $order->getPayment()->getMethod();
         }
-        $handle .= '_success';
 
+        $handle .= '_success';
         return $handle;
     }
 
@@ -197,7 +197,7 @@ class Page extends Action
             'checkout_onepage_controller_success_action',
             [
                 'order_ids' => [$this->_getOrder()->getId()],
-                'order' => $this->_getOrder()
+                'order'     => $this->_getOrder()
             ]
         );
     }
