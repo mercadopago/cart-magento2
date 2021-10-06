@@ -1,4 +1,4 @@
-name: Module Tests
+name: Verify Standard and Test
 
 on: [pull_request]
 
