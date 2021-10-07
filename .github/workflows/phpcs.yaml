@@ -1,4 +1,4 @@
-name: Verify Standard and Test
+name: Verify Standard with PHPCS
 
 on: [pull_request]
 
@@ -64,6 +64,5 @@ jobs:
         id: unit-test
         run: magento2/vendor/phpunit/phpunit/phpunit --colors=always --whitelist magento2/app/code/MercadoPago/Core --coverage-clover clover.xml --coverage-text  magento2/app/code/MercadoPago/Test
 
-      - name: Repository Minimum Test Coverage
-        id: repository-coverage
-        run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
+      - name: Detect Coding Standard Violations
+        run: magento2/vendor/bin/phpcs -q --report=checkstyle --standard=Magento2 | cs2pr --graceful-warnings magento2/app/code/MercadoPago/
