@@ -1,9 +1,9 @@
-name: Verify Standard and Test
+name: Verify Test
 
 on: [pull_request]
 
 jobs:
-  validate-tests-and-standard:
+  validate-tests:
     runs-on: ubuntu-latest
 
     services:
