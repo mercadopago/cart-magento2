@@ -70,8 +70,7 @@ class CustomTicketConfigProvider implements ConfigProviderInterface
         \Magento\Framework\View\Asset\Repository $assetRepo,
         \MercadoPago\Core\Helper\Data $coreHelper,
         \Magento\Framework\App\ProductMetadataInterface $productMetadata
-    )
-    {
+    ) {
         $this->_request = $context->getRequest();
         $this->methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
         $this->_checkoutSession = $checkoutSession;

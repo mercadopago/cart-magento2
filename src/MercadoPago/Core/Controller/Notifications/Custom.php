@@ -9,12 +9,6 @@ use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Notifications;
 
-
-/**
- * Class Custom
- *
- * @package MercadoPago\Core\Controller\Notifications
- */
 class Custom extends NotificationBase
 {
     const LOG_NAME = 'custom_notification';
@@ -41,7 +35,7 @@ class Custom extends NotificationBase
         $this->coreModel      = $coreModel;
         $this->_notifications = $notifications;
         parent::__construct($context);
-    }//end __construct()
+    } //end __construct()
 
     /**
      * Controller Action
@@ -81,8 +75,8 @@ class Custom extends NotificationBase
 
             $message = 'Mercado Pago - There was a serious error processing the notification. Could not handle the error.';
             $this->setResponseHttp($statusResponse, $message, ['exception_error' => $e->getMessage()]);
-        }//end try
-    }//end execute()
+        } //end try
+    } //end execute()
 
     /**
      * @param $httpStatus
@@ -97,10 +91,10 @@ class Custom extends NotificationBase
             'data'    => $data,
         ];
 
-        $this->coreHelper->log('NotificationsCustom::setResponseHttp - Response: '.json_encode($response), self::LOG_NAME);
+        $this->coreHelper->log('NotificationsCustom::setResponseHttp - Response: ' . json_encode($response), self::LOG_NAME);
 
         $this->getResponse()->setHeader('Content-Type', 'application/json', $overwriteExisting = true);
         $this->getResponse()->setBody(json_encode($response));
         $this->getResponse()->setHttpResponseCode($httpStatus);
-    }//end setResponseHttp()
+    } //end setResponseHttp()
 }//end class

@@ -259,7 +259,6 @@ class Payment extends TopicsAbstract
 
             return RestClient::post('/v1/customers/'.$customer_id.'/cards', $request, null, ['Authorization: Bearer '.$accessToken]);
         }
-
     }//end addCardInCustomer()
 
     /**
@@ -267,7 +266,7 @@ class Payment extends TopicsAbstract
      * @param  null $type
      * @return array
      */
-    public function getPaymentData($id, $type=null)
+    public function getPaymentData($id, $type = null)
     {
         try {
             $response = $this->_coreModel->getPayment($id);
@@ -288,7 +287,6 @@ class Payment extends TopicsAbstract
         } catch (\Exception $e) {
             $this->_mpHelper->log(__('ERROR - Notifications Payment getPaymentData'), self::LOG_NAME, $e->getMessage());
         }
-
     }//end getPaymentData()
 
     /**

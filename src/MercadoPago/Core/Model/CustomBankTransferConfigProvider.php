@@ -82,8 +82,7 @@ class CustomBankTransferConfigProvider implements ConfigProviderInterface
         Repository $assetRepo,
         Data $coreHelper,
         ProductMetadataInterface $productMetadata
-    )
-    {
+    ) {
         $this->_request = $context->getRequest();
         $this->methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
         $this->_checkoutSession = $checkoutSession;

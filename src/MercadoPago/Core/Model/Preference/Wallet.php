@@ -445,7 +445,7 @@ class Wallet
      * @param  string $scopeType
      * @return mixed
      */
-    protected function getConfig($path, $scopeType=ScopeInterface::SCOPE_STORE)
+    protected function getConfig($path, $scopeType = ScopeInterface::SCOPE_STORE)
     {
         return $this->scopeConfig->getValue($path, $scopeType);
     }//end getConfig()
@@ -674,11 +674,11 @@ class Wallet
      */
     protected function getNotificationUrl()
     {
-        $params = array(
-            '_query' => array(
+        $params = [
+            '_query' => [
                 'source_news' => 'ipn'
-            )
-        );
+            ]
+        ];
 
         $notification_url = $this->urlBuilder->getUrl(self::NOTIFICATION_PATH, $params);
 

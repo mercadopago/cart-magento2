@@ -7,11 +7,6 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\OrderFactory;
 
-/**
- * Class Success
- *
- * @package MercadoPago\Core\Controller\CustomPix
- */
 class Success extends Action
 {
     /**

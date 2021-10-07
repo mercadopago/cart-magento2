@@ -572,7 +572,7 @@ class Payment extends Cc implements GatewayInterface
      * @return boolean
      * @throws LocalizedException
      */
-    public function isAvailable(CartInterface $quote=null)
+    public function isAvailable(CartInterface $quote = null)
     {
         $isActive = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_ACTIVE, ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {
@@ -605,7 +605,7 @@ class Payment extends Cc implements GatewayInterface
      * @return boolean
      * @throws LocalizedException
      */
-    public function isAvailableMethod(CartInterface $quote=null)
+    public function isAvailableMethod(CartInterface $quote = null)
     {
         return $this->available($quote);
     }//end isAvailableMethod()
@@ -614,7 +614,7 @@ class Payment extends Cc implements GatewayInterface
      * @return boolean
      * @throws LocalizedException
      */
-    public function available(CartInterface $quote=null)
+    public function available(CartInterface $quote = null)
     {
         $parent = parent::isAvailable($quote);
         $status = true;

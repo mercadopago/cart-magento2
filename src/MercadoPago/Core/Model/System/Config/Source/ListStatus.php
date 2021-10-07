@@ -7,8 +7,7 @@ namespace MercadoPago\Core\Model\System\Config\Source;
  *
  * @package MercadoPago\Core\Model\System\Config\Source
  */
-class ListStatus
-    implements \Magento\Framework\Option\ArrayInterface
+class ListStatus implements \Magento\Framework\Option\ArrayInterface
 {
 
     /**
@@ -34,5 +33,4 @@ class ListStatus
 
         return $status;
     }
-
 }

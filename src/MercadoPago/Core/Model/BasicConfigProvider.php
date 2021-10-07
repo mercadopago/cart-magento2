@@ -49,8 +49,7 @@ class BasicConfigProvider implements ConfigProviderInterface
         PaymentHelper $paymentHelper,
         ScopeConfigInterface $scopeConfig,
         ProductMetadataInterface $productMetadata
-    )
-    {
+    ) {
         $this->_context = $context;
         $this->_assetRepo = $assetRepo;
         $this->_coreHelper = $coreHelper;
@@ -127,18 +126,18 @@ class BasicConfigProvider implements ConfigProviderInterface
     {
         $accessToken = $this->_scopeConfig->getValue(
             ConfigData::PATH_ACCESS_TOKEN,
-            ScopeInterface::SCOPE_WEBSITE)
-        ;
+            ScopeInterface::SCOPE_WEBSITE
+        );
 
         $maxInstallments = $this->_scopeConfig->getValue(
             ConfigData::PATH_BASIC_MAX_INSTALLMENTS,
-            ScopeInterface::SCOPE_STORE)
-        ;
+            ScopeInterface::SCOPE_STORE
+        );
 
         $excludePaymentMethods = $this->_scopeConfig->getValue(
             ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS,
-            ScopeInterface::SCOPE_STORE)
-        ;
+            ScopeInterface::SCOPE_STORE
+        );
 
         $excludePaymentMethods = explode(",", $excludePaymentMethods);
 
@@ -146,7 +145,7 @@ class BasicConfigProvider implements ConfigProviderInterface
             $debit = 0;
             $credit = 0;
             $ticket = 0;
-            $choMethods = array();
+            $choMethods = [];
 
             $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
 
@@ -163,13 +162,13 @@ class BasicConfigProvider implements ConfigProviderInterface
                 }
             }
 
-            $parameters = array(
+            $parameters = [
                 "debit" => $debit,
                 "credit" => $credit,
                 "ticket" => $ticket,
                 "installments" => $maxInstallments,
                 "checkout_methods" => $choMethods,
-            );
+            ];
 
             return $parameters;
         } catch (\Exception $e) {

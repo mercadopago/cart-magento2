@@ -97,8 +97,7 @@ class ConfigObserver implements ObserverInterface
         \Magento\Backend\Block\Store\Switcher $switcher,
         \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
-    )
-    {
+    ) {
         $this->_scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
         $this->coreHelper = $coreHelper;

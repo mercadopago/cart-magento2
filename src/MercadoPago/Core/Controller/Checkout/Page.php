@@ -19,10 +19,6 @@ use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Model\Notifications\Topics\Payment;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class Page
- * @package MercadoPago\Core\Controller\Checkout
- */
 class Page extends Action
 {
     /**

@@ -1,9 +1,9 @@
-name: Verify Test
+name: Verify Standard with PHPCS
 
 on: [pull_request]
 
 jobs:
-  validate-tests:
+  validate-standard:
     runs-on: ubuntu-latest
 
     services:
@@ -60,10 +60,8 @@ jobs:
         id: install-plugin
         run: mv src/* magento2/app/code
 
-      - name: Run Unit Test
-        id: unit-test
-        run: magento2/vendor/phpunit/phpunit/phpunit --colors=always --whitelist magento2/app/code/MercadoPago/Core --coverage-clover clover.xml --coverage-text  magento2/app/code/MercadoPago/Test
+      - name: Config Warnings Exit
+        run: magento2/vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
 
-      - name: Repository Minimum Test Coverage
-        id: repository-coverage
-        run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
+      - name: Detect Coding Standard Violations
+        run: magento2/vendor/bin/phpcs -q --report=full --standard=Magento2 magento2/app/code/MercadoPago/

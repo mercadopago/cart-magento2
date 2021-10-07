@@ -19,5 +19,4 @@ class Success extends AbstractSuccess
         parent::_construct();
         $this->setTemplate('custom/success.phtml');
     }
-
 }

@@ -273,7 +273,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @return boolean
      * @throws LocalizedException
      */
-    public function isAvailable(CartInterface $quote=null)
+    public function isAvailable(CartInterface $quote = null)
     {
         $isActive = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 

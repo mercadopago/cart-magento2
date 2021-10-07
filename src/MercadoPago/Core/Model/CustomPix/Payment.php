@@ -145,7 +145,6 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
         $order->setBaseGrandTotal($total);
 
         $this->getInfoInstance()->setOrder($order);
-
     }//end setOrderSubtotals()
 
     /**
@@ -156,7 +155,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
      * @return boolean
      * @throws LocalizedException
      */
-    public function isAvailable(CartInterface $quote=null)
+    public function isAvailable(CartInterface $quote = null)
     {
         $isActive = $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_ACTIVE, ScopeInterface::SCOPE_STORE);
         if (empty($isActive)) {

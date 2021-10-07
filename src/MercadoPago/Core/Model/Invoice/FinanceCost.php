@@ -7,8 +7,7 @@ namespace MercadoPago\Core\Model\Invoice;
  *
  * @package MercadoPago\Core\Model\Invoice
  */
-class FinanceCost
-    extends \Magento\Sales\Model\Order\Total\AbstractTotal
+class FinanceCost extends \Magento\Sales\Model\Order\Total\AbstractTotal
 {
     /**
      * @param \Magento\Sales\Model\Order\Invoice $invoice

@@ -1,6 +1,7 @@
 <?php
 
 namespace MercadoPago\Core\Plugin;
+
 /**
  * Class MinificationIsExcludedPlugin
  *

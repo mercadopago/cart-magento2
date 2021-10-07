@@ -52,7 +52,7 @@ class OrderCancelPlugin
         $this->messageManager = $context->getMessageManager();
         $this->dataHelper     = $dataHelper;
         $this->scopeConfig    = $scopeConfig;
-    }//end __construct()
+    } //end __construct()
 
     /**
      * @param Order $order
@@ -67,7 +67,7 @@ class OrderCancelPlugin
         $result = $proceed();
 
         return $result;
-    }//end aroundCancel()
+    } //end aroundCancel()
 
     /**
      * @throws LocalizedException
@@ -81,10 +81,10 @@ class OrderCancelPlugin
 
         $paymentMethod = $this->order->getPayment()->getMethodInstance()->getCode();
         if (false === ($paymentMethod === 'mercadopago_custom'
-            || $paymentMethod === 'mercadopago_customticket'
-            || $paymentMethod === 'mercadopago_custom_bank_transfer'
-            || $paymentMethod === 'mercadopago_basic'
-            || $paymentMethod === 'mercadopago_custom_pix')
+                || $paymentMethod === 'mercadopago_customticket'
+                || $paymentMethod === 'mercadopago_custom_bank_transfer'
+                || $paymentMethod === 'mercadopago_basic'
+                || $paymentMethod === 'mercadopago_custom_pix')
         ) {
             return;
         }
@@ -143,18 +143,18 @@ class OrderCancelPlugin
                 } else {
                     $this->throwCancelationException(__('The payment has not been canceled, you can only cancel payments with status pending or in_process. The payment status is ') . $response['response']['status'] . '.');
                 }
-            }//end if
+            } //end if
         } else {
             $this->throwCancelationException(__('An error occurred while getting the status of the payment in the API Mercado Pago.'), $response);
-        }//end if
+        } //end if
 
         return;
-    }//end salesOrderBeforeCancel()
+    } //end salesOrderBeforeCancel()
 
     /**
      * @throws LocalizedException
      */
-    protected function throwCancelationException($message, $data=[])
+    protected function throwCancelationException($message, $data = [])
     {
         $this->dataHelper->log('OrderCancelPlugin::salesOrderBeforeCancel - ' . $message, 'mercadopago-custom.log', $data);
         throw new LocalizedException(new Phrase('Mercado Pago - ' . $message));

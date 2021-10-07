@@ -7,8 +7,7 @@ namespace MercadoPago\Core\Model\Quote;
  *
  * @package MercadoPago\Core\Model\Quote
  */
-class FinanceCost
-    extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
+class FinanceCost extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 {
 
     /**
@@ -37,8 +36,7 @@ class FinanceCost
         \Magento\Framework\Registry $registry,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\App\RequestInterface $request
-    )
-    {
+    ) {
         $this->setCode('finance_cost');
         $this->_registry = $registry;
         $this->_checkoutSession = $checkoutSession;
@@ -143,8 +141,7 @@ class FinanceCost
         \Magento\Quote\Model\Quote $quote,
         \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment,
         \Magento\Quote\Model\Quote\Address\Total $total
-    )
-    {
+    ) {
         $address = $shippingAssignment->getShipping()->getAddress();
 
         if ($this->_getFinancingCondition($address, $shippingAssignment)) {
