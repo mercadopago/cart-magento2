@@ -29,6 +29,7 @@ jobs:
           php-version: "7.3"
           extensions: curl, dom, intl, json, openssl
           coverage: xdebug
+          tools: phpmd
 
       - name: Verify PHP Installation
         run: php -v
@@ -59,6 +60,9 @@ jobs:
       - name: Install MP Plugin
         id: install-plugin
         run: mv src/* magento2/app/code
+
+      - name: Run PHPMD
+        run: phpmd magento2/app/code/MercadoPago/ --ignore-violations-on-exit ansi codesize,unusedcode,naming,cleancode
 
       - name: Config Warnings Exit
         run: magento2/vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
