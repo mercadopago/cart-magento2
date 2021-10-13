@@ -11,4 +11,4 @@ echo "Installing..."
 composer install
 composer update
 
-cat magento2/vendor/php-code-coverage-verifier-master/composer.json
+ls -la magento2/vendor/php-code-coverage-verifier-master
