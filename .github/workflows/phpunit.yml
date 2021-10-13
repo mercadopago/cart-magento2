@@ -58,13 +58,13 @@ jobs:
         id: install-plugin
         run: mv src/* magento2/app/code
 
-      - name: Git Diff
-        id: git-diff
-        run: git diff --color > pr-coverage.patch
+      - name: Install php-code-coverage-verifier
+        id: install-php-code-coverage-verifier
+        run: bash bin/install-pr-coverage.sh
 
-      - name: CAT Git Diff
-        id: cat-git-diff
-        run: cat pr-coverage.patch
+      - name: Generate git diff
+        id: git-diff
+        run: git diff --color --no-prefix > pr-coverage.patch
 
       - name: Run Unit Test
         id: unit-test
