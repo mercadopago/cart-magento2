@@ -62,6 +62,10 @@ jobs:
         id: git-diff
         run: git diff --color > pr-coverage.patch
 
+      - name: CAT Git Diff
+        id: cat-git-diff
+        run: cat pr-coverage.patch
+
       - name: Run Unit Test
         id: unit-test
         run: magento2/vendor/phpunit/phpunit/phpunit --colors=always --whitelist magento2/app/code/MercadoPago/Core --coverage-clover clover.xml --coverage-text  magento2/app/code/MercadoPago/Test
