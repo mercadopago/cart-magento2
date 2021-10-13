@@ -27,10 +27,11 @@ class Success extends Action
      * @param OrderFactory $orderFactory
      */
     public function __construct(
-        Context $context,
-        Session $checkoutSession,
+        Context      $context,
+        Session      $checkoutSession,
         OrderFactory $orderFactory
-    ) {
+    )
+    {
         $this->_checkoutSession = $checkoutSession;
         $this->_orderFactory = $orderFactory;
 
@@ -40,12 +41,11 @@ class Success extends Action
     }
 
     /**
-     * Controller action
+     * @return void
      */
     public function execute()
     {
         $this->_view->loadLayout(['default', 'mercadopago_custom_pix_success']);
-
         $this->_view->renderLayout();
     }
 }

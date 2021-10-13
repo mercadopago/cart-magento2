@@ -9,6 +9,8 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Asset\Repository;
 use Magento\Payment\Helper\Data as PaymentHelper;
@@ -80,6 +82,7 @@ class CustomConfigProvider implements ConfigProviderInterface
 
     /**
      * CustomConfigProvider constructor.
+     *
      * @param PaymentHelper $paymentHelper
      * @param Data $coreHelper
      * @param Context $context
@@ -88,18 +91,19 @@ class CustomConfigProvider implements ConfigProviderInterface
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param ProductMetadataInterface $productMetadata
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function __construct(
-        PaymentHelper $paymentHelper,
-        Data $coreHelper,
-        Context $context,
-        Session $checkoutSession,
-        Repository $assetRepo,
-        StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig,
+        PaymentHelper            $paymentHelper,
+        Data                     $coreHelper,
+        Context                  $context,
+        Session                  $checkoutSession,
+        Repository               $assetRepo,
+        StoreManagerInterface    $storeManager,
+        ScopeConfigInterface     $scopeConfig,
         ProductMetadataInterface $productMetadata
-    ) {
+    )
+    {
         $this->_context = $context;
         $this->_request = $context->getRequest();
         $this->_assetRepo = $assetRepo;
@@ -112,9 +116,9 @@ class CustomConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * Gather information to be sent to javascript method renderer
-     *
-     * @return array
+     * @return array|\array[][]
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getConfig()
     {
@@ -129,7 +133,7 @@ class CustomConfigProvider implements ConfigProviderInterface
 
         $walletButtonLink = $this->_coreHelper->getWalletButtonLink($country);
 
-        $data = [
+        return [
             'payment' => [
                 $this->methodCode => [
                     'bannerUrl' => $this->_scopeConfig->getValue(
@@ -174,14 +178,12 @@ class CustomConfigProvider implements ConfigProviderInterface
                 ],
             ],
         ];
-
-        return $data;
     }
 
     /**
      * Get payment methods to show on checkout
      *
-     * @return array
+     * @return array|void
      */
     public function getPaymentMethods()
     {

@@ -2,38 +2,46 @@
 
 namespace MercadoPago\Core\Controller\Api;
 
-class Subtotals extends \Magento\Framework\App\Action\Action
+use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Registry;
+use Magento\Quote\Api\CartRepositoryInterface;
+
+class Subtotals extends Action
 {
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $_checkoutSession;
 
     /**
      * Quote repository.
      *
-     * @var \Magento\Quote\Api\CartRepositoryInterface
+     * @var CartRepositoryInterface
      */
     protected $quoteRepository;
 
     /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     protected $_registry;
 
     /**
      * Coupon constructor.
      *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
-     * @param \Magento\Framework\Registry $registry
+     * @param Context $context
+     * @param Session $checkoutSession
+     * @param CartRepositoryInterface $quoteRepository
+     * @param Registry $registry
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
-        \Magento\Framework\Registry $registry
+        Context $context,
+        Session $checkoutSession,
+        CartRepositoryInterface $quoteRepository,
+        Registry $registry
     ) {
         parent::__construct($context);
         $this->_checkoutSession = $checkoutSession;
@@ -42,16 +50,16 @@ class Subtotals extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Fetch coupon info
+     * * Fetch coupon info
      *
-     * Controller Action
+     * @return void
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function execute()
     {
         $total = $this->getRequest()->getParam('cost');
         $quote = $this->_checkoutSession->getQuote();
-
-        //save value to DiscountCoupon collect
         $this->_registry->register('mercadopago_total_amount', $total);
         $this->quoteRepository->save($quote->collectTotals());
     }

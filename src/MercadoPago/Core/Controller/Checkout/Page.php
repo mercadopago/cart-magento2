@@ -8,8 +8,8 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Registry;
-use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\ScopeInterface;
@@ -86,17 +86,18 @@ class Page extends Action
      */
 
     public function __construct(
-        Context $context,
-        Session $checkoutSession,
-        OrderFactory $orderFactory,
-        OrderSender $orderSender,
-        LoggerInterface $logger,
-        Data $helperData,
+        Context              $context,
+        Session              $checkoutSession,
+        OrderFactory         $orderFactory,
+        OrderSender          $orderSender,
+        LoggerInterface      $logger,
+        Data                 $helperData,
         ScopeConfigInterface $scopeConfig,
-        Core $core,
-        CatalogSession $catalogSession,
-        Payment $paymentNotification
-    ) {
+        Core                 $core,
+        CatalogSession       $catalogSession,
+        Payment              $paymentNotification
+    )
+    {
         $this->_checkoutSession = $checkoutSession;
         $this->_orderFactory = $orderFactory;
         $this->_orderSender = $orderSender;
@@ -111,7 +112,7 @@ class Page extends Action
     }
 
     /**
-     * Controller action
+     * @return void
      */
     public function execute()
     {
@@ -122,11 +123,10 @@ class Page extends Action
                 $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
                 $status = null;
 
-                //checkout Custom Credit Card
                 if (isset($paymentResponse['status'])) {
                     $status = $paymentResponse['status'];
                 }
-                //checkout redirect
+
                 if ($status == 'approved' || $status == 'pending') {
                     $this->approvedValidation($paymentResponse);
                     $this->_redirect('checkout/onepage/success');
@@ -145,7 +145,7 @@ class Page extends Action
     }
 
     /**
-     * @return Order
+     * @return mixed
      */
     protected function _getOrder()
     {
@@ -168,22 +168,25 @@ class Page extends Action
         }
 
         $handle .= '_success';
+
         return $handle;
     }
 
     /**
      * @param $payment
-     * @throws Exception
+     * @throws LocalizedException
      */
     public function approvedValidation($payment)
     {
         if ($payment['status'] == 'approved') {
             if ($this->_scopeConfig->isSetFlag(ConfigData::PATH_CUSTOM_BINARY_MODE, ScopeInterface::SCOPE_STORE)) {
                 $paymentResponse = $this->_core->getPaymentV1($payment['id']);
+
                 if ($paymentResponse['status'] == 200) {
                     $this->_paymentNotification->updateStatusOrderByPayment($paymentResponse['response']);
                 }
             }
+
             $this->dispatchSuccessActionObserver();
         }
     }
@@ -197,7 +200,7 @@ class Page extends Action
             'checkout_onepage_controller_success_action',
             [
                 'order_ids' => [$this->_getOrder()->getId()],
-                'order'     => $this->_getOrder()
+                'order' => $this->_getOrder()
             ]
         );
     }

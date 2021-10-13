@@ -5,7 +5,6 @@ namespace MercadoPago\Core\Model\Notifications\Topics;
 use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DB\TransactionFactory;
-use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\CreditmemoFactory;
 use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
@@ -49,42 +48,43 @@ class Payment extends TopicsAbstract
     /**
      * Payment constructor.
      *
-     * @param mpHelper             $mpHelper
+     * @param mpHelper $mpHelper
      * @param ScopeConfigInterface $scopeConfig
-     * @param Core                 $coreModel
-     * @param OrderFactory         $orderFactory
-     * @param CreditmemoFactory    $creditmemoFactory
-     * @param MessageInterface     $messageInterface
-     * @param StatusFactory        $statusFactory
-     * @param OrderSender          $orderSender
-     * @param OrderCommentSender   $orderCommentSender
-     * @param TransactionFactory   $transactionFactory
-     * @param InvoiceSender        $invoiceSender
-     * @param InvoiceService       $invoiceService
+     * @param Core $coreModel
+     * @param OrderFactory $orderFactory
+     * @param CreditmemoFactory $creditmemoFactory
+     * @param MessageInterface $messageInterface
+     * @param StatusFactory $statusFactory
+     * @param OrderSender $orderSender
+     * @param OrderCommentSender $orderCommentSender
+     * @param TransactionFactory $transactionFactory
+     * @param InvoiceSender $invoiceSender
+     * @param InvoiceService $invoiceService
      */
     public function __construct(
-        mpHelper $mpHelper,
+        mpHelper             $mpHelper,
         ScopeConfigInterface $scopeConfig,
-        Core $coreModel,
-        OrderFactory $orderFactory,
-        CreditmemoFactory $creditmemoFactory,
-        MessageInterface $messageInterface,
-        StatusFactory $statusFactory,
-        OrderSender $orderSender,
-        OrderCommentSender $orderCommentSender,
-        TransactionFactory $transactionFactory,
-        InvoiceSender $invoiceSender,
-        InvoiceService $invoiceService
-    ) {
-        $this->_mpHelper    = $mpHelper;
+        Core                 $coreModel,
+        OrderFactory         $orderFactory,
+        CreditmemoFactory    $creditmemoFactory,
+        MessageInterface     $messageInterface,
+        StatusFactory        $statusFactory,
+        OrderSender          $orderSender,
+        OrderCommentSender   $orderCommentSender,
+        TransactionFactory   $transactionFactory,
+        InvoiceSender        $invoiceSender,
+        InvoiceService       $invoiceService
+    )
+    {
+        $this->_mpHelper = $mpHelper;
         $this->_scopeConfig = $scopeConfig;
-        $this->_coreModel   = $coreModel;
+        $this->_coreModel = $coreModel;
 
         parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService);
-    }//end __construct()
+    } //end __construct()
 
     /**
-     * @param  $payment
+     * @param $payment
      * @return array
      * @throws Exception
      */
@@ -96,27 +96,27 @@ class Payment extends TopicsAbstract
             $message = 'Mercado Pago - The order was not found in Magento. You will not be able to follow the process without this information.';
             return [
                 'httpStatus' => Response::HTTP_NOT_FOUND,
-                'message'    => $message,
-                'data'       => $payment['external_reference'],
+                'message' => $message,
+                'data' => $payment['external_reference'],
             ];
         }
 
-        $message              = parent::getMessage($payment);
+        $message = parent::getMessage($payment);
         $statusAlreadyUpdated = $this->checkStatusAlreadyUpdated($payment, $order);
-        $newOrderStatus       = parent::getConfigStatus($payment, $order->canCreditmemo());
-        $currentOrderStatus   = $order->getState();
-        $orderTotal           = Round::roundWithSiteId($order->getGrandTotal(), $this->getSiteId());
+        $newOrderStatus = parent::getConfigStatus($payment, $order->canCreditmemo());
+        $currentOrderStatus = $order->getState();
+        $orderTotal = Round::roundWithSiteId($order->getGrandTotal(), $this->getSiteId());
         $couponMP = $payment['coupon_amount'];
         $paidTotal = $payment['transaction_details']['total_paid_amount'];
 
-        if($couponMP > 0){
+        if ($couponMP > 0) {
             $paidTotal += $couponMP;
         }
 
         if ($orderTotal > $paidTotal) {
             $newOrderStatus = 'fraud';
-            $message       .= __('<br/> Order total: %1', $order->getGrandTotal());
-            $message       .= __('<br/> Paid: %1', $paidTotal);
+            $message .= __('<br/> Order total: %1', $order->getGrandTotal());
+            $message .= __('<br/> Paid: %1', $paidTotal);
         }
 
         if ($statusAlreadyUpdated) {
@@ -127,12 +127,12 @@ class Payment extends TopicsAbstract
             $messageHttp = 'Mercado Pago - Status has already been updated.';
             return [
                 'httpStatus' => Response::HTTP_OK,
-                'message'    => $messageHttp,
-                'data'       => [
-                    'message'              => $message,
-                    'order_id'             => $order->getIncrementId(),
+                'message' => $messageHttp,
+                'data' => [
+                    'message' => $message,
+                    'order_id' => $order->getIncrementId(),
                     'current_order_status' => $currentOrderStatus,
-                    'new_order_status'     => $newOrderStatus,
+                    'new_order_status' => $newOrderStatus,
                 ],
             ];
         }
@@ -154,25 +154,25 @@ class Payment extends TopicsAbstract
         $messageHttp = 'Mercado Pago - Status successfully updated.';
         return [
             'httpStatus' => Response::HTTP_OK,
-            'message'    => $messageHttp,
-            'data'       => [
-                'message'          => $message,
-                'order_id'         => $order->getIncrementId(),
+            'message' => $messageHttp,
+            'data' => [
+                'message' => $message,
+                'order_id' => $order->getIncrementId(),
                 'new_order_status' => $newOrderStatus,
                 'old_order_status' => $currentOrderStatus,
-                'created_invoice'  => $responseInvoice,
+                'created_invoice' => $responseInvoice,
             ],
         ];
-    }//end updateStatusOrderByPayment()
+    } //end updateStatusOrderByPayment()
 
     /**
-     * @param  $paymentResponse
-     * @param  $order
-     * @return boolean
+     * @param $paymentResponse
+     * @param $order
+     * @return bool
      */
     public function checkStatusAlreadyUpdated($paymentResponse, $order)
     {
-        $orderUpdated   = false;
+        $orderUpdated = false;
         $statusToUpdate = parent::getConfigStatus($paymentResponse, false);
         $commentsObject = $order->getStatusHistoryCollection(true);
         foreach ($commentsObject as $commentObj) {
@@ -182,7 +182,7 @@ class Payment extends TopicsAbstract
         }
 
         return $orderUpdated;
-    }//end checkStatusAlreadyUpdated()
+    } //end checkStatusAlreadyUpdated()
 
     /**
      * @param $order
@@ -192,6 +192,7 @@ class Payment extends TopicsAbstract
     {
         $emailOrderCreate = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_CREATE, ScopeInterface::SCOPE_STORE);
         $emailAlreadySent = false;
+
         if ($emailOrderCreate) {
             if (!$order->getEmailSent()) {
                 $this->_orderSender->send($order, true);
@@ -200,18 +201,18 @@ class Payment extends TopicsAbstract
         }
 
         if ($emailAlreadySent === false) {
-            $statusEmail     = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_UPDATE, ScopeInterface::SCOPE_STORE);
+            $statusEmail = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_UPDATE, ScopeInterface::SCOPE_STORE);
             $statusEmailList = explode(',', $statusEmail);
             if (in_array($order->getStatus(), $statusEmailList)) {
                 $this->_orderCommentSender->send($order, $notify = '1', str_replace('<br/>', '', $message));
             }
         }
-    }//end sendEmailCreateOrUpdate()
+    } //end sendEmailCreateOrUpdate()
 
     /**
-     * @param  $order
-     * @param  $message
-     * @return boolean
+     * @param $order
+     * @param $message
+     * @return bool
      * @throws Exception
      */
     public function createInvoice($order, $message)
@@ -231,11 +232,11 @@ class Payment extends TopicsAbstract
         }
 
         return false;
-    }//end createInvoice()
+    } //end createInvoice()
 
     /**
-     * @param  $paymentResponse
-     * @return array
+     * @param $paymentResponse
+     * @return array|void
      */
     public function addCardInCustomer($paymentResponse)
     {
@@ -245,26 +246,26 @@ class Payment extends TopicsAbstract
             && isset($paymentResponse['payment_method_id'])
             && isset($paymentResponse['issuer_id'])
         ) {
-            $customer_id       = $paymentResponse['metadata']['customer_id'];
-            $token             = $paymentResponse['metadata']['token'];
+            $customer_id = $paymentResponse['metadata']['customer_id'];
+            $token = $paymentResponse['metadata']['token'];
             $payment_method_id = $paymentResponse['payment_method_id'];
-            $issuer_id         = (int) $paymentResponse['issuer_id'];
+            $issuer_id = (int)$paymentResponse['issuer_id'];
 
             $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
-            $request     = [
-                'token'             => $token,
-                'issuer_id'         => $issuer_id,
+            $request = [
+                'token' => $token,
+                'issuer_id' => $issuer_id,
                 'payment_method_id' => $payment_method_id,
             ];
 
-            return RestClient::post('/v1/customers/'.$customer_id.'/cards', $request, null, ['Authorization: Bearer '.$accessToken]);
+            return RestClient::post('/v1/customers/' . $customer_id . '/cards', $request, null, ['Authorization: Bearer ' . $accessToken]);
         }
-    }//end addCardInCustomer()
+    } //end addCardInCustomer()
 
     /**
-     * @param  $id
-     * @param  null $type
-     * @return array
+     * @param $id
+     * @param null $type
+     * @return array|void
      */
     public function getPaymentData($id, $type = null)
     {
@@ -276,26 +277,26 @@ class Payment extends TopicsAbstract
                 throw new Exception(__('MP API Invalid Response'), 400);
             }
 
-            $payments   = [];
+            $payments = [];
             $payments[] = $response['response'];
 
             return [
                 'merchantOrder' => null,
-                'payments'      => $payments,
-                'shipmentData'  => null,
+                'payments' => $payments,
+                'shipmentData' => null,
             ];
         } catch (\Exception $e) {
             $this->_mpHelper->log(__('ERROR - Notifications Payment getPaymentData'), self::LOG_NAME, $e->getMessage());
         }
-    }//end getPaymentData()
+    } //end getPaymentData()
 
     /**
-     * @param Order $order
-     * @param array $payment
+     * @param $order
+     * @param $payment
      */
     protected function updateAdditionalInformation($order, $payment)
     {
-        $orderPayment          = $order->getPayment();
+        $orderPayment = $order->getPayment();
         $additionalInformation = $orderPayment->getAdditionalInformation('paymentResponse');
 
         if (!empty($payment['card'])) {
@@ -317,20 +318,20 @@ class Payment extends TopicsAbstract
             $orderPayment->setCcTransId($payment['id']);
         }
 
-        $additionalInformation['status']        = $payment['status'];
+        $additionalInformation['status'] = $payment['status'];
         $additionalInformation['status_detail'] = $payment['status_detail'];
 
         $order->getPayment()->setAdditionalInformation('paymentResponse', $additionalInformation);
-    }//end updateAdditionalInformation()
+    } //end updateAdditionalInformation()
 
     /**
-     * @return false|string|string[]
+     * @return string
      */
     protected function getSiteId()
     {
         return mb_strtoupper($this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            ConfigData::PATH_SITE_ID,
+            ScopeInterface::SCOPE_STORE
         ));
-    }//end getSiteId()
-}//end class
+    } //end getSiteId()
+} //end class

@@ -4,6 +4,7 @@ namespace MercadoPago\Core\Model;
 
 use Exception;
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Payment\Helper\Data as PaymentHelper;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -39,17 +40,18 @@ class BasicConfigProvider implements ConfigProviderInterface
      * @param Repository $assetRepo
      * @param ProductMetadataInterface $productMetadata
      * @param Data $coreHelper
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function __construct(
-        Data $coreHelper,
-        Context $context,
-        Repository $assetRepo,
-        Session $checkoutSession,
-        PaymentHelper $paymentHelper,
-        ScopeConfigInterface $scopeConfig,
+        Data                     $coreHelper,
+        Context                  $context,
+        Repository               $assetRepo,
+        Session                  $checkoutSession,
+        PaymentHelper            $paymentHelper,
+        ScopeConfigInterface     $scopeConfig,
         ProductMetadataInterface $productMetadata
-    ) {
+    )
+    {
         $this->_context = $context;
         $this->_assetRepo = $assetRepo;
         $this->_coreHelper = $coreHelper;
@@ -71,7 +73,7 @@ class BasicConfigProvider implements ConfigProviderInterface
 
             $bannerInfo = $this->makeBannerCheckout();
 
-            $data = [
+            return [
                 'payment' => [
                     $this->methodCode => [
                         'active' => $this->_scopeConfig->getValue(
@@ -109,9 +111,7 @@ class BasicConfigProvider implements ConfigProviderInterface
                     ],
                 ],
             ];
-
-            return $data;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->_coreHelper->log("BasicConfigProvider ERROR: " . $e->getMessage(), 'BasicConfigProvider');
             return [];
         }
@@ -120,7 +120,7 @@ class BasicConfigProvider implements ConfigProviderInterface
     /**
      * Make payment methods banner
      *
-     * @return void
+     * @return array|void
      */
     public function makeBannerCheckout()
     {
@@ -162,16 +162,14 @@ class BasicConfigProvider implements ConfigProviderInterface
                 }
             }
 
-            $parameters = [
+            return [
                 "debit" => $debit,
                 "credit" => $credit,
                 "ticket" => $ticket,
                 "installments" => $maxInstallments,
                 "checkout_methods" => $choMethods,
             ];
-
-            return $parameters;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->_coreHelper->log(
                 "makeBannerCheckout:: An error occurred at the time of obtaining the payment methods banner: " . $e
             );

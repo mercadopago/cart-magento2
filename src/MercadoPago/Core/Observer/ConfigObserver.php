@@ -2,7 +2,17 @@
 
 namespace MercadoPago\Core\Observer;
 
+use Magento\Backend\Block\Store\Switcher;
+use Magento\Config\Model\ResourceModel\Config;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Store\Model\ScopeInterface;
+use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Data;
 
 /**
  * Class ConfigObserver
@@ -38,15 +48,11 @@ class ConfigObserver implements ObserverInterface
     ];
 
     /**
-     * Available countries to custom checkout
-     *
      * @var array
      */
     private $available_transparent_credit_cart = ['MLA', 'MLB', 'MLM', 'MLV', 'MLC', 'MCO', 'MPE'];
 
     /**
-     * Available countries to custom ticket
-     *
      * @var array
      */
     private $available_transparent_ticket = ['MLA', 'MLB', 'MLM', 'MLV', 'MLC', 'MCO', 'MPE'];
@@ -57,27 +63,37 @@ class ConfigObserver implements ObserverInterface
     const LOG_NAME = 'mercadopago';
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $_scopeConfig;
 
     /**
-     * @var \MercadoPago\Core\Helper\
+     * @var
      */
     protected $coreHelper;
 
     /**
-     * Config configResource
-     *
      * @var $configResource
      */
     protected $configResource;
+
+    /**
+     * @var Switcher
+     */
     protected $_switcher;
+
+    /**
+     * @var int|null
+     */
     protected $_scopeCode;
+
+    /**
+     * @var ProductMetadataInterface
+     */
     protected $_productMetaData;
 
     /**
-     * @var \Magento\Framework\App\Cache\TypeListInterface
+     * @var TypeListInterface
      */
     protected $cacheTypeList;
 
@@ -86,17 +102,20 @@ class ConfigObserver implements ObserverInterface
     /**
      * ConfigObserver constructor.
      *
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \MercadoPago\Core\Helper\Data $coreHelper
-     * @param \Magento\Config\Model\ResourceModel\Config $configResource
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Data $coreHelper
+     * @param Config $configResource
+     * @param Switcher $switcher
+     * @param ProductMetadataInterface $productMetadata
+     * @param TypeListInterface $cacheTypeList
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \MercadoPago\Core\Helper\Data $coreHelper,
-        \Magento\Config\Model\ResourceModel\Config $configResource,
-        \Magento\Backend\Block\Store\Switcher $switcher,
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
-        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+        ScopeConfigInterface $scopeConfig,
+        Data $coreHelper,
+        Config $configResource,
+        Switcher $switcher,
+        ProductMetadataInterface $productMetadata,
+        TypeListInterface $cacheTypeList
     ) {
         $this->_scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
@@ -111,11 +130,11 @@ class ConfigObserver implements ObserverInterface
     /**
      * Updates configuration values based every time MercadoPago configuration section is saved
      *
-     * @param \Magento\Framework\Event\Observer $observer
-     *
-     * @return $this
+     * @param Observer $observer
+     * @return void
+     * @throws LocalizedException
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         $this->validateAccessToken();
         $this->setUserInfo();
@@ -133,18 +152,18 @@ class ConfigObserver implements ObserverInterface
 
         if ($country == "") {
             $country = $this->_scopeConfig->getValue(
-                \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
-                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+                ConfigData::PATH_SITE_ID,
+                ScopeInterface::SCOPE_WEBSITE,
                 $this->_scopeCode
             );
         }
 
         if (!in_array(strtoupper($country), $this->available_transparent_credit_cart)) {
-            $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_ACTIVE, 0);
+            $this->_saveWebsiteConfig(ConfigData::PATH_CUSTOM_ACTIVE, 0);
         }
 
         if (!in_array(strtoupper($country), $this->available_transparent_ticket)) {
-            $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_TICKET_ACTIVE, 0);
+            $this->_saveWebsiteConfig(ConfigData::PATH_CUSTOM_TICKET_ACTIVE, 0);
         }
     }
 
@@ -155,13 +174,12 @@ class ConfigObserver implements ObserverInterface
      */
     public function checkBanner($typeCheckout)
     {
-        //get country
         $country = $this->country;
 
         if ($country == "") {
             $country = $this->_scopeConfig->getValue(
-                \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
-                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+                ConfigData::PATH_SITE_ID,
+                ScopeInterface::SCOPE_WEBSITE,
                 $this->_scopeCode
             );
         }
@@ -173,7 +191,7 @@ class ConfigObserver implements ObserverInterface
         $defaultBanner = $this->banners[$typeCheckout][$country];
         $currentBanner = $this->_scopeConfig->getValue(
             'payment/' . $typeCheckout . '/banner_checkout',
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            ScopeInterface::SCOPE_WEBSITE,
             $this->_scopeCode
         );
 
@@ -196,13 +214,13 @@ class ConfigObserver implements ObserverInterface
     /**
      * Set configuration value sponsor_id based on current credentials
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function setUserInfo()
     {
         $sponsorIdConfig = $this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\ConfigData::PATH_SPONSOR_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            ConfigData::PATH_SPONSOR_ID,
+            ScopeInterface::SCOPE_WEBSITE,
             $this->_scopeCode
         );
 
@@ -214,8 +232,8 @@ class ConfigObserver implements ObserverInterface
         $this->coreHelper->log("Valid user test", self::LOG_NAME);
 
         $accessToken = $this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            ConfigData::PATH_ACCESS_TOKEN,
+            ScopeInterface::SCOPE_WEBSITE,
             $this->_scopeCode
         );
 
@@ -253,8 +271,8 @@ class ConfigObserver implements ObserverInterface
             }
         }
 
-        $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\ConfigData::PATH_SPONSOR_ID, $sponsorId);
-        $this->_saveWebsiteConfig(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, $siteId);
+        $this->_saveWebsiteConfig(ConfigData::PATH_SPONSOR_ID, $sponsorId);
+        $this->_saveWebsiteConfig(ConfigData::PATH_SITE_ID, $siteId);
 
         $this->country = $siteId;
         $this->coreHelper->log("Site_id saved", self::LOG_NAME, $siteId);
@@ -264,19 +282,19 @@ class ConfigObserver implements ObserverInterface
     /**
      * Validate current accessToken
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     protected function validateAccessToken()
     {
         $accessToken = $this->_scopeConfig->getValue(
-            \MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            ConfigData::PATH_ACCESS_TOKEN,
+            ScopeInterface::SCOPE_WEBSITE,
             $this->_scopeCode
         );
 
         if (!empty($accessToken)) {
             if (!$this->coreHelper->isValidAccessToken($accessToken)) {
-                throw new \Magento\Framework\Exception\LocalizedException(__('Mercado Pago - Custom Checkout: Invalid access token'));
+                throw new LocalizedException(__('Mercado Pago - Custom Checkout: Invalid access token'));
             }
         }
     }

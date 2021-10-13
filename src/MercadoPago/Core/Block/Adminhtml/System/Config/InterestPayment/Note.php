@@ -15,6 +15,15 @@ use MercadoPago\Core\Helper\ConfigData;
  */
 class Note extends Field
 {
+    /**
+     * @var ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
+     * @var Config
+     */
+    protected $configResource;
 
     /**
      * @param Context $context
@@ -23,11 +32,12 @@ class Note extends Field
      * @param array $data
      */
     public function __construct(
-        Context $context,
+        Context              $context,
         ScopeConfigInterface $scopeConfig,
-        Config $configResource,
-        array $data = []
-    ) {
+        Config               $configResource,
+        array                $data = []
+    )
+    {
         parent::__construct($context, $data);
         $this->scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
@@ -37,12 +47,11 @@ class Note extends Field
      *
      * Rendering the elements
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
     {
-
         $siteId = strtoupper(
             $this->scopeConfig->getValue(
                 ConfigData::PATH_SITE_ID,

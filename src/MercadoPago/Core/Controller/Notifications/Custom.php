@@ -2,7 +2,7 @@
 
 namespace MercadoPago\Core\Controller\Notifications;
 
-use Magento\Framework\App\Action\Action;
+use Exception;
 use Magento\Framework\App\Action\Context;
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Response;
@@ -13,12 +13,24 @@ class Custom extends NotificationBase
 {
     const LOG_NAME = 'custom_notification';
 
+    /**
+     * @var Data
+     */
     protected $coreHelper;
 
+    /**
+     * @var Core
+     */
     protected $coreModel;
 
+    /**
+     * @var
+     */
     protected $_order;
 
+    /**
+     * @var Notifications
+     */
     protected $_notifications;
 
     /**
@@ -31,14 +43,14 @@ class Custom extends NotificationBase
      */
     public function __construct(Context $context, Data $coreHelper, Core $coreModel, Notifications $notifications)
     {
-        $this->coreHelper     = $coreHelper;
-        $this->coreModel      = $coreModel;
+        $this->coreHelper = $coreHelper;
+        $this->coreModel = $coreModel;
         $this->_notifications = $notifications;
         parent::__construct($context);
     } //end __construct()
 
     /**
-     * Controller Action
+     * @return void
      */
     public function execute()
     {
@@ -46,7 +58,7 @@ class Custom extends NotificationBase
             $request = $this->getRequest();
 
             $requestValues = $this->_notifications->validateRequest($request);
-            $topicClass    = $this->_notifications->getTopicClass($request);
+            $topicClass = $this->_notifications->getTopicClass($request);
 
             if ($requestValues['topic'] != 'payment') {
                 $message = 'Mercado Pago - Invalid Notification Parameters, Invalid Type.';
@@ -54,19 +66,20 @@ class Custom extends NotificationBase
             }
 
             $response = $this->coreModel->getPaymentV1($requestValues['id']);
+
             if (empty($response) || ($response['status'] != 200 && $response['status'] != 201)) {
                 $message = 'Mercado Pago - Payment not found, Mercado Pago API did not return the expected information.';
                 $this->setResponseHttp(Response::HTTP_NOT_FOUND, $message, $response);
                 return;
             }
 
-            $payment  = $response['response'];
+            $payment = $response['response'];
             $response = $topicClass->updateStatusOrderByPayment($payment);
 
             $this->setResponseHttp($response['httpStatus'], $response['message'], $response['data']);
 
             return;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $statusResponse = Response::HTTP_INTERNAL_ERROR;
 
             if (method_exists($e, 'getCode') && ($e->getCode() >= 200 && $e->getCode() <= 599)) {
@@ -86,9 +99,9 @@ class Custom extends NotificationBase
     protected function setResponseHttp($httpStatus, $message, $data = [])
     {
         $response = [
-            'status'  => $httpStatus,
+            'status' => $httpStatus,
             'message' => $message,
-            'data'    => $data,
+            'data' => $data,
         ];
 
         $this->coreHelper->log('NotificationsCustom::setResponseHttp - Response: ' . json_encode($response), self::LOG_NAME);

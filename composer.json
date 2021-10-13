@@ -29,8 +29,5 @@
     },
     "require": {
         "ext-json": "*"
-    },
-    "require-dev": {
-        "magento/magento-coding-standard": "^6.0"
     }
 }
