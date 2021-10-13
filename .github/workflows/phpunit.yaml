@@ -60,7 +60,7 @@ jobs:
 
       - name: Git Diff
         id: git-diff
-        run: git diff git diff --color > pr-coverage.patch
+        run: git diff --color > pr-coverage.patch
 
       - name: Run Unit Test
         id: unit-test
