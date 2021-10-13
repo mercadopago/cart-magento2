@@ -76,7 +76,7 @@ jobs:
 
       - name: Pull Request Minimum Coverage
         id: pull-request-coverage
-        run: php magento2/vendor/php-code-coverage-verifier-master/bin/php-code-coverage-verifier-master verify clover.xml pr-coverage.patch
+        run: php magento2/vendor/php-code-coverage-verifier-master/bin/php-code-coverage-verifier verify clover.xml pr-coverage.patch
 
 
 
