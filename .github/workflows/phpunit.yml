@@ -73,3 +73,10 @@ jobs:
       - name: Repository Minimum Test Coverage
         id: repository-coverage
         run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
+
+      - name: Pull Request Minimum Coverage
+        id: pull-request-coverage
+        run: magento2/vendor/php-code-coverage-verifier-master/bin/vendor/php-code-coverage-verifier-master clover.xml pr-coverage.patch
+
+
+
