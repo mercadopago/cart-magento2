@@ -24,6 +24,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 5
+        run: git diff --no-prefix develop... > pr-coverage.patch
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -71,10 +72,6 @@ jobs:
       - name: Install php-code-coverage-verifier
         id: install-php-code-coverage-verifier
         run: cd pr-coverage && composer install
-
-      - name: Generate git diff
-        id: git-diff
-        run: git diff develop... --no-prefix > pr-coverage.patch
 
       - name: Cat git diff
         id: cat-git-diff
