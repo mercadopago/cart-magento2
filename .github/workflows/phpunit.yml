@@ -74,7 +74,7 @@ jobs:
         id: install-php-code-coverage-verifier
         env:
           COMPOSER_AUTH: ${{secrets.COMPOSER_AUTH}}
-        run: cd magento2 && composer require tomzx/php-code-coverage-verifier:dev-master
+        run: composer require tomzx/php-code-coverage-verifier:dev-master
 
       - name: Generate git diff
         id: git-diff
@@ -82,7 +82,7 @@ jobs:
 
       - name: Pull Request Minimum Coverage
         id: pull-request-coverage
-        run: php magento2/vendor/bin/php-code-coverage-verifier verify clover.xml pr-coverage.patch
+        run: php vendor/bin/php-code-coverage-verifier verify clover.xml pr-coverage.patch
 
 
 
