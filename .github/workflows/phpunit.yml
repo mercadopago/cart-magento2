@@ -23,7 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          fetch-depth: 5
+          fetch-depth: 0
 
       - name: Generate git diff
         id: git-diff
