@@ -74,7 +74,7 @@ jobs:
         id: install-php-code-coverage-verifier
         env:
           COMPOSER_AUTH: ${{secrets.COMPOSER_AUTH}}
-        run: cd magento2 && composer require tomzx/php-code-coverage-verifier:dev-master --no-plugins
+        run: cd magento2 && composer require tomzx/php-code-coverage-verifier:dev-master --no-plugins --with-all-dependencies
 
       - name: Composer downgrade to version 1
         id: pr-coverage-composer-downgrade
