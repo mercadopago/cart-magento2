@@ -72,7 +72,7 @@ jobs:
 
       - name: Generate git diff
         id: git-diff
-        run: git diff origin/develop... --no-prefix > pr-coverage.patch
+        run: git diff origin/develop... -- --no-prefix > pr-coverage.patch
 
       - name: Cat git diff
         id: cat-git-diff
