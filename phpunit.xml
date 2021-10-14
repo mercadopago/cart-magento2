@@ -1,0 +1,11 @@
+<phpunit colors="true">
+    <testsuite name="Tests">
+		<directory suffix-".php">./src/Tests</directory>
+	</testsuite>
+
+	<filter>
+		<whitelist>
+			<directory suffix=".php">./src/Core</directory>
+		</whitelist>
+	</filter>
+</phpunit>
