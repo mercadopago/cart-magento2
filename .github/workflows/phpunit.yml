@@ -27,7 +27,7 @@ jobs:
 
       - name: Generate git diff
         id: git-diff
-        run: git diff --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} > pr-coverage.patch
+        run: git diff ----no-prefix --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} > pr-coverage.patch
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
