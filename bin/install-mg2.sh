@@ -11,7 +11,6 @@ cd magento2
 
 echo "Installing..."
 composer install
-composer update
 
 bin/magento --version
 sudo chmod -Rf 777 var/ pub/ generated/ app/etc/env.php

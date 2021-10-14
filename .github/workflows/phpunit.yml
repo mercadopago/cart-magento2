@@ -58,35 +58,22 @@ jobs:
         id: install-plugin
         run: mv src/* magento2/app/code
 
-      - name: Run Unit Test
-        id: unit-test
-        run: magento2/vendor/phpunit/phpunit/phpunit --colors=always --whitelist magento2/app/code/MercadoPago/Core --coverage-clover clover.xml --coverage-text magento2/app/code/MercadoPago/Test
-
-      - name: Repository Minimum Test Coverage
-        id: repository-coverage
-        run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
-
-      - name: Composer upgrade to version 2
-        id: composer-upgrade
-        run: composer self-update --2
-
       - name: Install php-code-coverage-verifier
         id: install-php-code-coverage-verifier
-        env:
-          COMPOSER_AUTH: ${{secrets.COMPOSER_AUTH}}
-        run: cd magento2 && composer require tomzx/php-code-coverage-verifier:dev-master --no-plugins --with-all-dependencies
-
-      - name: Composer downgrade to version 1
-        id: pr-coverage-composer-downgrade
-        run: composer self-update --1
+        run: bash bin/install-pr-coverage.sh
 
       - name: Generate git diff
         id: git-diff
         run: git diff --color --no-prefix > pr-coverage.patch
 
+      - name: Run Unit Test
+        id: unit-test
+        run: magento2/vendor/phpunit/phpunit/phpunit --colors=always --whitelist magento2/app/code/MercadoPago/Core --coverage-clover clover.xml --coverage-text  magento2/app/code/MercadoPago/Test
+
+      - name: Repository Minimum Test Coverage
+        id: repository-coverage
+        run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
+
       - name: Pull Request Minimum Coverage
         id: pull-request-coverage
-        run: php magento2/vendor/bin/php-code-coverage-verifier verify clover.xml pr-coverage.patch
-
-
-
+        run: php magento2/vendor/php-code-coverage-verifier-master/bin/php-code-coverage-verifier verify clover.xml pr-coverage.patch
