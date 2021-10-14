@@ -72,7 +72,7 @@ jobs:
 
       - name: Generate git diff
         id: git-diff
-        run: git diff --color --no-prefix > pr-coverage.patch
+        run: git diff --no-prefix > pr-coverage.patch
 
       - name: Pull Request Minimum Coverage
         id: pull-request-coverage
