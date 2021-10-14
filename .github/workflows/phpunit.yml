@@ -77,7 +77,7 @@ jobs:
         run: cd magento2 && composer require tomzx/php-code-coverage-verifier:dev-master
 
       - name: Composer downgrade to version 1
-        id: composer-downgrade
+        id: pr-coverage-composer-downgrade
         run: composer self-update --1
 
       - name: Generate git diff
