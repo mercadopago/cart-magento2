@@ -72,6 +72,8 @@ jobs:
 
       - name: Install php-code-coverage-verifier
         id: install-php-code-coverage-verifier
+        env:
+          COMPOSER_AUTH: ${{secrets.COMPOSER_AUTH}}
         run: composer require tomzx/php-code-coverage-verifier
 
       - name: Generate git diff
