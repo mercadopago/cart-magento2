@@ -60,7 +60,7 @@ jobs:
 
       - name: Run Unit Test
         id: unit-test
-        run: magento2/vendor/phpunit/phpunit/phpunit --colors=always --whitelist magento2/app/code/MercadoPago/Core --coverage-clover clover.xml --coverage-text  magento2/app/code/MercadoPago/Test
+        run: magento2/vendor/phpunit/phpunit/phpunit --colors=always --whitelist magento2/app/code/MercadoPago/Core/**/*.php --coverage-clover clover.xml --coverage-text  magento2/app/code/MercadoPago/Test
 
       - name: Repository Minimum Test Coverage
         id: repository-coverage
