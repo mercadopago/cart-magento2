@@ -22,6 +22,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        fetch-depth: 5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -72,7 +73,7 @@ jobs:
 
       - name: Generate git diff
         id: git-diff
-        run: git diff --no-prefix develop... -- > pr-coverage.patch
+        run: git diff develop... --no-prefix > pr-coverage.patch
 
       - name: Cat git diff
         id: cat-git-diff
