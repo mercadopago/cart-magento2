@@ -74,6 +74,14 @@ jobs:
         id: git-diff
         run: git diff --no-prefix > pr-coverage.patch
 
+      - name: Cat git diff
+        id: cat-git-diff
+        run: cat pr-coverage.patch
+
+      - name: LS
+        id: ls
+        run: ls -la
+
       - name: Pull Request Minimum Coverage
         id: pull-request-coverage
         run: php pr-coverage/bin/php-code-coverage-verifier verify clover.xml pr-coverage.patch
