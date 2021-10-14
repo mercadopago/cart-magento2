@@ -74,7 +74,7 @@ jobs:
         id: install-php-code-coverage-verifier
         env:
           COMPOSER_AUTH: ${{secrets.COMPOSER_AUTH}}
-        run: composer require tomzx/php-code-coverage-verifier:dev-master
+        run: cd magento2 && composer require tomzx/php-code-coverage-verifier:dev-master
 
       - name: Generate git diff
         id: git-diff
