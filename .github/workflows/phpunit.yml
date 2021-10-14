@@ -27,7 +27,7 @@ jobs:
 
       - name: Generate git diff
         id: git-diff
-        run: git diff --no-prefix origin/HEAD..origin/develop > pr-coverage.patch
+        run: git diff --no-prefix origin/HEAD..origin/develop -- > pr-coverage.patch
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
