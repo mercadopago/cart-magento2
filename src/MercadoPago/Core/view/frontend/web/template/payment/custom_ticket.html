@@ -300,13 +300,13 @@
 
         <!-- ko if: (getCountTickets() > 0)-->
         <div class="actions-toolbar">
-            <div class="primary mp-d-flex-baseline">                
+            <div class="primary mp-d-flex-baseline">
                 <p class="mp-mr-20">
                     <!-- ko i18n: 'By continuing, you agree to our '--><!-- /ko -->
-                    <a data-bind="attr: {href: getFingerPrintLink(), title 'fingerprint_link'}" target="_blank">
+                    <a data-bind="attr: {href: getFingerPrintLink(), title: $t('link')}" target="_blank">
                         <!-- ko i18n: 'Terms and Conditions.'--><!-- /ko -->
                     </a>
-                </p>                
+                </p>
                 <button
                     data-role="review-save"
                     type="submit"
