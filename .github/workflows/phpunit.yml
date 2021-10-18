@@ -23,9 +23,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Cat secret
-        id: cat-secret
-        run: echo ${{secrets.COMPOSER_AUTH}}
+      - name: Cat env
+        id: cat-env
+        run: echo ${{GITHUB_REF}}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
