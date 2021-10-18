@@ -27,7 +27,6 @@ try {
     }
 
     $xml             = new SimpleXMLElement(file_get_contents($cloverFile));
-    $metrics         = $xml->xpath('//metrics');
     $classes         = $xml->xpath('//class');
     $totalElements   = 0;
     $checkedElements = 0;
