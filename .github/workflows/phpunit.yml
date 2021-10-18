@@ -25,10 +25,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Generate git diff
-        id: git-diff
-        run: git diff --no-prefix --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} > pr-coverage.patch
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -72,6 +68,6 @@ jobs:
         id: repository-coverage
         run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
 
-      - name: Cat git diff
-        id: cat-git-diff
-        run: cat pr-coverage.patch
+      - name: Get pull request files
+        id: get-pull-request-files
+        run: bash bin/get-pull-request-files.sh
