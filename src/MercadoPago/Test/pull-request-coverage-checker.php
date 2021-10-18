@@ -46,12 +46,12 @@ try {
     $coverage = ($checkedElements / $totalElements) * 100;
 
     if ($coverage >= $percentage) {
-        print_r(' Code coverage is ' . $coverage);
+        print_r('Code coverage is ' . $coverage);
         print_r(' -> Pull Request OK');
         return;
     }
 
-    print_r(' Code coverage is ' . round($coverage, 2) . '%, which is below the accepted ' . $percentage . '%');
+    print_r('Code coverage is ' . round($coverage, 2) . '%, which is below the accepted ' . $percentage . '%');
     print_r(' -> Pull Request Rejected');
 } catch (\Exception $e) {
     print_r('Error: ' . $e->getMessage());
