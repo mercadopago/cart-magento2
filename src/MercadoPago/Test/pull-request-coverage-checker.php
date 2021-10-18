@@ -31,7 +31,7 @@ try {
     $totalElements   = 0;
     $checkedElements = 0;
 
-    foreach ($classes as $key => $class) {
+    foreach ($classes as $class) {
         if (in_array($class['name'], $pullRequestFiles)) {
             $totalElements   += (int) $class->metrics['elements'];
             $checkedElements += (int) $class->metrics['coveredelements'];
