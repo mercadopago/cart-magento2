@@ -72,6 +72,7 @@ class BasicConfigProvider implements ConfigProviderInterface
             }
 
             $bannerInfo = $this->makeBannerCheckout();
+            $country = strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
 
             return [
                 'payment' => [
@@ -108,6 +109,7 @@ class BasicConfigProvider implements ConfigProviderInterface
                         'module_version' => $this->_coreHelper->getModuleVersion(),
                         'platform_version' => $this->_productMetaData->getVersion(),
                         'mercadopago_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mercado-pago-mini.png"),
+                        'fingerprint_link' => $this->_coreHelper->getFingerPrintLink($country),
                     ],
                 ],
             ];
