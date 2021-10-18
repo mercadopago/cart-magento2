@@ -23,10 +23,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Cat env
-        id: cat-env
-        run: echo ${{ github.event.number }}
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
