@@ -5,7 +5,7 @@
 
 	<filter>
 		<whitelist>
-			<directory suffix=".php">magento2/app/code/MercadoPago</directory>
+			<directory suffix=".php">magento2/app/code/MercadoPago/Core/Block</directory>
 		</whitelist>
 	</filter>
 </phpunit>
