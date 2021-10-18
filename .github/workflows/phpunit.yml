@@ -66,7 +66,7 @@ jobs:
 
       - name: Run Unit Test
         id: unit-test
-        run: magento2/vendor/phpunit/phpunit/phpunit --configuration phpunit.xml --coverage-clover clover.xml --coverage-text magento2/app/code/MercadoPago/Test $(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/PluginAndPartners/cart-magento2/pulls/172/files) | jq ".[].filename" | grep -E  'php"$' | xargs)
+        run: magento2/vendor/phpunit/phpunit/phpunit --configuration phpunit.xml --coverage-clover clover.xml --coverage-text magento2/app/code/MercadoPago/Test
 
       - name: Repository Minimum Test Coverage
         id: repository-coverage

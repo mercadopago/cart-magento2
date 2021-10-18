@@ -6,4 +6,4 @@ export PHPUNIT_FILES=$(curl -H "Accept: application/vnd.github.v3+json" https://
 | grep -E  'php"$' \
 | xargs)
 
-echo $PHPUNIT_FILES
+magento2/vendor/phpunit/phpunit/phpunit --configuration phpunit.xml --coverage-clover clover.xml --coverage-text magento2/app/code/MercadoPago/Test $PHPUNIT_FILES
