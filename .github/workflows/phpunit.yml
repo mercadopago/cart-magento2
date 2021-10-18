@@ -25,7 +25,7 @@ jobs:
 
       - name: Cat env
         id: cat-env
-        run: echo ${{GITHUB_REF}}
+        run: echo ${{ github.event.number }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -73,3 +73,5 @@ jobs:
       - name: Pull Request Coverage
         id: pull-request-coverage
         run: bash bin/pull-request-coverage.sh
+        env:
+          PR_NUMBER: ${{ github.event.number }}
