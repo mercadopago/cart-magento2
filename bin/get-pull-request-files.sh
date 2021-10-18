@@ -7,3 +7,5 @@ export PHPUNIT_FILES=$(curl -H "Accept: application/vnd.github.v3+json" https://
 | xargs)
 
 echo $PHPUNIT_FILES
+
+php src/MercadoPago/Test/pull-request-coverage-checker.php clover.xml 80 $PHPUNIT_FILES
