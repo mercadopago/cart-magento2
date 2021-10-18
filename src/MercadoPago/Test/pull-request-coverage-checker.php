@@ -23,7 +23,7 @@ try {
 
     if (count($pullRequestFiles) == 0) {
         print_r('Pull Request does not contain any php file to check code coverage');
-        exit();
+        return;
     }
 
     $xml             = new SimpleXMLElement(file_get_contents($cloverFile));
@@ -40,7 +40,7 @@ try {
 
     if ($totalElements == 0 || $checkedElements == 0) {
         print_r('Pull Request does not contain tested php files to check code coverage');
-        exit();
+        return;
     }
 
     $coverage = ($checkedElements / $totalElements) * 100;

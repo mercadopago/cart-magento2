@@ -26,7 +26,7 @@ try {
     if ($coverage >= $percentage) {
         print_r('Code coverage is ' . $coverage);
         print_r(' -> Pull Request OK');
-        exit();
+        return;
     }
 
     print_r('Code coverage is ' . round($coverage, 2) . '%, which is below the accepted ' . $percentage . '%');

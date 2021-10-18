@@ -23,6 +23,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Cat secret
+        id: cat-secret
+        run: run echo ${{secrets.COMPOSER_AUTH}}
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
