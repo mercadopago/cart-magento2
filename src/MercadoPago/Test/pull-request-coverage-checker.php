@@ -38,7 +38,8 @@ foreach ($classes as $class) {
 }
 
 if ($totalElements == 0 || $checkedElements == 0) {
-    throw new Exception('Pull Request does not contain tested php files to check code coverage');
+    print_r('Pull Request does not contain tested php files to check code coverage');
+    return;
 }
 
 $coverage = ($checkedElements / $totalElements) * 100;
@@ -51,4 +52,3 @@ if ($coverage >= $percentage) {
 
 print_r('Code coverage is ' . round($coverage, 2) . '%, which is below the accepted ' . $percentage . '%');
 print_r(' -> Pull Request Rejected');
-
