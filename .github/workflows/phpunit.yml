@@ -66,6 +66,10 @@ jobs:
         id: unit-test
         run: magento2/vendor/phpunit/phpunit/phpunit --configuration phpunit.xml --coverage-clover clover.xml --coverage-text magento2/app/code/MercadoPago/Test
 
+      - name: Cat clover.xml
+        id: cat-clover-xml
+        run: cat clover.xml
+
       - name: Repository Minimum Test Coverage
         id: repository-coverage
         run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
