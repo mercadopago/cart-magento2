@@ -10,6 +10,7 @@ mv magento2-2.3.6-p1 magento2
 cd magento2
 
 echo "Installing..."
+composer update
 composer install
 
 bin/magento --version
