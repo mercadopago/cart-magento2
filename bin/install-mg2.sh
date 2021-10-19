@@ -19,3 +19,5 @@ php -d memory_limit=5G bin/magento
 bin/magento setup:upgrade
 bin/magento module:enable --all --clear-static-content
 php -d memory_limit=5G bin/magento setup:di:compile
+
+rm -rf 2.3.6-p1.zip
