@@ -7,7 +7,7 @@ RUN chmod uga+x /usr/local/bin/install-php-extensions && sync
 # Install dependencies
 RUN apt-get update -y
 RUN apt-get install -y nano unzip
-RUN install-php-extensions intl gd soap bcmath pdo_mysql xsl zip
+RUN install-php-extensions intl gd soap pdo_mysql xsl zip
 
 # Install and configure xdebug
 RUN yes | pecl install xdebug \
@@ -30,6 +30,9 @@ RUN sh bin/install-mg2.sh
 
 # Install plugin
 COPY src magento2/app/code
+
+# Config dir test folder
+COPY phpunit.xml phpunit.xml
 
 # Fix permissions
 RUN chmod 777 -Rf magento2
