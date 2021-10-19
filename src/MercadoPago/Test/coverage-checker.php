@@ -1,4 +1,5 @@
 <?php
+
 $inputFile  = $argv[1];
 $percentage = min(100, max(0, (int) $argv[2]));
 
@@ -23,12 +24,11 @@ foreach ($metrics as $metric) {
 $coverage = ($checkedElements / $totalElements) * 100;
 
 if ($coverage >= $percentage) {
-
     print_r('Code coverage is ' . $coverage);
-    print_r('-> Pull Request OK');
+    print_r(' -> Pull Request OK');
     return;
 }
+
 print_r('Code coverage is ' . round($coverage, 2) . '%, which is below the accepted ' . $percentage . '%');
-print_r('-> Pull Request Rejected');
-// when we want to fail the pull request, just uncomment the line below
-// exit(1);
+print_r(' -> Pull Request Rejected');
+

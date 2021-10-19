@@ -60,8 +60,14 @@ jobs:
 
       - name: Run Unit Test
         id: unit-test
-        run: magento2/vendor/phpunit/phpunit/phpunit --colors=always --whitelist magento2/app/code/MercadoPago/Core --coverage-clover clover.xml --coverage-text  magento2/app/code/MercadoPago/Test
+        run: magento2/vendor/phpunit/phpunit/phpunit --configuration phpunit.xml --coverage-clover clover.xml --coverage-text magento2/app/code/MercadoPago/Test
 
       - name: Repository Minimum Test Coverage
         id: repository-coverage
         run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
+
+      - name: Pull Request Coverage
+        id: pull-request-coverage
+        run: bash bin/pull-request-coverage.sh
+        env:
+          PR_NUMBER: ${{ github.event.number }}

@@ -110,10 +110,12 @@ class CustomBankTransferConfigProvider implements ConfigProviderInterface
 
         $identificationTypes = $this->methodInstance->getIdentifcationTypes();
 
+        $country = strtoupper($this->_scopeConfig->getValue(ConfigData::PATH_SITE_ID, ScopeInterface::SCOPE_STORE));
+
         $data = [
             'payment' => [
                 $this->methodCode => [
-                    'country' => strtoupper($this->_scopeConfig->getValue(ConfigData::PATH_SITE_ID, ScopeInterface::SCOPE_STORE)),
+                    'country' => $country,
                     'bannerUrl' => $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_BANK_TRANSFER_BANNER, ScopeInterface::SCOPE_STORE),
                     'payment_method_options' => $paymentMethods,
                     'identification_types' => $identificationTypes,
@@ -125,6 +127,7 @@ class CustomBankTransferConfigProvider implements ConfigProviderInterface
                     'platform_version' => $this->_productMetaData->getVersion(),
                     'module_version' => $this->_coreHelper->getModuleVersion(),
                     'banktransfer_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/ticket-mini.png"),
+                    'fingerprint_link' => $this->_coreHelper->getFingerPrintLink($country),
                 ]
             ]
         ];

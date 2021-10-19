@@ -83,4 +83,4 @@ atlassian*
 !/.editorconfig
 !.github/
 !/bin
-
+!/*.xml
