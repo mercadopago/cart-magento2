@@ -217,6 +217,10 @@ define(
         return '';
       },
 
+      getFingerPrintLink: function () {
+        return configPayment['fingerprint_link'];
+      },
+
       getSuccessUrl: function () {
         if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           return window.checkoutConfig.payment[this.getCode()]['success_url'];
