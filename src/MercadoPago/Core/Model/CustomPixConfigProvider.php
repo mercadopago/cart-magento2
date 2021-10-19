@@ -109,10 +109,12 @@ class CustomPixConfigProvider implements ConfigProviderInterface
             return [];
         }
 
+        $country = strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+
         return [
             'payment' => [
                 $this->methodCode => [
-                    'country' => strtoupper($this->_scopeConfig->getValue(ConfigData::PATH_SITE_ID, ScopeInterface::SCOPE_STORE)),
+                    'country' => $country,
                     'bannerUrl' => $this->_scopeConfig->getValue(ConfigData::PATH_CUSTOM_PIX_BANNER, ScopeInterface::SCOPE_STORE),
                     'success_url' => $this->methodInstance->getConfigData('order_place_redirect_url'),
                     'route' => $this->_request->getRouteName(),
@@ -123,6 +125,7 @@ class CustomPixConfigProvider implements ConfigProviderInterface
                     'module_version' => $this->_coreHelper->getModuleVersion(),
                     'pix_logo' => $this->_assetRepo->getUrl("MercadoPago_Core::images/logo_pix.png"),
                     'pix_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/pix-mini.png"),
+                    'fingerprint_link' => $this->_coreHelper->getFingerPrintLink($country),
                 ]
             ]
         ];

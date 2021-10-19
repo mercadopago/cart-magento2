@@ -68,6 +68,10 @@ define(
         return configPayment['country'];
       },
 
+      getFingerPrintLink: function () {
+        return configPayment['fingerprint_link'];
+      },
+
       existBanner: function () {
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
           if (window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null) {
