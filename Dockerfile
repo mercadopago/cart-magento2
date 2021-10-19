@@ -10,7 +10,7 @@ RUN apt-get install -y nano unzip git
 RUN install-php-extensions intl gd soap bcmath pdo_mysql xsl zip
 
 # Install and configure xdebug
-RUN yes | pecl install xdebug-2.9.8 \
+RUN yes | pecl install xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini \
