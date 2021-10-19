@@ -6,11 +6,11 @@ RUN chmod uga+x /usr/local/bin/install-php-extensions && sync
 
 # Install dependencies
 RUN apt-get update -y
-RUN apt-get install -y nano unzip
+RUN apt-get install -y nano unzip git
 RUN install-php-extensions intl gd soap bcmath pdo_mysql xsl zip
 
 # Install and configure xdebug
-RUN yes | pecl install xdebug \
+RUN yes | pecl install xdebug-2.9.8 \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini \
@@ -24,6 +24,12 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && rm -rf composer-setup.php \
     && composer self-update --1
 
+# Install phpmd
+RUN git clone git://github.com/phpmd/phpmd.git \
+    && cd phpmd \
+    && git submodule update --init \
+    && composer install
+
 # Install Magento 2
 COPY bin/install-mg2.sh bin/install-mg2.sh
 RUN sh bin/install-mg2.sh
@@ -31,7 +37,7 @@ RUN sh bin/install-mg2.sh
 # Install plugin
 COPY src magento2/app/code
 
-# Config dir test folder
+# phpunit config file
 COPY phpunit.xml phpunit.xml
 
 # Fix permissions
