@@ -5,4 +5,4 @@ echo "\n"
 
 docker exec magento-php magento2/vendor/bin/phpcs -q --report=full --standard=Magento2 magento2/app/code/MercadoPago/
 
-echo ✅ "\033[01;32m PHPSTAN EXECUTED SUCCESSFULLY \n \033[0m"
+echo ✅ "\033[01;32m PHPCS EXECUTED SUCCESSFULLY \n \033[0m"
