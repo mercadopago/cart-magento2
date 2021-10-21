@@ -17,8 +17,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        username: root
     container_name: magento-php
     links:
       - mysql
