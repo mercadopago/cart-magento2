@@ -46,8 +46,8 @@ class Info extends \Magento\Payment\Block\Info
      */
     protected function _prepareSpecificInformation($transport = null)
     {
-        $data      = [];
         $transport = parent::_prepareSpecificInformation($transport);
+        $data      = [];
 
         $info            = $this->getInfo();
         $paymentResponse = $info->getAdditionalInformation('paymentResponse');
@@ -94,5 +94,4 @@ class Info extends \Magento\Payment\Block\Info
 
         return $transport->setData(array_merge($data, $transport->getData()));
     } //end _prepareSpecificInformation()
-
 }//end class
