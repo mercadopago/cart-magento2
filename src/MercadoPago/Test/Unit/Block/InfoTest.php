@@ -9,7 +9,6 @@ use \PHPUnit\Framework\TestCase;
 
 class InfoTest extends TestCase
 {
-
     private $object;
 
     protected function setUp()

@@ -107,6 +107,10 @@ define(
         return window.checkoutConfig.payment[this.getCode()]['country'];
       },
 
+      getFingerPrintLink: function () {
+        return configPayment['fingerprint_link'];
+      },
+
       existBanner: function () {
         if (window.checkoutConfig.payment[this.getCode()] != undefined) {
           if (window.checkoutConfig.payment[this.getCode()]['bannerUrl'] != null) {

@@ -9,8 +9,7 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 /**
  * @codeCoverageIgnore
  */
-class UpgradeSchema
-    implements UpgradeSchemaInterface
+class UpgradeSchema implements UpgradeSchemaInterface
 {
     /**
      * {@inheritdoc}
@@ -74,7 +73,6 @@ class UpgradeSchema
                 $connection->addColumn($salesTable, $name, $definition);
                 $connection->addColumn($quoteTable, $name, $definition);
             }
-
         }
 
 
@@ -82,14 +80,20 @@ class UpgradeSchema
 
         if (version_compare($context->getVersion(), '1.0.4', '<=')) {
             $quoteAddressTable = $installer->getTable('quote_address');
-            $columns = ['discount_coupon_amount' => ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                'length' => '12,4',
-                'nullable' => true,
-                'comment' => 'Discount coupon Amount',],
-                'base_discount_coupon_amount' => ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+            $columns = [
+                'discount_coupon_amount' => [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
                     'length' => '12,4',
                     'nullable' => true,
-                    'comment' => 'Base Discount coupon Amount',]];
+                    'comment' => 'Discount coupon Amount',
+                ],
+                'base_discount_coupon_amount' => [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length' => '12,4',
+                    'nullable' => true,
+                    'comment' => 'Base Discount coupon Amount',
+                ]
+            ];
 
             foreach ($columns as $name => $definition) {
                 $connection->addColumn($quoteAddressTable, $name, $definition);
@@ -102,14 +106,20 @@ class UpgradeSchema
 
         if (version_compare($context->getVersion(), '1.0.5', '<=')) {
             $quoteAddressTable = $installer->getTable('quote_address');
-            $columns = ['finance_cost_amount' => ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                'length' => '12,4',
-                'nullable' => true,
-                'comment' => 'Finance Cost Amount'],
-                'base_finance_cost_amount' => ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+            $columns = [
+                'finance_cost_amount' => [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
                     'length' => '12,4',
                     'nullable' => true,
-                    'comment' => 'Base Finance Cost Amount']];
+                    'comment' => 'Finance Cost Amount'
+                ],
+                'base_finance_cost_amount' => [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length' => '12,4',
+                    'nullable' => true,
+                    'comment' => 'Base Finance Cost Amount'
+                ]
+            ];
 
             foreach ($columns as $name => $definition) {
                 $connection->addColumn($quoteAddressTable, $name, $definition);

@@ -6,9 +6,6 @@ use Magento\Framework\DataObject;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Sales\Model\OrderFactory;
 
-/**
- * Class Info
- */
 class Info extends \Magento\Payment\Block\Info
 {
 
@@ -36,12 +33,11 @@ class Info extends \Magento\Payment\Block\Info
     public function __construct(
         Context $context,
         OrderFactory $orderFactory,
-        array $data=[]
+        array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_orderFactory = $orderFactory;
-
-    }//end __construct()
+    } //end __construct()
 
 
     /**
@@ -50,7 +46,7 @@ class Info extends \Magento\Payment\Block\Info
      * @param  null | array $transport
      * @return DataObject
      */
-    protected function _prepareSpecificInformation($transport=null)
+    protected function _prepareSpecificInformation($transport = null)
     {
         $transport = parent::_prepareSpecificInformation($transport);
         $data      = [];
@@ -105,8 +101,7 @@ class Info extends \Magento\Payment\Block\Info
         }
 
         return $transport->setData(array_merge($data, $transport->getData()));
-
-    }//end _prepareSpecificInformation()
+    } //end _prepareSpecificInformation()
 
     /**
      * @return bool
@@ -132,5 +127,4 @@ class Info extends \Magento\Payment\Block\Info
         $this->setIsPdf(true);
         return parent::toPdf();
     }
-
 }//end class

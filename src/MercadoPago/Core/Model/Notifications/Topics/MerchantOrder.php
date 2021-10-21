@@ -21,16 +21,37 @@ use MercadoPago\Core\Model\Notifications\Notifications;
 class MerchantOrder extends TopicsAbstract
 {
     const LOG_NAME = 'notification_merchant_order';
+
     const TYPES_TOPIC = ['payment', 'merchant_order'];
 
+    /**
+     * @var mpHelper
+     */
     protected $_mpHelper;
+
+    /**
+     * @var ScopeConfigInterface
+     */
     protected $_scopeConfig;
+
+    /**
+     * @var Core
+     */
     protected $_coreModel;
+
+    /**
+     * @var int
+     */
     protected $_payAmount = 0;
+
+    /**
+     * @var int
+     */
     protected $_payIndex = 0;
 
     /**
      * MerchantOrder constructor.
+     *
      * @param mpHelper $mpHelper
      * @param ScopeConfigInterface $scopeConfig
      * @param Core $coreModel
@@ -68,7 +89,7 @@ class MerchantOrder extends TopicsAbstract
     /**
      * @param $id
      * @param null $type
-     * @return array
+     * @return array|void
      */
     public function getPaymentData($id, $type = null)
     {
@@ -107,7 +128,7 @@ class MerchantOrder extends TopicsAbstract
 
             $shipmentData = (isset($merchantOrder['shipments'][0])) ? $merchantOrder['shipments'][0] : [];
             return ['merchantOrder' => $merchantOrder, 'payments' => $payments, 'shipmentData' => $shipmentData];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->_mpHelper->log(__("ERROR - Notifications MerchantOrder getPaymentData"), self::LOG_NAME, $e->getMessage());
         }
     }
@@ -155,8 +176,6 @@ class MerchantOrder extends TopicsAbstract
             "totalPending" => $totalPending
         ];
 
-        $response = [];
-        //validate order state
         if ($totalApproved >= $totalOrder) {
             $statusList = ['approved'];
             $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
@@ -164,14 +183,12 @@ class MerchantOrder extends TopicsAbstract
             $response = ['key' => $lastPaymentIndex, 'status' => 'approved', 'final' => true];
             $this->_dataHelper->log("Order Setted Approved: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
         } elseif ($totalPending >= $totalOrder) {
-            // return last status inserted
             $statusList = ['pending', 'in_process'];
             $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
 
             $response = ['key' => $lastPaymentIndex, 'status' => 'pending', 'final' => false];
             $this->_dataHelper->log("Order Setted Pending: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
         } else {
-            // return last status inserted
             $statusList = ['cancelled', 'refunded', 'charged_back', 'in_mediation', 'rejected'];
             $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
             $statusReturned = $payments[$lastPaymentIndex]['status'];
@@ -186,18 +203,21 @@ class MerchantOrder extends TopicsAbstract
     /**
      * @param $payments
      * @param $status
-     * @return int
+     * @return int|mixed|string
      */
     protected function _getLastPaymentIndex($payments, $status)
     {
         $class = 'MercadoPago\Core\Model\Notifications\Topics\MerchantOrder';
         $dates = [];
+
         foreach ($payments as $key => $payment) {
             if (in_array($payment['status'], $status)) {
                 $dates[] = ['key' => $key, 'value' => $payment['last_modified']];
             }
         }
+
         usort($dates, [$class, "_dateCompare"]);
+
         if ($dates) {
             $lastModified = array_pop($dates);
             return $lastModified['key'];
@@ -209,8 +229,7 @@ class MerchantOrder extends TopicsAbstract
     /**
      * @param $order
      * @param $data
-     * @return bool|void
-     * @throws Exception
+     * @return array
      */
     public function updateOrder($order, $data)
     {
@@ -226,8 +245,8 @@ class MerchantOrder extends TopicsAbstract
         }
 
         $this->updatePaymentInfo($order, $data);
-        $statusResponse = $this->changeStatusOrder($order, $data);
-        return $statusResponse;
+
+        return $this->changeStatusOrder($order, $data);
     }
 
     public function checkStatusAlreadyUpdated($order, $data)

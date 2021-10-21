@@ -26,5 +26,4 @@ abstract class NotificationBase extends Action implements \Magento\Framework\App
     {
         return true;
     }
-
 }

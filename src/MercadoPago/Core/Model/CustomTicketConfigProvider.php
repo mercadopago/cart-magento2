@@ -70,8 +70,7 @@ class CustomTicketConfigProvider implements ConfigProviderInterface
         \Magento\Framework\View\Asset\Repository $assetRepo,
         \MercadoPago\Core\Helper\Data $coreHelper,
         \Magento\Framework\App\ProductMetadataInterface $productMetadata
-    )
-    {
+    ) {
         $this->_request = $context->getRequest();
         $this->methodInstance = $paymentHelper->getMethodInstance($this->methodCode);
         $this->_checkoutSession = $checkoutSession;
@@ -98,10 +97,12 @@ class CustomTicketConfigProvider implements ConfigProviderInterface
             $this->_coreHelper->log("CustomTicketConfigProvider::getConfig - You have excluded all payment methods, the customer can not make the payment.");
         }
 
+        $country = strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+
         $data = [
             'payment' => [
                 $this->methodCode => [
-                    'country' => strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE)),
+                    'country' => $country,
                     'bannerUrl' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_TICKET_BANNER, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                     'logEnabled' => $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG, \Magento\Store\Model\ScopeInterface::SCOPE_STORE),
                     'options' => $paymentMethods,
@@ -114,6 +115,7 @@ class CustomTicketConfigProvider implements ConfigProviderInterface
                     'platform_version' => $this->_productMetaData->getVersion(),
                     'module_version' => $this->_coreHelper->getModuleVersion(),
                     'ticket_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/ticket-mini.png"),
+                    'fingerprint_link' => $this->_coreHelper->getFingerPrintLink($country),
                 ]
             ]
         ];

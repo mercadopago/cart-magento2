@@ -14,7 +14,7 @@ abstract class AbstractMessage implements MessageInterface
      *
      * @return mixed
      */
-    public abstract function getMessageMap();
+    abstract public function getMessageMap();
 
     /**
      * Get message text from array based on key

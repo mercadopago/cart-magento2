@@ -13,20 +13,20 @@ $paymentTitle = $block->getMethod()->getConfigData('title', $block->getInfo()->g
 ?>
 <?= $block->escapeHtml($paymentTitle) ?>
 
-<?php if ($specificInfo) : ?>
+<?php if ($specificInfo): ?>
     <table class="data-table admin__table-secondary">
-        <?php foreach ($specificInfo as $label => $value) : ?>
+        <?php foreach ($specificInfo as $label => $value): ?>
             <?php
-                if ($label === 'QR Code') :
-                    continue;
+            if ($label === 'QR Code'):
+                continue;
                 endif;
             ?>
             <tr>
                 <th><?= $block->escapeHtml(__($label)) ?>:</th>
                 <td style="word-break: break-word;">
-                    <?php if ($label === 'Pix QR Code') : ?>
+                    <?php if ($label === 'Pix QR Code'): ?>
                         <img src="data:image/jpg;base64,<?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray($value, true)))) ?>" width="207" style="" />
-                    <?php else : ?>
+                    <?php else: ?>
                         <?= /* @noEscape */ nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray(__($value), true)))) ?>
                     <?php endif; ?>
                 </td>

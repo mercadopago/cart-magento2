@@ -2,11 +2,13 @@
 
 namespace MercadoPago\Core\Model\System\Message;
 
+use Exception;
 use Magento\Backend\Block\Store\Switcher;
 use Magento\Config\Model\ResourceModel\Config;
 use Magento\Framework\App\Cache\Frontend\Pool;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Notification\MessageInterface;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
@@ -17,9 +19,6 @@ use MercadoPago\Core\Model\Core;
  */
 class CustomPixMessageNotification implements MessageInterface
 {
-    /**
-     * Message identity key
-     */
     const MESSAGE_IDENTITY = 'custom_pix_notification';
 
     const ALLOWED_SITE_ID = 'MLB';
@@ -39,13 +38,11 @@ class CustomPixMessageNotification implements MessageInterface
     protected $scopeConfig;
 
     /**
-     *
      * @var Config
      */
     protected $configResource;
 
     /**
-     *
      * @var Switcher
      */
     protected $switcher;
@@ -60,34 +57,32 @@ class CustomPixMessageNotification implements MessageInterface
      */
     protected $cacheFrontendPool;
 
-
     /**
      * CustomPixMessageNotification constructor.
      *
-     * @param Core                 $coreModel
+     * @param Core $coreModel
      * @param ScopeConfigInterface $scopeConfig
-     * @param Config               $configResource
-     * @param Switcher             $switcher
-     * @param TypeListInterface    $cacheTypeList
-     * @param Pool                 $cacheFrontendPool
+     * @param Config $configResource
+     * @param Switcher $switcher
+     * @param TypeListInterface $cacheTypeList
+     * @param Pool $cacheFrontendPool
      */
     public function __construct(
-        Core $coreModel,
+        Core                 $coreModel,
         ScopeConfigInterface $scopeConfig,
-        Config $configResource,
-        Switcher $switcher,
-        TypeListInterface $cacheTypeList,
-        Pool $cacheFrontendPool
-    ) {
-        $this->coreModel         = $coreModel;
-        $this->scopeConfig       = $scopeConfig;
-        $this->configResource    = $configResource;
-        $this->switcher          = $switcher;
-        $this->cacheTypeList     = $cacheTypeList;
+        Config               $configResource,
+        Switcher             $switcher,
+        TypeListInterface    $cacheTypeList,
+        Pool                 $cacheFrontendPool
+    )
+    {
+        $this->coreModel = $coreModel;
+        $this->scopeConfig = $scopeConfig;
+        $this->configResource = $configResource;
+        $this->switcher = $switcher;
+        $this->cacheTypeList = $cacheTypeList;
         $this->cacheFrontendPool = $cacheFrontendPool;
-
-    }//end __construct()
-
+    } //end __construct()
 
     /**
      * @return string
@@ -95,9 +90,7 @@ class CustomPixMessageNotification implements MessageInterface
     public function getIdentity()
     {
         return self::MESSAGE_IDENTITY;
-
-    }//end getIdentity()
-
+    } //end getIdentity()
 
     /**
      * @return boolean
@@ -109,22 +102,20 @@ class CustomPixMessageNotification implements MessageInterface
                 return false;
             }
 
-            if (true === $this->pixAvalaiblePaymentPix()) {
+            if (true === $this->pixAvailablePaymentPix()) {
                 return false;
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return false;
         }
 
         $this->hidePix();
 
         return true;
-
-    }//end isDisplayed()
-
+    } //end isDisplayed()
 
     /**
-     * @return \Magento\Framework\Phrase|string
+     * @return string
      */
     public function getText()
     {
@@ -134,23 +125,19 @@ class CustomPixMessageNotification implements MessageInterface
             self::PIX_INFORMATION_LINK,
             __('Read more')
         );
-
-    }//end getText()
-
+    } //end getText()
 
     /**
-     * @inheritDoc
+     * @return void
      */
     public function getSeverity()
     {
         self::SEVERITY_NOTICE;
-
-    }//end getSeverity()
-
+    } //end getSeverity()
 
     /**
      * @return boolean
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     protected function canConfigurePixGateway()
     {
@@ -162,17 +149,15 @@ class CustomPixMessageNotification implements MessageInterface
         }
 
         return false;
-
-    }//end canConfigurePixGateway()
-
+    } //end canConfigurePixGateway()
 
     /**
      * @return boolean
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    protected function pixAvalaiblePaymentPix()
+    protected function pixAvailablePaymentPix()
     {
-        $data     = $this->coreModel->getPaymentMethods();
+        $data = $this->coreModel->getPaymentMethods();
         $payments = $data['response'];
 
         foreach ($payments as $payment) {
@@ -182,9 +167,7 @@ class CustomPixMessageNotification implements MessageInterface
         }
 
         return false;
-
-    }//end pixAvalaiblePaymentPix()
-
+    } //end pixAvailablePaymentPix()
 
     /**
      * @param $paymentActivePath
@@ -195,7 +178,7 @@ class CustomPixMessageNotification implements MessageInterface
             $paymentActivePath,
             ScopeInterface::SCOPE_STORE
         );
-        // check is active for disable
+
         if ($statusPaymentMethod) {
             $value = 0;
             if ($this->switcher->getWebsiteId() == 0) {
@@ -209,17 +192,13 @@ class CustomPixMessageNotification implements MessageInterface
                 );
             }
         }
-
-    }//end disablePayment()
-
+    } //end disablePayment()
 
     protected function hidePix()
     {
         $this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
         $this->cleanConfigCache();
-
-    }//end hidePix()
-
+    } //end hidePix()
 
     protected function cleanConfigCache()
     {
@@ -227,8 +206,5 @@ class CustomPixMessageNotification implements MessageInterface
         foreach ($this->cacheFrontendPool as $cacheFrontend) {
             $cacheFrontend->getBackend()->clean();
         }
-
-    }//end cleanConfigCache()
-
-
+    } //end cleanConfigCache()
 }//end class

@@ -1,6 +1,7 @@
 <?php
 
 namespace MercadoPago\Core\Model\Api\V1;
+
 /**
  *  Exception which thrown by MercadoPago API in case of processable error codes from api v1
  *
@@ -8,8 +9,7 @@ namespace MercadoPago\Core\Model\Api\V1;
  *
  * @package MercadoPago\Core\Model\Api\V1
  */
-class Exception
-    extends \MercadoPago\Core\Model\Api\Exception
+class Exception extends \MercadoPago\Core\Model\Api\Exception
 {
     /**
      *  map messages
@@ -57,5 +57,4 @@ class Exception
     {
         $this->phrase = $phrase;
     }
-
 }

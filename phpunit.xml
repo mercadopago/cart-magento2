@@ -1,0 +1,11 @@
+<phpunit colors="true">
+    <testsuite name="Tests">
+		<directory suffix=".php">magento2/app/code/MercadoPago/Test</directory>
+	</testsuite>
+
+	<filter>
+		<whitelist>
+			<directory suffix=".php">magento2/app/code/MercadoPago/Core</directory>
+		</whitelist>
+	</filter>
+</phpunit>

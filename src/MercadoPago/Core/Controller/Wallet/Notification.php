@@ -5,13 +5,9 @@ namespace MercadoPago\Core\Controller\Wallet;
 use Magento\Framework\App\Action\Context;
 use MercadoPago\Core\Controller\Notifications\NotificationBase;
 use MercadoPago\Core\Model\Notifications\Notifications;
-use MercadoPago\Core\Model\Notifications\Topics\Payment;
 use MercadoPago\Core\Model\Preference\Wallet;
+use Throwable;
 
-/**
- * Class Notification
- * @package MercadoPago\Core\Controller\Wallet
- */
 class Notification extends NotificationBase
 {
     const HTTP_RESPONSE_NOT_FOUND = 404;
@@ -19,11 +15,6 @@ class Notification extends NotificationBase
     const HTTP_RESPONSE_BAD_REQUEST = 400;
 
     const HTTP_RESPONSE_INTERNAL_ERROR = 500;
-
-    /**
-     * @var Payment
-     */
-    protected $paymentNotification;
 
     /**
      * @var Wallet
@@ -42,17 +33,18 @@ class Notification extends NotificationBase
      * @param Notifications $notifications
      */
     public function __construct(
-        Context $context,
-        Wallet $wallet,
+        Context       $context,
+        Wallet        $wallet,
         Notifications $notifications
-    ) {
+    )
+    {
         parent::__construct($context);
         $this->notifications = $notifications;
         $this->wallet = $wallet;
     }
 
     /**
-     * @inheritDoc
+     * @return void
      */
     public function execute()
     {
@@ -64,17 +56,26 @@ class Notification extends NotificationBase
 
             $data = $this->notifications->getPaymentInformation($topicClass, $requestValues);
             if (empty($data)) {
-                throw new \Exception(__('Error Merchant Order notification is expected'), self::HTTP_RESPONSE_NOT_FOUND);
+                throw new \Exception(
+                    __('Error Merchant Order notification is expected'),
+                    self::HTTP_RESPONSE_NOT_FOUND
+                );
             }
 
             $merchantOrder = $data['merchantOrder'];
-            if (is_null($merchantOrder)) {
-                throw new \Exception(__('Merchant Order not found or is an notification invalid type.'), self::HTTP_RESPONSE_NOT_FOUND);
+            if ($merchantOrder === null) {
+                throw new \Exception(
+                    __('Merchant Order not found or is an notification invalid type.'),
+                    self::HTTP_RESPONSE_NOT_FOUND
+                );
             }
 
             $order = $this->wallet->processNotification($merchantOrder);
             if ($order->getStatus() === 'canceled') {
-                throw new \Exception(__('Order already canceled: ') . $merchantOrder["external_reference"], self::HTTP_RESPONSE_BAD_REQUEST);
+                throw new \Exception(
+                    __('Order already canceled: ') . $merchantOrder["external_reference"],
+                    self::HTTP_RESPONSE_BAD_REQUEST
+                );
             }
 
             $data['statusFinal'] = $topicClass->getStatusFinal($data['payments'], $merchantOrder);
@@ -85,7 +86,7 @@ class Notification extends NotificationBase
             $statusResponse = $topicClass->updateOrder($order, $data);
 
             $this->setResponseHttp($statusResponse['code'], $statusResponse['text'], $request->getParams());
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $code = $exception->getCode();
 
             if ($exception->getCode() < 200 || $exception->getCode() > 500) {

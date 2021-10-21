@@ -36,6 +36,10 @@ define(
         return 'mercadopago_basic';
       },
 
+      getFingerPrintLink: function () {
+        return configPayment['fingerprint_link'];
+      },
+
       getLogoUrl: function () {
         if (configPayment != null) {
           return configPayment['logoUrl'];
