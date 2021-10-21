@@ -52,3 +52,5 @@ if ($coverage >= $percentage) {
 
 print_r('Code coverage is ' . round($coverage, 2) . '%, which is below the accepted ' . $percentage . '%');
 print_r(' -> Pull Request Rejected');
+
+throw new Exception('Code coverage is ' . round($coverage, 2) . '%, which is below the accepted ' . $percentage . '%');
