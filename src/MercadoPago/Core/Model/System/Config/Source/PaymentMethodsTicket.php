@@ -47,8 +47,7 @@ class PaymentMethodsTicket implements ArrayInterface
         $this->scopeConfig = $scopeConfig;
         $this->coreHelper  = $coreHelper;
         $this->_switcher   = $switcher;
-
-    }//end __construct()
+    } //end __construct()
 
 
     /**
@@ -74,9 +73,9 @@ class PaymentMethodsTicket implements ArrayInterface
         $this->coreHelper->log('GET /v1/payment_methods', 'mercadopago');
 
         try {
-            $response = RestClient::get('/v1/payment_methods', null, ['Authorization: Bearer '.$accessToken]);
+            $response = RestClient::get('/v1/payment_methods', null, ['Authorization: Bearer ' . $accessToken]);
         } catch (Exception $e) {
-            $this->coreHelper->log('PaymentMethodsTicket:: An error occurred at the time of obtaining the ticket payment methods: '.$e);
+            $this->coreHelper->log('PaymentMethodsTicket:: An error occurred at the time of obtaining the ticket payment methods: ' . $e);
             return [];
         }
 
@@ -98,8 +97,5 @@ class PaymentMethodsTicket implements ArrayInterface
         $this->coreHelper->log('PaymentMethodsTicket:: Displayed', 'mercadopago', $methods);
 
         return $methods;
-
-    }//end toOptionArray()
-
-
+    } //end toOptionArray()
 }//end class

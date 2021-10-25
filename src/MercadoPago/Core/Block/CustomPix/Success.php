@@ -2,11 +2,7 @@
 
 namespace MercadoPago\Core\Block\CustomPix;
 
-/**
- * Class Success
- */
-class Success
-    extends \MercadoPago\Core\Block\AbstractSuccess
+class Success extends \MercadoPago\Core\Block\AbstractSuccess
 {
     /**
      * Constructor
@@ -16,5 +12,4 @@ class Success
         parent::_construct();
         $this->setTemplate('custom_pix/success.phtml');
     }
-
 }

@@ -36,8 +36,10 @@ if ($this->checkExistCallback() == false && $this->getRedirectUserStatus()) {
 
             <p>
                 <?php /* @escapeNotVerified */
-                echo __('Your order %1 has been successfully generated.',
-                    '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>');
+                echo __(
+                    'Your order %1 has been successfully generated.',
+                    '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>'
+                );
                 ?>
             </p>
 

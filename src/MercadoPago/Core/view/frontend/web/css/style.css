@@ -647,6 +647,20 @@ textarea.has-error {
   display: flex;
 }
 
+.mp-d-flex-baseline {
+  display: flex !important;
+  align-items: baseline;
+}
+@media screen and (max-width: 767px) {
+      .mp-d-flex-baseline {
+          display: inline !important;
+      }
+}
+
+.mp-mr-20 {
+  margin-right: 20px;
+}
+
 .mp-mb-12 {
   margin-bottom: 12px !important;
 }

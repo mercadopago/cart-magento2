@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: magento-database
+    environment:
+      MYSQL_DATABASE: magento_test
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_USER: magento
+      MYSQL_PASSWORD: p@ssw0rd1
+      MYSQL_ROOT_PASSWORD: p@ssw0rd1
+    ports:
+      - 3306:3306
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: magento-php
+    links:
+      - mysql
+    ports:
+      - 8080:80

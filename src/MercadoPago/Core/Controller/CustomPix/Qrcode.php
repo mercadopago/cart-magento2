@@ -7,9 +7,6 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Sales\Api\Data\OrderInterface;
 
-/**
- * Class Qrcode
- */
 class Qrcode extends Action
 {
 
@@ -17,7 +14,6 @@ class Qrcode extends Action
      * @var OrderInterface
      */
     protected $order;
-
 
     /**
      * Qrcode constructor.
@@ -32,9 +28,7 @@ class Qrcode extends Action
             $context
         );
         $this->order = $order;
-
-    }//end __construct()
-
+    } //end __construct()
 
     /**
      * Controller action
@@ -53,9 +47,7 @@ class Qrcode extends Action
         $image = $this->getImage($base64ImageString);
 
         return $this->getRawResponse($image);
-
-    }//end execute()
-
+    } //end execute()
 
     /**
      * @param $orderId
@@ -89,12 +81,8 @@ class Qrcode extends Action
                 $base64Image = $paymentResponse['point_of_interaction']['transaction_data']['qr_code_base64'];
             }
         }
-
-
         return $base64Image;
-
-    }//end getImageBase64String()
-
+    } //end getImageBase64String()
 
     /**
      * @param  $base64ImageString
@@ -102,6 +90,7 @@ class Qrcode extends Action
      */
     protected function getImage($base64ImageString)
     {
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
         $data = base64_decode($base64ImageString);
 
         $im = imagecreatefromstring($data);
@@ -110,11 +99,9 @@ class Qrcode extends Action
         $image = ob_get_contents();
         imagedestroy($im);
         ob_end_clean();
-
+        // phpcs:ignore Magento2.Security.LanguageConstruct.ExitUsage
         return $image;
-
-    }//end getImage()
-
+    } //end getImage()
 
     /**
      * @param  $content
@@ -127,8 +114,5 @@ class Qrcode extends Action
         $result->setContents($content);
 
         return $result;
-
-    }//end getRawResponse()
-
-
+    } //end getRawResponse()
 }//end class

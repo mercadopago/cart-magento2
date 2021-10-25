@@ -7,10 +7,6 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use MercadoPago\Core\Model\Preference\Wallet;
 
-/**
- * Class Preference
- * @package MercadoPago\Core\Controller\Wallet
- */
 class Preference extends AbstractAction
 {
     /**

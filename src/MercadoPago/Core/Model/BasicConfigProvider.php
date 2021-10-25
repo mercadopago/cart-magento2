@@ -4,6 +4,7 @@ namespace MercadoPago\Core\Model;
 
 use Exception;
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Payment\Helper\Data as PaymentHelper;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -39,15 +40,15 @@ class BasicConfigProvider implements ConfigProviderInterface
      * @param Repository $assetRepo
      * @param ProductMetadataInterface $productMetadata
      * @param Data $coreHelper
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function __construct(
-        Data $coreHelper,
-        Context $context,
-        Repository $assetRepo,
-        Session $checkoutSession,
-        PaymentHelper $paymentHelper,
-        ScopeConfigInterface $scopeConfig,
+        Data                     $coreHelper,
+        Context                  $context,
+        Repository               $assetRepo,
+        Session                  $checkoutSession,
+        PaymentHelper            $paymentHelper,
+        ScopeConfigInterface     $scopeConfig,
         ProductMetadataInterface $productMetadata
     )
     {
@@ -71,8 +72,9 @@ class BasicConfigProvider implements ConfigProviderInterface
             }
 
             $bannerInfo = $this->makeBannerCheckout();
+            $country = strtoupper($this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
 
-            $data = [
+            return [
                 'payment' => [
                     $this->methodCode => [
                         'active' => $this->_scopeConfig->getValue(
@@ -107,12 +109,11 @@ class BasicConfigProvider implements ConfigProviderInterface
                         'module_version' => $this->_coreHelper->getModuleVersion(),
                         'platform_version' => $this->_productMetaData->getVersion(),
                         'mercadopago_mini' => $this->_assetRepo->getUrl("MercadoPago_Core::images/mercado-pago-mini.png"),
+                        'fingerprint_link' => $this->_coreHelper->getFingerPrintLink($country),
                     ],
                 ],
             ];
-
-            return $data;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->_coreHelper->log("BasicConfigProvider ERROR: " . $e->getMessage(), 'BasicConfigProvider');
             return [];
         }
@@ -121,24 +122,24 @@ class BasicConfigProvider implements ConfigProviderInterface
     /**
      * Make payment methods banner
      *
-     * @return void
+     * @return array|void
      */
     public function makeBannerCheckout()
     {
         $accessToken = $this->_scopeConfig->getValue(
             ConfigData::PATH_ACCESS_TOKEN,
-            ScopeInterface::SCOPE_WEBSITE)
-        ;
+            ScopeInterface::SCOPE_WEBSITE
+        );
 
         $maxInstallments = $this->_scopeConfig->getValue(
             ConfigData::PATH_BASIC_MAX_INSTALLMENTS,
-            ScopeInterface::SCOPE_STORE)
-        ;
+            ScopeInterface::SCOPE_STORE
+        );
 
         $excludePaymentMethods = $this->_scopeConfig->getValue(
             ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS,
-            ScopeInterface::SCOPE_STORE)
-        ;
+            ScopeInterface::SCOPE_STORE
+        );
 
         $excludePaymentMethods = explode(",", $excludePaymentMethods);
 
@@ -146,7 +147,7 @@ class BasicConfigProvider implements ConfigProviderInterface
             $debit = 0;
             $credit = 0;
             $ticket = 0;
-            $choMethods = array();
+            $choMethods = [];
 
             $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
 
@@ -163,16 +164,14 @@ class BasicConfigProvider implements ConfigProviderInterface
                 }
             }
 
-            $parameters = array(
+            return [
                 "debit" => $debit,
                 "credit" => $credit,
                 "ticket" => $ticket,
                 "installments" => $maxInstallments,
                 "checkout_methods" => $choMethods,
-            );
-
-            return $parameters;
-        } catch (\Exception $e) {
+            ];
+        } catch (Exception $e) {
             $this->_coreHelper->log(
                 "makeBannerCheckout:: An error occurred at the time of obtaining the payment methods banner: " . $e
             );

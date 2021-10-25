@@ -15,34 +15,43 @@ use MercadoPago\Core\Helper\ConfigData;
  */
 class Note extends Field
 {
+    /**
+     * @var ScopeConfigInterface
+     */
+    protected $scopeConfig;
 
     /**
-    * @param Context $context
-    * @param ScopeConfigInterface $scopeConfig
-    * @param Config $configResource
-    * @param array $data
-    */
+     * @var Config
+     */
+    protected $configResource;
+
+    /**
+     * @param Context $context
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Config $configResource
+     * @param array $data
+     */
     public function __construct(
-        Context $context,
+        Context              $context,
         ScopeConfigInterface $scopeConfig,
-        Config $configResource,
-        array $data = []
-    ) {
+        Config               $configResource,
+        array                $data = []
+    )
+    {
         parent::__construct($context, $data);
         $this->scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
     }
 
     /**
-    *
-    * Rendering the elements
-    *
-    * @param  AbstractElement $element
-    * @return string
-    */
+     *
+     * Rendering the elements
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
     public function render(AbstractElement $element)
     {
-
         $siteId = strtoupper(
             $this->scopeConfig->getValue(
                 ConfigData::PATH_SITE_ID,
@@ -58,17 +67,18 @@ class Note extends Field
     }
 
     /**
-    *
-    * Switches the note according to site_id
-    *
-    * @param  $siteId
-    * @param  $originalData
-    * @return bool
-    */
+     *
+     * Switches the note according to site_id
+     *
+     * @param  $siteId
+     * @param  $originalData
+     * @return bool
+     */
     protected function hideInterestPayment($siteId, $originalData)
     {
-        if ( ($siteId == "MCO" && $originalData['id'] == 'interest_payment_default_info') ||
-            ($siteId != "MCO" && $originalData['id'] == 'interest_payment_info') ) {
+        if (($siteId == "MCO" && $originalData['id'] == 'interest_payment_default_info') ||
+            ($siteId != "MCO" && $originalData['id'] == 'interest_payment_info')
+        ) {
             return true;
         }
 

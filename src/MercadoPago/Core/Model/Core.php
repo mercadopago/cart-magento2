@@ -462,7 +462,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
     protected function getDiscountAmount(Quote $quote)
     {
         return ($quote->getSubtotalWithDiscount() - $quote->getBaseSubtotal());
-    }//end processDiscount()
+    } //end processDiscount()
 
     /**
      * Return info of a coupon applied
@@ -526,11 +526,11 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         $preference = [];
 
-        $notification_params = array(
-            '_query' => array(
+        $notification_params = [
+            '_query' => [
                 'source_news' => 'webhooks'
-            )
-        );
+            ]
+        ];
 
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom', $notification_params);
         if (isset($notification_url) && !strrpos($notification_url, 'localhost')) {
@@ -564,7 +564,10 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         $preference['additional_info']['payer']['registration_date'] = date(
             'Y-m-d',
-            $customer->getCreatedAtTimestamp()) . "T" . date('H:i:s', $customer->getCreatedAtTimestamp()
+            $customer->getCreatedAtTimestamp()
+        ) . "T" . date(
+            'H:i:s',
+            $customer->getCreatedAtTimestamp()
         );
 
         if ($order->canShip()) {
@@ -642,7 +645,8 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
 
         if (isset($response['response']) &&
             isset($response['response']['cause']) &&
-            count($response['response']['cause']) > 0) {
+            count($response['response']['cause']) > 0
+        ) {
 
             // get first error
             $cause = $response['response']['cause'][0];
@@ -809,7 +813,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         );
 
         return SponsorId::getSponsorId($siteId);
-    }//end getSponsorId()
+    } //end getSponsorId()
 
     /**
      * @return false|string|string[]
@@ -820,5 +824,5 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             \MercadoPago\Core\Helper\ConfigData::PATH_SITE_ID,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ));
-    }//end getSiteId()
+    } //end getSiteId()
 }

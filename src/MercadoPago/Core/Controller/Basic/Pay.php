@@ -7,7 +7,10 @@ use Magento\Catalog\Controller\Product\View\ViewInterface;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\UrlInterface;
 use MercadoPago\Core\Helper\ConfigData;
@@ -18,12 +21,12 @@ class Pay extends Action implements ViewInterface
 {
     const LOG_NAME = 'CONTROLLER_BASIC_PAY';
     /**
-     * @var \MercadoPago\Core\Model\Basic\Payment
+     * @var Payment
      */
     protected $_paymentFactory;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $_scopeConfig;
 
@@ -58,14 +61,15 @@ class Pay extends Action implements ViewInterface
      * @param Data $coreHelper
      */
     public function __construct(
-        Context $context,
-        Payment $paymentFactory,
+        Context              $context,
+        Payment              $paymentFactory,
         ScopeConfigInterface $scopeConfig,
-        ManagerInterface $messageManager,
-        ResultFactory $resultFactory,
-        UrlInterface $urlInterface,
-        Data $coreHelper
-    ) {
+        ManagerInterface     $messageManager,
+        ResultFactory        $resultFactory,
+        UrlInterface         $urlInterface,
+        Data                 $coreHelper
+    )
+    {
         $this->_paymentFactory = $paymentFactory;
         $this->_scopeConfig = $scopeConfig;
         $this->_messageManager = $messageManager;
@@ -76,20 +80,25 @@ class Pay extends Action implements ViewInterface
     }
 
     /**
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return Redirect|ResultInterface|void
      */
     public function execute()
     {
         try {
             $array_assign = $this->_paymentFactory->postPago();
             $resultRedirect = $this->_resultFactory->create(ResultFactory::TYPE_REDIRECT);
+
             if ($array_assign['status'] != 400) {
                 $resultRedirect->setUrl($array_assign['init_point']);
             } else {
                 $this->_messageManager->addError(__($array_assign['message']));
-                $resultRedirect->setUrl($this->_url->getUrl($this->_scopeConfig->getValue(ConfigData::PATH_BASIC_URL_FAILURE)));
+                $resultRedirect->setUrl(
+                    $this->_url->getUrl(
+                        $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_URL_FAILURE)
+                    )
+                );
             }
+
             return $resultRedirect;
         } catch (Exception $e) {
             $this->_coreHelper->log("ERROR CONTROLLER BASIC PAY: " . $e->getMessage(), self::LOG_NAME);

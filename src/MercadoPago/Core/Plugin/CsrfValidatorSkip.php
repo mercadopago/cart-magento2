@@ -3,7 +3,6 @@
 
 namespace MercadoPago\Core\Plugin;
 
-
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\Request\CsrfValidator;
 use Magento\Framework\App\RequestInterface;

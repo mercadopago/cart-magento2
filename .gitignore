@@ -83,4 +83,6 @@ atlassian*
 !/.editorconfig
 !.github/
 !/bin
+!/*.xml
+!/docker*
 
