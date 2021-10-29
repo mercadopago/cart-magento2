@@ -123,7 +123,7 @@
                                 data-checkout="mp_firstname"
                                 id="mp_firstname"
                                 class="form-control-mine required-entry-firstname"
-                                data-bind="attr: { title: $t('Name')" />
+                                data-bind="attr: { title: $t('Name') }" />
                             <small class="mp-form-error" data-main="#mp_firstname" id="mp_error_firstname"><!-- ko i18n: 'This is a required field'--><!-- /ko --></small>
                         </div>
 
@@ -290,7 +290,7 @@
             </div>
         </form>
 
-        <div data-bind="template: {afterRender: initializeMethod()}"></div>
+        <div afterRender="initializeMethod()"></div>
 
         <div class="checkout-agreements-block">
             <!-- ko foreach: $parent.getRegion('before-place-order') -->
