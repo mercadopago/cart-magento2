@@ -170,7 +170,7 @@ class MerchantOrder extends TopicsAbstract
             }
         }
 
-        $arrayLog = [
+        $totals = [
             "totalApproved" => $totalApproved,
             "totalOrder" => $totalOrder,
             "totalPending" => $totalPending
@@ -180,20 +180,20 @@ class MerchantOrder extends TopicsAbstract
             $statusList = ['approved'];
             $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
 
-            $response = ['key' => $lastPaymentIndex, 'status' => 'approved', 'final' => true];
-            $this->_dataHelper->log("Order Setted Approved: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
+            $response = ['key' => $lastPaymentIndex, 'status' => 'approved', 'final' => true, 'totals' => $totals];
+            $this->_dataHelper->log("Order Setted Approved: " . json_encode($totals), 'mercadopago-basic.log', $response);
         } elseif ($totalPending >= $totalOrder) {
             $statusList = ['pending', 'in_process'];
             $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
 
-            $response = ['key' => $lastPaymentIndex, 'status' => 'pending', 'final' => false];
-            $this->_dataHelper->log("Order Setted Pending: " . json_encode($arrayLog), 'mercadopago-basic.log', $response);
+            $response = ['key' => $lastPaymentIndex, 'status' => 'pending', 'final' => false, 'totals' => $totals];
+            $this->_dataHelper->log("Order Setted Pending: " . json_encode($totals), 'mercadopago-basic.log', $response);
         } else {
             $statusList = ['cancelled', 'refunded', 'charged_back', 'in_mediation', 'rejected'];
             $lastPaymentIndex = $this->_getLastPaymentIndex($payments, $statusList);
             $statusReturned = $payments[$lastPaymentIndex]['status'];
 
-            $response = ['key' => $lastPaymentIndex, 'status' => $payments[$lastPaymentIndex]['status'], 'final' => true];
+            $response = ['key' => $lastPaymentIndex, 'status' => $payments[$lastPaymentIndex]['status'], 'final' => true, 'totals' => $totals];
             $this->_dataHelper->log("Order Setted Other Status: " . $statusReturned, 'mercadopago-basic.log', $response);
         }
 
@@ -233,6 +233,11 @@ class MerchantOrder extends TopicsAbstract
      */
     public function updateOrder($order, $data)
     {
+        if (count($data['payments']) > 1) {
+            $data['payments'][$data['statusFinal']['key']]['transaction_details']['total_paid_amount'] =
+                $data['statusFinal']['totals']['totalApproved'];
+        }
+        
         $payment = $data['payments'][$data['statusFinal']['key']];
         $orderPayment = $order->getPayment();
         $orderPayment->setAdditionalInformation("paymentResponse", $payment);
