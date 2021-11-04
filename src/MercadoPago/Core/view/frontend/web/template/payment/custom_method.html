@@ -282,7 +282,7 @@
             <div class="wb-cho-button-frame"></div>
         </form>
 
-        <div data-bind="template: { afterRender: initApp() }"></div>
+        <div afterRender="initApp()"></div>
 
         <div class="checkout-agreements-block">
             <!-- ko foreach: $parent.getRegion('before-place-order') -->

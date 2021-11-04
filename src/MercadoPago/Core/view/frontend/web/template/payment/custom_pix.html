@@ -34,7 +34,7 @@
                      }, 'validation':[]}">
         </form>
 
-        <div data-bind="template: { afterRender: initializeMethod() }"></div>
+        <div afterRender="initializeMethod()"></div>
 
         <div class="checkout-agreements-block">
             <!-- ko foreach: $parent.getRegion('before-place-order') -->
