@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+-   Fixed cors reports
 -   Fixed incompatibilities with Magento 2.4.3-p1
 -   Fixed bug with two card payments
 
