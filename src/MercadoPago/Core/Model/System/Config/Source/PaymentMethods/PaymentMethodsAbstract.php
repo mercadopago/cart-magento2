@@ -49,7 +49,7 @@ abstract class PaymentMethodsAbstract implements \Magento\Framework\Option\Array
 
         try {
             #$response = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
-            $paymentMethods = $this->coreHelper->getMercadoPagoPaymentMethods($accessToken);
+            $response = $this->coreHelper->getMercadoPagoPaymentMethods($accessToken);
             if ($response['status'] > 201) {
                 return ['methods' => $methods];
             }
