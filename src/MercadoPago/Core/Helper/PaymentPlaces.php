@@ -10,7 +10,7 @@ class PaymentPlaces
     public static function getPaymentPlaces($paymentId)
     {
         $payment_places = [
-            'paycash' => [
+            "paycash" => [
                 [
                     "payment_option_id" => "7eleven",
                     "name"              => "7 Eleven",
@@ -44,6 +44,6 @@ class PaymentPlaces
             ],
         ];
 
-        return $payment_places[$paymentId] ;
+        return $payment_places[$paymentId] ?? [];
     }
 }
