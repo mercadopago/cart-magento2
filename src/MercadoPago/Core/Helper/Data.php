@@ -202,11 +202,14 @@ class Data extends \Magento\Payment\Helper\Data
             return true;
         }
 
-        $mp = $this->getApiInstance($accessToken);
-        $isValid = $mp->is_valid_access_token();
+        $response = $this->getMercadoPagoPaymentMethods($accessToken);
 
-        $this->_mpCache->saveCache($cacheKey, $isValid);
-        return $isValid;
+        if (empty($response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
+            return false;
+        }
+
+        $this->_mpCache->saveCache($cacheKey, true);
+        return true;
     }
 
     /**

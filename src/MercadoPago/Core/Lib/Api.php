@@ -347,33 +347,7 @@ class Api
         $url = "/discount_campaigns?transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code";
         return RestClient::get($url, null, ["Authorization: Bearer " . $access_token]);
     }
-
-    /**
-     * @return bool
-     */
-    public function is_valid_access_token()
-    {
-        if (empty($this->ll_access_token)) {
-            return false;
-        }
-
-        try {
-            $response = $this->coreHelper->getMercadoPagoPaymentMethods($this->get_access_token());
-
-            if (empty($response)) {
-                return false;
-            }
-
-            if ((isset($response['status'])) && ($response['status'] == 401 || $response['status'] == 400)) {
-                return false;
-            }
-
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
+    
     /**
      * @param $id
      * @return array

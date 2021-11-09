@@ -37,12 +37,10 @@
                 <!-- /ko -->
                 <!-- /ko -->
 
-                <!-- ko if: (getCountTickets() == 1) -->
                 <ul id="mercadopago-payment-methods-ticket">
                     <!-- ko foreach: {data: getTicketsData(), as: 'ticket'} -->
                     <li class="mercadopago-ticket-option">
-                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ value: ticket.id, checked: true, 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true }) }" />
-
+                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ value: ticket.id, 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })}" />
                         <label class="mercadopago-ticket-label">
                             <img data-bind="'attr':{src: ticket.secure_thumbnail, alt: ticket.name}" />
                             <label class="mercadopago-ticket-label" data-bind="text: ticket.name"></label>
@@ -50,22 +48,6 @@
                     </li>
                     <!--/ko-->
                 </ul>
-                <!-- /ko -->
-
-                <!-- ko if: (getCountTickets() > 1) -->
-                <ul id="mercadopago-payment-methods-ticket">
-                    <!-- ko foreach: {data: getTicketsData(), as: 'ticket'} -->
-                    <li class="mercadopago-ticket-option">
-                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ value: ticket.id, 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true }) }" />
-
-                        <label class="mercadopago-ticket-label">
-                            <img data-bind="'attr':{src: ticket.secure_thumbnail, alt: ticket.name}" />
-                            <label class="mercadopago-ticket-label" data-bind="text: ticket.name"></label>
-                        </label>
-                    </li>
-                    <!--/ko-->
-                </ul>
-                <!-- /ko -->
 
                 <!-- ko if: getCountTickets() > 0 -->
                 <!-- ko if: (getCountryId() == 'MLB')-->
