@@ -365,7 +365,7 @@ class Data extends \Magento\Payment\Helper\Data
             return false;
         }
 
-        return $payment_methods['response'];
+        return $payment_methods;
     }
 
     /**
