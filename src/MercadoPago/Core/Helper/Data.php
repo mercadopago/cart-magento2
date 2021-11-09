@@ -343,7 +343,7 @@ class Data extends \Magento\Payment\Helper\Data
     }
 
     /**
-     * return the list of payment methods or null
+     * return the list of payment methods or false
      *
      * @param mixed|null $accessToken
      *
@@ -351,6 +351,9 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function getMercadoPagoPaymentMethods($accessToken)
     {
+        
+        $this->log('GET /v1/payment_methods', 'mercadopago');
+
         try {
             $mp = $this->getApiInstance($accessToken);
 

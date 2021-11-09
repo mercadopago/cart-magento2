@@ -679,7 +679,6 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function getPaymentMethods()
     {
-        #return $this->getMercadoPagoInstance()->get("/v1/payment_methods");
         return $this->_coreHelper->getMercadoPagoPaymentMethods($this->_accessToken);
     }
 
