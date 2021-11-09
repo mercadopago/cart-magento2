@@ -150,7 +150,7 @@ class BasicConfigProvider implements ConfigProviderInterface
             $choMethods = [];
 
             //$paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
-            $paymentMethods = $coreHelper->getMercadoPagoPaymentMethods($accessToken);
+            $paymentMethods = $this->_coreHelper->getMercadoPagoPaymentMethods($accessToken);
 
             foreach ($paymentMethods['response'] as $pm) {
                 if (!in_array($pm['id'], $excludePaymentMethods)) {

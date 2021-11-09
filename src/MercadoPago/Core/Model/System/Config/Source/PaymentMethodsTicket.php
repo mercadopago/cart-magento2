@@ -70,11 +70,11 @@ class PaymentMethodsTicket implements ArrayInterface
             return $methods;
         }
 
-        $this->coreHelper->log('GET /v1/payment_methods' . 'ticket', 'mercadopago');
+        $this->coreHelper->log('GET /v1/payment_methods' . ' ticket', 'mercadopago');
 
         try {
             #$response = RestClient::get('/v1/payment_methods', null, ['Authorization: Bearer ' . $accessToken]);
-            $response = $this->$coreHelper->getMercadoPagoPaymentMethods($accessToken);
+            $response = $this->coreHelper->getMercadoPagoPaymentMethods($accessToken);
         } catch (Exception $e) {
             $this->coreHelper->log('PaymentMethodsTicket:: An error occurred at the time of obtaining the ticket payment methods: ' . $e);
             return [];

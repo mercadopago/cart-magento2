@@ -359,7 +359,7 @@ class Api
 
         try {
             #$response = $this->get("/v1/payment_methods");
-            $response = $this->$coreHelper->getMercadoPagoPaymentMethods($this->get_access_token());
+            $response = $this->coreHelper->getMercadoPagoPaymentMethods($this->get_access_token());
 
             if (empty($response)) {
                 return false;
