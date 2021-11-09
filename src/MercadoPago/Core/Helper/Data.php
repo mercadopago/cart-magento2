@@ -23,6 +23,7 @@ use MercadoPago\Core\Lib\Api;
 use MercadoPago\Core\Lib\RestClient;
 use MercadoPago\Core\Logger\Logger;
 use MercadoPago\Core\Model\Custom\Payment;
+use MercadoPago\Core\Helper\PaymentPlaces;
 
 /**
  * Class Data
@@ -357,7 +358,7 @@ class Data extends \Magento\Payment\Helper\Data
 
             foreach ($payment_methods['response'] as $payment_method) {
                 if (!isset($payment_method['payment_places'])) {
-                    $payment_method['payment_places'] = [];
+                    $payment_method['payment_places'] = PaymentPlaces::getPaymentPlaces($payment_method['id']);
                 }
             }
 
