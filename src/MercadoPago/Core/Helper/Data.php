@@ -354,9 +354,6 @@ class Data extends \Magento\Payment\Helper\Data
             $mp = $this->getApiInstance($accessToken);
 
             $payment_methods = $mp->get("/v1/payment_methods");
-            if ($payment_methods['status'] == 401 || $payment_methods['status'] == 400) {
-                return false;
-            }
 
             foreach ($payment_methods['response'] as $payment_method) {
                 if (!isset($payment_method['payment_places'])) {
