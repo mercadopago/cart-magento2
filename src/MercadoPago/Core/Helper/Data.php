@@ -204,7 +204,7 @@ class Data extends \Magento\Payment\Helper\Data
 
         $response = $this->getMercadoPagoPaymentMethods($accessToken);
 
-        if (empty($response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
+        if ((!$response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
             return false;
         }
 
@@ -355,7 +355,7 @@ class Data extends \Magento\Payment\Helper\Data
     public function getMercadoPagoPaymentMethods($accessToken)
     {
         
-        $this->log('GET /v1/payment_methods', 'mercadopago');
+        $this->log('GET /v1/payment_methods', 'mercadopago', $accessToken);
 
         try {
             $mp = $this->getApiInstance($accessToken);
