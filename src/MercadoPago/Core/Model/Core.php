@@ -679,7 +679,8 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function getPaymentMethods()
     {
-        return $this->getMercadoPagoInstance()->get("/v1/payment_methods");
+        #return $this->getMercadoPagoInstance()->get("/v1/payment_methods");
+        return $this->coreHelper->getMercadoPagoPaymentMethods($this->_accessToken);
     }
 
     /**
@@ -799,6 +800,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         if (!$this->_accessToken) {
             $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
+
         return $this->_coreHelper->getApiInstance($this->_accessToken);
     }
 

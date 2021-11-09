@@ -353,15 +353,22 @@ class Data extends \Magento\Payment\Helper\Data
         try {
             $mp = $this->getApiInstance($accessToken);
 
-            $response = $mp->get("/v1/payment_methods");
-            if ($response['status'] == 401 || $response['status'] == 400) {
+            $payment_methods = $mp->get("/v1/payment_methods");
+            if ($payment_methods['status'] == 401 || $payment_methods['status'] == 400) {
                 return false;
             }
+
+            foreach ($payment_methods['response'] as $payment_method) {
+                if (!isset($payment_method['payment_places'])) {
+                    $payment_method['payment_places'] = [];
+                }
+            }
+
         } catch (Exception $e) {
             return false;
         }
 
-        return $response['response'];
+        return $payment_methods['response'];
     }
 
     /**
