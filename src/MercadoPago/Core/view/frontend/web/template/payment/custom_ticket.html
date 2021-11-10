@@ -39,13 +39,26 @@
 
                 <ul id="mercadopago-payment-methods-ticket">
                     <!-- ko foreach: {data: getTicketsData(), as: 'ticket'} -->
-                    <li class="mercadopago-ticket-option">
+                    <!-- ko if: (ticket.payment_places.length === 0) -->
+                    <li style="display:inline-block; width: 40%;" class="mercadopago-ticket-option">
                         <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ value: ticket.id, 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })}" />
                         <label class="mercadopago-ticket-label">
                             <img data-bind="'attr':{src: ticket.secure_thumbnail, alt: ticket.name}" />
                             <label class="mercadopago-ticket-label" data-bind="text: ticket.name"></label>
                         </label>
                     </li>
+                    <!--/ko-->
+                    <!-- ko if: (ticket.payment_places.length > 0) -->
+                    <!-- ko foreach: {data: ticket.payment_places, as: 'payment_place'} -->
+                    <li style="display:inline-block;  width: 40%;" class="mercadopago-ticket-option">
+                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ value: ticket.id, 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })}" />
+                        <label class="mercadopago-ticket-label">
+                            <img data-bind="'attr':{src: payment_place.thumbnail, alt: payment_place.name}" />
+                            <label class="mercadopago-ticket-label" data-bind="text: payment_place.name"></label>
+                        </label>
+                    </li>
+                    <!--/ko-->
+                    <!--/ko-->
                     <!--/ko-->
                 </ul>
 
