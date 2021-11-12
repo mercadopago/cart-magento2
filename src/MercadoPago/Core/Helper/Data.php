@@ -213,27 +213,6 @@ class Data extends \Magento\Payment\Helper\Data
     }
 
     /**
-     * ClientId and Secret valid?
-     *
-     * @param $clientId
-     * @param $clientSecret
-     *
-     * @return bool
-     * @throws LocalizedException
-     */
-    public function isValidClientCredentials($clientId, $clientSecret)
-    {
-        $mp = $this->getApiInstance($clientId, $clientSecret);
-        try {
-            $mp->get_access_token();
-        } catch (Exception $e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * @param string $scopeCode
      * @return bool|mixed
      */
@@ -271,53 +250,6 @@ class Data extends \Magento\Payment\Helper\Data
 
         $order->setTotalPaid($paidAmount);
         $order->save();
-    }
-
-    /**
-     * Modify payment array adding specific fields
-     *
-     * @param $payment
-     *
-     * @return mixed
-     * @refactor
-     */
-    public function setPayerInfo(&$payment)
-    {
-        $this->log("setPayerInfo", 'mercadopago-custom.log', $payment);
-
-        if ($payment['payment_method_id']) {
-            $payment["payment_method"] = $payment['payment_method_id'];
-        }
-
-        if ($payment['installments']) {
-            $payment["installments"] = $payment['installments'];
-        }
-        if ($payment['id']) {
-            $payment["payment_id_detail"] = $payment['id'];
-        }
-        if (isset($payment['trunc_card'])) {
-            $payment["trunc_card"] = $payment['trunc_card'];
-        } elseif (isset($payment['card']) && isset($payment['card']['last_four_digits'])) {
-            $payment["trunc_card"] = "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
-        }
-
-        if (isset($payment['card']["cardholder"]["name"])) {
-            $payment["cardholder_name"] = $payment['card']["cardholder"]["name"];
-        }
-
-        if (isset($payment['payer']['first_name'])) {
-            $payment['payer_first_name'] = $payment['payer']['first_name'];
-        }
-
-        if (isset($payment['payer']['last_name'])) {
-            $payment['payer_last_name'] = $payment['payer']['last_name'];
-        }
-
-        if (isset($payment['payer']['email'])) {
-            $payment['payer_email'] = $payment['payer']['email'];
-        }
-
-        return $payment;
     }
 
     /**
@@ -425,42 +357,6 @@ class Data extends \Magento\Payment\Helper\Data
     public function getModuleVersion()
     {
         return $this->_moduleResource->getDbVersion('MercadoPago_Core');
-    }
-
-    /**
-     * Summary: Get client id from access token.
-     * Description: Get client id from access token.
-     *
-     * @param String $at
-     *
-     * @return String client id.
-     */
-    public static function getClientIdFromAccessToken($at)
-    {
-        $t = explode('-', $at);
-
-        if (count($t) > 0) {
-            return $t[1];
-        }
-
-        return '';
-    }
-
-    /**
-     * @param $additionalInfo
-     * @return string|null
-     */
-    public function getPaymentId($additionalInfo)
-    {
-        if (isset($additionalInfo['payment_id_detail']) && !empty($additionalInfo['payment_id_detail'])) {
-            return $additionalInfo['payment_id_detail'];
-        }
-
-        if (isset($additionalInfo['paymentResponse']) && !empty($additionalInfo['paymentResponse'])) {
-            return $additionalInfo['paymentResponse']['id'];
-        }
-
-        return null;
     }
 
     /**
