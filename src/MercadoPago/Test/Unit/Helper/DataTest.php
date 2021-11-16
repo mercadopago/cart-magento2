@@ -88,6 +88,11 @@ class DataTest extends TestCase
     private $moduleResource;
 
     /**
+     * @var MockObject
+     */
+    private $api;
+
+    /**
      * @inheritdoc
      */
     protected function setUp(): void
@@ -113,32 +118,41 @@ class DataTest extends TestCase
         $this->switcher = $arguments['switcher'];
         $this->composerInformation = $arguments['composerInformation'];
         $this->moduleResource = $arguments['moduleResource'];
-        
-        
+        $this->api = $arguments['api'];
+
         $this->helper = $objectManagerHelper->getObject($className, $arguments);
     }
 
-    public function testGetMercadoPagoPaymentMethods(): void
+    public function testGetMercadoPagoPaymentMethods_successResponse_returnArrayWithPaymentPlaces(): void
     {
-        list($accesstoken, $payment_methods, $uri) = [
-            'APP-ACCESSTOKEN-TEST',
+        list($accesstoken, $payment_methods, $expected_payment_methods, $uri) = [
+            'APP_USR-00000000000-000000-000000-0000000000',
             Response::RESPONSE_PAYMENT_METHODS_SUCCESS,
+            Response::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAY_PLACES,
             '/v1/payment_methods',
         ];
 
-        $apiMock = $this->getMockBuilder(Api::class)
-        ->disableOriginalConstructor()
-        ->getMock();
+        $this->api->expects($this->once())
+        ->method('get')
+        ->with($uri)
+        ->willReturn($payment_methods);
 
-        $apiMock
-        ->method(
-            'get'
-        )->with(
-            $uri
-        )->willReturn(
-            $payment_methods
-        );
+        $this->assertEquals($expected_payment_methods, $this->helper->getMercadoPagoPaymentMethods($accesstoken));
+    }
 
-        $this->assertEquals($payment_meethods, $this->helper->getMercadoPagoPaymentMethods($accesstoken));
+    public function testGetMercadoPagoPaymentMethods_exception_returnEmpty(): void
+    {
+        list($accesstoken, $uri) = [
+            'APP-ACCESSTOKEN-TEST',
+            '/v1/payment_methods',
+        ];
+
+        $this->api->expects($this->once())
+        ->method('get')
+        ->with($uri)
+        ->willReturn(null);
+
+        $this->expectException(Exception::class);
+        $response = $this->helper->getMercadoPagoPaymentMethods($accesstoken);
     }
 }
