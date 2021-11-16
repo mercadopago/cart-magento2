@@ -1,4 +1,4 @@
-.PHONY: help bash build linter phpcs phpmd phpstan test
+.PHONY: help bash build linter phpcs phpmd phpstan test sync-files
 help:
 	@grep -E '^[a-zA-Z-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "[32m%-15s[0m %s\n", $$1, $$2}'
 
@@ -22,3 +22,6 @@ phpstan: ## Run and validate code standards with stan
 
 test: ## Run and validate tests with phpunit
 	@sh bin/run-test.sh
+
+sync-files: ## Sync your local files to Magento 2 Container
+	@sh bin/run-sync-files.sh
