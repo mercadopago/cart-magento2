@@ -91,6 +91,11 @@ class Data extends \Magento\Payment\Helper\Data
     protected $_moduleResource;
 
     /**
+     * @var Api $api
+     */
+    protected $_api;
+
+    /**
      * Data constructor.
      * @param Message\MessageInterface $messageInterface
      * @param Cache $mpCache
@@ -106,6 +111,7 @@ class Data extends \Magento\Payment\Helper\Data
      * @param Switcher $switcher
      * @param ComposerInformation $composerInformation
      * @param ResourceInterface $moduleResource
+     * @param Api $api
      */
     public function __construct(
         Message\MessageInterface $messageInterface,
@@ -121,7 +127,8 @@ class Data extends \Magento\Payment\Helper\Data
         OrderFactory $orderFactory,
         Switcher $switcher,
         ComposerInformation $composerInformation,
-        ResourceInterface $moduleResource
+        ResourceInterface $moduleResource,
+        Api $api
     ) {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
@@ -132,6 +139,7 @@ class Data extends \Magento\Payment\Helper\Data
         $this->_switcher = $switcher;
         $this->_composerInformation = $composerInformation;
         $this->_moduleResource = $moduleResource;
+        $this->_api = $api;
     }
 
     /**
@@ -174,7 +182,8 @@ class Data extends \Magento\Payment\Helper\Data
             throw new LocalizedException(__('The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
         }
 
-        $api = new Api($accessToken);
+        //$api = new Api($accessToken);
+        $api = $this->_api;
         $api->set_platform(self::PLATFORM_OPENPLATFORM);
 
         $api->set_type(self::TYPE);
@@ -282,7 +291,7 @@ class Data extends \Magento\Payment\Helper\Data
      *
      * @param mixed|null $accessToken
      *
-     * @return mixed
+     * @return array
      */
     public function getMercadoPagoPaymentMethods($accessToken)
     {
@@ -293,6 +302,7 @@ class Data extends \Magento\Payment\Helper\Data
             $mp = $this->getApiInstance($accessToken);
 
             $payment_methods = $mp->get("/v1/payment_methods");
+
             $treated_payments_methods = []; 
 
             foreach ($payment_methods['response'] as $payment_method) {
@@ -308,7 +318,7 @@ class Data extends \Magento\Payment\Helper\Data
             return $payment_methods;
 
         } catch (Exception $e) {
-            return false;
+            return [];
         }
     }
 
