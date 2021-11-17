@@ -152,7 +152,6 @@ class DataTest extends TestCase
         ->with($uri)
         ->willReturn(null);
 
-        $this->expectException(Exception::class);
-        $response = $this->helper->getMercadoPagoPaymentMethods($accesstoken);
+        $this->assertEquals([], $this->helper->getMercadoPagoPaymentMethods($accesstoken));
     }
 }
