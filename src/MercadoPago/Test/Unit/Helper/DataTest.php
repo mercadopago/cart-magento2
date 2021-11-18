@@ -41,12 +41,12 @@ class DataTest extends TestCase
      * @var MockObject
      */
     private $paymentMethodFactory;
-    
+
     /**
      * @var MockObject
      */
     private $appEmulation;
-    
+
     /**
      * @var MockObject
      */
@@ -76,12 +76,12 @@ class DataTest extends TestCase
      * @var MockObject
      */
     private $switcher;
-    
+
     /**
      * @var MockObject
      */
     private $composerInformation;
-    
+
     /**
      * @var MockObject
      */
@@ -104,7 +104,7 @@ class DataTest extends TestCase
         $context = $arguments['context'];
         $this->scopeConfig = $context->getScopeConfig();
         $this->layoutFactory = $arguments['layoutFactory'];
-        
+
         $this->messageInterface = $arguments['messageInterface'];
         $this->mpCache = $arguments['mpCache'];
 
@@ -133,9 +133,9 @@ class DataTest extends TestCase
         ];
 
         $this->api->expects($this->once())
-        ->method('get')
-        ->with($uri)
-        ->willReturn($payment_methods);
+            ->method('get')
+            ->with($uri)
+            ->willReturn($payment_methods);
 
         $this->assertEquals($expected_payment_methods, $this->helper->getMercadoPagoPaymentMethods($accesstoken));
     }
@@ -148,9 +148,9 @@ class DataTest extends TestCase
         ];
 
         $this->api->expects($this->once())
-        ->method('get')
-        ->with($uri)
-        ->willReturn(null);
+            ->method('get')
+            ->with($uri)
+            ->willReturn(null);
 
         $this->assertEquals([], $this->helper->getMercadoPagoPaymentMethods($accesstoken));
     }
