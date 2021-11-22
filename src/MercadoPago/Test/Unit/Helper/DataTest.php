@@ -4,7 +4,9 @@ namespace MercadoPago\Test\Unit\Helper;
 
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Lib\Api;
+use MercadoPago\Test\Unit\Constants\Config;
 use MercadoPago\Test\Unit\Constants\Response;
+use MercadoPago\Test\Unit\Constants\PaymentMethods;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PHPUnit\Framework\TestCase;
@@ -125,34 +127,21 @@ class DataTest extends TestCase
 
     public function testGetMercadoPagoPaymentMethods_successResponse_returnArrayWithPaymentPlaces(): void
     {
-        list($accesstoken, $payment_methods, $expected_payment_methods, $uri) = [
-            'APP_USR-00000000000-000000-000000-0000000000',
-            Response::RESPONSE_PAYMENT_METHODS_SUCCESS,
-            Response::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAY_PLACES,
-            '/v1/payment_methods',
-        ];
-
         $this->api->expects($this->once())
         ->method('get')
-        ->with($uri)
-        ->willReturn($payment_methods);
+        ->with(PaymentMethods::PAYMENT_METHODS_URI)
+        ->willReturn(Response::RESPONSE_PAYMENT_METHODS_SUCCESS);
 
-        $this->assertEquals($expected_payment_methods, $this->helper->getMercadoPagoPaymentMethods($accesstoken));
+        $this->assertEquals(Response::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAY_PLACES, $this->helper->getMercadoPagoPaymentMethods(Config::ACCESS_TOKEN));
     }
 
     public function testGetMercadoPagoPaymentMethods_exception_returnEmpty(): void
     {
-        list($accesstoken, $uri) = [
-            'APP-ACCESSTOKEN-TEST',
-            '/v1/payment_methods',
-        ];
-
         $this->api->expects($this->once())
         ->method('get')
-        ->with($uri)
+        ->with(PaymentMethods::PAYMENT_METHODS_URI)
         ->willReturn(null);
 
-        $this->expectException(Exception::class);
-        $response = $this->helper->getMercadoPagoPaymentMethods($accesstoken);
+        $this->assertEquals([], $this->helper->getMercadoPagoPaymentMethods(Config::ACCESS_TOKEN));
     }
 }
