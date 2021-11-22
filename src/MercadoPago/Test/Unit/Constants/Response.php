@@ -2,7 +2,7 @@
 
 namespace MercadoPago\Test\Unit\Constants;
 
-class Response 
+class Response
 {
 
   public const RESPONSE_PAYMENT_METHODS_SUCCESS = [
@@ -13,8 +13,7 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'debmaster',
         'max_allowed_amount' => 300000,
         'min_allowed_amount' => 5,
@@ -51,8 +50,7 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'supported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'amex',
         'max_allowed_amount' => 300000,
         'min_allowed_amount' => 1,
@@ -89,8 +87,7 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'supported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'master',
         'max_allowed_amount' => 300000,
         'min_allowed_amount' => 5,
@@ -127,8 +124,7 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'debvisa',
         'max_allowed_amount' => 300000,
         'min_allowed_amount' => 5,
@@ -165,8 +161,7 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'toka',
         'max_allowed_amount' => 200000,
         'min_allowed_amount' => 5,
@@ -203,8 +198,7 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'tengo',
         'max_allowed_amount' => 200000,
         'min_allowed_amount' => 5,
@@ -241,8 +235,7 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'edenred',
         'max_allowed_amount' => 200000,
         'min_allowed_amount' => 5,
@@ -279,8 +272,7 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'sodexo',
         'max_allowed_amount' => 200000,
         'min_allowed_amount' => 5,
@@ -317,8 +309,7 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'carnet',
         'max_allowed_amount' => 200000,
         'min_allowed_amount' => 5,
@@ -328,8 +319,7 @@ class Response
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://http2.mlstatic.com/storage/logos-api-admin/14b2cb40-e3bc-11ea-a26c-a3e05eb53570-m@2x.png',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'testing',
         'thumbnail' => 'https://http2.mlstatic.com/storage/logos-api-admin/14b2cb40-e3bc-11ea-a26c-a3e05eb53570-m@2x.png',
       ],
@@ -339,8 +329,7 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'supported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'visa',
         'max_allowed_amount' => 300000,
         'min_allowed_amount' => 5,
@@ -379,8 +368,7 @@ class Response
           2 => 'entity_type',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'paycash',
         'max_allowed_amount' => 60000,
         'min_allowed_amount' => 20,
@@ -390,15 +378,13 @@ class Response
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/paycash.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'testing',
         'thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/paycash.gif',
       ],
       11 => [
         'accreditation_time' => 1,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'does_not_apply',
         'financial_institutions' => [
           0 => [
@@ -415,18 +401,15 @@ class Response
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/clabe.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'testing',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/clabe.gif',
       ],
       12 => [
         'accreditation_time' => 0,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'supported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'meliplace',
         'max_allowed_amount' => 10000,
         'min_allowed_amount' => 10,
@@ -436,18 +419,15 @@ class Response
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/xxxxx.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'testing',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/xxxxx.gif',
       ],
       13 => [
         'accreditation_time' => 60,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'does_not_apply',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'banamex',
         'max_allowed_amount' => 40000,
         'min_allowed_amount' => 5,
@@ -457,18 +437,15 @@ class Response
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/banamex.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'active',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/banamex.gif',
       ],
       14 => [
         'accreditation_time' => 60,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'does_not_apply',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'bancomer',
         'max_allowed_amount' => 40000,
         'min_allowed_amount' => 10,
@@ -478,18 +455,15 @@ class Response
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/bancomer.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'active',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/bancomer.gif',
       ],
       15 => [
         'accreditation_time' => 60,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'does_not_apply',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'serfin',
         'max_allowed_amount' => 40000,
         'min_allowed_amount' => 5,
@@ -499,18 +473,15 @@ class Response
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/serfin.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'active',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/serfin.gif',
       ],
       16 => [
         'accreditation_time' => 2880,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'does_not_apply',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'oxxo',
         'max_allowed_amount' => 10000,
         'min_allowed_amount' => 5,
@@ -520,8 +491,7 @@ class Response
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/oxxo.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'active',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/oxxo.gif',
       ],
@@ -537,14 +507,13 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'debmaster',
         'max_allowed_amount' => 300000,
         'min_allowed_amount' => 5,
         'name' => 'Mastercard Débito',
         'payment_type_id' => 'debit_card',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
@@ -576,14 +545,13 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'supported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'amex',
         'max_allowed_amount' => 300000,
         'min_allowed_amount' => 1,
         'name' => 'American Express',
         'payment_type_id' => 'credit_card',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
@@ -615,14 +583,13 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'supported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'master',
         'max_allowed_amount' => 300000,
         'min_allowed_amount' => 5,
         'name' => 'Mastercard',
         'payment_type_id' => 'credit_card',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
@@ -654,14 +621,13 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'debvisa',
         'max_allowed_amount' => 300000,
         'min_allowed_amount' => 5,
         'name' => 'Visa Débito',
         'payment_type_id' => 'debit_card',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
@@ -693,14 +659,13 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'toka',
         'max_allowed_amount' => 200000,
         'min_allowed_amount' => 5,
         'name' => 'Toka',
         'payment_type_id' => 'debit_card',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
@@ -732,14 +697,13 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'tengo',
         'max_allowed_amount' => 200000,
         'min_allowed_amount' => 5,
         'name' => 'Tengo',
         'payment_type_id' => 'debit_card',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
@@ -771,14 +735,13 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'edenred',
         'max_allowed_amount' => 200000,
         'min_allowed_amount' => 5,
         'name' => 'Edenred',
         'payment_type_id' => 'debit_card',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
@@ -810,14 +773,13 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'sodexo',
         'max_allowed_amount' => 200000,
         'min_allowed_amount' => 5,
         'name' => 'Sodexo',
         'payment_type_id' => 'debit_card',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
@@ -849,20 +811,18 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'carnet',
         'max_allowed_amount' => 200000,
         'min_allowed_amount' => 5,
         'name' => 'Carnet',
         'payment_type_id' => 'credit_card',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://http2.mlstatic.com/storage/logos-api-admin/14b2cb40-e3bc-11ea-a26c-a3e05eb53570-m@2x.png',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'testing',
         'thumbnail' => 'https://http2.mlstatic.com/storage/logos-api-admin/14b2cb40-e3bc-11ea-a26c-a3e05eb53570-m@2x.png',
       ],
@@ -872,14 +832,13 @@ class Response
           0 => 'cardholder_name',
         ],
         'deferred_capture' => 'supported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'visa',
         'max_allowed_amount' => 300000,
         'min_allowed_amount' => 5,
         'name' => 'Visa',
         'payment_type_id' => 'credit_card',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
@@ -913,8 +872,7 @@ class Response
           2 => 'entity_type',
         ],
         'deferred_capture' => 'unsupported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'paycash',
         'max_allowed_amount' => 60000,
         'min_allowed_amount' => 20,
@@ -956,15 +914,13 @@ class Response
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/paycash.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'testing',
         'thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/paycash.gif',
       ],
       11 => [
         'accreditation_time' => 1,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'does_not_apply',
         'financial_institutions' => [
           0 => [
@@ -977,123 +933,107 @@ class Response
         'min_allowed_amount' => 1,
         'name' => 'STP',
         'payment_type_id' => 'bank_transfer',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/clabe.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'testing',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/clabe.gif',
       ],
       12 => [
         'accreditation_time' => 0,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'supported',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'meliplace',
         'max_allowed_amount' => 10000,
         'min_allowed_amount' => 10,
         'name' => 'Meliplaces',
         'payment_type_id' => 'ticket',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/xxxxx.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'testing',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/xxxxx.gif',
       ],
       13 => [
         'accreditation_time' => 60,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'does_not_apply',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'banamex',
         'max_allowed_amount' => 40000,
         'min_allowed_amount' => 5,
         'name' => 'Citibanamex',
         'payment_type_id' => 'atm',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/banamex.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'active',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/banamex.gif',
       ],
       14 => [
         'accreditation_time' => 60,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'does_not_apply',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'bancomer',
         'max_allowed_amount' => 40000,
         'min_allowed_amount' => 10,
         'name' => 'BBVA Bancomer',
         'payment_type_id' => 'atm',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/bancomer.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'active',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/bancomer.gif',
       ],
       15 => [
         'accreditation_time' => 60,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'does_not_apply',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'serfin',
         'max_allowed_amount' => 40000,
         'min_allowed_amount' => 5,
         'name' => 'Santander',
         'payment_type_id' => 'atm',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/serfin.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'active',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/serfin.gif',
       ],
       16 => [
         'accreditation_time' => 2880,
-        'additional_info_needed' => [
-        ],
+        'additional_info_needed' => [],
         'deferred_capture' => 'does_not_apply',
-        'financial_institutions' => [
-        ],
+        'financial_institutions' => [],
         'id' => 'oxxo',
         'max_allowed_amount' => 10000,
         'min_allowed_amount' => 5,
         'name' => 'OXXO',
         'payment_type_id' => 'ticket',
-        'payment_places' => [ ],
+        'payment_places' => [],
         'processing_modes' => [
           0 => 'aggregator',
         ],
         'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/oxxo.gif',
-        'settings' => [
-        ],
+        'settings' => [],
         'status' => 'active',
         'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/oxxo.gif',
       ],
@@ -1102,8 +1042,7 @@ class Response
   ];
 
   public const RESPONSE_PAYMENT_METHODS_FAILURE = [
-    'response' => [ ],
+    'response' => [],
     'status' => 401,
   ];
-
 }

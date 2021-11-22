@@ -43,12 +43,12 @@ class DataTest extends TestCase
      * @var MockObject
      */
     private $paymentMethodFactory;
-    
+
     /**
      * @var MockObject
      */
     private $appEmulation;
-    
+
     /**
      * @var MockObject
      */
@@ -78,12 +78,12 @@ class DataTest extends TestCase
      * @var MockObject
      */
     private $switcher;
-    
+
     /**
      * @var MockObject
      */
     private $composerInformation;
-    
+
     /**
      * @var MockObject
      */
@@ -106,7 +106,7 @@ class DataTest extends TestCase
         $context = $arguments['context'];
         $this->scopeConfig = $context->getScopeConfig();
         $this->layoutFactory = $arguments['layoutFactory'];
-        
+
         $this->messageInterface = $arguments['messageInterface'];
         $this->mpCache = $arguments['mpCache'];
 
