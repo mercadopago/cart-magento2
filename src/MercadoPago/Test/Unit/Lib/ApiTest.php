@@ -22,9 +22,7 @@ class ApiTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->api = $this->getMockBuilder(Api::class)
-                        ->disableOriginalConstructor()
-                        ->getMock();
+        $this->api = new Api($default_access_token);
     }
 
     /**

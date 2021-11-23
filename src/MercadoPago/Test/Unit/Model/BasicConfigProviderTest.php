@@ -1,17 +1,18 @@
 <?php
 
-namespace MercadoPago\Test\Unit\Helper;
+namespace MercadoPago\Test\Unit\Model;
 
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Lib\Api;
 use MercadoPago\Core\Model\BasicConfigProvider;
 use MercadoPago\Test\Unit\Constants\ConfigProviderConstants;
-use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Magento\Payment\Model\Method\AbstractMethod;
 use Magento\Store\Model\ScopeInterface;
+use \Magento\Framework\UrlInterface;
 
 class BasicConfigProviderTest extends TestCase
 {
@@ -58,7 +59,12 @@ class BasicConfigProviderTest extends TestCase
     /**
      * @var MockObject
      */
-    private $abstractMethodMock;
+    private $abstractMethod;
+
+    /**
+     * @var MockObject
+     */
+    private $url;
 
     /**
      * @inheritdoc
@@ -77,7 +83,7 @@ class BasicConfigProviderTest extends TestCase
         $this->scopeConfig = $arguments['scopeConfig'];
         $this->productMetadata = $arguments['productMetadata'];
 
-        $this->abstractMethodMock = $this->getMockBuilder(AbstractMethod::class)
+        $this->abstractMethod = $this->getMockBuilder(AbstractMethod::class)
             ->setMethods(['isAvailable'])
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
@@ -85,14 +91,29 @@ class BasicConfigProviderTest extends TestCase
         $this->paymentHelper
             ->expects($this->any())
             ->method('getMethodInstance')
-            ->willReturn($this->abstractMethodMock);
+            ->willReturn($this->abstractMethod);
+        
+        $this->url = $this->getMockBuilder(UrlInterface::class)
+            ->setMethods(['getUrl'])
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+        
+        $this->context = $this->getMockBuilder(Context::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        
+        $arguments['context'] = $this->context;
+        
+        $this->context->expects($this->any())
+            ->method('getUrl')
+            ->willReturn($this->url);
 
         $this->basicConfigProvider = $objectManagerHelper->getObject($className, $arguments);
     }
 
     public function testGetConfig_successfulExecution_returnArray(): void
     {
-        $this->abstractMethodMock->expects($this->once())
+        $this->abstractMethod->expects($this->once())
             ->method('isAvailable')
             ->willReturn(true);
 
@@ -103,6 +124,10 @@ class BasicConfigProviderTest extends TestCase
         $this->assetRepo->expects($this->any())
             ->method('getUrl')
             ->willReturnArgument(0);
+
+        $this->url->expects($this->once())
+            ->method('getUrl')
+            ->willReturn('action_url');
 
         $this->coreHelper->expects($this->once())
             ->method('getModuleversion')
@@ -119,14 +144,14 @@ class BasicConfigProviderTest extends TestCase
         $expectedReturn = [
             'payment' => [
                 \MercadoPago\Core\Model\Basic\Payment::CODE => [
-                    'active' => 'payment/mercadopago_basic/active',
-                    'logEnabled' => 'payment/mercadopago/logs',
-                    'max_installments' => 'payment/mercadopago_basic/max_installments',
-                    'auto_return' => 'payment/mercadopago_basic/auto_return',
-                    'exclude_payments' => 'payment/mercadopago_basic/excluded_payment_methods',
-                    'order_status' => 'payment/mercadopago_basic/order_status',
+                    'active' => ConfigData::PATH_BASIC_ACTIVE,
+                    'logEnabled' => ConfigData::PATH_ADVANCED_LOG,
+                    'max_installments' => ConfigData::PATH_BASIC_MAX_INSTALLMENTS,
+                    'auto_return' => ConfigData::PATH_BASIC_AUTO_RETURN,
+                    'exclude_payments' => ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS,
+                    'order_status' => ConfigData::PATH_BASIC_ORDER_STATUS,
                     'logoUrl' => 'MercadoPago_Core::images/mp_logo.png',
-                    'actionUrl' => null,
+                    'actionUrl' => 'action_url',
                     'banner_info' => null,
                     'loading_gif' => 'MercadoPago_Core::images/loading.gif',
                     'redirect_image' => 'MercadoPago_Core::images/redirect_checkout.png',
@@ -143,7 +168,7 @@ class BasicConfigProviderTest extends TestCase
 
     public function testGetConfig_exceptionExecution_returnEmpty(): void
     {
-        $this->abstractMethodMock->expects($this->once())
+        $this->abstractMethod->expects($this->once())
             ->method('isAvailable')
             ->will($this->throwException(new \Exception()));
 
@@ -152,7 +177,7 @@ class BasicConfigProviderTest extends TestCase
 
     public function testGetConfig_methodInstanceNotAvailable_returnEmpty(): void
     {
-        $this->abstractMethodMock->expects($this->once())
+        $this->abstractMethod->expects($this->once())
             ->method('isAvailable')
             ->willReturn(false);
 
@@ -194,18 +219,9 @@ class BasicConfigProviderTest extends TestCase
             [ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE, null, 'paycash,amex']
         ];
 
-        
         $this->scopeConfig
             ->method('getValue')
             ->will($this->returnValueMap($valueMap));
-        
-        echo "\n";
-        echo $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
-        echo "\n";
-        echo $this->scopeConfig->getValue(ConfigData::PATH_BASIC_MAX_INSTALLMENTS, ScopeInterface::SCOPE_STORE);
-        echo "\n";
-        echo $this->scopeConfig->getValue(ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE);
-        echo "\n";
 
         $this->coreHelper->expects($this->once())
             ->method('getMercadoPagoPaymentMethods')
@@ -230,6 +246,6 @@ class BasicConfigProviderTest extends TestCase
             ->method('getMercadoPagoPaymentMethods')
             ->will($this->throwException(new \Exception()));
 
-            $this->assertEquals(null, $this->basicConfigProvider->makeBannerCheckout());
+        $this->assertEquals(null, $this->basicConfigProvider->makeBannerCheckout());
     }
 }
