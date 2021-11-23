@@ -4,7 +4,6 @@ namespace MercadoPago\Test\Unit\Helper;
 
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Lib\Api;
-use MercadoPago\Test\Unit\Constants\Config;
 use MercadoPago\Test\Unit\Constants\Response;
 use MercadoPago\Test\Unit\Constants\PaymentMethods;
 use Magento\Framework\App\Helper\Context;
@@ -17,82 +16,82 @@ class DataTest extends TestCase
     /**
      * @var Data
      */
-    private $helper;
+    private $data;
 
     /**
      * @var MockObject
      */
-    private $messageInterface;
+    private $messageInterfaceMock;
 
     /**
      * @var MockObject
      */
-    private $mpCache;
+    private $mpCacheMock;
 
     /**
      * @var MockObject
      */
-    private $context;
+    private $contextMock;
 
     /**
      * @var LayoutFactory|MockObject
      */
-    private $layoutFactory;
+    private $layoutFactoryMock;
 
     /**
      * @var MockObject
      */
-    private $paymentMethodFactory;
+    private $paymentMethodFactoryMock;
 
     /**
      * @var MockObject
      */
-    private $appEmulation;
+    private $appEmulationMock;
 
     /**
      * @var MockObject
      */
-    private $paymentConfig;
+    private $paymentConfigMock;
 
     /**
      * @var MockObject
      */
-    private $initialConfig;
+    private $initialConfigMock;
 
     /**
      * @var MockObject
      */
-    private $logger;
+    private $loggerMock;
 
     /**
      * @var MockObject
      */
-    private $statusFactory;
+    private $statusFactoryMock;
 
     /**
      * @var MockObject
      */
-    private $orderFactory;
+    private $orderFactoryMock;
 
     /**
      * @var MockObject
      */
-    private $switcher;
+    private $switcherMock;
 
     /**
      * @var MockObject
      */
-    private $composerInformation;
+    private $composerInformationMock;
 
     /**
      * @var MockObject
      */
-    private $moduleResource;
+    private $moduleResourceMock;
 
     /**
      * @var MockObject
      */
-    private $api;
+    private $apiMock;
 
     /**
      * @inheritdoc
@@ -102,46 +101,48 @@ class DataTest extends TestCase
         $objectManagerHelper = new ObjectManager($this);
         $className = Data::class;
         $arguments = $objectManagerHelper->getConstructArguments($className);
-        /** @var Context $context */
-        $context = $arguments['context'];
-        $this->scopeConfig = $context->getScopeConfig();
-        $this->layoutFactory = $arguments['layoutFactory'];
 
-        $this->messageInterface = $arguments['messageInterface'];
-        $this->mpCache = $arguments['mpCache'];
+        $this->contextMock = $arguments['context'];
+        $this->scopeConfigMock = $arguments['scopeConfig'];
+        $this->layoutFactoryMock = $arguments['layoutFactory'];
+        $this->messageInterfaceMock = $arguments['messageInterface'];
+        $this->mpCacheMock = $arguments['mpCache'];
+        $this->paymentMethodFactoryMock = $arguments['paymentMethodFactory'];
+        $this->appEmulationMock = $arguments['appEmulation'];
+        $this->paymentConfigMock = $arguments['paymentConfig'];
+        $this->initialConfigMock = $arguments['initialConfig'];
+        $this->loggerMock = $arguments['logger'];
+        $this->statusFactoryMock = $arguments['statusFactory'];
+        $this->orderFactoryMock = $arguments['orderFactory'];
+        $this->switcherMock = $arguments['switcher'];
+        $this->composerInformationMock = $arguments['composerInformation'];
+        $this->moduleResourceMock = $arguments['moduleResource'];
+        $this->apiMock = $arguments['api'];
 
-        $this->paymentMethodFactory = $arguments['paymentMethodFactory'];
-        $this->appEmulation = $arguments['appEmulation'];
-        $this->paymentConfig = $arguments['paymentConfig'];
-        $this->initialConfig = $arguments['initialConfig'];
-        $this->logger = $arguments['logger'];
-        $this->statusFactory = $arguments['statusFactory'];
-        $this->orderFactory = $arguments['orderFactory'];
-        $this->switcher = $arguments['switcher'];
-        $this->composerInformation = $arguments['composerInformation'];
-        $this->moduleResource = $arguments['moduleResource'];
-        $this->api = $arguments['api'];
+        $this->contextMock = $this->getMockBuilder(Api::class)
+        ->disableOriginalConstructor()
+        ->getMock();
 
-        $this->helper = $objectManagerHelper->getObject($className, $arguments);
+        $this->data = $objectManagerHelper->getObject($className, $arguments);
     }
 
     public function testGetMercadoPagoPaymentMethods_successResponse_returnArrayWithPaymentPlaces(): void
     {
-        $this->api->expects($this->once())
+        $this->apiMock->expects($this->once())
         ->method('get')
         ->with(PaymentMethods::PAYMENT_METHODS_URI)
         ->willReturn(Response::RESPONSE_PAYMENT_METHODS_SUCCESS);
 
-        $this->assertEquals(Response::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAY_PLACES, $this->helper->getMercadoPagoPaymentMethods(Config::ACCESS_TOKEN));
+        $this->assertEquals(Response::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAY_PLACES, $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));
     }
 
     public function testGetMercadoPagoPaymentMethods_exception_returnEmpty(): void
     {
-        $this->api->expects($this->once())
+        $this->apiMock->expects($this->once())
         ->method('get')
         ->with(PaymentMethods::PAYMENT_METHODS_URI)
         ->willReturn(null);
 
-        $this->assertEquals([], $this->helper->getMercadoPagoPaymentMethods(Config::ACCESS_TOKEN));
+        $this->assertEquals([], $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));
     }
 }
