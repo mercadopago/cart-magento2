@@ -22,7 +22,7 @@ class ApiTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->api = new Api($default_access_token);
+        $this->api = new Api($this->default_access_token);
     }
 
     /**

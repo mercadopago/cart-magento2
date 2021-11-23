@@ -103,7 +103,6 @@ class DataTest extends TestCase
         $arguments = $objectManagerHelper->getConstructArguments($className);
 
         $this->contextMock = $arguments['context'];
-        $this->scopeConfigMock = $arguments['scopeConfig'];
         $this->layoutFactoryMock = $arguments['layoutFactory'];
         $this->messageInterfaceMock = $arguments['messageInterface'];
         $this->mpCacheMock = $arguments['mpCache'];
