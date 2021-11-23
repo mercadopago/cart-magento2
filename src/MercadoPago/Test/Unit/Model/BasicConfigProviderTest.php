@@ -24,47 +24,47 @@ class BasicConfigProviderTest extends TestCase
     /**
      * @var MockObject
      */
-    private $coreHelper;
+    private $coreHelperMock;
 
     /**
      * @var MockObject
      */
-    private $context;
+    private $contextMock;
 
     /**
      * @var MockObject
      */
-    private $assetRepo;
+    private $assetRepoMock;
 
     /**
      * @var MockObject
      */
-    private $checkoutSession;
+    private $checkoutSessionMock;
 
     /**
      * @var MockObject
      */
-    private $paymentHelper;
+    private $paymentHelperMock;
 
     /**
      * @var MockObject
      */
-    private $scopeConfig;
+    private $scopeConfigMock;
 
     /**
      * @var MockObject
      */
-    private $productMetadata;
+    private $productMetadataMock;
 
     /**
      * @var MockObject
      */
-    private $abstractMethod;
+    private $abstractMethodMock;
 
     /**
      * @var MockObject
      */
-    private $url;
+    private $urlMock;
 
     /**
      * @inheritdoc
@@ -75,71 +75,71 @@ class BasicConfigProviderTest extends TestCase
         $className = BasicConfigProvider::class;
         $arguments = $objectManagerHelper->getConstructArguments($className);
 
-        $this->context = $arguments['context'];
-        $this->coreHelper = $arguments['coreHelper'];
-        $this->assetRepo = $arguments['assetRepo'];
-        $this->checkoutSession = $arguments['checkoutSession'];
-        $this->paymentHelper = $arguments['paymentHelper'];
-        $this->scopeConfig = $arguments['scopeConfig'];
-        $this->productMetadata = $arguments['productMetadata'];
+        $this->contextMock = $arguments['context'];
+        $this->coreHelperMock = $arguments['coreHelper'];
+        $this->assetRepoMock = $arguments['assetRepo'];
+        $this->checkoutSessionMock = $arguments['checkoutSession'];
+        $this->paymentHelperMock = $arguments['paymentHelper'];
+        $this->scopeConfigMock = $arguments['scopeConfig'];
+        $this->productMetadataMock = $arguments['productMetadata'];
 
-        $this->abstractMethod = $this->getMockBuilder(AbstractMethod::class)
-            ->setMethods(['isAvailable'])
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $this->abstractMethodMock = $this->getMockBuilder(AbstractMethod::class)
+        ->setMethods(['isAvailable'])
+        ->disableOriginalConstructor()
+        ->getMockForAbstractClass();
 
-        $this->paymentHelper
-            ->expects($this->any())
-            ->method('getMethodInstance')
-            ->willReturn($this->abstractMethod);
+        $this->paymentHelperMock
+        ->expects($this->any())
+        ->method('getMethodInstance')
+         ->willReturn($this->abstractMethodMock);
         
-        $this->url = $this->getMockBuilder(UrlInterface::class)
-            ->setMethods(['getUrl'])
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $this->urlMock = $this->getMockBuilder(UrlInterface::class)
+        ->setMethods(['getUrl'])
+        ->disableOriginalConstructor()
+        ->getMockForAbstractClass();
         
-        $this->context = $this->getMockBuilder(Context::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->contextMock = $this->getMockBuilder(Context::class)
+        ->disableOriginalConstructor()
+        ->getMock();
         
-        $arguments['context'] = $this->context;
+        $arguments['context'] = $this->contextMock;
         
-        $this->context->expects($this->any())
-            ->method('getUrl')
-            ->willReturn($this->url);
+        $this->contextMock->expects($this->any())
+        ->method('getUrl')
+        ->willReturn($this->urlMock);
 
         $this->basicConfigProvider = $objectManagerHelper->getObject($className, $arguments);
     }
 
     public function testGetConfig_successfulExecution_returnArray(): void
     {
-        $this->abstractMethod->expects($this->once())
-            ->method('isAvailable')
-            ->willReturn(true);
+        $this->abstractMethodMock->expects($this->once())
+        ->method('isAvailable')
+        ->willReturn(true);
 
-        $this->scopeConfig->expects($this->any())
-            ->method('getValue')
-            ->willReturnArgument(0);
+        $this->scopeConfigMock->expects($this->any())
+        ->method('getValue')
+        ->willReturnArgument(0);
 
-        $this->assetRepo->expects($this->any())
-            ->method('getUrl')
-            ->willReturnArgument(0);
+        $this->assetRepoMock->expects($this->any())
+        ->method('getUrl')
+        ->willReturnArgument(0);
 
-        $this->url->expects($this->once())
-            ->method('getUrl')
-            ->willReturn('action_url');
+        $this->urlMock->expects($this->once())
+        ->method('getUrl')
+        ->willReturn('action_url');
 
-        $this->coreHelper->expects($this->once())
-            ->method('getModuleversion')
-            ->willReturn('module_version');
+        $this->coreHelperMock->expects($this->once())
+        ->method('getModuleversion')
+        ->willReturn('module_version');
 
-        $this->coreHelper->expects($this->once())
-            ->method('getFingerPrintLink')
-            ->willReturn('fingerprint_link');
+        $this->coreHelperMock->expects($this->once())
+        ->method('getFingerPrintLink')
+        ->willReturn('fingerprint_link');
 
-        $this->productMetadata->expects($this->once())
-            ->method('getVersion')
-            ->willReturn('magento2');
+        $this->productMetadataMock->expects($this->once())
+        ->method('getVersion')
+        ->willReturn('magento2');
 
         $expectedReturn = [
             'payment' => [
@@ -168,18 +168,18 @@ class BasicConfigProviderTest extends TestCase
 
     public function testGetConfig_exceptionExecution_returnEmpty(): void
     {
-        $this->abstractMethod->expects($this->once())
-            ->method('isAvailable')
-            ->will($this->throwException(new \Exception()));
+        $this->abstractMethodMock->expects($this->once())
+        ->method('isAvailable')
+        ->will($this->throwException(new \Exception()));
 
         $this->assertEquals([], $this->basicConfigProvider->getConfig());
     }
 
     public function testGetConfig_methodInstanceNotAvailable_returnEmpty(): void
     {
-        $this->abstractMethod->expects($this->once())
-            ->method('isAvailable')
-            ->willReturn(false);
+        $this->abstractMethodMock->expects($this->once())
+        ->method('isAvailable')
+        ->willReturn(false);
 
         $this->assertEquals([], $this->basicConfigProvider->getConfig());
     }
@@ -192,13 +192,13 @@ class BasicConfigProviderTest extends TestCase
             [ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE, null, '']
         ];
 
-        $this->scopeConfig
-            ->method('getValue')
-            ->will($this->returnValueMap($valueMap));
+        $this->scopeConfigMock
+        ->method('getValue')
+        ->will($this->returnValueMap($valueMap));
 
-        $this->coreHelper->expects($this->once())
-            ->method('getMercadoPagoPaymentMethods')
-            ->willReturn(ConfigProviderConstants::PAYMENT_METHODS);
+        $this->coreHelperMock->expects($this->once())
+        ->method('getMercadoPagoPaymentMethods')
+        ->willReturn(ConfigProviderConstants::PAYMENT_METHODS);
 
         $expectedOutput = [
             "debit" => 1,
@@ -219,13 +219,13 @@ class BasicConfigProviderTest extends TestCase
             [ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE, null, 'paycash,amex']
         ];
 
-        $this->scopeConfig
-            ->method('getValue')
-            ->will($this->returnValueMap($valueMap));
+        $this->scopeConfigMock
+        ->method('getValue')
+        ->will($this->returnValueMap($valueMap));
 
-        $this->coreHelper->expects($this->once())
-            ->method('getMercadoPagoPaymentMethods')
-            ->willReturn(ConfigProviderConstants::PAYMENT_METHODS);
+        $this->coreHelperMock->expects($this->once())
+        ->method('getMercadoPagoPaymentMethods')
+        ->willReturn(ConfigProviderConstants::PAYMENT_METHODS);
 
         $expectedOutput = [
             "debit" => 1,
@@ -242,9 +242,9 @@ class BasicConfigProviderTest extends TestCase
 
     public function testMakeBannerCheckout_exceptionExecution_returnNull(): void
     {
-        $this->coreHelper->expects($this->once())
-            ->method('getMercadoPagoPaymentMethods')
-            ->will($this->throwException(new \Exception()));
+        $this->coreHelperMock->expects($this->once())
+        ->method('getMercadoPagoPaymentMethods')
+        ->will($this->throwException(new \Exception()));
 
         $this->assertEquals(null, $this->basicConfigProvider->makeBannerCheckout());
     }

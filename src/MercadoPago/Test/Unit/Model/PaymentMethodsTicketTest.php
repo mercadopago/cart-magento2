@@ -18,22 +18,22 @@ class PaymentMethodsTicketTest extends TestCase
     /**
      * @var PaymentMethodsTicket
      */
-    private $helper;
+    private $paymentMethodsTicket;
 
     /**
      * @var MockObject
      */
-    private $scopeConfig;
+    private $scopeConfigMock;
 
     /**
      * @var MockObject
      */
-    private $coreHelper;
+    private $coreHelperMock;
 
     /**
      * @var MockObject
      */
-    private $switcher;
+    private $switcherMock;
 
     /**
      * @inheritdoc
@@ -43,32 +43,33 @@ class PaymentMethodsTicketTest extends TestCase
         $objectManagerHelper = new ObjectManager($this);
         $className = PaymentMethodsTicket::class;
         $arguments = $objectManagerHelper->getConstructArguments($className);
-        $this->scopeConfig = $arguments['scopeConfig'];
-        $this->coreHelper = $arguments['coreHelper'];
-        $this->switcher = $arguments['switcher'];
+        $this->scopeConfigMock = $arguments['scopeConfig'];
+        $this->coreHelperMock = $arguments['coreHelper'];
+        $this->switcherMock = $arguments['switcher'];
 
-        $this->helper = $objectManagerHelper->getObject($className, $arguments);
+        $this->paymentMethodsTicket = $objectManagerHelper->getObject($className, $arguments);
     }
 
     public function testToOptionArray_success_returnArrayWithoutMethods(): void
     {
-        $this->scopeConfig->expects(self::any())->method('getValue')
-        ->with(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_WEBSITE, $this->switcher->getWebsiteId())
+        $this->scopeConfigMock->expects(self::any())
+        ->method('getValue')
         ->willReturn('');
 
-        $this->assertEquals(PaymentMethods::EMPTY_PAYMENT_METHODS, $this->helper->toOptionArray());
+        $this->assertEquals(PaymentMethods::EMPTY_PAYMENT_METHODS, $this->paymentMethodsTicket->toOptionArray());
     }
 
     public function testToOptionArray_success_returnArrayWithMethods(): void
     {
-        $this->scopeConfig->expects(self::any())->method('getValue')
-        ->with(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_WEBSITE, $this->switcher->getWebsiteId())
-        ->willReturn(Config::ACCESS_TOKEN);
+        $this->scopeConfigMock->expects(self::any())
+        ->method('getValue')
+        ->willReturn('APP_USR-00000000000-000000-000000-0000000000');
 
-        $this->coreHelper->expects(self::any())->method('getMercadoPagoPaymentMethods')
-        ->with(Config::ACCESS_TOKEN)
+        $this->coreHelperMock->expects(self::any())
+        ->method('getMercadoPagoPaymentMethods')
+        ->with('APP_USR-00000000000-000000-000000-0000000000')
         ->willReturn(Response::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAY_PLACES);
 
-        $this->assertEquals(PaymentMethods::PAYMENT_METHODS_SUCCESS, $this->helper->toOptionArray());
+        $this->assertEquals(PaymentMethods::PAYMENT_METHODS_SUCCESS, $this->paymentMethodsTicket->toOptionArray());
     }
 }

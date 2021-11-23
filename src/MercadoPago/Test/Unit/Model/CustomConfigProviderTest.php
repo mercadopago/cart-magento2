@@ -25,61 +25,61 @@ class CustomConfigProviderTest extends TestCase
     /**
      * @var MockObject
      */
-    private $coreHelper;
+    private $coreHelperMock;
 
     /**
      * @var MockObject
      */
-    private $request;
+    private $requestMock;
 
     /**
      * @var MockObject
      */
-    private $context;
+    private $contextMock;
 
     /**
      * @var MockObject
      */
-    private $assetRepo;
+    private $assetRepoMock;
 
     /**
      * @var MockObject
      */
-    private $storeManager;
+    private $storeManagerMock;
 
     /**
      * @var MockObject
      */
-    private $checkoutSession;
+    private $checkoutSessionMock;
 
     /**
      * @var MockObject
      */
-    private $paymentHelper;
+    private $paymentHelperMock;
 
     /**
      * @var MockObject
      */
-    private $scopeConfig;
+    private $scopeConfigMock;
 
     /**
      * @var MockObject
      */
-    private $productMetadata;
+    private $productMetadataMock;
 
     /**
      * @var MockObject
      */
-    private $abstractMethod;
+    private $abstractMethodMock;
 
     /**
      * @var MockObject
      */
-    private $storeInterface;
+    private $storeInterfaceMock;
     /**
      * @var MockObject
      */
-    private $quote;
+    private $quoteMock;
 
     /**
      * @inheritdoc
@@ -90,112 +90,112 @@ class CustomConfigProviderTest extends TestCase
         $className = CustomConfigProvider::class;
         $arguments = $objectManagerHelper->getConstructArguments($className);
 
-        $this->paymentHelper = $arguments['paymentHelper'];
-        $this->coreHelper = $arguments['coreHelper'];
-        $this->checkoutSession = $arguments['checkoutSession'];
-        $this->assetRepo = $arguments['assetRepo'];
-        $this->storeManager = $arguments['storeManager'];
-        $this->scopeConfig = $arguments['scopeConfig'];
-        $this->productMetadata = $arguments['productMetadata'];
+        $this->paymentHelperMock = $arguments['paymentHelper'];
+        $this->coreHelperMock = $arguments['coreHelper'];
+        $this->checkoutSessionMock = $arguments['checkoutSession'];
+        $this->assetRepoMock = $arguments['assetRepo'];
+        $this->storeManagerMock = $arguments['storeManager'];
+        $this->scopeConfigMock = $arguments['scopeConfig'];
+        $this->productMetadataMock = $arguments['productMetadata'];
         
-        $this->abstractMethod = $this->getMockBuilder(AbstractMethod::class)
-            ->setMethods(['isAvailable', 'getCustomerAndCards', 'getConfigData'])
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $this->abstractMethodMock = $this->getMockBuilder(AbstractMethod::class)
+        ->setMethods(['isAvailable', 'getCustomerAndCards', 'getConfigData'])
+        ->disableOriginalConstructor()
+        ->getMockForAbstractClass();
         
-        $this->paymentHelper->expects($this->any())
-            ->method('getMethodInstance')
-            ->willReturn($this->abstractMethod);
+        $this->paymentHelperMock->expects($this->any())
+        ->method('getMethodInstance')
+        ->willReturn($this->abstractMethodMock);
         
-        $this->storeInterface = $this->getMockBuilder(StoreInterface::class)
-            ->setMethods(['getBaseUrl'])
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $this->storeInterfaceMock = $this->getMockBuilder(StoreInterface::class)
+        ->setMethods(['getBaseUrl'])
+        ->disableOriginalConstructor()
+        ->getMockForAbstractClass();
 
-        $this->storeManager->expects($this->any())
-            ->method('getStore')
-            ->willReturn($this->storeInterface);
+        $this->storeManagerMock->expects($this->any())
+        ->method('getStore')
+        ->willReturn($this->storeInterfaceMock);
         
-        $this->quote = $this->getMockBuilder(Quote::class)
-            ->setMethods(['getGrandTotal'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->quoteMock = $this->getMockBuilder(Quote::class)
+        ->setMethods(['getGrandTotal'])
+        ->disableOriginalConstructor()
+        ->getMock();
 
-        $this->checkoutSession->expects($this->any())
-            ->method('getQuote')
-            ->willReturn($this->quote);
+        $this->checkoutSessionMock->expects($this->any())
+        ->method('getQuote')
+        ->willReturn($this->quoteMock);
         
-        $this->request = $this->getMockBuilder(RequestInterface::class)
-            ->setMethods(['getRouteName'])
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $this->requestMock = $this->getMockBuilder(RequestInterface::class)
+        ->setMethods(['getRouteName'])
+        ->disableOriginalConstructor()
+        ->getMockForAbstractClass();
         
-        $this->context = $this->getMockBuilder(Context::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->contextMock = $this->getMockBuilder(Context::class)
+        ->disableOriginalConstructor()
+        ->getMock();
         
-        $arguments['context'] = $this->context;
+        $arguments['context'] = $this->contextMock;
         
-        $this->context->expects($this->any())
-            ->method('getRequest')
-            ->willReturn($this->request);
+        $this->contextMock->expects($this->any())
+        ->method('getRequest')
+        ->willReturn($this->requestMock);
 
         $this->customConfigProvider = $objectManagerHelper->getObject($className, $arguments);
     }
 
     public function testGetConfig_successfulExecution_returnArray(): void
     {
-        $this->abstractMethod->expects($this->once())
-            ->method('isAvailable')
-            ->willReturn(true);
+        $this->abstractMethodMock->expects($this->once())
+        ->method('isAvailable')
+        ->willReturn(true);
 
-        $this->abstractMethod->expects($this->once())
-            ->method('getCustomerAndCards')
-            ->willReturn('customer_and_cards');
+        $this->abstractMethodMock->expects($this->once())
+        ->method('getCustomerAndCards')
+        ->willReturn('customer_and_cards');
 
-        $this->abstractMethod->expects($this->once())
-            ->method('getConfigData')
-            ->willReturn('success_url');
+        $this->abstractMethodMock->expects($this->once())
+        ->method('getConfigData')
+        ->willReturn('success_url');
 
-        $this->scopeConfig->expects($this->any())
-            ->method('getValue')
-            ->willReturnArgument(0);
+        $this->scopeConfigMock->expects($this->any())
+        ->method('getValue')
+        ->willReturnArgument(0);
 
-        $this->assetRepo->expects($this->any())
-            ->method('getUrl')
-            ->willReturnArgument(0);
+        $this->assetRepoMock->expects($this->any())
+        ->method('getUrl')
+        ->willReturnArgument(0);
 
-        $this->storeInterface->expects($this->any())
-            ->method('getBaseUrl')
-            ->willReturn('base_url');
+        $this->storeInterfaceMock->expects($this->any())
+        ->method('getBaseUrl')
+        ->willReturn('base_url');
 
-        $this->quote->expects($this->any())
-            ->method('getGrandTotal')
-            ->willReturn('grand_total');
+        $this->quoteMock->expects($this->any())
+        ->method('getGrandTotal')
+        ->willReturn('grand_total');
 
-        $this->request->expects($this->once())
-            ->method('getRouteName')
-            ->willReturn('route_name');
+        $this->requestMock->expects($this->once())
+        ->method('getRouteName')
+        ->willReturn('route_name');
 
-        $this->coreHelper->expects($this->once())
-            ->method('getModuleversion')
-            ->willReturn('module_version');
+        $this->coreHelperMock->expects($this->once())
+        ->method('getModuleversion')
+        ->willReturn('module_version');
 
-        $this->coreHelper->expects($this->once())
-            ->method('getWalletButtonLink')
-            ->willReturn('wallet_button_link');
+        $this->coreHelperMock->expects($this->once())
+        ->method('getWalletButtonLink')
+        ->willReturn('wallet_button_link');
 
-        $this->coreHelper->expects($this->once())
-            ->method('getFingerPrintLink')
-            ->willReturn('fingerprint_link');
+        $this->coreHelperMock->expects($this->once())
+        ->method('getFingerPrintLink')
+        ->willReturn('fingerprint_link');
 
-        $this->coreHelper->expects($this->once())
-            ->method('getMercadoPagoPaymentMethods')
-            ->willReturn(null);
+        $this->coreHelperMock->expects($this->once())
+        ->method('getMercadoPagoPaymentMethods')
+        ->willReturn(null);
 
-        $this->productMetadata->expects($this->once())
-            ->method('getVersion')
-            ->willReturn('magento2');
+        $this->productMetadataMock->expects($this->once())
+        ->method('getVersion')
+        ->willReturn('magento2');
 
         $expectedReturn = [
             'payment' => [
@@ -234,22 +234,22 @@ class CustomConfigProviderTest extends TestCase
 
     public function testGetConfig_methodInstanceNotAvailable_returnEmpty(): void
     {
-        $this->abstractMethod->expects($this->once())
-            ->method('isAvailable')
-            ->willReturn(false);
+        $this->abstractMethodMock->expects($this->once())
+        ->method('isAvailable')
+        ->willReturn(false);
 
         $this->assertEquals([], $this->customConfigProvider->getConfig());
     }
 
     public function testGetPaymentMethods_successExecution_returnCards(): void
     {
-        $this->scopeConfig->expects($this->any())
-            ->method('getValue')
-            ->willReturnArgument(0);
+        $this->scopeConfigMock->expects($this->any())
+        ->method('getValue')
+        ->willReturnArgument(0);
 
-        $this->coreHelper->expects($this->once())
-            ->method('getMercadoPagoPaymentMethods')
-            ->willReturn(ConfigProviderConstants::PAYMENT_METHODS);
+        $this->coreHelperMock->expects($this->once())
+        ->method('getMercadoPagoPaymentMethods')
+        ->willReturn(ConfigProviderConstants::PAYMENT_METHODS);
 
         $expectedOutput = [
             0 => ConfigProviderConstants::PAYMENT_METHODS['response'][0],
