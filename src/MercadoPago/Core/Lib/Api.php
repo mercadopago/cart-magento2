@@ -7,6 +7,8 @@ namespace MercadoPago\Core\Lib;
  * Access MercadoPago for payments integration
  *
  * @author hcasatti
+ * 
+ * @codeCoverageIgnore
  *
  */
 class Api

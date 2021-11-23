@@ -35,6 +35,8 @@ use MercadoPago\Core\Lib\Api;
  * Class Core
  *
  * @package MercadoPago\Core\Model
+ * 
+ * @codeCoverageIgnore
  */
 class Core extends \Magento\Payment\Model\Method\AbstractMethod
 {
