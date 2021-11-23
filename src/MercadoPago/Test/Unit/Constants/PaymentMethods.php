@@ -37,7 +37,7 @@ class PaymentMethods
     ];
 
     public const EMPTY_PAYMENT_METHODS = [
-        0 => [
+        [
             'value' => '',
             'label' => 'Accept all payment methods',
         ]
