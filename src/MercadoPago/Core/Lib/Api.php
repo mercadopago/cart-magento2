@@ -11,7 +11,7 @@ namespace MercadoPago\Core\Lib;
  * @codeCoverageIgnore
  *
  */
-class Api
+class Api implements ApiInterface
 {
 
     /**
@@ -86,6 +86,11 @@ class Api
         }
 
         return $this->sandbox;
+    }
+
+    public function set_access_token($access_token)
+    {
+        $this->ll_access_token = $access_token;
     }
 
     /**

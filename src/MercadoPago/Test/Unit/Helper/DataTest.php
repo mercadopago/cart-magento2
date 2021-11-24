@@ -118,10 +118,6 @@ class DataTest extends TestCase
         $this->moduleResourceMock = $arguments['moduleResource'];
         $this->apiMock = $arguments['api'];
 
-        $this->contextMock = $this->getMockBuilder(Api::class)
-        ->disableOriginalConstructor()
-        ->getMock();
-
         $this->data = $objectManagerHelper->getObject($className, $arguments);
     }
 
