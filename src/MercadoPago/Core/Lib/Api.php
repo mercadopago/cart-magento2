@@ -60,9 +60,9 @@ class Api implements ApiInterface
     {
         $i = func_num_args();
 
-        if ($i > 2 || $i < 1) {
+        /*if ($i > 2 || $i < 1) {
             throw new \Exception('Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN');
-        }
+        }*/
 
         if ($i == 1) {
             $this->ll_access_token = func_get_arg(0);
