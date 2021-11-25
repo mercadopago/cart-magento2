@@ -41,4 +41,6 @@ COPY src magento2/app/code
 COPY phpunit.xml phpunit.xml
 
 # Fix permissions
-RUN chmod 777 -Rf magento2
+RUN cd magento2 && find var vendor generated pub/static pub/media app/etc -type f -print0 | xargs -0 chmod u+w
+RUN cd magento2 && find var vendor generated pub/static pub/media app/etc -type d -print0 | xargs -0 chmod u+w
+RUN chmod u+x magento2/bin/magento
