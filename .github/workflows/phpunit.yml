@@ -67,7 +67,6 @@ jobs:
         run: php magento2/app/code/MercadoPago/Test/coverage-checker.php clover.xml 80
 
       - name: Pull Request Coverage
-        uses: sergeysova/jq-action@v2
         id: pull-request-coverage
         run: bash bin/pull-request-coverage.sh
         env:
