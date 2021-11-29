@@ -83,7 +83,7 @@ function execute($argv) {
     $percentage       = min(100, max(0, (int) $argv[2]));
     $pullRequestFiles = parse_pull_request_files($argv);
 
-    if (!is_hotfix_branch($branchName)) {
+    if (false === is_hotfix_branch($branchName)) {
         validate_clover_file($cloverFile);
         validate_percentage_param($percentage);
 
