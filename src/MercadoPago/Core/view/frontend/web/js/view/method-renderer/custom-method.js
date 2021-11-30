@@ -64,8 +64,8 @@ define(
               id: 'co-mercadopago-form',
               cardNumber: { id: 'mpCardNumber' },
               cardholderName: { id: 'mpCardholderName' },
-              cardExpirationMonth: { id: 'mpCardExpirationMonth' },
-              cardExpirationYear: { id: 'mpCardExpirationYear' },
+              cardExpirationMonth: { id: 'mpCardExpirationDate' },
+              cardExpirationYear: { id: 'mpCardExpirationDate' },
               securityCode: { id: 'mpSecurityCode' },
               installments: { id: 'mpInstallments' },
               identificationType: { id: 'mpDocType' },
@@ -78,9 +78,6 @@ define(
               },
               onIdentificationTypesReceived: (error, identificationTypes) => {
                 if (error) return console.warn('IdentificationTypes handling error: ', error);
-              },
-              onIssuersReceived: (error, issuers) => {
-                if (error) return console.warn('Issuers handling error: ', error);
               },
               onInstallmentsReceived: (error, installments) => {
                 if (error) {
@@ -112,20 +109,6 @@ define(
             },
           });
         }
-      },
-
-      changeMonthInput: function () {
-        var monthInput = document.getElementById("mpCardExpirationMonth");
-        var monthSelect = document.getElementById("mpCardExpirationMonthSelect");
-
-        monthInput.value = ('0' + monthSelect.value).slice(-2);
-      },
-
-      changeYearInput: function () {
-        var yearInput = document.getElementById("mpCardExpirationYear");
-        var yearSelect = document.getElementById("mpCardExpirationYearSelect");
-
-        yearInput.value = yearSelect.value;
       },
 
       toogleWalletButton: function () {
@@ -344,8 +327,7 @@ define(
           'method': this.item.method,
           'additional_data': {
             'payment[method]': this.getCode(),
-            'card_expiration_month': document.getElementById('mpCardExpirationMonth').value,
-            'card_expiration_year': document.getElementById('mpCardExpirationYear').value,
+            'card_expiration_date': document.getElementById('mpCardExpirationDate').value,
             'card_holder_name': document.getElementById('mpCardholderName').value,
             'doc_type': document.getElementById('mpDocType').value,
             'doc_number': document.getElementById('mpDocNumber').value,
@@ -355,7 +337,6 @@ define(
             'site_id': this.getCountry(),
             'token': formData.token,
             'payment_method_id': formData.paymentMethodId,
-            'issuer_id': formData.issuerId,
             'gateway_mode': this.getMpGatewayMode(),
           }
         };

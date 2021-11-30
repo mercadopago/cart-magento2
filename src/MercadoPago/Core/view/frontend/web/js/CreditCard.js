@@ -75,7 +75,9 @@
       document.getElementById('mp-doc-number-div').style.display = 'none';
     }
 
-    if (!additionalInfoNeeded.cardholder_identification_type && !additionalInfoNeeded.cardholder_identification_number) {
+    if (additionalInfoNeeded.cardholder_identification_type && additionalInfoNeeded.cardholder_identification_number) {
+      document.getElementById('mp-doc-div').style.display = 'block';
+    } else {
       document.getElementById('mp-doc-div').style.display = 'none';
     }
   }
@@ -83,10 +85,7 @@
   window.clearInputs = function () {
     hideErrors();
     document.getElementById('mpCardNumber').style.background = 'no-repeat #fff';
-    document.getElementById('mpCardExpirationMonth').value = '';
-    document.getElementById('mpCardExpirationMonthSelect').value = '';
-    document.getElementById('mpCardExpirationYear').value = '';
-    document.getElementById('mpCardExpirationYearSelect').value = '';
+    document.getElementById('mpCardExpirationDate').value = '';
     document.getElementById('mpDocNumber').value = '';
     document.getElementById('mpSecurityCode').value = '';
     document.getElementById('mpCardholderName').value = '';
@@ -98,8 +97,7 @@
     var formInputs = form.querySelectorAll('[data-checkout]');
     var fixedInputs = [
       'mpCardNumber',
-      'mpCardExpirationMonthSelect',
-      'mpCardExpirationYearSelect',
+      'mpCardExpirationDate',
       'mpSecurityCode',
       'mpInstallments'
     ];
@@ -178,8 +176,7 @@
         span.style.display = 'block';
 
         if (code === '301') {
-          form.querySelector('#mpCardExpirationYearSelect').classList.add('mp-form-control-error');
-          form.querySelector('#mpCardExpirationMonthSelect').classList.add('mp-form-control-error');
+          form.querySelector('#mpCardExpirationDate').classList.add('mp-form-control-error');
         } else {
           form.querySelector(span.getAttribute('data-main')).classList.add('mp-form-control-error');
         }

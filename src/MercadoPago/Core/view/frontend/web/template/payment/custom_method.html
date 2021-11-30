@@ -85,6 +85,8 @@
             </p>
             <!--/ko-->
 
+            <p><!-- ko i18n: 'Enter your card details'--><!-- /ko --></p>
+
             <div id="mercadopago-form">
                 <div class="mp-box-inputs mp-col-100">
                     <label for="mpCardNumber">
@@ -109,58 +111,6 @@
                     </div>
                 </div>
 
-                <div class="mp-box-inputs mp-line">
-                    <div class="mp-box-inputs mp-col-50">
-                        <label for="mpCardExpirationMonthSelect">
-                            <!-- ko i18n: 'Expiration month'--><!-- /ko -->
-                            <em>*</em>
-                        </label>
-                        <select
-                            id="mpCardExpirationMonthSelect"
-                            data-checkout="mpCardExpirationMonthSelect"
-                            name="mercadopago_custom[cardExpirationMonth]"
-                            data-bind="
-                                attr: { 'data-container': getCode() + '-cc-month' },
-                                enable: isActive($parents),
-                                options: getCcMonthsValues(),
-                                optionsValue: 'value',
-                                optionsText: 'month',
-                                optionsCaption: $t('Month'),
-                                event: { change: changeMonthInput }
-                            "
-                        ></select>
-
-                        <small id="mp-error-208" class="mp-form-error" data-main="#mpCardExpirationMonthSelect"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
-                        <small id="mp-error-325" class="mp-form-error" data-main="#mpCardExpirationMonthSelect"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
-                    </div>
-
-                    <div class="mp-box-inputs mp-col-50">
-                        <label for="mpCardExpirationYearSelect">
-                            <!-- ko i18n: 'Expiration year'--><!-- /ko -->
-                            <em>*</em>
-                        </label>
-                        <select
-                            id="mpCardExpirationYearSelect"
-                            data-checkout="mpCardExpirationYearSelect"
-                            name="mercadopago_custom[cardExpirationYear]"
-                            data-bind="
-                                attr: { 'data-container': getCode() + '-cc-year' },
-                                enable: isActive($parents),
-                                options: getCcYearsValues(),
-                                optionsValue: 'value',
-                                optionsText: 'year',
-                                optionsCaption: $t('Year'),
-                                event: { change: changeYearInput }
-                            "
-                        ></select>
-
-                        <small id="mp-error-209" class="mp-form-error" data-main="#mpCardExpirationYearSelect"><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
-                        <small id="mp-error-326" class="mp-form-error" data-main="#mpCardExpirationYearSelect"><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
-                    </div>
-
-                    <small id="mp-error-301" class="mp-form-error"><!-- ko i18n: 'Invalid card expiration date'--><!-- /ko --></small>
-                </div>
-
                 <div class="mp-box-inputs mp-col-100" id="mp-card-holder-div">
                     <label for="mpCardholderName">
                         <!-- ko i18n: 'Card holder name'--><!-- /ko -->
@@ -178,7 +128,25 @@
                 </div>
 
                 <div class="mp-box-inputs mp-line">
-                    <div class="mp-box-inputs mp-col-35">
+                    <div class="mp-box-inputs mp-col-50">
+                        <label for="mpCardExpirationDate">
+                            <!-- ko i18n: 'Expiration date'--><!-- /ko -->
+                            <em>*</em>
+                        </label>
+                        <input
+                            type="text"
+                            id="mpCardExpirationDate"
+                            data-checkout="mpCardExpirationDate"
+                            autocomplete="off"
+                            minlength="7"
+                            maxlength="7"
+                            placeholder="MM/AAAA"
+                        />
+
+                        <small id="mp-error-301" class="mp-form-error"><!-- ko i18n: 'Invalid card expiration date'--><!-- /ko --></small>
+                    </div>
+
+                    <div class="mp-box-inputs mp-col-50">
                         <label for="mpSecurityCode">
                             <!-- ko i18n: 'Security code'--><!-- /ko -->
                             <em>*</em>
@@ -224,7 +192,7 @@
                     </div>
                 </div>
 
-                <div class="mp-box-inputs mp-col-100 mp-issuer" id="mp-issuer-div">
+                <div class="mp-box-inputs mp-col-100 mp-issuer" id="mp-issuer-div" style="display: none;">
                     <label for="mpIssuer">
                         <!-- ko i18n: 'Issuer'--><!-- /ko -->
                         <em>*</em>
@@ -275,8 +243,7 @@
             </div>
 
             <div>
-                <input id="mpCardExpirationMonth" type="hidden" />
-                <input id="mpCardExpirationYear" type="hidden">
+                <input id="mpCardExpirationDate" type="hidden" />
             </div>
 
             <div class="wb-cho-button-frame"></div>
