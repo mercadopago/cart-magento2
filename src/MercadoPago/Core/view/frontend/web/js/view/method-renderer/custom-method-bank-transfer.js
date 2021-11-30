@@ -108,7 +108,7 @@ define(
       },
 
       getFingerPrintLink: function () {
-        return configPayment['fingerprint_link'];
+        return window.checkoutConfig.payment['fingerprint_link'];
       },
 
       existBanner: function () {
