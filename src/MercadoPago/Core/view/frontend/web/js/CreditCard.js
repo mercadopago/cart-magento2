@@ -13,6 +13,17 @@
       }
     });
   }
+  
+  window.setChangeEventExpirationDate = function () {
+    document.getElementById('mpCardExpirationDate').addEventListener('change', function (e) {
+      var card_expiration_date = document.getElementById('mpCardExpirationDate').value;
+      var card_expiration_month = card_expiration_date.split('/')[0] | '';
+      var card_expiration_year = card_expiration_date.split('/')[1] | '';
+
+      document.getElementById('mpCardExpirationMonth').value = ('0' + card_expiration_month).slice(-2);
+      document.getElementById('mpCardExpirationYear').value = card_expiration_year;
+    });
+  }
 
   window.setChangeEventOnInstallments = function (siteId, payer_costs) {
     if (siteId === 'MLA') {
@@ -174,12 +185,7 @@
 
       if (span !== undefined) {
         span.style.display = 'block';
-
-        if (code === '301') {
-          form.querySelector('#mpCardExpirationDate').classList.add('mp-form-control-error');
-        } else {
-          form.querySelector(span.getAttribute('data-main')).classList.add('mp-form-control-error');
-        }
+        form.querySelector(span.getAttribute('data-main')).classList.add('mp-form-control-error');
       }
     }
 

@@ -51,6 +51,7 @@ define(
       initApp: function () {
         if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           setChangeEventOnCardNumber();
+          setChangeEventExpirationDate();
 
           // Initialize SDK v2
           mp = new MercadoPago(this.getPublicKey());
@@ -64,8 +65,8 @@ define(
               id: 'co-mercadopago-form',
               cardNumber: { id: 'mpCardNumber' },
               cardholderName: { id: 'mpCardholderName' },
-              cardExpirationMonth: { id: 'mpCardExpirationDate' },
-              cardExpirationYear: { id: 'mpCardExpirationDate' },
+              cardExpirationMonth: { id: 'mpCardExpirationMonth' },
+              cardExpirationYear: { id: 'mpCardExpirationYear' },
               securityCode: { id: 'mpSecurityCode' },
               installments: { id: 'mpInstallments' },
               identificationType: { id: 'mpDocType' },
@@ -327,7 +328,8 @@ define(
           'method': this.item.method,
           'additional_data': {
             'payment[method]': this.getCode(),
-            'card_expiration_date': document.getElementById('mpCardExpirationDate').value,
+            'card_expiration_month': document.getElementById('mpCardExpirationMonth').value,
+            'card_expiration_year': document.getElementById('mpCardExpirationYear').value,
             'card_holder_name': document.getElementById('mpCardholderName').value,
             'doc_type': document.getElementById('mpDocType').value,
             'doc_number': document.getElementById('mpDocNumber').value,

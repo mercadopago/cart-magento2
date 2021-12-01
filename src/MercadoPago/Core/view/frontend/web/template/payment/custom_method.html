@@ -141,9 +141,15 @@
                             minlength="7"
                             maxlength="7"
                             placeholder="MM/AAAA"
+                            onkeyup="maskInput(this, mdate)"
                         />
 
-                        <small id="mp-error-301" class="mp-form-error"><!-- ko i18n: 'Invalid card expiration date'--><!-- /ko --></small>
+                        <small id="mp-error-208" class="mp-form-error" data-main="#mpCardExpirationDate"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
+                        <small id="mp-error-325" class="mp-form-error" data-main="#mpCardExpirationDate"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
+                        <small id="mp-error-209" class="mp-form-error" data-main="#mpCardExpirationDate"><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
+                        <small id="mp-error-326" class="mp-form-error" data-main="#mpCardExpirationDate"><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
+                        <small id="mp-error-E205" class="mp-form-error" data-main="#mpCardExpirationDate"><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
+                        <small id="mp-error-301" class="mp-form-error" data-main="#mpCardExpirationDate"><!-- ko i18n: 'Invalid card expiration date'--><!-- /ko --></small>
                     </div>
 
                     <div class="mp-box-inputs mp-col-50">
@@ -243,7 +249,8 @@
             </div>
 
             <div>
-                <input id="mpCardExpirationDate" type="hidden" />
+                <input id="mpCardExpirationMonth" type="hidden" />
+                <input id="mpCardExpirationYear" type="hidden" />
             </div>
 
             <div class="wb-cho-button-frame"></div>
