@@ -20,7 +20,7 @@
                 <cctypes>AE,VI,MC,DI,JCB</cctypes>
                 <ccfields>csc,expdate,acct</ccfields>
                 <model>MercadoPago\Core\Model\Custom\Payment</model>
-                <title translate="label">Credit Card - Mercado Pago</title>
+                <title translate="label">Credit and Debit Card - Mercado Pago</title>
                 <allowspecific>0</allowspecific>
                 <banner_checkout></banner_checkout>
                 <sort_order>-4</sort_order>
