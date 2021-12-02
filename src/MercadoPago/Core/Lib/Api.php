@@ -7,9 +7,11 @@ namespace MercadoPago\Core\Lib;
  * Access MercadoPago for payments integration
  *
  * @author hcasatti
+ * 
+ * @codeCoverageIgnore
  *
  */
-class Api
+class Api implements ApiInterface
 {
 
     /**
@@ -58,9 +60,9 @@ class Api
     {
         $i = func_num_args();
 
-        if ($i > 2 || $i < 1) {
+        /*if ($i > 2 || $i < 1) {
             throw new \Exception('Invalid arguments. Use CLIENT_ID and CLIENT SECRET, or ACCESS_TOKEN');
-        }
+        }*/
 
         if ($i == 1) {
             $this->ll_access_token = func_get_arg(0);
@@ -84,6 +86,11 @@ class Api
         }
 
         return $this->sandbox;
+    }
+
+    public function set_access_token($access_token)
+    {
+        $this->ll_access_token = $access_token;
     }
 
     /**
@@ -347,33 +354,7 @@ class Api
         $url = "/discount_campaigns?transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code";
         return RestClient::get($url, null, ["Authorization: Bearer " . $access_token]);
     }
-
-    /**
-     * @return bool
-     */
-    public function is_valid_access_token()
-    {
-        if (empty($this->ll_access_token)) {
-            return false;
-        }
-
-        try {
-            $response = $this->get("/v1/payment_methods");
-
-            if (empty($response)) {
-                return false;
-            }
-
-            if ((isset($response['status'])) && ($response['status'] == 401 || $response['status'] == 400)) {
-                return false;
-            }
-
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
+    
     /**
      * @param $id
      * @return array

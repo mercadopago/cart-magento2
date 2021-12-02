@@ -78,7 +78,11 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
             $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
-            $preference['payment_method_id'] = $payment->getAdditionalInformation("payment_method");
+            $payment_method = $payment->getAdditionalInformation("payment_method");
+            $payment_method_id = str_contains($payment_method, '|') ? explode('|', $payment_method)[0] : $payment_method;
+            $payment_option_id = str_contains($payment_method, '|') ? explode('|', $payment_method)[1] : '';
+
+            $preference['payment_method_id'] = $payment_method_id;
 
             if ($payment->getAdditionalInformation("firstName") != "") {
                 $preference['payer']['first_name'] = $payment->getAdditionalInformation("firstName");
@@ -116,6 +120,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
 
             $preference['metadata']['checkout'] = 'custom';
             $preference['metadata']['checkout_type'] = 'ticket';
+            $preference['metadata']['payment_option_id'] = $payment_option_id;
 
             $this->_helperData->log("CustomPaymentTicket::initialize - Preference to POST", 'mercadopago-custom.log', $preference);
         } catch (\Exception $e) {
