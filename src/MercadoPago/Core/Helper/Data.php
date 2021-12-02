@@ -23,6 +23,7 @@ use MercadoPago\Core\Lib\Api;
 use MercadoPago\Core\Lib\RestClient;
 use MercadoPago\Core\Logger\Logger;
 use MercadoPago\Core\Model\Custom\Payment;
+use MercadoPago\Core\Helper\PaymentPlaces;
 
 /**
  * Class Data
@@ -90,6 +91,11 @@ class Data extends \Magento\Payment\Helper\Data
     protected $_moduleResource;
 
     /**
+     * @var Api $api
+     */
+    protected $_api;
+
+    /**
      * Data constructor.
      * @param Message\MessageInterface $messageInterface
      * @param Cache $mpCache
@@ -105,6 +111,7 @@ class Data extends \Magento\Payment\Helper\Data
      * @param Switcher $switcher
      * @param ComposerInformation $composerInformation
      * @param ResourceInterface $moduleResource
+     * @param Api $api
      */
     public function __construct(
         Message\MessageInterface $messageInterface,
@@ -120,7 +127,8 @@ class Data extends \Magento\Payment\Helper\Data
         OrderFactory $orderFactory,
         Switcher $switcher,
         ComposerInformation $composerInformation,
-        ResourceInterface $moduleResource
+        ResourceInterface $moduleResource,
+        Api $api
     ) {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
@@ -131,6 +139,7 @@ class Data extends \Magento\Payment\Helper\Data
         $this->_switcher = $switcher;
         $this->_composerInformation = $composerInformation;
         $this->_moduleResource = $moduleResource;
+        $this->_api = $api;
     }
 
     /**
@@ -173,7 +182,9 @@ class Data extends \Magento\Payment\Helper\Data
             throw new LocalizedException(__('The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
         }
 
-        $api = new Api($accessToken);
+        //$api = new Api($accessToken);
+        $api = $this->_api;
+        $api->set_access_token($accessToken);
         $api->set_platform(self::PLATFORM_OPENPLATFORM);
 
         $api->set_type(self::TYPE);
@@ -201,31 +212,13 @@ class Data extends \Magento\Payment\Helper\Data
             return true;
         }
 
-        $mp = $this->getApiInstance($accessToken);
-        $isValid = $mp->is_valid_access_token();
+        $response = $this->getMercadoPagoPaymentMethods($accessToken);
 
-        $this->_mpCache->saveCache($cacheKey, $isValid);
-        return $isValid;
-    }
-
-    /**
-     * ClientId and Secret valid?
-     *
-     * @param $clientId
-     * @param $clientSecret
-     *
-     * @return bool
-     * @throws LocalizedException
-     */
-    public function isValidClientCredentials($clientId, $clientSecret)
-    {
-        $mp = $this->getApiInstance($clientId, $clientSecret);
-        try {
-            $mp->get_access_token();
-        } catch (Exception $e) {
+        if ((!$response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
             return false;
         }
 
+        $this->_mpCache->saveCache($cacheKey, true);
         return true;
     }
 
@@ -270,53 +263,6 @@ class Data extends \Magento\Payment\Helper\Data
     }
 
     /**
-     * Modify payment array adding specific fields
-     *
-     * @param $payment
-     *
-     * @return mixed
-     * @refactor
-     */
-    public function setPayerInfo(&$payment)
-    {
-        $this->log("setPayerInfo", 'mercadopago-custom.log', $payment);
-
-        if ($payment['payment_method_id']) {
-            $payment["payment_method"] = $payment['payment_method_id'];
-        }
-
-        if ($payment['installments']) {
-            $payment["installments"] = $payment['installments'];
-        }
-        if ($payment['id']) {
-            $payment["payment_id_detail"] = $payment['id'];
-        }
-        if (isset($payment['trunc_card'])) {
-            $payment["trunc_card"] = $payment['trunc_card'];
-        } elseif (isset($payment['card']) && isset($payment['card']['last_four_digits'])) {
-            $payment["trunc_card"] = "xxxx xxxx xxxx " . $payment['card']["last_four_digits"];
-        }
-
-        if (isset($payment['card']["cardholder"]["name"])) {
-            $payment["cardholder_name"] = $payment['card']["cardholder"]["name"];
-        }
-
-        if (isset($payment['payer']['first_name'])) {
-            $payment['payer_first_name'] = $payment['payer']['first_name'];
-        }
-
-        if (isset($payment['payer']['last_name'])) {
-            $payment['payer_last_name'] = $payment['payer']['last_name'];
-        }
-
-        if (isset($payment['payer']['email'])) {
-            $payment['payer_email'] = $payment['payer']['email'];
-        }
-
-        return $payment;
-    }
-
-    /**
      * Return sum of fields separated with |
      *
      * @param $data
@@ -342,26 +288,39 @@ class Data extends \Magento\Payment\Helper\Data
     }
 
     /**
-     * return the list of payment methods or null
+     * return the list of payment methods or false
      *
      * @param mixed|null $accessToken
      *
-     * @return mixed
+     * @return array
      */
     public function getMercadoPagoPaymentMethods($accessToken)
     {
+        
+        $this->log('GET /v1/payment_methods', 'mercadopago');
+
         try {
             $mp = $this->getApiInstance($accessToken);
 
-            $response = $mp->get("/v1/payment_methods");
-            if ($response['status'] == 401 || $response['status'] == 400) {
-                return false;
-            }
-        } catch (Exception $e) {
-            return false;
-        }
+            $payment_methods = $mp->get("/v1/payment_methods");
 
-        return $response['response'];
+            $treated_payments_methods = []; 
+
+            foreach ($payment_methods['response'] as $payment_method) {
+                if (!isset($payment_method['payment_places'])) {         
+                    $payment_method['payment_places'] = PaymentPlaces::getPaymentPlaces($payment_method['id']);
+                }
+                
+                array_push($treated_payments_methods, $payment_method);
+            }
+
+            $payment_methods['response'] = $treated_payments_methods;
+
+            return $payment_methods;
+
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -409,42 +368,6 @@ class Data extends \Magento\Payment\Helper\Data
     public function getModuleVersion()
     {
         return $this->_moduleResource->getDbVersion('MercadoPago_Core');
-    }
-
-    /**
-     * Summary: Get client id from access token.
-     * Description: Get client id from access token.
-     *
-     * @param String $at
-     *
-     * @return String client id.
-     */
-    public static function getClientIdFromAccessToken($at)
-    {
-        $t = explode('-', $at);
-
-        if (count($t) > 0) {
-            return $t[1];
-        }
-
-        return '';
-    }
-
-    /**
-     * @param $additionalInfo
-     * @return string|null
-     */
-    public function getPaymentId($additionalInfo)
-    {
-        if (isset($additionalInfo['payment_id_detail']) && !empty($additionalInfo['payment_id_detail'])) {
-            return $additionalInfo['payment_id_detail'];
-        }
-
-        if (isset($additionalInfo['paymentResponse']) && !empty($additionalInfo['paymentResponse'])) {
-            return $additionalInfo['paymentResponse']['id'];
-        }
-
-        return null;
     }
 
     /**

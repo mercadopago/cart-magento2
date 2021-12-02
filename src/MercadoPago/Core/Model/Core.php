@@ -35,6 +35,8 @@ use MercadoPago\Core\Lib\Api;
  * Class Core
  *
  * @package MercadoPago\Core\Model
+ * 
+ * @codeCoverageIgnore
  */
 class Core extends \Magento\Payment\Model\Method\AbstractMethod
 {
@@ -679,7 +681,8 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      */
     public function getPaymentMethods()
     {
-        return $this->getMercadoPagoInstance()->get("/v1/payment_methods");
+        $this->getMercadoPagoInstance();
+        return $this->_coreHelper->getMercadoPagoPaymentMethods($this->_accessToken);
     }
 
     /**
@@ -799,6 +802,7 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         if (!$this->_accessToken) {
             $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
+
         return $this->_coreHelper->getApiInstance($this->_accessToken);
     }
 

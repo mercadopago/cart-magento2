@@ -7,6 +7,8 @@ use Magento\Framework\App\ObjectManager;
 
 /**
  * MercadoPago cURL RestClient
+ * 
+ * @codeCoverageIgnore
  */
 class RestClient
 {
