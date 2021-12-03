@@ -12,6 +12,7 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\View\Helper\Js;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Data;
 
 /**
  * Config form FieldSet renderer
@@ -36,6 +37,12 @@ class Payment extends Fieldset
     protected $switcher;
 
     /**
+     *
+     * @var Data
+     */
+    protected $coreHelper;
+
+    /**
      * @param Context $context
      * @param Session $authSession
      * @param Js $jsHelper
@@ -43,6 +50,7 @@ class Payment extends Fieldset
      * @param Config $configResource
      * @param Switcher $switcher
      * @param array $data
+     * @param Data $coreHelper
      */
     public function __construct(
         Context $context,
@@ -51,12 +59,14 @@ class Payment extends Fieldset
         ScopeConfigInterface $scopeConfig,
         Config $configResource,
         Switcher $switcher,
-        array $data = []
+        array $data = [],
+        Data $coreHelper
     ) {
-        parent::__construct($context, $authSession, $jsHelper, $data);
+        parent::__construct($context, $authSession, $jsHelper, $data, $coreHelper);
         $this->scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
         $this->switcher = $switcher;
+        $this->coreHelper = $coreHelper;
     }
 
     /**
@@ -68,25 +78,28 @@ class Payment extends Fieldset
         //get id element
         $paymentId = $element->getId();
 
-        //get country (Site id for Mercado Pago)
-        $siteId = strtoupper(
-            $this->scopeConfig->getValue(
-                ConfigData::PATH_SITE_ID,
-                ScopeInterface::SCOPE_STORE
-            )
-        );
-
         //check is bank transfer
-        if ($this->hideBankTransfer($paymentId, $siteId)) {
+        if ($this->hideBankTransfer($paymentId)) {
             return "";
         }
 
         //check is pix
-        if ($this->hidePix($paymentId, $siteId)) {
+        if ($this->hidePix($paymentId)) {
             return "";
         }
 
         return parent::render($element);
+    }
+
+    public function getPaymentMethods() {
+        $accessToken = $this->scopeConfig->getValue(
+            ConfigData::PATH_ACCESS_TOKEN,
+            ScopeInterface::SCOPE_WEBSITE
+        );
+
+        $paymentMethods = $this->coreHelper->getMercadoPagoPaymentMethods($accessToken);
+
+        return $paymentMethods;
     }
 
     /**
@@ -118,30 +131,40 @@ class Payment extends Fieldset
 
     /**
      * @param  $paymentId
-     * @param  $siteId
      * @return bool
      */
-    protected function hideBankTransfer($paymentId, $siteId)
+    protected function hideBankTransfer($paymentId)
     {
         if (strpos($paymentId, 'custom_checkout_bank_transfer') !== false) {
-            //hide payment method if not Chile or Colombia
-            if ($siteId !== "MLC" && $siteId !== "MCO") {
-                $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
-                return true;
-            }
-        }
+            $paymentMethods = $this->getPaymentMethods();
 
+            foreach ($paymentMethods['response'] as $pm) {
+                if ($pm['payment_type_id'] === 'bank_transfer' && $pm['id'] !== 'pix') {
+                    return false;
+                }
+            }
+
+            $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
+            return true;
+        }
         return false;
     }
 
     /**
      * @param  $paymentId
-     * @param  $siteId
      * @return bool
      */
-    protected function hidePix($paymentId, $siteId)
+    protected function hidePix($paymentId)
     {
         if (strpos($paymentId, 'custom_checkout_pix') !== false) {
+
+            $siteId = strtoupper(
+                $this->scopeConfig->getValue(
+                    ConfigData::PATH_SITE_ID,
+                    ScopeInterface::SCOPE_STORE
+                )
+            );
+
             if ($siteId !== "MLB") {
                 $this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
                 return true;
