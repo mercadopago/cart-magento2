@@ -62,6 +62,12 @@ class PaymentTest extends TestCase
     protected $mpCache;
 
     /**
+     * @var MockObject
+     */
+    protected $abstractElementMock;
+
+
+    /**
      * @inheritdoc
      */
     protected function setUp(): void
@@ -80,16 +86,16 @@ class PaymentTest extends TestCase
         $this->coreHelperMock = $arguments['coreHelper'];
         $this->mpCache = $arguments['mpCache'];
 
+        $this->abstractElementMock = $this->getMockBuilder(AbstractElement::class)
+        ->setMethods(['getId'])
+        ->disableOriginalConstructor()
+        ->getMockForAbstractClass();
+
         $this->payment = $objectManagerHelper->getObject($className, $arguments);
     }
 
     public function testHideBankTransfer_success_returnTrue(): void
     {
-        $renderMock = $this->abstractElementMock = $this->getMockBuilder(AbstractElement::class)
-        ->setMethods(['getId'])
-        ->disableOriginalConstructor()
-        ->getMockForAbstractClass();
-
         $this->abstractElementMock
         ->expects($this->any())
         ->method('getId')
@@ -110,16 +116,11 @@ class PaymentTest extends TestCase
 
         $this->mpCache->expects(self::any())->method('saveCache');
 
-        $this->assertEquals("", $this->payment->render($renderMock));
+        $this->assertEquals("", $this->payment->render($this->abstractElementMock));
     }
 
     public function testHidePix_success_returnTrue(): void
     {
-        $renderMock = $this->abstractElementMock = $this->getMockBuilder(AbstractElement::class)
-        ->setMethods(['getId'])
-        ->disableOriginalConstructor()
-        ->getMockForAbstractClass();
-
         $this->abstractElementMock
         ->expects($this->any())
         ->method('getId')
@@ -129,6 +130,6 @@ class PaymentTest extends TestCase
         ->method('getValue')
         ->willReturn('MLA');
 
-        $this->assertEquals("", $this->payment->render($renderMock));
+        $this->assertEquals("", $this->payment->render($this->abstractElementMock));
     }
 }
