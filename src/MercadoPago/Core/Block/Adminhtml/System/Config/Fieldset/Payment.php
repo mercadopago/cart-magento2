@@ -148,21 +148,25 @@ class Payment extends Fieldset
             $cacheKey = Cache::HIDE_BANK_TRANSFER;
 
             $cacheEntry = $this->mpCache->getFromCache($cacheKey);
-            if (!is_null($cacheEntry)) {
-                return $cacheEntry;
+
+            if ($cacheEntry == 1) {
+                return false;
+            } else if ($cacheEntry == 2) {
+                $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
+                return true;
             }
             
             $paymentMethods = $this->getPaymentMethods();
 
             foreach ($paymentMethods['response'] as $pm) {
-                if ($pm['payment_type_id'] === 'bank_transfer' && $pm['id'] !== 'pix') {
-                    $this->mpCache->saveCache($cacheKey, false);
+                if ($pm['payment_type_id'] === 'bank_transfer' && strtolower($pm['id']) !== 'pix') {
+                    $this->mpCache->saveCache($cacheKey, 1);
                     return false;
                 }
             }
 
             $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
-            $this->mpCache->saveCache($cacheKey, true);
+            $this->mpCache->saveCache($cacheKey, 2);
             return true;
         }
         return false;
