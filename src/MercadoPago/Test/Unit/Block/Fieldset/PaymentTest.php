@@ -3,7 +3,7 @@
 namespace MercadoPago\Test\Unit\Block\Fieldset;
 
 use MercadoPago\Core\Block\Adminhtml\System\Config\Fieldset\Payment;
-use MercadoPago\Test\Unit\Constants\Response;
+use MercadoPago\Test\Unit\Mock\PaymentResponseMock;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use PHPUnit\Framework\TestCase;
@@ -112,7 +112,7 @@ class PaymentTest extends TestCase
         $this->coreHelperMock->expects(self::any())
         ->method('getMercadoPagoPaymentMethods')
         ->with('APP_USR-00000000000-000000-000000-0000000000')
-        ->willReturn(Response::RESPONSE_PAYMENT_METHODS_SUCCESS_MLB);
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_MLB);
 
         $this->mpCache->expects(self::any())->method('saveCache');
 
