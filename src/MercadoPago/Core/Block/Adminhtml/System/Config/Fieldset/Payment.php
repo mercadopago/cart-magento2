@@ -20,6 +20,10 @@ use MercadoPago\Core\Helper\Cache;
  */
 class Payment extends Fieldset
 {
+    const SHOW_PAYMENT_METHOD = 1;
+
+    const HIDE_PAYMENT_METHOD = 2;
+
     /**
      * @var ScopeConfigInterface
      */
@@ -149,9 +153,9 @@ class Payment extends Fieldset
 
             $cacheEntry = $this->mpCache->getFromCache($cacheKey);
 
-            if ($cacheEntry == 1) {
+            if ($cacheEntry == self::SHOW_PAYMENT_METHOD) {
                 return false;
-            } else if ($cacheEntry == 2) {
+            } else if ($cacheEntry == self::HIDE_PAYMENT_METHOD) {
                 $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
                 return true;
             }
@@ -160,13 +164,13 @@ class Payment extends Fieldset
 
             foreach ($paymentMethods['response'] as $pm) {
                 if ($pm['payment_type_id'] === 'bank_transfer' && strtolower($pm['id']) !== 'pix') {
-                    $this->mpCache->saveCache($cacheKey, 1);
+                    $this->mpCache->saveCache($cacheKey, self::SHOW_PAYMENT_METHOD);
                     return false;
                 }
             }
 
             $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
-            $this->mpCache->saveCache($cacheKey, 2);
+            $this->mpCache->saveCache($cacheKey, self::HIDE_PAYMENT_METHOD);
             return true;
         }
         return false;
