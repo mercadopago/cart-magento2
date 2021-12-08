@@ -261,6 +261,7 @@ class Wallet
         $quoteId = $payment['metadata']['quote_id'];
 
         $quote = $this->quoteRepository->get($quoteId);
+        $quote->getPayment()->setAdditionalInformation('purpose', 'wallet_purchase');
         $quote->getPayment()->importData(['method' => 'mercadopago_basic']);
 
         $orderId = $this->quoteManagement->placeOrder($quote->getId());
