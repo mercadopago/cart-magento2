@@ -162,7 +162,7 @@ class Payment extends Fieldset
             
             $paymentMethods = $this->getPaymentMethods();
 
-            if ($paymentMethods['status'] == 200) {
+            if ($paymentMethods) {
                 foreach ($paymentMethods['response'] as $pm) {
                     if ($pm['payment_type_id'] === 'bank_transfer' && strtolower($pm['id']) !== 'pix') {
                         $this->mpCache->saveCache($cacheKey, self::SHOW_PAYMENT_METHOD);
