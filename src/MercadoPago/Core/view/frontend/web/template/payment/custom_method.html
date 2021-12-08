@@ -81,16 +81,17 @@
         >
             <!-- ko if: (getMpWalletButton() != 0)-->
             <p class="mp-custom-title">
-                <!-- ko i18n: 'Or enter all your card details:'--><!-- /ko -->
+                <!-- ko i18n: 'Or add your card details:'--><!-- /ko -->
             </p>
             <!--/ko-->
 
-            <p><!-- ko i18n: 'Enter your card details'--><!-- /ko --></p>
-
+            <!-- ko if: (getMpWalletButton() == 0)-->
+                <p><!-- ko i18n: 'Add your card details'--><!-- /ko --></p>
+            <!--/ko-->
             <div id="mercadopago-form">
                 <div class="mp-box-inputs mp-col-100">
                     <label for="mpCardNumber">
-                        <!-- ko i18n: 'Credit card number'--><!-- /ko -->
+                        <!-- ko i18n: 'Card number'--><!-- /ko -->
                         <em>*</em>
                     </label>
                     <input
@@ -113,7 +114,7 @@
 
                 <div class="mp-box-inputs mp-col-100" id="mp-card-holder-div">
                     <label for="mpCardholderName">
-                        <!-- ko i18n: 'Card holder name'--><!-- /ko -->
+                        <!-- ko i18n: 'Card holder full name'--><!-- /ko -->
                         <em>*</em>
                     </label>
                     <input
@@ -124,7 +125,7 @@
                         autocomplete="off"
                     />
 
-                    <small id="mp-error-221" class="mp-form-error" data-main="#mpCardholderName"><!-- ko i18n: 'Invalid cardholder name'--><!-- /ko --></small>
+                    <small id="mp-error-221" class="mp-form-error" data-main="#mpCardholderName"><!-- ko i18n: 'Invalid card holder full name'--><!-- /ko --></small>
                 </div>
 
                 <div class="mp-box-inputs mp-line">
