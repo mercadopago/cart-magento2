@@ -2,7 +2,7 @@
     "name": "mercadopago/core",
     "description": "Mercado Pago Magento 2 Plugin",
     "type": "magento2-module",
-    "version": "3.12.3",
+    "version": "3.13.0",
     "license": [
         "OSL-3.0",
         "AFL-3.0"
