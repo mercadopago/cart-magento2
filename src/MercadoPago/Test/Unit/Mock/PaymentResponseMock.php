@@ -1,9 +1,11 @@
 <?php
 
-namespace MercadoPago\Test\Unit\Constants;
+namespace MercadoPago\Test\Unit\Mock;
 
-class Response
+class PaymentResponseMock
 {
+
+  public const PAYMENT_METHODS_URI = '/v1/payment_methods';
 
   public const RESPONSE_PAYMENT_METHODS_SUCCESS = [
     'response' => [
@@ -499,7 +501,7 @@ class Response
     'status' => 200,
   ];
 
-  public const RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAY_PLACES = [
+  public const RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES = [
     'response' => [
       0 => [
         'accreditation_time' => 2880,
@@ -1039,6 +1041,508 @@ class Response
       ],
     ],
     'status' => 200,
+  ];
+
+  public const RESPONSE_PAYMENT_METHODS_CONFIG_PROVIDER = [
+    'response' => [
+        0 => [
+            'accreditation_time' => 2880,
+            'additional_info_needed' => [
+                0 => 'cardholder_name',
+            ],
+            'deferred_capture' => 'unsupported',
+            'financial_institutions' => [],
+            'id' => 'debmaster',
+            'max_allowed_amount' => 300000,
+            'min_allowed_amount' => 5,
+            'name' => 'Mastercard Débito',
+            'payment_type_id' => 'debit_card',
+            'payment_places' => [],
+            'processing_modes' => [
+                0 => 'aggregator',
+            ],
+            'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/debmaster.gif',
+            'settings' => [
+                0 => [
+                    'bin' => [
+                        'exclusion_pattern' => '^(506302|506429)',
+                        'installments_pattern' => '',
+                        'pattern' => '^(506202|230868|506208|231018|542878|523595|506199|506305|506306|506307|506332|506333|588772|528430|551440|516016|524021|506269|535943|537030|526476|506323|551238|506259|529571|526354|539955|553467|516576|528074|534381|557604|506236|506257|532485|512280|516102|506250|506255|506304|526498|506212|539975|530113|506416|506414|550897|506392|506204|506249|529575|506201|506205|511265|538984|553800|554173|506275|557602|551515|523691|502275|506206|526194|526196|526197|551509|506415|511761|506383|506374|506402|506335|506265|535900|539944|506314|506411|506313|506245|506251|506386|526404|506274|506258|506353|506350|555924|506355|506410|506423|506424|506361|506247|506284|506352|506263|506432|506297|506287|506334|506364|506384|506320|506319|506344|506294|506283|506342|506282|506421|506393|506343|506439|506373|536783|549685|506367|506303|506254|506413|533922|516611|506337|506397|506398|506213|506277|506278|506279|506280|506377|511852|506422|506312|506441|506399|537938|506427|510586|538405|538088|506214|506215|506356|528480|506389|506351|506300|506354|506253|546378|516415|506309|533987|545290|545325|506311|506365|506380|506407|557920|557921|557922|557923|557924|506412|528598|531294|549672|506391|506428|511765|543924|506449|526400|551353|506405|506406|230884|230948|230951|557910|557909|557908|557907|557905|506217|545730|506218|589617|557906|517747|554628|504563|529093|517771|557991|551077|557561|550233|533609|551244|554627|504536|557875|557874|529028|525678|524711|520698|520694|520416|520116|517795|517721|517712|558426|554492|551081|517439|517440|549613|506228|557551|530686|518847|526424|516594|511114|506340|506270|506229|539177|559471|557671|511391|536324|543451|528514|538756|506458|555691)',
+                    ],
+                    'card_number' => [
+                        'length' => 16,
+                        'validation' => 'standard',
+                    ],
+                    'security_code' => [
+                        'card_location' => 'back',
+                        'length' => 3,
+                        'mode' => 'mandatory',
+                    ],
+                ],
+            ],
+            'status' => 'active',
+            'thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/debmaster.gif',
+        ],
+        1 => [
+            'accreditation_time' => 2880,
+            'additional_info_needed' => [
+                0 => 'cardholder_name',
+            ],
+            'deferred_capture' => 'supported',
+            'financial_institutions' => [],
+            'id' => 'amex',
+            'max_allowed_amount' => 300000,
+            'min_allowed_amount' => 1,
+            'name' => 'American Express',
+            'payment_type_id' => 'credit_card',
+            'payment_places' => [],
+            'processing_modes' => [
+                0 => 'aggregator',
+            ],
+            'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/amex.gif',
+            'settings' => [
+                0 => [
+                    'bin' => [
+                        'exclusion_pattern' => NULL,
+                        'installments_pattern' => '^(?!341595|3603(2|4)|360732|36075(5|6)|360935|37159(3|5)|3747((5(8|9))|(62))|3751(3([0-9])|7(7|8))|3764((0([0-9]))|(1([0-8]))|(2(2|8|9))|(3(6|7))|(4[0-9]|5[0-8])|(6([1-7])|7[0-8]|8[0-9]|9(1|3)))|37652(0|9)|37660((1|2)|[5-9])|376((6(2[0-9]|3[5-9]|8[5-8]))|71[0-4])|3771(69|74)|37779[0-8]|3778(0[2-6]|1[3-6]|20)|37782(5|6)|3799(6[6-8]|7(5|7)))',
+                        'pattern' => '^((34)|(37))',
+                    ],
+                    'card_number' => [
+                        'length' => 15,
+                        'validation' => 'standard',
+                    ],
+                    'security_code' => [
+                        'card_location' => 'front',
+                        'length' => 4,
+                        'mode' => 'mandatory',
+                    ],
+                ],
+            ],
+            'status' => 'active',
+            'thumbnail' => 'http://img.mlstatic.com/org-img/MP3/API/logos/amex.gif',
+        ],
+        2 => [
+            'accreditation_time' => 0,
+            'additional_info_needed' => [
+              0 => 'identification_type',
+              1 => 'identification_number',
+              2 => 'entity_type',
+            ],
+            'deferred_capture' => 'unsupported',
+            'financial_institutions' => [],
+            'id' => 'paycash',
+            'max_allowed_amount' => 60000,
+            'min_allowed_amount' => 20,
+            'name' => 'PayCash',
+            'payment_type_id' => 'ticket',
+            'processing_modes' => [
+              0 => 'aggregator',
+            ],
+            'secure_thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/paycash.gif',
+            'settings' => [],
+            'status' => 'testing',
+            'thumbnail' => 'https://www.mercadopago.com/org-img/MP3/API/logos/paycash.gif',
+          ],
+    ],
+    'status' => 200,
+];
+
+  public const RESPONSE_PAYMENT_METHODS_SUCCESS_MLB = [
+    'response' => [
+      [
+        "accreditation_time" => 2880, 
+        "additional_info_needed" => [
+            "cardholder_identification_number", 
+            "cardholder_identification_type", 
+            "cardholder_name" 
+        ], 
+        "deferred_capture" => "supported", 
+        "financial_institutions" => [], 
+        "id" => "elo", 
+        "max_allowed_amount" => 60000, 
+        "min_allowed_amount" => 0.5, 
+        "name" => "Elo", 
+        "payment_type_id" => "credit_card", 
+        "processing_modes" => [
+          "aggregator" 
+        ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/elo.gif", 
+        "settings" => [
+          [
+            "bin" => [
+              "exclusion_pattern" => "^(509023|506704|506706|506761|509887|506754|509882|506760|506764|506755|509881|506758|506702|506700|506770|509880|506768|506766|506716|506771|506767|506762|506735|506699|506756|506723|509884|506772|506713|506773|506710|506765|509901|509885|509815|506763|506734|506714|506712|506711|509894|509812|506769|506759|506757|506701)", 
+              "installments_pattern" => "^(?!(506721))|(506718|(506720)|(50672[4-9])|(50673[0-3])|506739|(50674[1-3])|(50674[5-7])|506753|(50677[4-5])|(50677[7-8])|(50900[0-2])|(50900[4-7])|509009|509014|(50902[0-9])|509030|(50903[5-9])|(50904[0-2])|(50904[4-9])|(50905[0-3])|509064|(50906[6-9])|509072|(50907[4-9])|(50908[0-3])|(50908[5-6])|(50909[1-2])|(50909[5-9])|(50910[0-1])|(50910[7-9])|(50911[0-9])|(50912[0-9])|(50913[0-9])|(50914[0-9])|(50915[0-9])|(50916[0-9])|(50917[0-9])|(50918[0-9])|(50919[0-9])|(50920[0-9])|(50921[0-9])|(50922[0-9])|(50923[0-9])|(50924[0-9])|(50925[0-6])|(50950[7-9])|(50951[0-9])|(50952[0-9])|(50953[0-9])|(50954[0-9])|(50955[0-9])|(50956[0-9])|(50957[0-9])|(50958[0-9])|(50959[0-9])|(50960[0-9])|(50961[0-9])|(50962[0-9])|(50963[0-9])|(50964[0-9])|(50965[0-9])|(50966[0-9])|(50967[0-9])|(50968[0-9])|(50969[0-9])|(50970[0-9])|(50971[0-9])|(50972[0-9])|(50973[0-9])|(50974[0-9])|(50975[0-9])|(50976[0-9])|(50977[0-9])|(50978[0-9])|(50979[0-9])|(50980[0-7])|636368|(65048[5-9])|(65049[0-9])|(65050[0-4])|(65050[6-9])|(65051[0-3])|(65051[8-9])|(65052[0-9])|(65053[0-8])|(65055[2-9])|(65056[0-9])|(65057[0-9])|(65058[0-9])|(65059[0-8])|(65072[0-7])|(65090[1-9])|(65091[0-9])|(65092[0-2])|650928|650939|(65094[6-9])|(65095[0-9])|(65096[0-9])|(65097[0-8])|(65165[2-9])|(65166[0-1])|(65166[3-9])|(65167[0-9])|(65168[0-9])|(65169[0-9])|(65170[0-4])|(65500[0-9])|(65501[0-1])|(65501[3-9])|(65502[1-9])|(65503[0-9])|(65504[0-9])|(65505[0-7]))", 
+              "pattern" => "^((50670[7-8])|506715|(50671[8-9])|(50672[0-1])|(50672[4-9])|(50673[0-3])|506739|(50674[1-3])|(50674[5-7])|506753|(50677[4-8])|(50900[0-2])|(50900[4-7])|509009|(50901[0-2])|509014|(50902[0-9])|509030|(50903[5-9])|(50904[0-2])|(50904[4-9])|(50905[0-9])|(50906[0-4])|(50906[6-9])|(50907[0-2])|(50907[4-9])|(50908[0-9])|(50909[1-2])|(50909[5-9])|(50910[0-1])|(50910[6-9])|(50911[0-9])|(50912[0-9])|(50913[0-9])|(50914[0-9])|(50915[0-9])|(50916[0-9])|(50917[0-9])|(50918[0-9])|(50919[0-9])|(50920[0-9])|(50921[0-9])|(50922[0-9])|(50923[0-9])|(50924[0-9])|(50925[0-9])|(50926[0-9])|(50927[0-9])|(50928[0-9])|(50929[0-9])|(50930[0-9])|(50931[0-9])|(50932[0-9])|(50933[0-9])|(50934[0-9])|(50935[0-9])|(50936[0-9])|(50937[0-9])|(50938[0-9])|(50939[0-9])|(50940[0-9])|(50941[0-9])|(50942[0-9])|(50943[0-9])|(50944[0-9])|(50945[0-9])|(50946[0-9])|(50947[0-9])|(50948[0-9])|(50949[0-9])|(50950[0-9])|(50951[0-9])|(50952[0-9])|(50953[0-9])|(50954[0-9])|(50955[0-9])|(50956[0-9])|(50957[0-9])|(50958[0-9])|(50959[0-9])|(50960[0-9])|(50961[0-9])|(50962[0-9])|(50963[0-9])|(50964[0-9])|(50965[0-9])|(50966[0-9])|(50967[0-9])|(50968[0-9])|(50969[0-9])|(50970[0-9])|(50971[0-9])|(50972[0-9])|(50973[0-9])|(50974[0-9])|(50975[0-9])|(50976[0-9])|(50977[0-9])|(50978[0-9])|(50979[0-9])|(50980[0-7])|(50983[1-9])|(50984[0-9])|(50985[0-9])|(50986[0-9])|(50987[0-7])|(50989[7-9])|509900|(50991[8-9])|(50992[0-9])|(50993[0-9])|(50994[0-9])|(50995[0-9])|(50996[0-4])|(50997[1-9])|(50998[0-6])|(50999[5-9])|636368|(65040[6-9])|(65041[0-9])|(65042[0-9])|(65043[0-9])|(65048[5-9])|(65049[0-9])|(65050[0-4])|(65050[6-9])|(65051[0-5])|(65051[8-9])|(65052[0-9])|(65053[0-8])|(65055[2-9])|(65056[0-9])|(65057[0-9])|(65058[0-9])|(65059[0-8])|(65072[0-7])|(65090[1-9])|(65091[0-9])|(65092[0-2])|650928|650939|(65094[6-9])|(65095[0-9])|(65096[0-9])|(65097[0-8])|(65165[2-9])|(65166[0-1])|(65166[3-9])|(65167[0-9])|(65168[0-9])|(65169[0-9])|(65170[0-4])|(65500[0-9])|(65501[0-1])|(65501[3-9])|(65502[1-9])|(65503[0-9])|(65504[0-9])|(65505[0-7])|(506704|506706|506761|509887))" 
+            ], 
+            "card_number" => [
+              "length" => 16, 
+              "validation" => "standard" 
+            ], 
+            "security_code" => [
+              "card_location" => "back", 
+              "length" => 3, 
+              "mode" => "mandatory" 
+            ] 
+          ] 
+        ], 
+        "status" => "active", 
+        "thumbnail" => "http://img.mlstatic.com/org-img/MP3/API/logos/elo.gif" 
+      ], 
+      [
+        "accreditation_time" => 0, 
+        "additional_info_needed" => [], 
+        "deferred_capture" => "does_not_apply", 
+        "financial_institutions" => [
+          [
+            "description" => "PIX", 
+            "id" => "1" 
+          ] 
+        ], 
+        "id" => "pix", 
+        "max_allowed_amount" => 9999999, 
+        "min_allowed_amount" => 0.01, 
+        "name" => "PIX", 
+        "payment_type_id" => "bank_transfer", 
+        "processing_modes" => [
+          "aggregator" 
+        ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/pix.gif", 
+        "settings" => [], 
+        "status" => "active", 
+        "thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/pix.gif" 
+      ], 
+      [
+        "accreditation_time" => 2880, 
+        "additional_info_needed" => [
+          "cardholder_name", 
+          "cardholder_identification_type", 
+          "cardholder_identification_number" 
+        ], 
+        "deferred_capture" => "supported", 
+        "financial_institutions" => [
+          ], 
+        "id" => "visa", 
+        "max_allowed_amount" => 60000, 
+        "min_allowed_amount" => 0.5, 
+        "name" => "Visa", 
+        "payment_type_id" => "credit_card", 
+        "processing_modes" => [
+                "aggregator" 
+              ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/visa.gif", 
+        "settings" => [
+          [
+            "bin" => [
+              "exclusion_pattern" => "^(400163|400176|400178|400185|400199|423808|439267|471233|473200|476332|482481|451416|438935|(40117[8-9])|(45763[1-2])|457393|431274)", 
+              "installments_pattern" => "^(?!(417401|453998|426398|462437|451212|456188|435087|404025|409280|406176|478507|430360|451302|410349))", 
+              "pattern" => "^(4)" 
+            ], 
+            "card_number" => [
+              "length" => 16, 
+              "validation" => "standard" 
+            ], 
+            "security_code" => [
+              "card_location" => "back", 
+              "length" => 3, 
+              "mode" => "mandatory" 
+            ] 
+          ] 
+        ], 
+        "status" => "active", 
+        "thumbnail" => "http://img.mlstatic.com/org-img/MP3/API/logos/visa.gif" 
+      ], 
+      [
+        "accreditation_time" => 2880, 
+        "additional_info_needed" => [
+          "cardholder_identification_type", 
+          "cardholder_name", 
+          "cardholder_identification_number" 
+        ], 
+        "deferred_capture" => "supported", 
+        "financial_institutions" => [], 
+        "id" => "master", 
+        "max_allowed_amount" => 60000, 
+        "min_allowed_amount" => 0.5, 
+        "name" => "Mastercard", 
+        "payment_type_id" => "credit_card", 
+        "processing_modes" => [
+          "aggregator" 
+        ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/master.gif", 
+        "settings" => [
+          [
+            "bin" => [
+              "exclusion_pattern" => "^(506704|545377|506706|506761|509887|526968|550207|528635|542652|502121|506721|506722|506776|536969|589916|(50670[7-8])|(506715)|(50671[7-9])|(50672[0-1])|(50672[4-9])|(50673[0-3])|(506739)|(50674[0-8])|(50675[0-3])|(50677[4-8])|(50900[0-9])|(50901[3-9])|(50902[0-9])|(50903[1-5])|(50903[8-9])|(50904[0-9])|(50905[0-9])|(50906[0-4])|(50906[6-9])|(50907[0-2])|(50907[4-5])|(504175)|(50907[6-9])|(50908[0-9])|(509[0-7][0-9]{2})|(509[8]0[0-9])|(50983[1-9])|(5098[4-6][0-9])|(5098[7][0-7])|(50989[7-9])|(509900)|(50991[8-9])|(5099[2-5][0-9])|(5099[6][0-4])|(50997[1-9])|(50998[0-6])|(50999[5-9])|509810)", 
+              "installments_pattern" => "^(?!(525823|525824|525834|527660|529133|529205|536390|513368|539131|529053|538450|538455|515675|549636|524886|546616|529115|511623|521580|527308|527648|528841|530551|533728|534300|539181|549622|528590|542865|538454|543299|549622|533728|230653|516129|527648|533519|557996|533433|511623|522157|529518|530551|546001|506704|506706|506761|509887|506754|509882|506760|506764|506755|509881|506758|506702|506700|506770|509880|506768|506766|506716|506771|506767|506762|506735|506699|506756|506723|509884|506772|506713|506773|506710|506765|509901|509885|509815|506763|506734|506714|506712|506711|509894|509812|506769|506759|506757|506701))", 
+              "pattern" => "^(5|(2(221|222|223|224|225|226|227|228|229|23|24|25|26|27|28|29|3|4|5|6|70|71|720)))" 
+            ], 
+            "card_number" => [
+              "length" => 16, 
+              "validation" => "standard" 
+            ], 
+            "security_code" => [
+              "card_location" => "back", 
+              "length" => 3, 
+              "mode" => "mandatory" 
+            ] 
+          ], 
+          [
+            "bin" => [
+              "exclusion_pattern" => "^(506704|545377|506706|506761|509887|506754|509882|506760|506764|506755|509881|506758|506702|506700|506770|509880|506768|506766|506716|506771|506767|506762|506735|506699|506756|506723|509884|506772|506713|506773|506710|506765|509901|509885|509815|506763|506734|506714|506712|506711|509894|509812|506769|506759|506757|506701)", 
+              "installments_pattern" => "^(?!(549622|533728|230653|516129|527648|533519|557996|533433|511623|522157|529518|530551|546001))", 
+              "pattern" => "^(532884)" 
+            ], 
+            "card_number" => [
+              "length" => 19, 
+              "validation" => "standard" 
+            ], 
+            "security_code" => [
+              "card_location" => "back", 
+              "length" => 3, 
+              "mode" => "mandatory" 
+            ] 
+          ] 
+        ], 
+        "status" => "active", 
+        "thumbnail" => "http://img.mlstatic.com/org-img/MP3/API/logos/master.gif" 
+      ], 
+      [
+        "accreditation_time" => 2880, 
+        "additional_info_needed" => [
+          "cardholder_identification_type", 
+          "cardholder_identification_number", 
+          "cardholder_name" 
+        ], 
+        "deferred_capture" => "supported", 
+        "financial_institutions" => [], 
+        "id" => "hipercard", 
+        "max_allowed_amount" => 60000, 
+        "min_allowed_amount" => 0.5, 
+        "name" => "Hipercard", 
+        "payment_type_id" => "credit_card", 
+        "processing_modes" => [
+          "aggregator" 
+        ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/hipercard.gif", 
+        "settings" => [
+          [
+            "bin" => [
+              "exclusion_pattern" => null, 
+              "installments_pattern" => "^((606282)|(637095)|(637568)|(637599)|(637609)|(637612))", 
+              "pattern" => "^((606282)|(637095)|(637568)|(637599)|(637609)|(637612))" 
+            ], 
+            "card_number" => [
+              "length" => 16, 
+              "validation" => "standard" 
+            ], 
+            "security_code" => [
+              "card_location" => "back", 
+              "length" => 3, 
+              "mode" => "mandatory" 
+            ] 
+          ], 
+          [
+            "bin" => [
+              "exclusion_pattern" => null, 
+              "installments_pattern" => "^((606282)|(637095)|(637568)|(637599)|(637609)|(637612))", 
+              "pattern" => "^((606282)|(637095)|(637568)|(637599)|(637609)|(637612))" 
+            ], 
+            "card_number" => [
+              "length" => 16, 
+              "validation" => "standard" 
+            ], 
+            "security_code" => [
+              "card_location" => "back", 
+              "length" => 3, 
+              "mode" => "mandatory" 
+            ] 
+          ] 
+        ], 
+        "status" => "active", 
+        "thumbnail" => "http://img.mlstatic.com/org-img/MP3/API/logos/hipercard.gif" 
+      ], 
+      [
+        "accreditation_time" => 2880, 
+        "additional_info_needed" => [
+          "cardholder_identification_type", 
+          "cardholder_identification_number", 
+          "cardholder_name" 
+        ], 
+        "deferred_capture" => "supported", 
+        "financial_institutions" => [], 
+        "id" => "amex", 
+        "max_allowed_amount" => 60000, 
+        "min_allowed_amount" => 0.5, 
+        "name" => "American Express", 
+        "payment_type_id" => "credit_card", 
+        "processing_modes" => [
+          "aggregator" 
+        ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/amex.gif", 
+        "settings" => [
+          [
+            "bin" => [
+              "exclusion_pattern" => "^((384100)|(384140)|(384160))", 
+              "installments_pattern" => "^(374758|374759|374760|374761|374762|374767|374768|374769|375130|375131|375132|375133|375134|375135|375136|375137|375138|375177|375178|375365|376421|376422|376423|376424|376425|376426|376427|376428|376429|376440|376441|376442|376443|376444|376445|376446|376449|376461|376462|376463|376464|376465|376466|376467|376471|376472|376473|376474|376475|376476|376477|376478|376479|376480|376481|376482|376483|376484|376485|376486|376487|376488|376489|376491|376493|376520|376521|376522|376523|376524|376525|376526|376527|376528|376529|376619|376620|376621|376622|376623|376624|376625|376626|376627|376628|376629|377169|377174|379966|379967|379968)", 
+              "pattern" => "^((34)|(37))" 
+            ], 
+            "card_number" => [
+              "length" => 15, 
+              "validation" => "standard" 
+            ], 
+            "security_code" => [
+              "card_location" => "front", 
+              "length" => 4, 
+              "mode" => "mandatory" 
+            ] 
+          ] 
+        ], 
+        "status" => "active", 
+        "thumbnail" => "http://img.mlstatic.com/org-img/MP3/API/logos/amex.gif" 
+      ], 
+      [
+        "accreditation_time" => 60, 
+        "additional_info_needed" => [
+          "identification_type", 
+          "identification_number", 
+          "first_name", 
+          "last_name" 
+        ], 
+        "deferred_capture" => "supported", 
+        "financial_institutions" => [], 
+        "id" => "pec", 
+        "max_allowed_amount" => 2000, 
+        "min_allowed_amount" => 4, 
+        "name" => "Pagamento na lotérica sem boleto", 
+        "payment_type_id" => "ticket", 
+        "processing_modes" => [
+          "aggregator" 
+        ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/pec.gif", 
+        "settings" => [], 
+        "status" => "active", 
+        "thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/pec.gif" 
+      ], 
+      [
+        "accreditation_time" => 2880, 
+        "additional_info_needed" => [], 
+        "deferred_capture" => "supported", 
+        "financial_institutions" => [], 
+        "id" => "account_money", 
+        "max_allowed_amount" => 10000000, 
+        "min_allowed_amount" => 0.01, 
+        "name" => "Dinheiro na minha conta do MercadoPago", 
+        "payment_type_id" => "account_money", 
+        "processing_modes" => [
+          "aggregator" 
+        ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/account_money.gif", 
+        "settings" => [], 
+        "status" => "active", 
+        "thumbnail" => "http://img.mlstatic.com/org-img/MP3/API/logos/account_money.gif" 
+      ], 
+      [
+        "accreditation_time" => 0, 
+        "additional_info_needed" => [
+          "cardholder_name", 
+          "cardholder_identification_type", 
+          "cardholder_identification_number" 
+        ], 
+        "deferred_capture" => "unsupported", 
+        "financial_institutions" => [], 
+        "id" => "debvisa", 
+        "max_allowed_amount" => 50000, 
+        "min_allowed_amount" => 0.5, 
+        "name" => "Visa Débito", 
+        "payment_type_id" => "debit_card", 
+        "processing_modes" => [
+          "aggregator" 
+        ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/debvisa.gif", 
+        "settings" => [
+          [
+            "bin" => [
+              "exclusion_pattern" => null, 
+              "installments_pattern" => "", 
+              "pattern" => "^(439267)" 
+            ], 
+            "card_number" => [
+              "length" => 16, 
+              "validation" => "standard" 
+            ], 
+            "security_code" => [
+              "card_location" => "back", 
+              "length" => 3, 
+              "mode" => "mandatory" 
+            ] 
+          ] 
+        ], 
+        "status" => "active", 
+        "thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/debvisa.gif" 
+      ], 
+      [
+        "accreditation_time" => 1440, 
+        "additional_info_needed" => [
+            "identification_type", 
+            "identification_number", 
+            "first_name", 
+            "last_name" 
+        ], 
+        "deferred_capture" => "does_not_apply", 
+        "financial_institutions" => [], 
+        "id" => "bolbradesco", 
+        "max_allowed_amount" => 100000, 
+        "min_allowed_amount" => 4, 
+        "name" => "Boleto", 
+        "payment_type_id" => "ticket", 
+        "processing_modes" => [
+          "aggregator" 
+        ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/bolbradesco.gif", 
+        "settings" => [], 
+        "status" => "active", 
+        "thumbnail" => "http://img.mlstatic.com/org-img/MP3/API/logos/bolbradesco.gif" 
+      ], 
+      [
+        "accreditation_time" => 0, 
+        "additional_info_needed" => [
+          "cardholder_name", 
+          "cardholder_identification_type", 
+          "cardholder_identification_number" 
+        ], 
+        "deferred_capture" => "unsupported", 
+        "financial_institutions" => [], 
+        "id" => "debelo", 
+        "max_allowed_amount" => 60000, 
+        "min_allowed_amount" => 0.5, 
+        "name" => "Elo Debito", 
+        "payment_type_id" => "debit_card", 
+        "processing_modes" => [
+          "aggregator" 
+        ], 
+        "secure_thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/elo.gif", 
+        "settings" => [
+          [
+            "bin" => [
+              "exclusion_pattern" => null, 
+              "installments_pattern" => "", 
+              "pattern" => "^(506722|509023)" 
+            ], 
+            "card_number" => [
+              "length" => 16, 
+              "validation" => "standard" 
+            ], 
+            "security_code" => [
+              "card_location" => "back", 
+              "length" => 3, 
+              "mode" => "mandatory" 
+            ] 
+          ] 
+        ], 
+        "status" => "active", 
+        "thumbnail" => "https://www.mercadopago.com/org-img/MP3/API/logos/elo.gif" 
+      ] 
+    ]
   ];
 
   public const RESPONSE_PAYMENT_METHODS_FAILURE = [

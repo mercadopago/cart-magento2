@@ -4,7 +4,7 @@ namespace MercadoPago\Test\Unit\Model;
 
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Model\CustomConfigProvider;
-use MercadoPago\Test\Unit\Constants\ConfigProviderConstants;
+use MercadoPago\Test\Unit\Mock\PaymentResponseMock;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
@@ -249,11 +249,11 @@ class CustomConfigProviderTest extends TestCase
 
         $this->coreHelperMock->expects($this->once())
         ->method('getMercadoPagoPaymentMethods')
-        ->willReturn(ConfigProviderConstants::PAYMENT_METHODS);
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_CONFIG_PROVIDER);
 
         $expectedOutput = [
-            0 => ConfigProviderConstants::PAYMENT_METHODS['response'][0],
-            1 => ConfigProviderConstants::PAYMENT_METHODS['response'][1]
+            0 => PaymentResponseMock::RESPONSE_PAYMENT_METHODS_CONFIG_PROVIDER['response'][0],
+            1 => PaymentResponseMock::RESPONSE_PAYMENT_METHODS_CONFIG_PROVIDER['response'][1]
         ];
 
         $this->assertEquals($expectedOutput, $this->customConfigProvider->getPaymentMethods());
