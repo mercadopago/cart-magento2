@@ -13,6 +13,17 @@
       }
     });
   }
+  
+  window.setChangeEventExpirationDate = function () {
+    document.getElementById('mpCardExpirationDate').addEventListener('change', function (e) {
+      var card_expiration_date = document.getElementById('mpCardExpirationDate').value;
+      var card_expiration_month = card_expiration_date.split('/')[0] | '';
+      var card_expiration_year = card_expiration_date.split('/')[1] | '';
+
+      document.getElementById('mpCardExpirationMonth').value = ('0' + card_expiration_month).slice(-2);
+      document.getElementById('mpCardExpirationYear').value = card_expiration_year;
+    });
+  }
 
   window.setChangeEventOnInstallments = function (siteId, payer_costs) {
     if (siteId === 'MLA') {
@@ -75,7 +86,9 @@
       document.getElementById('mp-doc-number-div').style.display = 'none';
     }
 
-    if (!additionalInfoNeeded.cardholder_identification_type && !additionalInfoNeeded.cardholder_identification_number) {
+    if (additionalInfoNeeded.cardholder_identification_type && additionalInfoNeeded.cardholder_identification_number) {
+      document.getElementById('mp-doc-div').style.display = 'block';
+    } else {
       document.getElementById('mp-doc-div').style.display = 'none';
     }
   }
@@ -83,10 +96,7 @@
   window.clearInputs = function () {
     hideErrors();
     document.getElementById('mpCardNumber').style.background = 'no-repeat #fff';
-    document.getElementById('mpCardExpirationMonth').value = '';
-    document.getElementById('mpCardExpirationMonthSelect').value = '';
-    document.getElementById('mpCardExpirationYear').value = '';
-    document.getElementById('mpCardExpirationYearSelect').value = '';
+    document.getElementById('mpCardExpirationDate').value = '';
     document.getElementById('mpDocNumber').value = '';
     document.getElementById('mpSecurityCode').value = '';
     document.getElementById('mpCardholderName').value = '';
@@ -98,8 +108,7 @@
     var formInputs = form.querySelectorAll('[data-checkout]');
     var fixedInputs = [
       'mpCardNumber',
-      'mpCardExpirationMonthSelect',
-      'mpCardExpirationYearSelect',
+      'mpCardExpirationDate',
       'mpSecurityCode',
       'mpInstallments'
     ];
@@ -176,13 +185,7 @@
 
       if (span !== undefined) {
         span.style.display = 'block';
-
-        if (code === '301') {
-          form.querySelector('#mpCardExpirationYearSelect').classList.add('mp-form-control-error');
-          form.querySelector('#mpCardExpirationMonthSelect').classList.add('mp-form-control-error');
-        } else {
-          form.querySelector(span.getAttribute('data-main')).classList.add('mp-form-control-error');
-        }
+        form.querySelector(span.getAttribute('data-main')).classList.add('mp-form-control-error');
       }
     }
 

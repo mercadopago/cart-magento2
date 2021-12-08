@@ -51,6 +51,7 @@ define(
       initApp: function () {
         if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           setChangeEventOnCardNumber();
+          setChangeEventExpirationDate();
 
           // Initialize SDK v2
           mp = new MercadoPago(this.getPublicKey());
@@ -78,9 +79,6 @@ define(
               },
               onIdentificationTypesReceived: (error, identificationTypes) => {
                 if (error) return console.warn('IdentificationTypes handling error: ', error);
-              },
-              onIssuersReceived: (error, issuers) => {
-                if (error) return console.warn('Issuers handling error: ', error);
               },
               onInstallmentsReceived: (error, installments) => {
                 if (error) {
@@ -112,20 +110,6 @@ define(
             },
           });
         }
-      },
-
-      changeMonthInput: function () {
-        var monthInput = document.getElementById("mpCardExpirationMonth");
-        var monthSelect = document.getElementById("mpCardExpirationMonthSelect");
-
-        monthInput.value = ('0' + monthSelect.value).slice(-2);
-      },
-
-      changeYearInput: function () {
-        var yearInput = document.getElementById("mpCardExpirationYear");
-        var yearSelect = document.getElementById("mpCardExpirationYearSelect");
-
-        yearInput.value = yearSelect.value;
       },
 
       toogleWalletButton: function () {
@@ -355,7 +339,6 @@ define(
             'site_id': this.getCountry(),
             'token': formData.token,
             'payment_method_id': formData.paymentMethodId,
-            'issuer_id': formData.issuerId,
             'gateway_mode': this.getMpGatewayMode(),
           }
         };
