@@ -104,6 +104,7 @@ define(
 
                 clearInputs();
                 setImageCard(paymentMethods[0].thumbnail);
+                handleInstallments(paymentMethods[0].payment_type_id);
                 loadAdditionalInfo(paymentMethods[0].additional_info_needed);
                 additionalInfoHandler();
               },
