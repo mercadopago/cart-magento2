@@ -66,7 +66,7 @@ class Payment extends Fieldset
         array $data = [],
         Data $coreHelper
     ) {
-        parent::__construct($context, $authSession, $jsHelper, $data, $coreHelper);
+        parent::__construct($context, $authSession, $jsHelper, $data);
         $this->scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
         $this->switcher = $switcher;
