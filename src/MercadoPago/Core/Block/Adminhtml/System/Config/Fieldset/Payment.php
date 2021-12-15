@@ -74,7 +74,7 @@ class Payment extends Fieldset
         Data $coreHelper,
         Cache $mpCache
     ) {
-        parent::__construct($context, $authSession, $jsHelper, $data, $coreHelper);
+        parent::__construct($context, $authSession, $jsHelper, $data);
         $this->scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
         $this->switcher = $switcher;
