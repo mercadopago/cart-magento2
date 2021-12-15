@@ -13,7 +13,6 @@ use Magento\Framework\View\Helper\Js;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
-use MercadoPago\Core\Helper\Cache;
 
 /**
  * Config form FieldSet renderer
@@ -48,11 +47,6 @@ class Payment extends Fieldset
     protected $coreHelper;
 
     /**
-     * @var Cache
-     */
-    protected $mpCache;
-
-    /**
      * @param Context $context
      * @param Session $authSession
      * @param Js $jsHelper
@@ -61,7 +55,6 @@ class Payment extends Fieldset
      * @param Switcher $switcher
      * @param array $data
      * @param Data $coreHelper
-     * @param Cache $mpCache
      */
     public function __construct(
         Context $context,
@@ -71,15 +64,13 @@ class Payment extends Fieldset
         Config $configResource,
         Switcher $switcher,
         array $data = [],
-        Data $coreHelper,
-        Cache $mpCache
+        Data $coreHelper
     ) {
         parent::__construct($context, $authSession, $jsHelper, $data);
         $this->scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
         $this->switcher = $switcher;
         $this->coreHelper = $coreHelper;
-        $this->mpCache = $mpCache;
     }
 
     /**
@@ -149,30 +140,17 @@ class Payment extends Fieldset
     protected function hideBankTransfer($paymentId)
     {
         if (strpos($paymentId, 'custom_checkout_bank_transfer') !== false) {
-            $cacheKey = Cache::HIDE_BANK_TRANSFER;
-
-            $cacheEntry = $this->mpCache->getFromCache($cacheKey);
-
-            if ($cacheEntry == self::SHOW_PAYMENT_METHOD) {
-                return false;
-            } else if ($cacheEntry == self::HIDE_PAYMENT_METHOD) {
-                $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
-                return true;
-            }
-            
             $paymentMethods = $this->getPaymentMethods();
 
             if ($paymentMethods) {
                 foreach ($paymentMethods['response'] as $pm) {
                     if ($pm['payment_type_id'] === 'bank_transfer' && strtolower($pm['id']) !== 'pix') {
-                        $this->mpCache->saveCache($cacheKey, self::SHOW_PAYMENT_METHOD);
                         return false;
                     }
                 }
             }
 
             $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
-            $this->mpCache->saveCache($cacheKey, self::HIDE_PAYMENT_METHOD);
             return true;
         }
         return false;

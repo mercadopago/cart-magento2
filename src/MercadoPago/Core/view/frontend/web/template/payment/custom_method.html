@@ -130,7 +130,7 @@
                     <small id="mp-error-221" class="mp-form-error" data-main="#mpCardholderName"><!-- ko i18n: 'Invalid card holder full name'--><!-- /ko --></small>
                 </div>
 
-                <div class="mp-box-inputs mp-line">
+                <div class="mp-box-inputs mp-line mp-margin-bottom-0">
                     <div class="mp-box-inputs mp-col-50">
                         <label for="mpCardExpirationDate">
                             <!-- ko i18n: 'Expiration date'--><!-- /ko -->
@@ -170,24 +170,27 @@
                             maxlength="4"
                             onkeyup="maskInput(this, minteger);"
                         />
+                        <small class="mp-box-inputs">
+                            <!-- ko i18n: 'The last 3 digits in the back of the card'--><!-- /ko -->
+                        </small>
 
                         <small id="mp-error-224" class="mp-form-error" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
                         <small id="mp-error-E302" class="mp-form-error" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
                     </div>
                 </div>
 
-                <div class="mp-box-inputs mp-col-100 mp-doc" id="mp-doc-div">
+                <div class="mp-box-inputs mp-line mp-margin-top-0" id="mp-doc-div">
                     <div class="mp-box-inputs mp-col-35 mp-docType" id="mp-doc-type-div">
                         <label for="mpDocType">
-                            <!-- ko i18n: 'Document Type'--><!-- /ko -->
+                            <!-- ko i18n: 'ID'--><!-- /ko -->
                             <em>*</em>
                         </label>
-                        <select id="mpDocType" data-checkout="mpDocType" name="mercadopago_custom[docType]"></select>
+                        <select id="mpDocType" data-checkout="mpDocType" name="mercadopago_custom[docType]" style="width: 95%;"></select>
                     </div>
 
-                    <div class="mp-box-inputs mp-col-65 mp-docNumber" id="mp-doc-number-div">
+                    <div class="mp-box-inputs mp-col-65 mp-docNumber " id="mp-doc-number-div">
                         <label for="mpDocNumber">
-                            <!-- ko i18n: 'Document number'--><!-- /ko -->
+                            <!-- ko i18n: 'Number of the payer ID'--><!-- /ko -->
                             <em>*</em>
                         </label>
                         <input
@@ -217,7 +220,6 @@
                 <div class="mp-box-inputs mp-col-100" id="mp-box-installments-selector">
                     <label for="mpInstallments">
                         <!-- ko i18n: 'Installments'--><!-- /ko -->
-                        <em>*</em>
                     </label>
                     <select id="mpInstallments" data-checkout="mpInstallments" name="mercadopago_custom[installments]"></select>
                     <small id="id-installments-status" class="mp-form-error"></small>

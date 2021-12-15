@@ -211,6 +211,14 @@
     }
   }
 
+  window.handleInstallments = function (payment_type_id) {
+    if (payment_type_id === 'debit_card') {
+      document.getElementById('mpInstallments').setAttribute("disabled","disabled");
+    } else {
+      document.getElementById('mpInstallments').removeAttribute("disabled");
+    }
+  }
+
   /**
    * Show taxes resolution 51/2017 for MLA
    */
