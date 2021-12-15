@@ -59,11 +59,6 @@ class PaymentTest extends TestCase
     /**
      * @var MockObject
      */
-    protected $mpCache;
-
-    /**
-     * @var MockObject
-     */
     protected $abstractElementMock;
 
 
@@ -84,7 +79,6 @@ class PaymentTest extends TestCase
         $this->switcherMock = $arguments['switcher'];
         $this->dataMock = $arguments['data'];
         $this->coreHelperMock = $arguments['coreHelper'];
-        $this->mpCache = $arguments['mpCache'];
 
         $this->abstractElementMock = $this->getMockBuilder(AbstractElement::class)
         ->setMethods(['getId'])
@@ -101,10 +95,6 @@ class PaymentTest extends TestCase
         ->method('getId')
         ->willReturn('custom_checkout_bank_transfer');
 
-        $this->mpCache->expects(self::any())
-        ->method('getFromCache')
-        ->willReturn(null);
-
         $this->scopeConfigMock->expects(self::any())
         ->method('getValue')
         ->willReturn('APP_USR-00000000000-000000-000000-0000000000');
@@ -113,8 +103,6 @@ class PaymentTest extends TestCase
         ->method('getMercadoPagoPaymentMethods')
         ->with('APP_USR-00000000000-000000-000000-0000000000')
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_MLB);
-
-        $this->mpCache->expects(self::any())->method('saveCache');
 
         $this->assertEquals("", $this->payment->render($this->abstractElementMock));
     }

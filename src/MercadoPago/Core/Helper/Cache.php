@@ -13,7 +13,6 @@ class Cache
 {
     const PREFIX_KEY = 'MP_';
     const IS_VALID_AT = 'IS_VALID_ACCESS_TOKEN';
-    const HIDE_BANK_TRANSFER = 'HIDE_BANK_TRANSFER';
 
     /**
      * @var CacheInterface
