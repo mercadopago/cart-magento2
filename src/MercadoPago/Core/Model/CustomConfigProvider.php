@@ -192,7 +192,7 @@ class CustomConfigProvider implements ConfigProviderInterface
 
         try {
             $cards = [];
-            $paymentMethods = RestClient::get("/v1/payment_methods", null, ["Authorization: Bearer " . $accessToken]);
+            $paymentMethods = $this->_coreHelper->getMercadoPagoPaymentMethods($accessToken);
             $response = $paymentMethods['response'];
 
             foreach ($response as $card) {

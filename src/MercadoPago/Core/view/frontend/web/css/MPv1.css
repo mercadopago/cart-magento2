@@ -1,5 +1,9 @@
-#co-mercadopago-form, #co-mercadopago-form-ticket {
+#co-mercadopago-form {
   max-width: 400px;
+}
+
+#co-mercadopago-form-mlb {
+  display: inline-block;
 }
 
 #mp-box-form {

@@ -28,10 +28,10 @@ class ConfigObserver implements ObserverInterface
      */
     private $banners = [
         "mercadopago_custom" => [
-            "MLA" => "http://imgmp.mlstatic.com/org-img/banners/ar/medios/online/468X60.jpg",
-            "MLB" => "http://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg",
+            "MLA" => "https://imgmp.mlstatic.com/org-img/banners/ar/medios/online/468X60.jpg",
+            "MLB" => "https://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_468X60.jpg",
             "MCO" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
-            "MLM" => "http://imgmp.mlstatic.com/org-img/banners/mx/medios/MLM_468X60.JPG",
+            "MLM" => "https://imgmp.mlstatic.com/org-img/banners/mx/medios/MLM_468X60.JPG",
             "MLC" => "https://secure.mlstatic.com/developers/site/cloud/banners/cl/468x60.gif",
             "MLV" => "https://imgmp.mlstatic.com/org-img/banners/ve/medios/468X60.jpg",
             "MPE" => "https://a248.e.akamai.net/secure.mlstatic.com/components/resources/mp/css/assets/desktop-logo-mercadopago.png",
