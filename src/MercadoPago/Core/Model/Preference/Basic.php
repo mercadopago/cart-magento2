@@ -552,6 +552,11 @@ class Basic extends AbstractMethod
             return;
         }
 
+        if($this->shouldUseCustomBaseNotificationUrl()) {
+            $notification_url =
+                $this->getCustomBaseNotificationUrl() . '/' . self::NOTIFICATION_URL .'?source_news=ipn';
+        }
+
         return $notification_url;
     }
 
@@ -565,4 +570,26 @@ class Basic extends AbstractMethod
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ));
     }//end getSiteId()
+
+    /**
+     * @return bool|null
+     */
+    protected function shouldUseCustomBaseNotificationUrl ()
+    {
+        return $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CUSTOM_BASE_NOTIFICATION_URL_ACTIVE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function getCustomBaseNotificationUrl() {
+        return $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CUSTOM_BASE_NOTIFICATION_URL,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
 }

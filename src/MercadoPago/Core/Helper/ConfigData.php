@@ -71,4 +71,8 @@ class ConfigData
     const PATH_ADVANCED_INTEGRATOR = 'payment/mercadopago/integrator_id';
     const PATH_ADVANCED_EMAIL_CREATE = 'payment/mercadopago/email_order_create';
     const PATH_ADVANCED_EMAIL_UPDATE = 'payment/mercadopago/email_order_update';
+    const PATH_ADVANCED_CUSTOM_BASE_NOTIFICATION_URL_ACTIVE = 'payment/mercadopago/custom_base_notification_url_active';
+    const PATH_ADVANCED_CUSTOM_BASE_NOTIFICATION_URL = 'payment/mercadopago/custom_base_notification_url';
+
+
 }

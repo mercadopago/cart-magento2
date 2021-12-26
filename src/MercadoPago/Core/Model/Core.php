@@ -535,9 +535,19 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
         ];
 
         $notification_url = $this->_urlBuilder->getUrl('mercadopago/notifications/custom', $notification_params);
-        if (isset($notification_url) && !strrpos($notification_url, 'localhost')) {
+
+        if (isset($notification_url) &&
+            !strrpos($notification_url, 'localhost')
+        ) {
             $preference['notification_url'] = $notification_url;
         }
+
+
+        if($this->shouldUseCustomBaseNotificationUrl()) {
+            $preference['notification_url'] =
+                $this->getCustomBaseNotificationUrl() . '/' . 'mercadopago/notifications/custom?source_news=webhooks';
+        }
+
 
         $preference['description'] = __(
             "Order # %1 in store %2",
@@ -829,4 +839,26 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ));
     } //end getSiteId()
+
+    /**
+     * @return bool|null
+     */
+    protected function shouldUseCustomBaseNotificationUrl ()
+    {
+        return $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CUSTOM_BASE_NOTIFICATION_URL_ACTIVE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function getCustomBaseNotificationUrl() {
+        return $this->_scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CUSTOM_BASE_NOTIFICATION_URL,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
 }

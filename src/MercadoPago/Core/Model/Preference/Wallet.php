@@ -3,6 +3,7 @@
 namespace MercadoPago\Core\Model\Preference;
 
 use Exception;
+use Laminas\View\Helper\Url;
 use Magento\Catalog\Helper\Image;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Api\Data\CustomerInterface;
@@ -686,6 +687,33 @@ class Wallet
             return;
         }
 
+        if($this->shouldUseCustomBaseNotificationUrl()) {
+            $notification_url =
+                $this->getCustomBaseNotificationUrl() . '/' . self::NOTIFICATION_PATH .'?source_news=ipn';
+        }
+
         return $notification_url;
     }
+
+    /**
+     * @return bool|null
+     */
+    protected function shouldUseCustomBaseNotificationUrl ()
+    {
+        return $this->scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CUSTOM_BASE_NOTIFICATION_URL_ACTIVE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function getCustomBaseNotificationUrl() {
+        return $this->scopeConfig->getValue(
+            \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_CUSTOM_BASE_NOTIFICATION_URL,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
 }//end class
