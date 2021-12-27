@@ -50,12 +50,12 @@ class ConfigObserver implements ObserverInterface
     /**
      * @var array
      */
-    private $available_transparent_credit_cart = ['MLA', 'MLB', 'MLM', 'MLV', 'MLC', 'MCO', 'MPE'];
+    private $available_transparent_credit_cart = ['MLA', 'MLB', 'MLM', 'MLV', 'MLC', 'MCO', 'MPE', 'MLU'];
 
     /**
      * @var array
      */
-    private $available_transparent_ticket = ['MLA', 'MLB', 'MLM', 'MLV', 'MLC', 'MCO', 'MPE'];
+    private $available_transparent_ticket = ['MLA', 'MLB', 'MLM', 'MLV', 'MLC', 'MCO', 'MPE', 'MLU'];
 
     /**
      *
