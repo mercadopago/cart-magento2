@@ -48,16 +48,6 @@ class ConfigObserver implements ObserverInterface
     ];
 
     /**
-     * @var array
-     */
-    private $available_transparent_credit_cart = ['MLA', 'MLB', 'MLM', 'MLV', 'MLC', 'MCO', 'MPE', 'MLU'];
-
-    /**
-     * @var array
-     */
-    private $available_transparent_ticket = ['MLA', 'MLB', 'MLM', 'MLV', 'MLC', 'MCO', 'MPE', 'MLU'];
-
-    /**
      *
      */
     const LOG_NAME = 'mercadopago';
@@ -138,33 +128,8 @@ class ConfigObserver implements ObserverInterface
     {
         $this->validateAccessToken();
         $this->setUserInfo();
-        $this->availableCheckout();
         $this->checkBanner('mercadopago_custom');
         $this->checkBanner('mercadopago_customticket');
-    }
-
-    /**
-     * Disables custom checkout if selected country is not available
-     */
-    public function availableCheckout()
-    {
-        $country = $this->country;
-
-        if ($country == "") {
-            $country = $this->_scopeConfig->getValue(
-                ConfigData::PATH_SITE_ID,
-                ScopeInterface::SCOPE_WEBSITE,
-                $this->_scopeCode
-            );
-        }
-
-        if (!in_array(strtoupper($country), $this->available_transparent_credit_cart)) {
-            $this->_saveWebsiteConfig(ConfigData::PATH_CUSTOM_ACTIVE, 0);
-        }
-
-        if (!in_array(strtoupper($country), $this->available_transparent_ticket)) {
-            $this->_saveWebsiteConfig(ConfigData::PATH_CUSTOM_TICKET_ACTIVE, 0);
-        }
     }
 
     /**
