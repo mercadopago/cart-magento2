@@ -13,15 +13,21 @@ use Magento\Framework\View\Helper\Js;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
+use MercadoPago\Core\Helper\Cache;
 
 /**
  * Config form FieldSet renderer
  */
 class Payment extends Fieldset
 {
-    const SHOW_PAYMENT_METHOD = 1;
 
-    const HIDE_PAYMENT_METHOD = 2;
+    /**
+     * checkout types
+     */
+    const CHECKOUT_PRO = 'basic_checkout';
+    const CHECKOUT_CUSTOM_CARD = 'custom_checkout';
+    const CHECKOUT_CUSTOM_TICKET = 'custom_checkout_ticket';
+    const CHECKOUT_CUSTOM_BANK_TRANSFER = 'custom_checkout_bank_transfer';
 
     /**
      * @var ScopeConfigInterface
@@ -47,6 +53,12 @@ class Payment extends Fieldset
     protected $coreHelper;
 
     /**
+     *
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
      * @param Context $context
      * @param Session $authSession
      * @param Js $jsHelper
@@ -55,6 +67,7 @@ class Payment extends Fieldset
      * @param Switcher $switcher
      * @param array $data
      * @param Data $coreHelper
+     * @param Cache $cache
      */
     public function __construct(
         Context $context,
@@ -64,13 +77,15 @@ class Payment extends Fieldset
         Config $configResource,
         Switcher $switcher,
         array $data = [],
-        Data $coreHelper
+        Data $coreHelper,
+        Cache $cache
     ) {
         parent::__construct($context, $authSession, $jsHelper, $data);
         $this->scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
         $this->switcher = $switcher;
         $this->coreHelper = $coreHelper;
+        $this->cache = $cache;
     }
 
     /**
@@ -82,12 +97,18 @@ class Payment extends Fieldset
         //get id element
         $paymentId = $element->getId();
 
-        //check is bank transfer
-        if ($this->hideBankTransfer($paymentId)) {
+        $this->coreHelper->log('Método ' . $paymentId);
+
+        //check available payment methods
+        if ($this->hideInvalidCheckoutOptions($paymentId)) {
+            
+            $this->coreHelper->log('Método inválido!');
+
+            //$this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
             return "";
         }
 
-        //check is pix
+        //check pix
         if ($this->hidePix($paymentId)) {
             return "";
         }
@@ -137,23 +158,57 @@ class Payment extends Fieldset
      * @param  $paymentId
      * @return bool
      */
-    protected function hideBankTransfer($paymentId)
+    protected function hideInvalidCheckoutOptions($paymentId)
     {
-        if (strpos($paymentId, 'custom_checkout_bank_transfer') !== false) {
+        $cacheKey = Cache::VALID_PAYMENT_METHODS;
+        $validCheckoutOptions = $this->cache->getFromCache($cacheKey);
+        if (!$validCheckoutOptions) {
+            $this->coreHelper->log('Não possuo cache e estou buscando na API;');
+            $validCheckoutOptions = $this->getAvailableCheckoutsOptions();
+            $this->cache->saveCache($cacheKey, $validCheckoutOptions);
+        }
+        
+        $this->coreHelper->log($validCheckoutOptions);
+        return !in_array($paymentId, $validCheckoutOptions);
+    }
+
+    /**
+     * Get available checkout options based on payment methods of the used credentials
+     *
+     * @param string $accessToken
+     * @return array
+     */
+    public function getAvailableCheckoutsOptions()
+    {
+        try {
+            $availableCheckouts = array(self::CHECKOUT_PRO);
             $paymentMethods = $this->getPaymentMethods();
 
-            if ($paymentMethods) {
-                foreach ($paymentMethods['response'] as $pm) {
-                    if ($pm['payment_type_id'] === 'bank_transfer' && strtolower($pm['id']) !== 'pix') {
-                        return false;
-                    }
+            foreach ($paymentMethods['response'] as $paymentMethod) {
+                switch (strtolower($paymentMethod->payment_type_id)) {
+                    case 'credit_card':
+                    case 'debid_card':
+                    case 'prepaid_card':
+                        $availableCheckouts[] = self::CHECKOUT_CUSTOM_CARD;
+                        break;
+
+                    case 'atm':
+                    case 'ticket':
+                        $availableCheckouts[] = self::CHECKOUT_CUSTOM_TICKET;
+                        break;
+
+                    case 'bank_transfer':
+                        if ($paymentMethod->id !== 'pix') {
+                            $availableCheckouts[] = self::CHECKOUT_CUSTOM_BANK_TRANSFER;
+                        }
+                        break;
                 }
             }
 
-            $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
-            return true;
+            return $availableCheckouts;
+        } catch (Exception $e) {
+            return [];
         }
-        return false;
     }
 
     /**
