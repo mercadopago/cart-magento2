@@ -26,9 +26,10 @@ class Payment extends Fieldset
     /**
      * checkout types
      */
-    const CHECKOUT_CUSTOM_CARD = 'custom_checkout';
-    const CHECKOUT_CUSTOM_TICKET = 'custom_checkout_ticket';
-    const CHECKOUT_CUSTOM_BANK_TRANSFER = 'custom_checkout_bank_transfer';
+    const CHECKOUT_CUSTOM_CARD = self::CHECKOUT_CONFIG_PREFIX . 'custom_checkout';
+    const CHECKOUT_CUSTOM_PIX= self::CHECKOUT_CONFIG_PREFIX . 'custom_checkout_pix';
+    const CHECKOUT_CUSTOM_TICKET = self::CHECKOUT_CONFIG_PREFIX . 'custom_checkout_ticket';
+    const CHECKOUT_CUSTOM_BANK_TRANSFER = self::CHECKOUT_CONFIG_PREFIX . 'custom_checkout_bank_transfer';
 
     /**
      * @var ScopeConfigInterface
@@ -106,11 +107,6 @@ class Payment extends Fieldset
             $this->coreHelper->log('Método inválido!', 'mercadopago.log');
 
             //$this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
-            return "";
-        }
-
-        //check pix
-        if ($this->hidePix($paymentId)) {
             return "";
         }
 
@@ -192,20 +188,23 @@ class Payment extends Fieldset
                     case 'debid_card':
                     case 'prepaid_card':
                         if (!in_array(self::CHECKOUT_CUSTOM_CARD, $availableCheckouts)) {
-                            $availableCheckouts[] = self::CHECKOUT_CONFIG_PREFIX . self::CHECKOUT_CUSTOM_CARD;
+                            $availableCheckouts[] = self::CHECKOUT_CUSTOM_CARD;
                         }
                         break;
 
                     case 'atm':
                     case 'ticket':
                         if (!in_array(self::CHECKOUT_CUSTOM_TICKET, $availableCheckouts)) {
-                            $availableCheckouts[] = self::CHECKOUT_CONFIG_PREFIX . self::CHECKOUT_CUSTOM_TICKET;
+                            $availableCheckouts[] = self::CHECKOUT_CUSTOM_TICKET;
                         }
                         break;
 
                     case 'bank_transfer':
-                        if (!in_array(self::CHECKOUT_CUSTOM_TICKET, $availableCheckouts) && $paymentMethod['id'] !== 'pix') {
-                            $availableCheckouts[] = self::CHECKOUT_CONFIG_PREFIX . self::CHECKOUT_CUSTOM_BANK_TRANSFER;
+                        if (!in_array(self::CHECKOUT_CUSTOM_PIX, $availableCheckouts) && strtolower($paymentMethod['id']) === 'pix') {
+                            $availableCheckouts[] = self::CHECKOUT_CUSTOM_PIX;
+                        }
+                        if (!in_array(self::CHECKOUT_CUSTOM_BANK_TRANSFER, $availableCheckouts) && strtolower($paymentMethod['id']) !== 'pix') {
+                            $availableCheckouts[] = self::CHECKOUT_CUSTOM_BANK_TRANSFER;
                         }
                         break;
                 }
@@ -215,29 +214,5 @@ class Payment extends Fieldset
         } catch (Exception $e) {
             return [];
         }
-    }
-
-    /**
-     * @param  $paymentId
-     * @return bool
-     */
-    protected function hidePix($paymentId)
-    {
-        if (strpos($paymentId, 'custom_checkout_pix') !== false) {
-
-            $siteId = strtoupper(
-                $this->scopeConfig->getValue(
-                    ConfigData::PATH_SITE_ID,
-                    ScopeInterface::SCOPE_STORE
-                )
-            );
-
-            if ($siteId !== "MLB") {
-                $this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
-                return true;
-            }
-        }
-
-        return false;
     }
 }
