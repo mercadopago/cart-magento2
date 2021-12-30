@@ -7,6 +7,7 @@ use Magento\Backend\Block\Store\Switcher;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Config\Block\System\Config\Form\Fieldset;
 use Magento\Config\Model\ResourceModel\Config;
+use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\View\Helper\Js;
@@ -44,6 +45,12 @@ class Payment extends Fieldset
 
     /**
      *
+     * @var TypeListInterface
+     */
+    protected $cacheTypeList;
+
+    /**
+     *
      * @var Switcher
      */
     protected $switcher;
@@ -70,6 +77,7 @@ class Payment extends Fieldset
      * @param array $data
      * @param Data $coreHelper
      * @param Cache $cache
+     * @param TypeLIstInterface $cacheTypeList
      */
     public function __construct(
         Context $context,
@@ -80,7 +88,8 @@ class Payment extends Fieldset
         Switcher $switcher,
         array $data = [],
         Data $coreHelper,
-        Cache $cache
+        Cache $cache,
+        TypeLIstInterface $cacheTypeList
     ) {
         parent::__construct($context, $authSession, $jsHelper, $data);
         $this->scopeConfig = $scopeConfig;
@@ -88,6 +97,7 @@ class Payment extends Fieldset
         $this->switcher = $switcher;
         $this->coreHelper = $coreHelper;
         $this->cache = $cache;
+        $this->cacheTypeList = $cacheTypeList;
     }
 
     /**
@@ -101,6 +111,7 @@ class Payment extends Fieldset
 
         //check available payment methods
         if ($this->hideInvalidCheckoutOptions($paymentId)) {
+            $this->coreHelper->log('disabling ' . $paymentId);
             $this->disablePayment($paymentId);
             return "";
         }
@@ -126,25 +137,31 @@ class Payment extends Fieldset
     {
         $paymentActivePath = $this->getPaymentPath($paymentId);
 
+        $this->coreHelper->log('$paymentActivePath ' . $paymentActivePath);
+
         $statusPaymentMethod = $this->scopeConfig->isSetFlag(
             $paymentActivePath,
             ScopeInterface::SCOPE_STORE
         );
 
+        $this->coreHelper->log('$statusPaymentMethod ' . $statusPaymentMethod);
+
         //check is active for disable
         if ($paymentActivePath && $statusPaymentMethod) {
-            $disabledValue = 0;
+            $this->coreHelper->log('true');
+            $value = 0;
 
             if ($this->switcher->getWebsiteId() == 0) {
-                $this->configResource->saveConfig($paymentActivePath, $disabledValue, 'default', 0);
+                $this->configResource->saveConfig($paymentActivePath, $value, 'default', 0);
             } else {
                 $this->configResource->saveConfig(
                     $paymentActivePath,
-                    $disabledValue,
+                    $value,
                     'websites',
                     $this->switcher->getWebsiteId()
                 );
             }
+            $this->cacheTypeList->cleanType(\Magento\Framework\App\Cache\Type\Config::TYPE_IDENTIFIER);
         }
     }
 
