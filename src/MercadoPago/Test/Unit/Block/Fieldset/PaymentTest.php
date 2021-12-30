@@ -120,4 +120,36 @@ class PaymentTest extends TestCase
 
         $this->assertEquals("", $this->payment->render($this->abstractElementMock));
     }
+
+    public function testGetAvailableCheckoutsOptions_success_returnOptions(): void {
+        $this->coreHelperMock
+        ->expects($this->any())
+        ->method('getAccessToken')
+        ->willReturn('access_token');
+
+        $this->coreHelperMock
+        ->expects($this->any())
+        ->method('getMercadoPagoPaymentMethods')
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS);
+
+        $checkoutOptions = $this->payment->getAvailableCheckoutsOptions();
+
+        $this->assertEquals($checkoutOptions, array(Payment::CHECKOUT_CUSTOM_CARD, Payment::CHECKOUT_CUSTOM_TICKET, Payment::CHECKOUT_CUSTOM_BANK_TRANSFER));
+    }
+
+    public function testGetAvailableCheckoutsOptions_success_returnEmpty(): void {
+        $this->coreHelperMock
+        ->expects($this->any())
+        ->method('getAccessToken')
+        ->willReturn('access_token');
+
+        $this->coreHelperMock
+        ->expects($this->any())
+        ->method('getMercadoPagoPaymentMethods')
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_FAILURE);
+
+        $checkoutOptions = $this->payment->getAvailableCheckoutsOptions();
+
+        $this->assertEquals($checkoutOptions, array());
+    }
 }
