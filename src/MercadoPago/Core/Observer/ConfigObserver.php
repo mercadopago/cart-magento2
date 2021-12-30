@@ -18,6 +18,8 @@ use MercadoPago\Core\Helper\Data;
  * Class ConfigObserver
  *
  * @package MercadoPago\Core\Observer
+ * 
+ * @codeCoverageIgnore
  */
 class ConfigObserver implements ObserverInterface
 {
