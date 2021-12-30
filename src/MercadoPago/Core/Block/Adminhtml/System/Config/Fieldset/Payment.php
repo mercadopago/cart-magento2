@@ -99,21 +99,17 @@ class Payment extends Fieldset
         //get id element
         $paymentId = $element->getId();
 
-        $this->coreHelper->log('Método ' . $paymentId, 'mercadopago.log');
-
         //check available payment methods
         if ($this->hideInvalidCheckoutOptions($paymentId)) {
-            
-            $this->coreHelper->log('Método inválido!', 'mercadopago.log');
-
-            //$this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
+            $this->disablePayment($paymentId);
             return "";
         }
 
         return parent::render($element);
     }
 
-    public function getPaymentMethods() {
+    public function getPaymentMethods()
+    {
         $accessToken = $this->coreHelper->getAccessToken();
 
         $paymentMethods = $this->coreHelper->getMercadoPagoPaymentMethods($accessToken);
@@ -122,25 +118,29 @@ class Payment extends Fieldset
     }
 
     /**
-     * @param $paymentActivePath
+     * Disables the given payment if it is currently active
+     * 
+     * @param $paymentId
      */
-    protected function disablePayment($paymentActivePath)
+    protected function disablePayment($paymentId)
     {
+        $paymentActivePath = $this->getPaymentPath($paymentId);
+
         $statusPaymentMethod = $this->scopeConfig->isSetFlag(
             $paymentActivePath,
             ScopeInterface::SCOPE_STORE
         );
 
         //check is active for disable
-        if ($statusPaymentMethod) {
-            $value = 0;
+        if ($paymentActivePath && $statusPaymentMethod) {
+            $disabledValue = 0;
 
             if ($this->switcher->getWebsiteId() == 0) {
-                $this->configResource->saveConfig($paymentActivePath, $value, 'default', 0);
+                $this->configResource->saveConfig($paymentActivePath, $disabledValue, 'default', 0);
             } else {
                 $this->configResource->saveConfig(
                     $paymentActivePath,
-                    $value,
+                    $disabledValue,
                     'websites',
                     $this->switcher->getWebsiteId()
                 );
@@ -161,12 +161,10 @@ class Payment extends Fieldset
         $cacheKey = Cache::VALID_PAYMENT_METHODS;
         $validCheckoutOptions = json_decode($this->cache->getFromCache($cacheKey));
         if (!$validCheckoutOptions) {
-            $this->coreHelper->log('Não possuo cache e estou buscando na API;', 'mercadopago.log');
             $validCheckoutOptions = $this->getAvailableCheckoutsOptions();
             $this->cache->saveCache($cacheKey, json_encode($validCheckoutOptions));
         }
-        
-        $this->coreHelper->log(json_encode($validCheckoutOptions), 'mercadopago.log');
+
         return !in_array($paymentId, $validCheckoutOptions);
     }
 
@@ -213,6 +211,23 @@ class Payment extends Fieldset
             return $availableCheckouts;
         } catch (Exception $e) {
             return [];
+        }
+    }
+
+    public function getPaymentPath($paymentId)
+    {
+        switch ($paymentId) {
+            case (self::CHECKOUT_CUSTOM_CARD):
+                return ConfigData::PATH_CUSTOM_ACTIVE;
+
+            case (self::CHECKOUT_CUSTOM_TICKET):
+                return ConfigData::PATH_CUSTOM_TICKET_ACTIVE;
+
+            case (self::CHECKOUT_CUSTOM_PIX):
+                return ConfigData::PATH_CUSTOM_PIX_ACTIVE;
+
+            case (self::CHECKOUT_CUSTOM_BANK_TRANSFER):
+                return ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE;
         }
     }
 }
