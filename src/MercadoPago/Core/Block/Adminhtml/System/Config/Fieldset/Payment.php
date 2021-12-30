@@ -226,7 +226,7 @@ class Payment extends Fieldset
             }
 
             return $availableCheckouts;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return [];
         }
     }
