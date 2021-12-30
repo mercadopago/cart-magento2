@@ -21,10 +21,11 @@ use MercadoPago\Core\Helper\Cache;
 class Payment extends Fieldset
 {
 
+    const CHECKOUT_CONFIG_PREFIX = 'payment_us_mercadopago_configurations_';
+
     /**
      * checkout types
      */
-    const CHECKOUT_PRO = 'basic_checkout';
     const CHECKOUT_CUSTOM_CARD = 'custom_checkout';
     const CHECKOUT_CUSTOM_TICKET = 'custom_checkout_ticket';
     const CHECKOUT_CUSTOM_BANK_TRANSFER = 'custom_checkout_bank_transfer';
@@ -97,12 +98,12 @@ class Payment extends Fieldset
         //get id element
         $paymentId = $element->getId();
 
-        $this->coreHelper->log('Método ' . $paymentId);
+        $this->coreHelper->log('Método ' . $paymentId, 'mercadopago.log');
 
         //check available payment methods
         if ($this->hideInvalidCheckoutOptions($paymentId)) {
             
-            $this->coreHelper->log('Método inválido!');
+            $this->coreHelper->log('Método inválido!', 'mercadopago.log');
 
             //$this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
             return "";
@@ -117,10 +118,7 @@ class Payment extends Fieldset
     }
 
     public function getPaymentMethods() {
-        $accessToken = $this->scopeConfig->getValue(
-            ConfigData::PATH_ACCESS_TOKEN,
-            ScopeInterface::SCOPE_WEBSITE
-        );
+        $accessToken = $this->coreHelper->getAccessToken();
 
         $paymentMethods = $this->coreHelper->getMercadoPagoPaymentMethods($accessToken);
 
@@ -160,15 +158,19 @@ class Payment extends Fieldset
      */
     protected function hideInvalidCheckoutOptions($paymentId)
     {
+        if (!$this->coreHelper->getAccessToken()) {
+            return true;
+        }
+
         $cacheKey = Cache::VALID_PAYMENT_METHODS;
-        $validCheckoutOptions = $this->cache->getFromCache($cacheKey);
+        $validCheckoutOptions = json_decode($this->cache->getFromCache($cacheKey));
         if (!$validCheckoutOptions) {
-            $this->coreHelper->log('Não possuo cache e estou buscando na API;');
+            $this->coreHelper->log('Não possuo cache e estou buscando na API;', 'mercadopago.log');
             $validCheckoutOptions = $this->getAvailableCheckoutsOptions();
-            $this->cache->saveCache($cacheKey, $validCheckoutOptions);
+            $this->cache->saveCache($cacheKey, json_encode($validCheckoutOptions));
         }
         
-        $this->coreHelper->log($validCheckoutOptions);
+        $this->coreHelper->log(json_encode($validCheckoutOptions), 'mercadopago.log');
         return !in_array($paymentId, $validCheckoutOptions);
     }
 
@@ -181,25 +183,29 @@ class Payment extends Fieldset
     public function getAvailableCheckoutsOptions()
     {
         try {
-            $availableCheckouts = array(self::CHECKOUT_PRO);
+            $availableCheckouts = array();
             $paymentMethods = $this->getPaymentMethods();
 
             foreach ($paymentMethods['response'] as $paymentMethod) {
-                switch (strtolower($paymentMethod->payment_type_id)) {
+                switch (strtolower($paymentMethod['payment_type_id'])) {
                     case 'credit_card':
                     case 'debid_card':
                     case 'prepaid_card':
-                        $availableCheckouts[] = self::CHECKOUT_CUSTOM_CARD;
+                        if (!in_array(self::CHECKOUT_CUSTOM_CARD, $availableCheckouts)) {
+                            $availableCheckouts[] = self::CHECKOUT_CONFIG_PREFIX . self::CHECKOUT_CUSTOM_CARD;
+                        }
                         break;
 
                     case 'atm':
                     case 'ticket':
-                        $availableCheckouts[] = self::CHECKOUT_CUSTOM_TICKET;
+                        if (!in_array(self::CHECKOUT_CUSTOM_TICKET, $availableCheckouts)) {
+                            $availableCheckouts[] = self::CHECKOUT_CONFIG_PREFIX . self::CHECKOUT_CUSTOM_TICKET;
+                        }
                         break;
 
                     case 'bank_transfer':
-                        if ($paymentMethod->id !== 'pix') {
-                            $availableCheckouts[] = self::CHECKOUT_CUSTOM_BANK_TRANSFER;
+                        if (!in_array(self::CHECKOUT_CUSTOM_TICKET, $availableCheckouts) && $paymentMethod['id'] !== 'pix') {
+                            $availableCheckouts[] = self::CHECKOUT_CONFIG_PREFIX . self::CHECKOUT_CUSTOM_BANK_TRANSFER;
                         }
                         break;
                 }
