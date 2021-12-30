@@ -8,6 +8,8 @@ use Magento\Framework\View\Element\Context;
 /**
  * Class Cache
  * @package MercadoPago\Core\Helper
+ * 
+ * @codeCoverageIgnore
  */
 class Cache
 {
