@@ -132,12 +132,28 @@ class PaymentTest extends TestCase
         ->method('getMercadoPagoPaymentMethods')
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS);
 
-        $checkoutOptions = $this->payment->getAvailableCheckoutsOptions();
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
 
         $this->assertEquals($checkoutOptions, array(Payment::CHECKOUT_CUSTOM_CARD, Payment::CHECKOUT_CUSTOM_TICKET, Payment::CHECKOUT_CUSTOM_BANK_TRANSFER));
     }
 
-    public function testGetAvailableCheckoutsOptions_success_returnEmpty(): void {
+    public function testGetAvailableCheckoutsOptions_success_returnOptionsWithPix(): void {
+        $this->coreHelperMock
+        ->expects($this->any())
+        ->method('getAccessToken')
+        ->willReturn('access_token');
+
+        $this->coreHelperMock
+        ->expects($this->any())
+        ->method('getMercadoPagoPaymentMethods')
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_MLB);
+
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
+
+        $this->assertEquals($checkoutOptions, array(Payment::CHECKOUT_CUSTOM_CARD, Payment::CHECKOUT_CUSTOM_PIX, Payment::CHECKOUT_CUSTOM_TICKET));
+    }
+
+    public function testGetAvailableCheckoutsOptions_failure_returnEmpty(): void {
         $this->coreHelperMock
         ->expects($this->any())
         ->method('getAccessToken')
@@ -148,7 +164,23 @@ class PaymentTest extends TestCase
         ->method('getMercadoPagoPaymentMethods')
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_FAILURE);
 
-        $checkoutOptions = $this->payment->getAvailableCheckoutsOptions();
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
+
+        $this->assertEquals($checkoutOptions, array());
+    }
+
+    public function testGetAvailableCheckoutsOptions_exception_returnEmpty(): void {
+        $this->coreHelperMock
+        ->expects($this->any())
+        ->method('getAccessToken')
+        ->willReturn('access_token');
+
+        $this->coreHelperMock
+        ->expects($this->any())
+        ->method('getMercadoPagoPaymentMethods')
+        ->will($this->throwException(new \Exception()));
+
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
 
         $this->assertEquals($checkoutOptions, array());
     }

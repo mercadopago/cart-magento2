@@ -111,7 +111,6 @@ class Payment extends Fieldset
 
         //check available payment methods
         if ($this->hideInvalidCheckoutOptions($paymentId)) {
-            $this->coreHelper->log('disabling ' . $paymentId);
             $this->disablePayment($paymentId);
             return "";
         }
@@ -137,18 +136,13 @@ class Payment extends Fieldset
     {
         $paymentActivePath = $this->getPaymentPath($paymentId);
 
-        $this->coreHelper->log('$paymentActivePath ' . $paymentActivePath);
-
         $statusPaymentMethod = $this->scopeConfig->isSetFlag(
             $paymentActivePath,
             ScopeInterface::SCOPE_STORE
         );
 
-        $this->coreHelper->log('$statusPaymentMethod ' . $statusPaymentMethod);
-
         //check is active for disable
         if ($paymentActivePath && $statusPaymentMethod) {
-            $this->coreHelper->log('true');
             $value = 0;
 
             if ($this->switcher->getWebsiteId() == 0) {
@@ -178,7 +172,8 @@ class Payment extends Fieldset
         $cacheKey = Cache::VALID_PAYMENT_METHODS;
         $validCheckoutOptions = json_decode($this->cache->getFromCache($cacheKey));
         if (!$validCheckoutOptions) {
-            $validCheckoutOptions = $this->getAvailableCheckoutsOptions();
+            $validCheckoutOptions = $this->getAvailableCheckoutOptions();
+
             $this->cache->saveCache($cacheKey, json_encode($validCheckoutOptions));
         }
 
@@ -191,7 +186,7 @@ class Payment extends Fieldset
      * @param string $accessToken
      * @return array
      */
-    public function getAvailableCheckoutsOptions()
+    public function getAvailableCheckoutOptions()
     {
         try {
             $availableCheckouts = array();
@@ -227,6 +222,7 @@ class Payment extends Fieldset
 
             return $availableCheckouts;
         } catch (\Exception $e) {
+            $this->coreHelper->log('Payment Fieldset getAvailableCheckoutOptions error: ' . $e->getMessage());
             return [];
         }
     }
