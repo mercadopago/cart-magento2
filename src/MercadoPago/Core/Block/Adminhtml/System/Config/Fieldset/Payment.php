@@ -22,15 +22,13 @@ use MercadoPago\Core\Helper\Cache;
 class Payment extends Fieldset
 {
 
-    const CHECKOUT_CONFIG_PREFIX = 'payment_us_mercadopago_configurations_';
-
     /**
      * checkout types
      */
-    const CHECKOUT_CUSTOM_CARD = self::CHECKOUT_CONFIG_PREFIX . 'custom_checkout';
-    const CHECKOUT_CUSTOM_PIX= self::CHECKOUT_CONFIG_PREFIX . 'custom_checkout_pix';
-    const CHECKOUT_CUSTOM_TICKET = self::CHECKOUT_CONFIG_PREFIX . 'custom_checkout_ticket';
-    const CHECKOUT_CUSTOM_BANK_TRANSFER = self::CHECKOUT_CONFIG_PREFIX . 'custom_checkout_bank_transfer';
+    const CHECKOUT_CUSTOM_CARD = 'custom_checkout';
+    const CHECKOUT_CUSTOM_PIX= 'custom_checkout_pix';
+    const CHECKOUT_CUSTOM_TICKET = 'custom_checkout_ticket';
+    const CHECKOUT_CUSTOM_BANK_TRANSFER = 'custom_checkout_bank_transfer';
 
     /**
      * @var ScopeConfigInterface
@@ -173,11 +171,12 @@ class Payment extends Fieldset
         $validCheckoutOptions = json_decode($this->cache->getFromCache($cacheKey));
         if (!$validCheckoutOptions) {
             $validCheckoutOptions = $this->getAvailableCheckoutOptions();
-
             $this->cache->saveCache($cacheKey, json_encode($validCheckoutOptions));
         }
+        
+        $paymentIdWithoutPrefix = implode('_', array_slice(explode('_', $paymentId), 4));
 
-        return !in_array($paymentId, $validCheckoutOptions);
+        return !in_array($paymentIdWithoutPrefix, $validCheckoutOptions);
     }
 
     /**
