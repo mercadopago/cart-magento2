@@ -7,17 +7,29 @@ use Magento\Backend\Block\Store\Switcher;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Config\Block\System\Config\Form\Fieldset;
 use Magento\Config\Model\ResourceModel\Config;
+use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\View\Helper\Js;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Helper\Data;
+use MercadoPago\Core\Helper\Cache;
 
 /**
  * Config form FieldSet renderer
  */
 class Payment extends Fieldset
 {
+
+    /**
+     * checkout types
+     */
+    const CHECKOUT_CUSTOM_CARD = 'custom_checkout';
+    const CHECKOUT_CUSTOM_PIX= 'custom_checkout_pix';
+    const CHECKOUT_CUSTOM_TICKET = 'custom_checkout_ticket';
+    const CHECKOUT_CUSTOM_BANK_TRANSFER = 'custom_checkout_bank_transfer';
+
     /**
      * @var ScopeConfigInterface
      */
@@ -31,9 +43,27 @@ class Payment extends Fieldset
 
     /**
      *
+     * @var TypeListInterface
+     */
+    protected $cacheTypeList;
+
+    /**
+     *
      * @var Switcher
      */
     protected $switcher;
+
+    /**
+     *
+     * @var Data
+     */
+    protected $coreHelper;
+
+    /**
+     *
+     * @var Cache
+     */
+    protected $cache;
 
     /**
      * @param Context $context
@@ -43,6 +73,9 @@ class Payment extends Fieldset
      * @param Config $configResource
      * @param Switcher $switcher
      * @param array $data
+     * @param Data $coreHelper
+     * @param Cache $cache
+     * @param TypeLIstInterface $cacheTypeList
      */
     public function __construct(
         Context $context,
@@ -51,12 +84,18 @@ class Payment extends Fieldset
         ScopeConfigInterface $scopeConfig,
         Config $configResource,
         Switcher $switcher,
-        array $data = []
+        array $data = [],
+        Data $coreHelper,
+        Cache $cache,
+        TypeLIstInterface $cacheTypeList
     ) {
         parent::__construct($context, $authSession, $jsHelper, $data);
         $this->scopeConfig = $scopeConfig;
         $this->configResource = $configResource;
         $this->switcher = $switcher;
+        $this->coreHelper = $coreHelper;
+        $this->cache = $cache;
+        $this->cacheTypeList = $cacheTypeList;
     }
 
     /**
@@ -68,39 +107,42 @@ class Payment extends Fieldset
         //get id element
         $paymentId = $element->getId();
 
-        //get country (Site id for Mercado Pago)
-        $siteId = strtoupper(
-            $this->scopeConfig->getValue(
-                ConfigData::PATH_SITE_ID,
-                ScopeInterface::SCOPE_STORE
-            )
-        );
-
-        //check is bank transfer
-        if ($this->hideBankTransfer($paymentId, $siteId)) {
-            return "";
-        }
-
-        //check is pix
-        if ($this->hidePix($paymentId, $siteId)) {
+        //check available payment methods
+        if ($this->hideInvalidCheckoutOptions($paymentId)) {
+            $this->disablePayment($paymentId);
             return "";
         }
 
         return parent::render($element);
     }
 
-    /**
-     * @param $paymentActivePath
-     */
-    protected function disablePayment($paymentActivePath)
+    public function getPaymentMethods()
     {
+        $accessToken = $this->coreHelper->getAccessToken();
+
+        $paymentMethods = $this->coreHelper->getMercadoPagoPaymentMethods($accessToken);
+
+        return $paymentMethods;
+    }
+
+    /**
+     * Disables the given payment if it is currently active
+     * 
+     * @param $paymentId
+     */
+    protected function disablePayment($paymentId)
+    {
+        $paymentIdWithoutPrefix = implode('_', array_slice(explode('_', $paymentId), 4));
+
+        $paymentActivePath = $this->getPaymentPath($paymentIdWithoutPrefix);
+
         $statusPaymentMethod = $this->scopeConfig->isSetFlag(
             $paymentActivePath,
             ScopeInterface::SCOPE_STORE
         );
 
         //check is active for disable
-        if ($statusPaymentMethod) {
+        if ($paymentActivePath && $statusPaymentMethod) {
             $value = 0;
 
             if ($this->switcher->getWebsiteId() == 0) {
@@ -113,41 +155,93 @@ class Payment extends Fieldset
                     $this->switcher->getWebsiteId()
                 );
             }
+            $this->cacheTypeList->cleanType(\Magento\Framework\App\Cache\Type\Config::TYPE_IDENTIFIER);
         }
     }
 
     /**
      * @param  $paymentId
-     * @param  $siteId
      * @return bool
      */
-    protected function hideBankTransfer($paymentId, $siteId)
+    protected function hideInvalidCheckoutOptions($paymentId)
     {
-        if (strpos($paymentId, 'custom_checkout_bank_transfer') !== false) {
-            //hide payment method if not Chile or Colombia
-            if ($siteId !== "MLC" && $siteId !== "MCO") {
-                $this->disablePayment(ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE);
-                return true;
-            }
+        if (!$this->coreHelper->getAccessToken()) {
+            return true;
         }
 
-        return false;
+        $cacheKey = Cache::VALID_PAYMENT_METHODS;
+        $validCheckoutOptions = json_decode($this->cache->getFromCache($cacheKey));
+        if (!$validCheckoutOptions) {
+            $validCheckoutOptions = $this->getAvailableCheckoutOptions();
+            $this->cache->saveCache($cacheKey, json_encode($validCheckoutOptions));
+        }
+        
+        $paymentIdWithoutPrefix = implode('_', array_slice(explode('_', $paymentId), 4));
+
+        return !in_array($paymentIdWithoutPrefix, $validCheckoutOptions);
     }
 
     /**
-     * @param  $paymentId
-     * @param  $siteId
-     * @return bool
+     * Get available checkout options based on payment methods of the used credentials
+     *
+     * @param string $accessToken
+     * @return array
      */
-    protected function hidePix($paymentId, $siteId)
+    public function getAvailableCheckoutOptions()
     {
-        if (strpos($paymentId, 'custom_checkout_pix') !== false) {
-            if ($siteId !== "MLB") {
-                $this->disablePayment(ConfigData::PATH_CUSTOM_PIX_ACTIVE);
-                return true;
-            }
-        }
+        try {
+            $availableCheckouts = array();
+            $paymentMethods = $this->getPaymentMethods();
 
-        return false;
+            foreach ($paymentMethods['response'] as $paymentMethod) {
+                switch (strtolower($paymentMethod['payment_type_id'])) {
+                    case 'credit_card':
+                    case 'debid_card':
+                    case 'prepaid_card':
+                        if (!in_array(self::CHECKOUT_CUSTOM_CARD, $availableCheckouts)) {
+                            $availableCheckouts[] = self::CHECKOUT_CUSTOM_CARD;
+                        }
+                        break;
+
+                    case 'atm':
+                    case 'ticket':
+                        if (!in_array(self::CHECKOUT_CUSTOM_TICKET, $availableCheckouts)) {
+                            $availableCheckouts[] = self::CHECKOUT_CUSTOM_TICKET;
+                        }
+                        break;
+
+                    case 'bank_transfer':
+                        if (!in_array(self::CHECKOUT_CUSTOM_PIX, $availableCheckouts) && strtolower($paymentMethod['id']) === 'pix') {
+                            $availableCheckouts[] = self::CHECKOUT_CUSTOM_PIX;
+                        }
+                        if (!in_array(self::CHECKOUT_CUSTOM_BANK_TRANSFER, $availableCheckouts) && strtolower($paymentMethod['id']) !== 'pix') {
+                            $availableCheckouts[] = self::CHECKOUT_CUSTOM_BANK_TRANSFER;
+                        }
+                        break;
+                }
+            }
+
+            return $availableCheckouts;
+        } catch (\Exception $e) {
+            $this->coreHelper->log('Payment Fieldset getAvailableCheckoutOptions error: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getPaymentPath($paymentId)
+    {
+        switch ($paymentId) {
+            case (self::CHECKOUT_CUSTOM_CARD):
+                return ConfigData::PATH_CUSTOM_ACTIVE;
+
+            case (self::CHECKOUT_CUSTOM_TICKET):
+                return ConfigData::PATH_CUSTOM_TICKET_ACTIVE;
+
+            case (self::CHECKOUT_CUSTOM_PIX):
+                return ConfigData::PATH_CUSTOM_PIX_ACTIVE;
+
+            case (self::CHECKOUT_CUSTOM_BANK_TRANSFER):
+                return ConfigData::PATH_CUSTOM_BANK_TRANSFER_ACTIVE;
+        }
     }
 }

@@ -4,8 +4,8 @@ namespace MercadoPago\Test\Unit\Helper;
 
 use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Lib\Api;
-use MercadoPago\Test\Unit\Constants\Response;
-use MercadoPago\Test\Unit\Constants\PaymentMethods;
+use MercadoPago\Test\Unit\Mock\PaymentResponseMock;
+use MercadoPago\Test\Unit\Mock\PaymentMethodsConfigMock;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PHPUnit\Framework\TestCase;
@@ -125,17 +125,17 @@ class DataTest extends TestCase
     {
         $this->apiMock->expects($this->once())
         ->method('get')
-        ->with(PaymentMethods::PAYMENT_METHODS_URI)
-        ->willReturn(Response::RESPONSE_PAYMENT_METHODS_SUCCESS);
+        ->with(PaymentResponseMock::PAYMENT_METHODS_URI)
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS);
 
-        $this->assertEquals(Response::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAY_PLACES, $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));
+        $this->assertEquals(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES, $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));
     }
 
     public function testGetMercadoPagoPaymentMethods_exception_returnEmpty(): void
     {
         $this->apiMock->expects($this->once())
         ->method('get')
-        ->with(PaymentMethods::PAYMENT_METHODS_URI)
+        ->with(PaymentResponseMock::PAYMENT_METHODS_URI)
         ->willReturn(null);
 
         $this->assertEquals([], $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));

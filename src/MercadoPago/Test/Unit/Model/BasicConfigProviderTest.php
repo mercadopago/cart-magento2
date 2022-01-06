@@ -5,7 +5,8 @@ namespace MercadoPago\Test\Unit\Model;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Lib\Api;
 use MercadoPago\Core\Model\BasicConfigProvider;
-use MercadoPago\Test\Unit\Constants\ConfigProviderConstants;
+use MercadoPago\Test\Unit\Mock\PaymentResponseMock;
+use MercadoPago\Test\Unit\Mock\PaymentMethodsConfigMock;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PHPUnit\Framework\TestCase;
@@ -198,14 +199,14 @@ class BasicConfigProviderTest extends TestCase
 
         $this->coreHelperMock->expects($this->once())
         ->method('getMercadoPagoPaymentMethods')
-        ->willReturn(ConfigProviderConstants::PAYMENT_METHODS);
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_CONFIG_PROVIDER);
 
         $expectedOutput = [
             "debit" => 1,
             "credit" => 1,
             "ticket" => 1,
             "installments" => 2,
-            "checkout_methods" => ConfigProviderConstants::PAYMENT_METHODS['response'],
+            "checkout_methods" => PaymentResponseMock::RESPONSE_PAYMENT_METHODS_CONFIG_PROVIDER['response'],
         ];
 
         $this->assertEquals($expectedOutput, $this->basicConfigProvider->makeBannerCheckout());
@@ -225,7 +226,7 @@ class BasicConfigProviderTest extends TestCase
 
         $this->coreHelperMock->expects($this->once())
         ->method('getMercadoPagoPaymentMethods')
-        ->willReturn(ConfigProviderConstants::PAYMENT_METHODS);
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_CONFIG_PROVIDER);
 
         $expectedOutput = [
             "debit" => 1,
@@ -233,7 +234,7 @@ class BasicConfigProviderTest extends TestCase
             "ticket" => 0,
             "installments" => 1,
             "checkout_methods" => [
-                0 => ConfigProviderConstants::PAYMENT_METHODS['response'][0]
+                0 => PaymentResponseMock::RESPONSE_PAYMENT_METHODS_CONFIG_PROVIDER['response'][0]
             ],
         ];
 
