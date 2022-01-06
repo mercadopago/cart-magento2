@@ -132,7 +132,9 @@ class Payment extends Fieldset
      */
     protected function disablePayment($paymentId)
     {
-        $paymentActivePath = $this->getPaymentPath($paymentId);
+        $paymentIdWithoutPrefix = implode('_', array_slice(explode('_', $paymentId), 4));
+
+        $paymentActivePath = $this->getPaymentPath($paymentIdWithoutPrefix);
 
         $statusPaymentMethod = $this->scopeConfig->isSetFlag(
             $paymentActivePath,
