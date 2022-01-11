@@ -219,4 +219,11 @@ class AbstractSuccess extends Template
         $this->persistCartSession();
         return $this->getUrl('checkout', ['_secure' => true]);
     } //end getReOrderUrl()
+
+    /**
+     * @return string
+     */     public function getLogoMP()
+     {
+        return $this->_assetRepo->getUrl('MercadoPago_Core::images/desktop-logo-mercadopago.png');
+    } //end getLogoMP()
 } //end class
