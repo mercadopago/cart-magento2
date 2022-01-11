@@ -84,10 +84,10 @@ class Payment extends Fieldset
         ScopeConfigInterface $scopeConfig,
         Config $configResource,
         Switcher $switcher,
-        array $data = [],
         Data $coreHelper,
         Cache $cache,
-        TypeLIstInterface $cacheTypeList
+        TypeLIstInterface $cacheTypeList,
+        array $data = []
     ) {
         parent::__construct($context, $authSession, $jsHelper, $data);
         $this->scopeConfig = $scopeConfig;
