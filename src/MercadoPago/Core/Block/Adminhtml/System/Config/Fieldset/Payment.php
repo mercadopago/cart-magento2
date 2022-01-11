@@ -23,11 +23,23 @@ class Payment extends Fieldset
 {
 
     /**
-     * checkout types
+     * Checkout Custom Card
      */
     const CHECKOUT_CUSTOM_CARD = 'custom_checkout';
+  
+    /**
+     * Checkout Custom Pix
+     */
     const CHECKOUT_CUSTOM_PIX= 'custom_checkout_pix';
+  
+    /**
+     * Checkout Custom Ticket
+     */
     const CHECKOUT_CUSTOM_TICKET = 'custom_checkout_ticket';
+  
+    /**
+     * Checkout Custom Bank Transfer
+     */
     const CHECKOUT_CUSTOM_BANK_TRANSFER = 'custom_checkout_bank_transfer';
 
     /**
@@ -72,10 +84,10 @@ class Payment extends Fieldset
      * @param ScopeConfigInterface $scopeConfig
      * @param Config $configResource
      * @param Switcher $switcher
-     * @param array $data
      * @param Data $coreHelper
      * @param Cache $cache
-     * @param TypeLIstInterface $cacheTypeList
+     * @param TypeListInterface $cacheTypeList
+     * @param array $data
      */
     public function __construct(
         Context $context,
@@ -86,7 +98,7 @@ class Payment extends Fieldset
         Switcher $switcher,
         Data $coreHelper,
         Cache $cache,
-        TypeLIstInterface $cacheTypeList,
+        TypeListInterface $cacheTypeList,
         array $data = []
     ) {
         parent::__construct($context, $authSession, $jsHelper, $data);
