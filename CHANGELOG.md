@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Updated Custom Checkout default value to credit and debit cards
+- Converted install/upgrade schema scripts to db_schema.xml files
 
 ## [3.14.1] - 2022-01-11
 
