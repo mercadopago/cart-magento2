@@ -55,7 +55,7 @@ function is_release_branch($branchName) {
 }
 
 function is_skipped_branch($branchName) {
-    return false === (is_hotfix_branch($branchName) || is_release_branch());
+    return false === (is_hotfix_branch($branchName) || is_release_branch($branchName));
 }
 
 function validate_clover_file($cloverFile) {
