@@ -50,6 +50,14 @@ function is_hotfix_branch($branchName) {
     return strpos($branchName, 'hotfix');
 }
 
+function is_release_branch($branchName) {
+    return strpos($branchName, 'release');
+}
+
+function is_skipped_branch($branchName) {
+    return false === (is_hotfix_branch($branchName) || is_release_branch());
+}
+
 function validate_clover_file($cloverFile) {
     if (!file_exists($cloverFile)) {
         throw new InvalidArgumentException('Invalid clover file provided');
@@ -83,7 +91,7 @@ function execute($argv) {
     $percentage       = min(100, max(0, (int) $argv[2]));
     $pullRequestFiles = parse_pull_request_files($argv);
 
-    if (false === is_hotfix_branch($branchName)) {
+    if (false === is_skipped_branch($branchName)) {
         validate_clover_file($cloverFile);
         validate_percentage_param($percentage);
 
