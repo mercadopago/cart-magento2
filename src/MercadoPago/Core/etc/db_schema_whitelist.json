@@ -1,0 +1,42 @@
+{
+  "sales_order": {
+    "column": {
+      "finance_cost_amount": true,
+      "base_finance_cost_amount": true,
+      "discount_coupon_amount": true,
+      "base_discount_coupon_amount": true
+    }
+  },
+  "quote": {
+    "column": {
+      "finance_cost_amount": true,
+      "base_finance_cost_amount": true,
+      "discount_coupon_amount": true,
+      "base_discount_coupon_amount": true
+    }
+  },
+  "sales_invoice": {
+    "column": {
+      "finance_cost_amount": true,
+      "base_finance_cost_amount": true,
+      "discount_coupon_amount": true,
+      "base_discount_coupon_amount": true
+    }
+  },
+  "sales_creditmemo": {
+    "column": {
+      "finance_cost_amount": true,
+      "base_finance_cost_amount": true,
+      "discount_coupon_amount": true,
+      "base_discount_coupon_amount": true
+    }
+  },
+  "quote_address": {
+    "column": {
+      "discount_coupon_amount": true,
+      "base_discount_coupon_amount": true,
+      "finance_cost_amount": true,
+      "base_finance_cost_amount": true
+    }
+  }
+}
