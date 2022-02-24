@@ -79,8 +79,8 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
             $preference = $this->_coreModel->makeDefaultPreferencePaymentV1($payment_info, $quote, $order);
 
             $payment_method = $payment->getAdditionalInformation("payment_method");
-            $payment_method_id = str_contains($payment_method, '|') ? explode('|', $payment_method)[0] : $payment_method;
-            $payment_option_id = str_contains($payment_method, '|') ? explode('|', $payment_method)[1] : '';
+            $payment_method_id = strpos($payment_method, '|') ? explode('|', $payment_method)[0] : $payment_method;
+            $payment_option_id = strpos($payment_method, '|') ? explode('|', $payment_method)[1] : '';
 
             $preference['payment_method_id'] = $payment_method_id;
 

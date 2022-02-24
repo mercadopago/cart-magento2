@@ -55,6 +55,6 @@ abstract class PaymentMethodsAbstract implements \Magento\Framework\Option\Array
         } catch (\Exception $e) {
             $this->coreHelper->log("PaymentMethodsTicket:: An error occurred at the time of obtaining the ticket payment methods: " . $e);
         }
-        return [];
+        return ['methods' => $methods];
     }
 }
