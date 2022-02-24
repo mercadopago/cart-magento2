@@ -8,6 +8,8 @@ use Magento\Framework\Event\ObserverInterface;
  * Class RefundObserverBeforeSave
  *
  * @package MercadoPago\Core\Observer
+ *
+ * @codeCoverageIgnore
  */
 class RefundObserverBeforeSave implements ObserverInterface
 {
