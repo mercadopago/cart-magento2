@@ -335,6 +335,7 @@ define(
             'doc_type': document.getElementById('mpDocType').value,
             'doc_number': document.getElementById('mpDocNumber').value,
             'installments': document.getElementById('mpInstallments').value,
+            'issuer_id': formData.issuerId,
             'total_amount': this.getGrandTotal(),
             'amount': this.getGrandTotal(),
             'site_id': this.getCountry(),

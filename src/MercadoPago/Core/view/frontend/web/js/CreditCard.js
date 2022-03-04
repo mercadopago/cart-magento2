@@ -13,7 +13,7 @@
       }
     });
   }
-  
+
   window.setChangeEventExpirationDate = function () {
     document.getElementById('mpCardExpirationDate').addEventListener('change', function (e) {
       var card_expiration_date = document.getElementById('mpCardExpirationDate').value;
@@ -34,7 +34,9 @@
   }
 
   window.setImageCard = function (secureThumbnail) {
-    document.getElementById('mpCardNumber').style.background = 'url(' + secureThumbnail + ') 98% 50% no-repeat #fff';
+    var mpCardNumber = document.getElementById('mpCardNumber');
+    mpCardNumber.style.background = 'url(' + secureThumbnail + ') 98% 50% no-repeat #fff';
+    mpCardNumber.style.backgroundSize = 'auto 24px';
   }
 
   window.loadAdditionalInfo = function (sdkAdditionalInfoNeeded) {
