@@ -123,6 +123,7 @@ class Payment extends TopicsAbstract
             $orderPayment = $order->getPayment();
             $orderPayment->setAdditionalInformation('paymentResponse', $payment);
             $order->save();
+            $this->sendEmailCreateOrUpdate($order, $message);
 
             $messageHttp = 'Mercado Pago - Status has already been updated.';
             return [
@@ -139,6 +140,10 @@ class Payment extends TopicsAbstract
 
         $order = self::setStatusAndComment($order, $newOrderStatus, $message);
 
+        $order->save();
+
+        $this->sendEmailCreateOrUpdate($order, $message);
+
         $responseInvoice = false;
         if ($payment['status'] == 'approved') {
             $responseInvoice = $this->createInvoice($order, $message);
@@ -146,10 +151,6 @@ class Payment extends TopicsAbstract
         }
 
         $this->updateAdditionalInformation($order, $payment);
-
-        $order->save();
-
-        $this->sendEmailCreateOrUpdate($order, $message);
 
         $messageHttp = 'Mercado Pago - Status successfully updated.';
         return [
@@ -183,31 +184,6 @@ class Payment extends TopicsAbstract
 
         return $orderUpdated;
     } //end checkStatusAlreadyUpdated()
-
-    /**
-     * @param $order
-     * @param $message
-     */
-    public function sendEmailCreateOrUpdate($order, $message)
-    {
-        $emailOrderCreate = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_CREATE, ScopeInterface::SCOPE_STORE);
-        $emailAlreadySent = false;
-
-        if ($emailOrderCreate) {
-            if (!$order->getEmailSent()) {
-                $this->_orderSender->send($order, true);
-                $emailAlreadySent = true;
-            }
-        }
-
-        if ($emailAlreadySent === false) {
-            $statusEmail = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_UPDATE, ScopeInterface::SCOPE_STORE);
-            $statusEmailList = explode(',', $statusEmail);
-            if (in_array($order->getStatus(), $statusEmailList)) {
-                $this->_orderCommentSender->send($order, $notify = '1', str_replace('<br/>', '', $message));
-            }
-        }
-    } //end sendEmailCreateOrUpdate()
 
     /**
      * @param $order
