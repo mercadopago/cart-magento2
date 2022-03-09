@@ -43,24 +43,32 @@
                 <ul id="mercadopago-payment-methods-ticket">
                     <!-- ko foreach: {data: getTicketsData(), as: 'ticket'} -->
                     <!-- ko if: (ticket.payment_places.length === 0) -->
-                    <li class="mercadopago-ticket-option">
-                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ id: ticket.id, value: ticket.id, 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })}" />
-                        <label class="mercadopago-ticket-label" data-bind="'attr':{ for: ticket.id }">
-                            <div class="mp-payment-method-logo-container">
-                                <img data-bind="'attr':{src: ticket.secure_thumbnail, alt: ticket.name}" class="img-fluid mp-payment-method-logo-image" />
-                            </div>
+                    <li style="display:inline-block; width: 40%; vertical-align: top;" class="mercadopago-ticket-option">
+                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{
+                            value: ticket.id,
+                            id: `mp-ticket-input-${ticket.name.replace(/ /d, '-').replace(/\W/g, '').toLowerCase()}`,
+                            'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })
+                        }" />
+                        <label class="mercadopago-ticket-label" data-bind="attr:{
+                            for:`mp-ticket-input-${ticket.name.replace(/ /d, '-').replace(/\W/g, '').toLowerCase()}`
+                        }">
+                            <img data-bind="'attr':{src: ticket.secure_thumbnail, alt: ticket.name}" />
                             <span class="mercadopago-ticket-label" data-bind="text: ticket.name"></span>
                         </label>
                     </li>
                     <!--/ko-->
                     <!-- ko if: (ticket.payment_places.length > 0) -->
                     <!-- ko foreach: {data: ticket.payment_places, as: 'payment_place'} -->
-                    <li class="mercadopago-ticket-option">
-                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ id: (ticket.id + '|' + payment_place.payment_option_id), value: (ticket.id + '|' + payment_place.payment_option_id), 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })}" />
-                        <label class="mercadopago-ticket-label" data-bind="'attr':{ for: (ticket.id + '|' + payment_place.payment_option_id) }">
-                            <div class="mp-payment-method-logo-container">
-                                <img data-bind="'attr':{src: payment_place.thumbnail, alt: payment_place.name}" class="img-fluid mp-payment-method-logo-image" />
-                            </div>
+                    <li style="display:inline-block;  width: 40%; vertical-align: top;" class="mercadopago-ticket-option">
+                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{
+                            value: (ticket.id + '|' + payment_place.payment_option_id),
+                            id: `mp-ticket-input-${ticket.name.replace(/ /d, '-').replace(/\W/g, '').toLowerCase()}`,
+                            'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })
+                        }" />
+                        <label class="mercadopago-ticket-label" data-bind="attr:{
+                            for:`mp-ticket-input-${ticket.name.replace(/ /d, '-').replace(/\W/g, '').toLowerCase()}`
+                        }">
+                            <img data-bind="'attr':{src: payment_place.thumbnail, alt: payment_place.name}" />
                             <span class="mercadopago-ticket-label" data-bind="text: payment_place.name"></span>
                         </label>
                     </li>
