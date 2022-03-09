@@ -79,6 +79,7 @@
                 <email_order_update>pending,approved,in_process,in_mediation,rejected,cancelled,refunded,charged_back
                 </email_order_update>
                 <logs>1</logs>
+                <custom_base_notification_url_active>0</custom_base_notification_url_active>
                 <model>MercadoPago\Core\Model\Core</model>
             </mercadopago>
         </payment>
