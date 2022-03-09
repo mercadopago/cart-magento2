@@ -237,7 +237,7 @@ class MerchantOrder extends TopicsAbstract
             $data['payments'][$data['statusFinal']['key']]['transaction_details']['total_paid_amount'] =
                 $data['statusFinal']['totals']['totalApproved'];
         }
-        
+
         $payment = $data['payments'][$data['statusFinal']['key']];
         $orderPayment = $order->getPayment();
         $orderPayment->setAdditionalInformation("paymentResponse", $payment);
@@ -246,6 +246,7 @@ class MerchantOrder extends TopicsAbstract
         if ($this->checkStatusAlreadyUpdated($order, $data)) {
             $message = "[Already updated] " . $this->getMessage($payment);
             $this->_dataHelper->log($message, 'mercadopago-basic.log');
+            $this->sendEmailCreateOrUpdate($order, $message);
             return ['text' => $message, 'code' => Response::HTTP_OK];
         }
 
