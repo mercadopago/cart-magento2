@@ -460,14 +460,6 @@ abstract class TopicsAbstract
                     $emailAlreadySent = true;
                 }
             }
-
-            if ($emailAlreadySent === false) {
-                $statusEmail = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_UPDATE, ScopeInterface::SCOPE_STORE);
-                $statusEmailList = explode(",", $statusEmail);
-                if (in_array($payment['status'], $statusEmailList)) {
-                    $this->_orderSender->send($order, $notify = '1', str_replace("<br/>", "", $message));
-                }
-            }
         }
 
         $this->_dataHelper->log("Update order", 'mercadopago-basic.log', $order->getData());
@@ -525,6 +517,31 @@ abstract class TopicsAbstract
 
         return false;
     }
+
+    /**
+     * @param $order
+     * @param $message
+     */
+    public function sendEmailCreateOrUpdate($order, $message)
+    {
+        $emailOrderCreate = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_CREATE, ScopeInterface::SCOPE_STORE);
+        $emailAlreadySent = false;
+
+        if ($emailOrderCreate) {
+            if (!$order->getEmailSent()) {
+                $this->_orderSender->send($order, true);
+                $emailAlreadySent = true;
+            }
+        }
+
+        if ($emailAlreadySent === false) {
+            $statusEmail = $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_EMAIL_UPDATE, ScopeInterface::SCOPE_STORE);
+            $statusEmailList = explode(',', $statusEmail);
+            if (in_array($order->getStatus(), $statusEmailList)) {
+                $this->_orderCommentSender->send($order, $notify = '1', str_replace('<br/>', '', $message));
+            }
+        }
+    } //end sendEmailCreateOrUpdate()
 
     /**
      * @return false|string|string[]

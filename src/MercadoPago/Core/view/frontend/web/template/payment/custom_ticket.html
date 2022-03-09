@@ -27,10 +27,13 @@
         <!-- /ko -->
         <!--/ko-->
 
-        <form class="form" id="co-mercadopago-form-ticket" action="#" method="post" data-bind="mageInit: {
-                'transparent':{
-                'context': context(),
-                }, 'validation':[]}">
+        <form
+            action="#"
+            method="post"
+            class="form"
+            id="co-mercadopago-form-ticket"
+            data-bind="mageInit: { 'transparent':{ 'context': context(), }, 'validation':[] }"
+        >
             <div id="mercadopago_checkout_custom_ticket">
                 <!-- ko if: (getCountTickets() == 0)-->
                 <!-- ko i18n: 'There are no payment methods available, please contact the seller.'-->
