@@ -110,7 +110,9 @@
                     <small id="mp-error-E301" class="mp-form-error mp-error-E301" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
 
                     <div class="mp-payment-methods-container" data-bind="foreach: getPaymentMethods()">
-                        <img data-bind="attr: { src: src, alt: name }" class="img-fluid mp-pm-card-image" />
+                        <div class="mp-payment-method-logo-container">
+                            <img data-bind="attr: { src: src, alt: name }" class="img-fluid mp-payment-method-logo-image" />
+                        </div>
                     </div>
                 </div>
 
