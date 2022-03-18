@@ -85,8 +85,7 @@ define(
                   return console.warn('Installments handling error: ', error)
                 }
 
-                var payer_costs = installments.payer_costs;
-                setChangeEventOnInstallments(this.getCountry(), payer_costs);
+                setChangeEventOnInstallments(this.getCountry(), installments.payer_costs);
               },
               onCardTokenReceived: (error, token) => {
                 if (error) {
@@ -97,13 +96,14 @@ define(
                 this.placeOrder();
               },
               onPaymentMethodsReceived: (error, paymentMethods) => {
+                clearInputs();
+
                 if (error) {
-                  clearInputs();
                   return console.warn('PaymentMethods handling error: ', error);
                 }
 
-                clearInputs();
                 setImageCard(paymentMethods[0].thumbnail);
+                setCvvLength(paymentMethods[0].settings[0].security_code.length);
                 handleInstallments(paymentMethods[0].payment_type_id);
                 loadAdditionalInfo(paymentMethods[0].additional_info_needed);
                 additionalInfoHandler();
@@ -133,8 +133,7 @@ define(
           existsCheckoutWrapper.remove();
         }
 
-        var wb_button = document.querySelector("body");
-        wb_button.appendChild(scriptTag);
+        document.querySelector("body").appendChild(scriptTag);
       },
 
       setValidateHandler: function (handler) {
@@ -356,6 +355,10 @@ define(
 
         if (fixedInputs || additionalInputs) {
           focusInputError();
+          return false;
+        }
+
+        if(!validateCvv()){
           return false;
         }
 
