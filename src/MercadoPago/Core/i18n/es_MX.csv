@@ -13,7 +13,7 @@
 "Order status when payment is chargeback","Estado de la orden cuando el pago resulta chargeback"
 "Order status when payment is in_mediation","Estado de la orden cuando el pago resulta in_mediation"
 "Order status when payment is refunded","Estado de la orden cuando el pago resulta refunded"
-"Order status when payment is partually refunded","Estado de la orden cuando el pago resulta partially_refunded"
+"Order status when payment is partially refunded","Estado de la orden cuando el pago resulta partially_refunded"
 "API Integration","Integración de API"
 "Refund payment","Devolución de pagos"
 "Enable payment refund when a Credit Memo is created, the refund will occur if the payment is Approved.","Habilitar la devolución de pagos cuando se crea una Credit Memo. La devolución ocurrirá si el pago resultó aprobado."
