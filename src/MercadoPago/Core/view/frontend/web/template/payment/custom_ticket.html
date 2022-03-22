@@ -27,10 +27,13 @@
         <!-- /ko -->
         <!--/ko-->
 
-        <form class="form" id="co-mercadopago-form-ticket" action="#" method="post" data-bind="mageInit: {
-                'transparent':{
-                'context': context(),
-                }, 'validation':[]}">
+        <form
+            action="#"
+            method="post"
+            class="form"
+            id="co-mercadopago-form-ticket"
+            data-bind="mageInit: { 'transparent':{ 'context': context(), }, 'validation':[] }"
+        >
             <div id="mercadopago_checkout_custom_ticket">
                 <!-- ko if: (getCountTickets() == 0)-->
                 <!-- ko i18n: 'There are no payment methods available, please contact the seller.'-->
@@ -40,21 +43,25 @@
                 <ul id="mercadopago-payment-methods-ticket">
                     <!-- ko foreach: {data: getTicketsData(), as: 'ticket'} -->
                     <!-- ko if: (ticket.payment_places.length === 0) -->
-                    <li style="display:inline-block; width: 40%; vertical-align: top;" class="mercadopago-ticket-option">
-                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ value: ticket.id, 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })}" />
-                        <label class="mercadopago-ticket-label">
-                            <img data-bind="'attr':{src: ticket.secure_thumbnail, alt: ticket.name}" />
-                            <label class="mercadopago-ticket-label" data-bind="text: ticket.name"></label>
+                    <li class="mercadopago-ticket-option">
+                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ id: ticket.id, value: ticket.id, 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })}" />
+                        <label class="mercadopago-ticket-label" data-bind="'attr':{ for: ticket.id }">
+                            <div class="mp-payment-method-logo-container">
+                                <img data-bind="'attr':{src: ticket.secure_thumbnail, alt: ticket.name}" class="img-fluid mp-payment-method-logo-image" />
+                            </div>
+                            <span class="mercadopago-ticket-label" data-bind="text: ticket.name"></span>
                         </label>
                     </li>
                     <!--/ko-->
                     <!-- ko if: (ticket.payment_places.length > 0) -->
                     <!-- ko foreach: {data: ticket.payment_places, as: 'payment_place'} -->
-                    <li style="display:inline-block;  width: 40%; vertical-align: top;" class="mercadopago-ticket-option">
-                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ value: (ticket.id + '|' + payment_place.payment_option_id), 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })}" />
-                        <label class="mercadopago-ticket-label">
-                            <img data-bind="'attr':{src: payment_place.thumbnail, alt: payment_place.name}" />
-                            <label class="mercadopago-ticket-label" data-bind="text: payment_place.name"></label>
+                    <li class="mercadopago-ticket-option">
+                        <input type="radio" class="optionsTicketMp" name="mercadopago_custom_ticket[payment_method_ticket]" data-bind="'attr':{ id: (ticket.id + '|' + payment_place.payment_option_id), value: (ticket.id + '|' + payment_place.payment_option_id), 'data-validate': JSON.stringify({ 'validate-one-required-by-name':true })}" />
+                        <label class="mercadopago-ticket-label" data-bind="'attr':{ for: (ticket.id + '|' + payment_place.payment_option_id) }">
+                            <div class="mp-payment-method-logo-container">
+                                <img data-bind="'attr':{src: payment_place.thumbnail, alt: payment_place.name}" class="img-fluid mp-payment-method-logo-image" />
+                            </div>
+                            <span class="mercadopago-ticket-label" data-bind="text: payment_place.name"></span>
                         </label>
                     </li>
                     <!--/ko-->

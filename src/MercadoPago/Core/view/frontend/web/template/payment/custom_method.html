@@ -110,7 +110,9 @@
                     <small id="mp-error-E301" class="mp-form-error mp-error-E301" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
 
                     <div class="mp-payment-methods-container" data-bind="foreach: getPaymentMethods()">
-                        <img data-bind="attr: { src: src, alt: name }" class="img-fluid mp-pm-card-image" />
+                        <div class="mp-payment-method-logo-container">
+                            <img data-bind="attr: { src: src, alt: name }" class="img-fluid mp-payment-method-logo-image" />
+                        </div>
                     </div>
                 </div>
 
@@ -156,7 +158,7 @@
                         <small id="mp-error-301" class="mp-form-error" data-main="#mpCardExpirationDate"><!-- ko i18n: 'Invalid card expiration date'--><!-- /ko --></small>
                     </div>
 
-                    <div class="mp-box-inputs mp-col-50">
+                    <div class="mp-box-inputs mp-col-50 mp-display-flex">
                         <label for="mpSecurityCode">
                             <!-- ko i18n: 'Security code'--><!-- /ko -->
                             <em>*</em>
@@ -170,12 +172,12 @@
                             maxlength="4"
                             onkeyup="maskInput(this, minteger);"
                         />
-                        <small class="mp-box-inputs">
+                        <small class="mp-box-inputs mp-pl-2">
                             <!-- ko i18n: 'The last 3 digits in the back of the card'--><!-- /ko -->
                         </small>
 
-                        <small id="mp-error-224" class="mp-form-error" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
-                        <small id="mp-error-E302" class="mp-form-error" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
+                        <small id="mp-error-224" class="mp-form-error mp-pt-0" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
+                        <small id="mp-error-E302" class="mp-form-error mp-pt-0" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
                     </div>
                 </div>
 

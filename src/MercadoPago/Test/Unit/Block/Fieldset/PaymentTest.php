@@ -132,7 +132,7 @@ class PaymentTest extends TestCase
         ->method('getMercadoPagoPaymentMethods')
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS);
 
-        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions('access_token');
 
         $this->assertEquals($checkoutOptions, array(Payment::CHECKOUT_CUSTOM_CARD, Payment::CHECKOUT_CUSTOM_TICKET, Payment::CHECKOUT_CUSTOM_BANK_TRANSFER));
     }
@@ -148,7 +148,7 @@ class PaymentTest extends TestCase
         ->method('getMercadoPagoPaymentMethods')
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_MLB);
 
-        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions('access_token');
 
         $this->assertEquals($checkoutOptions, array(Payment::CHECKOUT_CUSTOM_CARD, Payment::CHECKOUT_CUSTOM_PIX, Payment::CHECKOUT_CUSTOM_TICKET));
     }
@@ -164,7 +164,7 @@ class PaymentTest extends TestCase
         ->method('getMercadoPagoPaymentMethods')
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_FAILURE);
 
-        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions('access_token');
 
         $this->assertEquals($checkoutOptions, array());
     }
@@ -180,7 +180,7 @@ class PaymentTest extends TestCase
         ->method('getMercadoPagoPaymentMethods')
         ->will($this->throwException(new \Exception()));
 
-        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions('access_token');
 
         $this->assertEquals($checkoutOptions, array());
     }

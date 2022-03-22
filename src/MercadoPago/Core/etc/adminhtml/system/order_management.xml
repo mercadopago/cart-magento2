@@ -58,7 +58,7 @@
         </field>
 
         <field id="order_status_partially_refunded" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
-            <label>Order status when payment is partually refunded</label>
+            <label>Order status when payment is partially refunded</label>
             <source_model>MercadoPago\Core\Model\System\Config\Source\Order\Status</source_model>
             <config_path>payment/mercadopago/order_status_partially_refunded</config_path>
         </field>
