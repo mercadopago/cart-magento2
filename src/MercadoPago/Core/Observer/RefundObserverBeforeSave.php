@@ -8,6 +8,8 @@ use Magento\Framework\Event\ObserverInterface;
  * Class RefundObserverBeforeSave
  *
  * @package MercadoPago\Core\Observer
+ *
+ * @codeCoverageIgnore
  */
 class RefundObserverBeforeSave implements ObserverInterface
 {
@@ -137,7 +139,11 @@ class RefundObserverBeforeSave implements ObserverInterface
                     $responseRefund = $mp->post("/v1/payments/$paymentID/refunds", $params);
                 }
 
-                if (!is_null($responseRefund) && ($responseRefund['status'] == 200 || $responseRefund['status'] == 201)) {
+                if (is_null($responseRefund)) {
+                    $this->throwRefundException(__("Could not process the refund, The Mercado Pago API returned an unexpected error. Check the log files."));
+                }
+
+                if ($responseRefund['status'] == 200 || $responseRefund['status'] == 201) {
                     $successMessageRefund = "Mercado Pago - " . __('Refund of %1 was processed successfully.', $amountRefund);
                     $this->messageManager->addSuccessMessage($successMessageRefund);
                     $this->dataHelper->log("RefundObserverBeforeSave::creditMemoRefundBeforeSave - " . $successMessageRefund, 'mercadopago-custom.log', $responseRefund);

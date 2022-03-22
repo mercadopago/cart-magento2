@@ -35,8 +35,10 @@
                                 <!-- ko i18n: 'cuotas'--><!-- /ko -->
                             </span>
                         </p>
-                        <div data-bind="foreach: getInfoBannerPaymentMethods('credit')" >
-                            <img data-bind="attr: {src: src, alt: name}" class="img-fluid img-tarjetas" />
+                        <div data-bind="foreach: getInfoBannerPaymentMethods('credit')" class="mp-payment-methods-content">
+                            <div class="mp-payment-method-logo-container">
+                                <img data-bind="attr: {src: src, alt: name}" class="img-fluid mp-payment-method-logo-image" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -48,8 +50,10 @@
                         <p class="subtitle-checkout">
                             <!-- ko i18n: 'Tarjetas de débito'--><!-- /ko -->
                         </p>
-                        <div data-bind="foreach: getInfoBannerPaymentMethods('debit')" >
-                            <img data-bind="attr: {src: src, alt: name}" class="img-fluid img-tarjetas" />
+                        <div data-bind="foreach: getInfoBannerPaymentMethods('debit')" class="mp-payment-methods-content">
+                            <div class="mp-payment-method-logo-container">
+                                <img data-bind="attr: {src: src, alt: name}" class="img-fluid mp-payment-method-logo-image" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -61,8 +65,10 @@
                         <p class="subtitle-checkout">
                             <!-- ko i18n: 'Pagos en efectivo'--><!-- /ko -->
                         </p>
-                        <div data-bind="foreach: getInfoBannerPaymentMethods('ticket')" >
-                            <img data-bind="attr: {src: src, alt: name}" class="img-fluid img-tarjetas" />
+                        <div data-bind="foreach: getInfoBannerPaymentMethods('ticket')" class="mp-payment-methods-content">
+                            <div class="mp-payment-method-logo-container">
+                                <img data-bind="attr: {src: src, alt: name}" class="img-fluid mp-payment-method-logo-image" />
+                            </div>
                         </div>
                     </div>
                 </div>
