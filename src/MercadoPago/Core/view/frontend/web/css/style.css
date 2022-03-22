@@ -700,10 +700,19 @@ textarea.has-error {
   display: flex !important;
   align-items: baseline;
 }
+
 @media screen and (max-width: 767px) {
-      .mp-d-flex-baseline {
-          display: inline !important;
-      }
+  .mp-d-flex-baseline {
+      display: inline !important;
+  }
+}
+
+.mp-pt-0 {
+  padding-top: 0 !important;
+}
+
+.mp-pl-2 {
+  padding-left: 2px !important;
 }
 
 .mp-mr-20 {
@@ -716,4 +725,11 @@ textarea.has-error {
 
 .mp-mb-0 {
   margin-bottom: 0 !important;
+}
+
+.mp-display-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 }

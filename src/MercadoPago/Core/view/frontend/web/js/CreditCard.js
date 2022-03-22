@@ -1,5 +1,6 @@
 (function () {
 
+  window.cvvLength = null;
   window.additionalInfoNeeded = {};
 
   window.getFormCustom = function () {
@@ -37,6 +38,10 @@
     var mpCardNumber = document.getElementById('mpCardNumber');
     mpCardNumber.style.background = 'url(' + secureThumbnail + ') 98% 50% no-repeat #fff';
     mpCardNumber.style.backgroundSize = 'auto 24px';
+  }
+
+  window.setCvvLength = function (length) {
+    cvvLength = length;
   }
 
   window.loadAdditionalInfo = function (sdkAdditionalInfoNeeded) {
@@ -173,6 +178,20 @@
     }
 
     return emptyInputs;
+  }
+
+  window.validateCvv = function () {
+    var span = getFormCustom().querySelectorAll('small[data-main="#mpSecurityCode"]');
+    var cvvInput = document.getElementById('mpSecurityCode');
+    var cvvValidation = cvvLength === cvvInput.value.length;
+
+    if (!cvvValidation) {
+      span[0].style.display = 'block';
+      cvvInput.classList.add('mp-form-control-error');
+      cvvInput.focus();
+    }
+
+    return cvvValidation;
   }
 
   window.showErrors = function (error) {
