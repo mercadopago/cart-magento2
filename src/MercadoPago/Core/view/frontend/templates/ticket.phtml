@@ -51,13 +51,7 @@ $payment_method = $this->getPaymentMethod();
 </div>
 
 <div id="logo-mercadopago">
-    <img src="https://secure.mlstatic.com/components/resources/mp/desktop/css/assets/desktop-logo-mercadopago.png"/>
-</div>
-
-<div class="primary button-success">
-    <a class="action primary continue"
-       href="<?php echo $block->escapeUrl($block->getUrl()) ?>"><span><?php /* @escapeNotVerified */
-            echo __('Continue Shopping') ?></span></a>
+    <img src="<?php echo $block->getLogoMP();?>">
 </div>
 
 <?php endif; ?>

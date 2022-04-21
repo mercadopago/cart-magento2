@@ -96,14 +96,8 @@ $link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . 
     </div>
 </div>
 
+<div id="logo-mercadopago">
+    <img src="<?php echo $block->getLogoMP();?>">
+</div>
 
-    <div id="logo-mercadopago">
-        <img src="https://secure.mlstatic.com/components/resources/mp/desktop/css/assets/desktop-logo-mercadopago.png"/>
-    </div>
-
-    <div class="primary button-success">
-        <a class="action primary continue"
-        href="<?php echo $block->escapeUrl($block->getUrl()) ?>"><span><?php /* @escapeNotVerified */
-                echo __('Continue Shopping') ?></span></a>
-    </div>
 <?php endif; ?>

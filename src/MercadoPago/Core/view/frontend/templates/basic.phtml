@@ -15,7 +15,7 @@ $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 
 ?>
 
-<?php if ($payment_method == 'mercadopago_custom') : ?>
+<?php if ($payment_method == 'mercadopago_basic') : ?>
 
 <div id="box-mercadopago">
 
@@ -81,7 +81,7 @@ $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
             <p><?php echo __('Payment Status: %1', ucfirst($paymentResponse['status'])); ?></p>
         <?php } ?>
 
-        <?php if (isset($paymentResponse['status_detail'])) { ?>
+        <?php if (isset($paymentResponse['id'])) { ?>
             <p><?php echo __('Payment Status Detail: %1', ucfirst($paymentResponse['status_detail'])); ?></p>
         <?php } ?>
 
@@ -99,5 +99,4 @@ $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
         </a>
     <?php endif; ?>
 </div>
-
 <?php endif; ?>

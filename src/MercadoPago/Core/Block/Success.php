@@ -11,6 +11,10 @@ class Success extends AbstractSuccess
     {
         parent::_construct();
 
+        if ($this->getPaymentMethod() == 'mercadopago_basic') {
+            return $this->setTemplate('basic.phtml');
+        }
+
         if ($this->getPaymentMethod() == 'mercadopago_custom_pix') {
             return $this->setTemplate('pix.phtml');
         }
