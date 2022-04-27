@@ -73,6 +73,10 @@
   width: 100%;
 }
 
+.checkout-success .button-success {
+    display: none;
+}
+
 .button-success {
   text-align: left;
   margin: 20px 0 20px 0;

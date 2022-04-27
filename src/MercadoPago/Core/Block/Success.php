@@ -24,7 +24,7 @@ class Success extends AbstractSuccess
         }
 
         if ($this->getPaymentMethod() == 'mercadopago_custom') {
-            return $this->setTemplate('custom.phtml');
+            return $this->setTemplate('custom/success.phtml');
         }
     }
 }
