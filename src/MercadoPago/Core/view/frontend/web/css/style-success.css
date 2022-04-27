@@ -1,5 +1,57 @@
 /* Styles for success page */
 
+.checkout-success #box-mercadopago {
+  width: 50%;
+  flex: none;
+}
+.checkout-success .mp-col-md-4 {
+  flex: none;
+  width: 100%;
+}
+
+.checkout-success .mp-col-md-8 {
+  flex: none;
+  width: 100%;
+}
+
+.checkout-success .mp-pix-right {
+  border-right: none;
+  border-top: solid 1px #e5e5e5;
+  margin-bottom: 32px;
+}
+
+.checkout-success .mp-qr-code {
+  width: 100%;
+  margin: 0 0 24px 0;
+}
+
+.checkout-success .mp-details-pix-button {
+  width: 100%;
+  display: inline-block;
+}
+
+.checkout-success .mp-row-checkout-pix-container {
+  display: block;
+}
+
+.checkout-success .mp-details-pix-img {
+  padding: 0;
+  margin: 64px auto 0;
+}
+
+.checkout-success .mp-details-pix-title {
+  margin: 40px auto 0;
+  text-align: center;
+  padding: 0;
+}
+
+.checkout-success .mp-qr-input {
+  height: 38px;
+  width: 95%;
+  margin-bottom: 24px;
+  padding: 6.3px 0 5.7px 12px;
+}
+
 #box-mercadopago, #logo-mercadopago {
   padding: 0;
   text-align: left;
@@ -191,6 +243,8 @@
 	list-style-type: none;
 }
 
+
+
 .mp-details-pix-qr {
 	padding: 0 4px 0 0;
 }
@@ -316,6 +370,11 @@
 }
 
 @media (max-width: 767.98px) {
+  .checkout-success #box-mercadopago {
+    width: 100%;
+		flex: none;
+  }
+
 	.mp-col-md-4 {
 		width: 100%;
 		flex: none;
