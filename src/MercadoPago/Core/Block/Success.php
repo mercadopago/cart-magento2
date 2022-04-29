@@ -12,7 +12,7 @@ class Success extends AbstractSuccess
         parent::_construct();
 
         if ($this->getPaymentMethod() == 'mercadopago_basic') {
-            return $this->setTemplate('basic.phtml');
+            return $this->setTemplate('basic/success.phtml');
         }
 
         if ($this->getPaymentMethod() == 'mercadopago_custom_pix') {
@@ -20,7 +20,7 @@ class Success extends AbstractSuccess
         }
 
         if ($this->getPaymentMethod() == 'mercadopago_customticket') {
-            return $this->setTemplate('ticket.phtml');
+            return $this->setTemplate('custom_ticket/success.phtml');
         }
 
         if ($this->getPaymentMethod() == 'mercadopago_custom') {
