@@ -11,16 +11,25 @@ class Success extends AbstractSuccess
     {
         parent::_construct();
 
+        if ($this->getPaymentMethod() == 'mercadopago_basic') {
+            return $this->setTemplate('basic/success.phtml');
+        }
+
         if ($this->getPaymentMethod() == 'mercadopago_custom_pix') {
-            return $this->setTemplate('pix.phtml');
+            return $this->setTemplate('custom_pix/success.phtml');
         }
 
         if ($this->getPaymentMethod() == 'mercadopago_customticket') {
-            return $this->setTemplate('ticket.phtml');
+            return $this->setTemplate('custom_ticket/success.phtml');
         }
 
         if ($this->getPaymentMethod() == 'mercadopago_custom') {
-            return $this->setTemplate('custom.phtml');
+            return $this->setTemplate('custom/success.phtml');
         }
+
+        if ($this->getPaymentMethod() == 'mercadopago_custom_bank_transfer') {
+            $this->setTemplate('custom_bank_transfer/success.phtml');
+        }
+
     }
 }

@@ -226,4 +226,15 @@ class AbstractSuccess extends Template
      {
         return $this->_assetRepo->getUrl('MercadoPago_Core::images/desktop-logo-mercadopago.png');
     } //end getLogoMP()
+
+    public function checkExistCallback()
+    {
+        $callback = $this->getRequest()->getParam('callback');
+
+        if (is_null($callback)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 } //end class

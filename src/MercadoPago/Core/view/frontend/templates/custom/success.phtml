@@ -5,6 +5,7 @@
 
 $order = $this->getOrder();
 $payment = $this->getPayment();
+$payment_method = $this->getPaymentMethod();
 
 //generate link to order
 $successMsg = 'Your order %1 has been successfully generated.';
@@ -13,6 +14,7 @@ $link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . 
 $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
 
 ?>
+<?php if ($payment_method == 'mercadopago_custom') : ?>
 
 <div id="box-mercadopago">
 
@@ -100,3 +102,4 @@ $paymentResponse = $payment->getAdditionalInformation("paymentResponse");
         </a>
     <?php endif; ?>
 </div>
+<?php endif; ?>
