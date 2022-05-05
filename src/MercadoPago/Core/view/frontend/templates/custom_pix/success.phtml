@@ -12,8 +12,9 @@ $expirationInfo = $this->getConfigExpirationInfo();
 $link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . $block->escapeHtml($order->getIncrementId()) . '</a>';
 ?>
 
+<?php if ($payment_method == 'mercadopago_custom_pix') : ?>
+
 <div id="box-mercadopago">
-        <?php if ($payment_method == 'mercadopago_custom_pix') { ?>
 
             <p class="mp-details-title">
             <?php echo __('Order %1 received! Now you just need to pay with Pix to finalize your purchase', $link_to_order); ?>
@@ -90,12 +91,9 @@ $link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . 
                         </script>
                     </div>
                 </div>
-            </div>
+          </div>
     </div>
-
-    <?php } ?>
 </div>
-
 
     <div id="logo-mercadopago">
         <img src="<?php echo $block->getLogoMP();?>">
@@ -106,3 +104,5 @@ $link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . 
         href="<?php echo $block->escapeUrl($block->getUrl()) ?>"><span><?php /* @escapeNotVerified */
                 echo __('Continue Shopping') ?></span></a>
     </div>
+
+<?php endif; ?>
