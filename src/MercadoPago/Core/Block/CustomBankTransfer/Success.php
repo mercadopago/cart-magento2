@@ -17,6 +17,7 @@ class Success extends \MercadoPago\Core\Block\AbstractSuccess
     {
         parent::_construct();
         $this->setTemplate('custom_bank_transfer/success.phtml');
+        $this->checkExistCallback();
     }
 
     public function getRedirectUserStatus()
@@ -25,14 +26,4 @@ class Success extends \MercadoPago\Core\Block\AbstractSuccess
         return $redirectUser;
     }
 
-    public function checkExistCallback()
-    {
-        $callback = $this->getRequest()->getParam('callback');
-
-        if (is_null($callback)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
 }
