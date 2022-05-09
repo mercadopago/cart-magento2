@@ -75,7 +75,7 @@
 "Store Settings","Configuración de tienda"
 "Category of your store","Categoría de tu tienda"
 "Use Mercado Pago Success Page","Utilizar página de resultado de pago de Mercado Pago"
-"The successful page of the Mercado Pago module is prepared to show messages for each Payment status, this page is also prepared to show the payment button with ticket. If you use the default page of Magento, you will have to customize it to show the button for payment of the Ticket.","La página de sucesso de pago de Mercado Pago está preparada para mostrar mensajes para cada estado de pago, esta página también esta preparada para mostrar el botón de pago para medios offline. Si utilizas la página de Magento, deberás personalizar para mostrar el botón de pago de los medios de pago offline."
+"The successful page of the Mercado Pago module is prepared to show messages for each Payment status, this page is also prepared to show the payment button with ticket.","La página de sucesso de pago de Mercado Pago está preparada para mostrar mensajes para cada estado de pago, esta página también esta preparada para mostrar el botón de pago para medios offline."
 "Show Discount Coupon","Mostrar valor del cupón de descuento"
 "Enabling this option will show the discount coupon amount in the order details","Si habilitas esta opción se mostrará el monto del cupón de descuento en el detalle de la orden"
 "Integrator ID","Integrator ID"
