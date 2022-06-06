@@ -7,12 +7,11 @@ use Magento\Framework\App\ObjectManager;
 
 /**
  * MercadoPago cURL RestClient
- * 
+ *
  * @codeCoverageIgnore
  */
 class RestClient
 {
-
     /**
      * API URL
      */
@@ -67,7 +66,6 @@ class RestClient
 
         return $connect;
     }
-
 
     /**
      * @param $connect
@@ -187,7 +185,6 @@ class RestClient
         return self::exec("DELETE", $uri, null, $content_type, $extra_params);
     }
 
-
     /**************
      *
      * Error implementation tracking
@@ -198,18 +195,12 @@ class RestClient
     static $url_store = "";
     static $email_admin = "";
     static $country_initial = "";
-    static $sponsor_id = "";
     static $check_loop = 0;
 
     public static function getIntegratorID()
     {
         $objectManager = ObjectManager::getInstance();
         return $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue(ConfigData::PATH_ADVANCED_INTEGRATOR);
-    }
-
-    public static function setSponsorID($sponsor_id)
-    {
-        self::$sponsor_id = $sponsor_id;
     }
 
     public static function setModuleVersion($module_version)
