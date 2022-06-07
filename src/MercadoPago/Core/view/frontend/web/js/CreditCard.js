@@ -3,6 +3,13 @@
   window.cvvLength = null;
   window.additionalInfoNeeded = {};
 
+  window.addCupomEvent= function () {
+    document.querySelector('#discount-form button').addEventListener('click', () => {
+      mpCardForm.unmount();
+      mpCardFormMock.mount();
+    })
+  }
+
   window.getFormCustom = function () {
     return document.querySelector('#co-mercadopago-form');
   }

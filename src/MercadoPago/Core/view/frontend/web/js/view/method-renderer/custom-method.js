@@ -37,7 +37,8 @@ define(
     'use strict';
 
     var mp = null;
-    var mpCardForm = null;
+    window.mpCardForm = null;
+    window.mpCardFormMock = null;
 
     return Component.extend({
       defaults: {
@@ -52,12 +53,13 @@ define(
         if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           setChangeEventOnCardNumber();
           setChangeEventExpirationDate();
+          addCupomEvent();
 
           // Initialize SDK v2
           mp = new MercadoPago(this.getPublicKey());
 
           // Instance SDK v2
-          mpCardForm = mp.cardForm({
+          window.mpCardForm = mp.cardForm({
             amount: String(this.getGrandTotal()),
             autoMount: true,
             processingMode: this.getProcessingMode(),
@@ -75,7 +77,17 @@ define(
             },
             callbacks: {
               onFormMounted: error => {
+                mpCardFormMock = mpCardForm;
+                console.log(quote.totals().base_grand_total);
                 if (error) return console.warn('FormMounted handling error: ', error);
+              },
+              onFormUnmounted: error => {
+                if (error) return console.warn('FormUnmounted handling error: ', error);
+
+                var deferred = $.Deferred();
+                getTotalsAction([], deferred);
+
+                console.log(quote.totals().base_grand_total);
               },
               onIdentificationTypesReceived: (error, identificationTypes) => {
                 if (error) return console.warn('IdentificationTypes handling error: ', error);
@@ -261,7 +273,7 @@ define(
         var self = this;
 
         setPaymentInformationAction(this.messageContainer, { method: 'mercadopago_custom' }).done(() => {
-          $.getJSON('/mercadopago/wallet/preference').done(function (response){
+          $.getJSON('/mercadopago/wallet/preference').done(function (response) {
             var preferenceId = response.preference.id
             self.toogleWalletButton();
 
@@ -358,7 +370,7 @@ define(
           return false;
         }
 
-        if(!validateCvv()){
+        if (!validateCvv()) {
           return false;
         }
 
@@ -433,11 +445,11 @@ define(
       },
 
       getProcessingMode: function () {
-          if (Number(this.getMpGatewayMode())) {
-            return 'gateway';
-          }
+        if (Number(this.getMpGatewayMode())) {
+          return 'gateway';
+        }
 
-          return 'aggregator';
+        return 'aggregator';
       },
     });
   }
