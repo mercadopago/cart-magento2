@@ -36,9 +36,8 @@ define(
   ) {
     'use strict';
 
-    var mp = null;
     window.mpCardForm = null;
-    window.mpCardFormMock = null;
+    window.mpQuote = null;
 
     return Component.extend({
       defaults: {
@@ -55,73 +54,8 @@ define(
           setChangeEventExpirationDate();
           addCupomEvent();
 
-          // Initialize SDK v2
-          mp = new MercadoPago(this.getPublicKey());
-
-          // Instance SDK v2
-          window.mpCardForm = mp.cardForm({
-            amount: String(this.getGrandTotal()),
-            autoMount: true,
-            processingMode: this.getProcessingMode(),
-            form: {
-              id: 'co-mercadopago-form',
-              cardNumber: { id: 'mpCardNumber' },
-              cardholderName: { id: 'mpCardholderName' },
-              cardExpirationMonth: { id: 'mpCardExpirationMonth' },
-              cardExpirationYear: { id: 'mpCardExpirationYear' },
-              securityCode: { id: 'mpSecurityCode' },
-              installments: { id: 'mpInstallments' },
-              identificationType: { id: 'mpDocType' },
-              identificationNumber: { id: 'mpDocNumber' },
-              issuer: { id: 'mpIssuer' }
-            },
-            callbacks: {
-              onFormMounted: error => {
-                mpCardFormMock = mpCardForm;
-                console.log(quote.totals().base_grand_total);
-                if (error) return console.warn('FormMounted handling error: ', error);
-              },
-              onFormUnmounted: error => {
-                if (error) return console.warn('FormUnmounted handling error: ', error);
-
-                var deferred = $.Deferred();
-                getTotalsAction([], deferred);
-
-                console.log(quote.totals().base_grand_total);
-              },
-              onIdentificationTypesReceived: (error, identificationTypes) => {
-                if (error) return console.warn('IdentificationTypes handling error: ', error);
-              },
-              onInstallmentsReceived: (error, installments) => {
-                if (error) {
-                  return console.warn('Installments handling error: ', error)
-                }
-
-                setChangeEventOnInstallments(this.getCountry(), installments.payer_costs);
-              },
-              onCardTokenReceived: (error, token) => {
-                if (error) {
-                  showErrors(error);
-                  return console.warn('Token handling error: ', error);
-                }
-
-                this.placeOrder();
-              },
-              onPaymentMethodsReceived: (error, paymentMethods) => {
-                clearInputs();
-
-                if (error) {
-                  return console.warn('PaymentMethods handling error: ', error);
-                }
-
-                setImageCard(paymentMethods[0].thumbnail);
-                setCvvLength(paymentMethods[0].settings[0].security_code.length);
-                handleInstallments(paymentMethods[0].payment_type_id);
-                loadAdditionalInfo(paymentMethods[0].additional_info_needed);
-                additionalInfoHandler();
-              },
-            },
-          });
+          mpQuote = quote;
+          initCardForm();
         }
       },
 
