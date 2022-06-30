@@ -36,8 +36,7 @@ define(
   ) {
     'use strict';
 
-    window.mpCardForm = null;
-    window.mpQuote = null;
+
 
     return Component.extend({
       defaults: {
@@ -52,10 +51,13 @@ define(
         if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           setChangeEventOnCardNumber();
           setChangeEventExpirationDate();
-          addCupomEvent();
-
-          mpQuote = quote;
-          initCardForm();
+          initCardForm(
+            this.getPublicKey(),
+            quote,
+            this.getProcessingMode(),
+            this.getCountry(),
+            this.placeOrder
+          );
         }
       },
 
@@ -268,7 +270,7 @@ define(
        * @override
        */
       getData: function () {
-        var formData = mpCardForm.getCardFormData();
+        var formData = getMpCardFormData()
 
         var dataObj = {
           'method': this.item.method,

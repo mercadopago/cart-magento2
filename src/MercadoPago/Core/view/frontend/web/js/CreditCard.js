@@ -1,29 +1,20 @@
 (function () {
 
-  window.mp = null;
   window.cvvLength = null;
   window.additionalInfoNeeded = {};
 
-  addCupomEvent = function () {
-    document.querySelector('#discount-form button').addEventListener('click', () => {
-      mpCardForm.unmount();
-      setTimeout(() => {
-        this.initCardForm()
-       }, 5000);
-    })
-  }
+  var mp = null;
+  var mpCardForm = null;
 
-  window.initCardForm = function () {
-    console.log(mpQuote.totals().base_grand_total)
 
-    // Initialize SDK v2
-    mp = new MercadoPago(window.checkoutConfig.payment['mercadopago_custom']['public_key']);
+  window.initCardForm = function (pk, quote, processMode, country, placeOrder) {
+    mp = new MercadoPago(pk);
 
     // Instance SDK v2
-    window.mpCardForm = mp.cardForm({
-      amount: String(mpQuote.totals().base_grand_total),
+    mpCardForm = mp.cardForm({
+      amount: String(quote.totals().base_grand_total),
       autoMount: true,
-      processingMode: getProcessingMode(),
+      processingMode: processMode,
       form: {
         id: 'co-mercadopago-form',
         cardNumber: { id: 'mpCardNumber' },
@@ -37,11 +28,15 @@
         issuer: { id: 'mpIssuer' }
       },
       callbacks: {
-        onFormMounted: (error) => {
+        onFormMounted: error => {
           if (error) return console.warn('FormMounted handling error: ', error);
         },
-        onFormUnmounted: (error) => {
-          if (error) return console.warn('FormUnmounted handling error: ', error);
+        onFormUnmounted: error => {
+          if (error) return console.warn('FormMounted handling error: ', error);
+          fullClearInputs()
+          setTimeout(() => {
+            initCardForm(pk, quote, processMode, country, placeOrder)
+          }, 5000);
         },
         onIdentificationTypesReceived: (error, identificationTypes) => {
           if (error) return console.warn('IdentificationTypes handling error: ', error);
@@ -51,7 +46,7 @@
             return console.warn('Installments handling error: ', error)
           }
 
-          setChangeEventOnInstallments(getCountry(), installments.payer_costs);
+          setChangeEventOnInstallments(country, installments.payer_costs);
         },
         onCardTokenReceived: (error, token) => {
           if (error) {
@@ -59,7 +54,7 @@
             return console.warn('Token handling error: ', error);
           }
 
-          //this.placeOrder();
+          placeOrder();
         },
         onPaymentMethodsReceived: (error, paymentMethods) => {
           clearInputs();
@@ -78,27 +73,13 @@
     });
   }
 
-  window.getCountry = function () {
-    if (window.checkoutConfig.payment['mercadopago_custom'] !== undefined) {
-      return window.checkoutConfig.payment['mercadopago_custom']['country'];
-    }
-    return '';
-  },
+  window.mpDeleteCardForm = function () {
+    mpCardForm.unmount()
+  }
 
-  window.getMpGatewayMode = function () {
-    if (window.checkoutConfig.payment['mercadopago_custom'] !== undefined) {
-      return window.checkoutConfig.payment['mercadopago_custom']['mp_gateway_mode'];
-    }
-    return 0;
-  },
-
-  window.getProcessingMode = function () {
-    if (Number(this.getMpGatewayMode())) {
-      return 'gateway';
-    }
-
-    return 'aggregator';
-  },
+  window.getMpCardFormData = function () {
+    return mpCardForm.getCardFormData();
+  }
 
   window.getFormCustom = function () {
     return document.querySelector('#co-mercadopago-form');
@@ -204,6 +185,12 @@
     document.getElementById('mpDocNumber').value = '';
     document.getElementById('mpSecurityCode').value = '';
     document.getElementById('mpCardholderName').value = '';
+  }
+
+  window.fullClearInputs = function () {
+    clearInputs()
+    document.getElementById('mpCardNumber').value = '';
+    document.getElementById("mpInstallments").value = ''
   }
 
   window.validateFixedInputs = function () {
@@ -331,7 +318,7 @@
 
   window.handleInstallments = function (payment_type_id) {
     if (payment_type_id === 'debit_card') {
-      document.getElementById('mpInstallments').setAttribute("disabled","disabled");
+      document.getElementById('mpInstallments').setAttribute("disabled", "disabled");
     } else {
       document.getElementById('mpInstallments').removeAttribute("disabled");
     }
