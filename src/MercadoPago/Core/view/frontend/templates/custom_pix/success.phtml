@@ -56,42 +56,74 @@ $link_to_order = '<a href="' . $block->escapeUrl($this->getOrderUrl()) . '">' . 
 
             </div>
 
-            <div class="mp-col-md-8 mp-text-center mp-pix-right">
-                <p class="mp-details-pix-amount">
-                    <span class="mp-details-pix-qr">
-                        <?php echo __('Value:'); ?>
-                    </span>
-                    <span class="mp-details-pix-qr-value">
-                    <?php echo __(' R$ '); ?> <?php echo number_format($paymentResponse['transaction_amount'], 2, ',', '.'); ?>
-                    </span>
-                </p>
-                <p class="mp-details-pix-qr-title">
-                    <?php echo __('Scan the QR code:'); ?>
-                </p>
-                <?php if (isset($paymentResponse['point_of_interaction']) && $paymentResponse['point_of_interaction']['transaction_data']['qr_code_base64']) { ?>
-                <img class="mp-details-pix-qr-img" src="data:image/jpeg;base64,<?php echo $paymentResponse['point_of_interaction']['transaction_data']['qr_code_base64']; ?>" />
-                <?php } ?>
-                <p class="mp-details-pix-qr-subtitle">
-                    <?php echo __('Code valid for '); ?><?php echo __($expirationInfo); ?>
-                </p>
-                <div class="mp-details-pix-container">
-                    <p class="mp-details-pix-qr-description">
-                        <?php echo __('If you prefer, you can pay by copying and pasting the following code'); ?>
-                    </p>
-                    <div class="mp-row-checkout-pix-container">
-                        <input id="mp-qr-code" value="<?php echo $paymentResponse['point_of_interaction']['transaction_data']['qr_code']; ?>" class="mp-qr-input"></input>
-                        <button onclick="copy_qr_code()" class="mp-details-pix-button" onclick="true"><?php echo __('Copy code'); ?></button>
-                        <script>
-                            function copy_qr_code() {
-                                var copyText = document.getElementById("mp-qr-code");
-                                copyText.select();
-                                copyText.setSelectionRange(0, 99999)
-                                document.execCommand("copy");
-                            }
-                        </script>
+            <div class="content-box">
+                <div class="content-box__row">
+                    <div id="banck-transfer-html">
+                        <div class="text-container mp-mb-16">
+                            <h2 class="heading-2 os-step__title">Quase lá! Pague via Pix para concluir sua compra</h2>
+                        </div>
+                        <div class="mp-flex mp-stretch-item">
+                            <div class="mp-flex-item-round-border mp-ta-center mp-bg-light-grey mp-padding-24 mp-mr-8">
+                                <div class="mp-flex-item-column mp-fc-black mp-ta-center">
+                                    <div class="mp-lh-120 mp-mp-fw-normal mp-fs-16 mp-fc-black mp-mobile-fs-14">Valor:</div>
+                                        <div id=pix-amount class="mp-lh-120 mp-fw-600 mp-fs-24 mp-fc-black mp-mobile-fs-16">R$&nbsp;<?php echo number_format($paymentResponse['transaction_amount'], 2, ',', '.'); ?></div>
+                                    </div>
+                                </div>
+                            <div class="mp-flex-item-round-border mp-ta-center mp-bg-light-grey mp-padding-24">
+                                <div class="mp-flex-item-column mp-fc-black mp-ta-center">
+                                    <div class="mp-lh-120 mp-mp-fw-normal mp-fs-16 mp-fc-black mp-mobile-fs-14">Vencimento:</div>
+                                    <div id=pix-due-date class="mp-lh-120 mp-fw-600 mp-fs-24 mp-fc-black mp-mobile-fs-16"><?php echo __($expirationInfo); ?></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-container">
+                                <div class="mp-flex mp-mb-16">
+                                    <h3 class="heading-3">Escaneie este código QR para pagar</h3>
+                                    <div class="mp-tooltip mp-img-fix-width">
+                                        <img src="https://http2.mlstatic.com/static/org-img/mkt/email-mkt-assets/op-plugins/shopify/important.png" width="15.6px" height="15.6px" alt="Important" style="margin-left: 8.2px; margin-top: 16.0px">
+                                        <span class="mp-tooltiptext">
+                                            Antes de confirmar a compra, você verá o valor a pagar e as informações do vendedor.
+                                        </span>
+                                    </div>
+                                </div>
+                                <p class="mp-mt-0">1. Acesse o seu banco ou aplicativo de pagamentos</p>
+                                <p class="mp-mt-0">2. Escolha pagar via Pix com código QR</p>
+                                <p class="mp-mt-0">3. Escaneie o seguinte código</p>
+                            </div>
+                            <div>
+                                <?php if (isset($paymentResponse['point_of_interaction']) && $paymentResponse['point_of_interaction']['transaction_data']['qr_code_base64']) { ?>
+                                <img class="mp-img-center mp-details-pix-qr-img" src="data:image/jpeg;base64,<?php echo $paymentResponse['point_of_interaction']['transaction_data']['qr_code_base64']; ?>" />
+                                <?php } ?>
+                            </div>
+                            <hr class="mp-bottom-line mp-mt-24 mp-mb-24">
+                        </div>
+                        <div>
+                            <div class="text-container">
+                                <h3 class="heading-3 mp-mb-16">Ou pague com o código Pix Copia e Cola</h3>
+                                <p>Acesse o seu banco ou aplicativo de pagamentos e escolha pagar via Pix. Em seguida, cole o seguinte código de pagamento:</p>
+                            </div>
+                            <div class="mp-mt-16 mp-mb-16">
+                                <span class="mp-ta-center">
+                                    <input id="mp-qr-code" value="<?php echo $paymentResponse['point_of_interaction']['transaction_data']['qr_code']; ?>" class="mp-qr-input"></input>
+                                </span>
+                                <span class="mp-fade-out-gradient"></span>
+                            </div>
+                            <div class="mp-flex mp-stretch-item">
+                                <button onclick="copy_qr_code()" class="mp-details-pix-button" onclick="true"><?php echo __('Copy code'); ?></button>
+                                    <script>
+                                        function copy_qr_code() {
+                                            var copyText = document.getElementById("mp-qr-code");
+                                            copyText.select();
+                                            copyText.setSelectionRange(0, 99999)
+                                            document.execCommand("copy");
+                                        }
+                                    </script>
+                            </div>
+                        </div>
                     </div>
                 </div>
-          </div>
+            </div>
     </div>
 </div>
 
