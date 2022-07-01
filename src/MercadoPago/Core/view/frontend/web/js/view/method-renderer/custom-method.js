@@ -36,8 +36,7 @@ define(
   ) {
     'use strict';
 
-    var mp = null;
-    var mpCardForm = null;
+
 
     return Component.extend({
       defaults: {
@@ -52,64 +51,13 @@ define(
         if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           setChangeEventOnCardNumber();
           setChangeEventExpirationDate();
-
-          // Initialize SDK v2
-          mp = new MercadoPago(this.getPublicKey());
-
-          // Instance SDK v2
-          mpCardForm = mp.cardForm({
-            amount: String(this.getGrandTotal()),
-            autoMount: true,
-            processingMode: this.getProcessingMode(),
-            form: {
-              id: 'co-mercadopago-form',
-              cardNumber: { id: 'mpCardNumber' },
-              cardholderName: { id: 'mpCardholderName' },
-              cardExpirationMonth: { id: 'mpCardExpirationMonth' },
-              cardExpirationYear: { id: 'mpCardExpirationYear' },
-              securityCode: { id: 'mpSecurityCode' },
-              installments: { id: 'mpInstallments' },
-              identificationType: { id: 'mpDocType' },
-              identificationNumber: { id: 'mpDocNumber' },
-              issuer: { id: 'mpIssuer' }
-            },
-            callbacks: {
-              onFormMounted: error => {
-                if (error) return console.warn('FormMounted handling error: ', error);
-              },
-              onIdentificationTypesReceived: (error, identificationTypes) => {
-                if (error) return console.warn('IdentificationTypes handling error: ', error);
-              },
-              onInstallmentsReceived: (error, installments) => {
-                if (error) {
-                  return console.warn('Installments handling error: ', error)
-                }
-
-                setChangeEventOnInstallments(this.getCountry(), installments.payer_costs);
-              },
-              onCardTokenReceived: (error, token) => {
-                if (error) {
-                  showErrors(error);
-                  return console.warn('Token handling error: ', error);
-                }
-
-                this.placeOrder();
-              },
-              onPaymentMethodsReceived: (error, paymentMethods) => {
-                clearInputs();
-
-                if (error) {
-                  return console.warn('PaymentMethods handling error: ', error);
-                }
-
-                setImageCard(paymentMethods[0].thumbnail);
-                setCvvLength(paymentMethods[0].settings[0].security_code.length);
-                handleInstallments(paymentMethods[0].payment_type_id);
-                loadAdditionalInfo(paymentMethods[0].additional_info_needed);
-                additionalInfoHandler();
-              },
-            },
-          });
+          initCardForm(
+            this.getPublicKey(),
+            quote,
+            this.getProcessingMode(),
+            this.getCountry(),
+            this
+          );
         }
       },
 
@@ -261,7 +209,7 @@ define(
         var self = this;
 
         setPaymentInformationAction(this.messageContainer, { method: 'mercadopago_custom' }).done(() => {
-          $.getJSON('/mercadopago/wallet/preference').done(function (response){
+          $.getJSON('/mercadopago/wallet/preference').done(function (response) {
             var preferenceId = response.preference.id
             self.toogleWalletButton();
 
@@ -322,7 +270,7 @@ define(
        * @override
        */
       getData: function () {
-        var formData = mpCardForm.getCardFormData();
+        var formData = getMpCardFormData()
 
         var dataObj = {
           'method': this.item.method,
@@ -358,11 +306,11 @@ define(
           return false;
         }
 
-        if(!validateCvv()){
+        if (!validateCvv()) {
           return false;
         }
 
-        mpCardForm.createCardToken();
+        mpCreateCardToken()
       },
 
       placeOrder: function () {
@@ -433,11 +381,11 @@ define(
       },
 
       getProcessingMode: function () {
-          if (Number(this.getMpGatewayMode())) {
-            return 'gateway';
-          }
+        if (Number(this.getMpGatewayMode())) {
+          return 'gateway';
+        }
 
-          return 'aggregator';
+        return 'aggregator';
       },
     });
   }
