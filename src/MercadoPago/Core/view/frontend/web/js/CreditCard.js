@@ -7,7 +7,7 @@
   var mpCardForm = null;
 
 
-  window.initCardForm = function (pk, quote, processMode, country, placeOrder) {
+  window.initCardForm = function (pk, quote, processMode, country, customMethod) {
     mp = new MercadoPago(pk);
 
     // Instance SDK v2
@@ -35,7 +35,7 @@
           if (error) return console.warn('FormMounted handling error: ', error);
           fullClearInputs()
           setTimeout(() => {
-            initCardForm(pk, quote, processMode, country, placeOrder)
+            initCardForm(pk, quote, processMode, country, customMethod)
           }, 5000);
         },
         onIdentificationTypesReceived: (error, identificationTypes) => {
@@ -54,7 +54,7 @@
             return console.warn('Token handling error: ', error);
           }
 
-          placeOrder();
+          customMethod.placeOrder();
         },
         onPaymentMethodsReceived: (error, paymentMethods) => {
           clearInputs();
@@ -79,6 +79,10 @@
 
   window.getMpCardFormData = function () {
     return mpCardForm.getCardFormData();
+  }
+
+  window.mpCreateCardToken = function () {
+    mpCardForm.createCardToken();
   }
 
   window.getFormCustom = function () {

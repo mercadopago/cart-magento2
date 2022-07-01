@@ -56,7 +56,7 @@ define(
             quote,
             this.getProcessingMode(),
             this.getCountry(),
-            this.placeOrder
+            this
           );
         }
       },
@@ -310,7 +310,7 @@ define(
           return false;
         }
 
-        mpCardForm.createCardToken();
+        mpCreateCardToken()
       },
 
       placeOrder: function () {
