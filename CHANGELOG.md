@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.17.0] - 2022-07-04
+
+### Added
+- Support to Magento 2.4.4 with PHP 8.1
+- Default success page of Magento support a Pix payment information
+
+### Fixed
+- Reload credit/debit card base amount on updated cart with coupon
+- Document input accept correct characters
+- Not sent sponsor id in header request
+
 ## [3.16.0] - 2022-05-05
 
 ### Added
