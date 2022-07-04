@@ -113,7 +113,8 @@
                                data-bind="attr: {
                               title: $t('Identification Number'),
                               'data-validate': JSON.stringify({required:true})
-                              }">
+                              }"
+                              onkeyup="maskInput(this, mintegerletter);">
                     </div> <!-- end .form-col-6 -->
                 </div><!-- end .form-row -->
 

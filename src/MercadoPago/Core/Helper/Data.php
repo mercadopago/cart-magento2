@@ -22,8 +22,6 @@ use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Lib\Api;
 use MercadoPago\Core\Lib\RestClient;
 use MercadoPago\Core\Logger\Logger;
-use MercadoPago\Core\Model\Custom\Payment;
-use MercadoPago\Core\Helper\PaymentPlaces;
 
 /**
  * Class Data
@@ -37,10 +35,12 @@ class Data extends \Magento\Payment\Helper\Data
      *api platform openplatform
      */
     const PLATFORM_OPENPLATFORM = 'openplatform';
+
     /**
      *api platform stdplatform
      */
     const PLATFORM_STD = 'std';
+
     /**
      *type
      */
@@ -50,6 +50,7 @@ class Data extends \Magento\Payment\Helper\Data
      * payment calculator
      */
     const STATUS_ACTIVE = 'active';
+
     const PAYMENT_TYPE_CREDIT_CARD = 'credit_card';
 
     /**
@@ -83,6 +84,10 @@ class Data extends \Magento\Payment\Helper\Data
      * @var Switcher
      */
     protected $_switcher;
+
+    /**
+     * @var ComposerInformation
+     */
     protected $_composerInformation;
 
     /**
@@ -151,9 +156,8 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function log($message, $name = "mercadopago", $array = null)
     {
-        //load admin configuration value, default is true
         $actionLog = $this->scopeConfig->getValue(
-            \MercadoPago\Core\Helper\ConfigData::PATH_ADVANCED_LOG,
+            ConfigData::PATH_ADVANCED_LOG,
             ScopeInterface::SCOPE_STORE
         );
 
@@ -166,7 +170,6 @@ class Data extends \Magento\Payment\Helper\Data
             $message .= " - " . json_encode($array);
         }
 
-        //set log
         $this->_mpLogger->setName($name);
         $this->_mpLogger->debug($message);
     }
@@ -182,7 +185,6 @@ class Data extends \Magento\Payment\Helper\Data
             throw new LocalizedException(__('The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
         }
 
-        //$api = new Api($accessToken);
         $api = $this->_api;
         $api->set_access_token($accessToken);
         $api->set_platform(self::PLATFORM_OPENPLATFORM);
@@ -192,9 +194,6 @@ class Data extends \Magento\Payment\Helper\Data
         RestClient::setUrlStore($this->getUrlStore());
         RestClient::setEmailAdmin($this->scopeConfig->getValue('trans_email/ident_sales/email', ScopeInterface::SCOPE_STORE));
         RestClient::setCountryInitial($this->getCountryInitial());
-        RestClient::setSponsorID($this->scopeConfig->getValue('payment/mercadopago/sponsor_id', ScopeInterface::SCOPE_STORE));
-
-        //$api->set_so((string)$this->_moduleContext->getVersion()); //TODO tracking
 
         return $api;
     }
@@ -202,7 +201,6 @@ class Data extends \Magento\Payment\Helper\Data
     /**
      * @param $accessToken
      * @return bool
-     * @throws LocalizedException
      */
     public function isValidAccessToken($accessToken)
     {
@@ -228,7 +226,7 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function getAccessToken($scopeCode = ScopeInterface::SCOPE_STORE)
     {
-        $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, $scopeCode);
+        $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, $scopeCode);
         if (empty($accessToken)) {
             return false;
         }
@@ -272,11 +270,14 @@ class Data extends \Magento\Payment\Helper\Data
     protected function _getMultiCardValue($data, $field)
     {
         $finalValue = 0;
+
         if (!isset($data[$field])) {
             return $finalValue;
         }
+
         $amountValues = explode('|', $data[$field]);
         $statusValues = explode('|', $data['status']);
+
         foreach ($amountValues as $key => $value) {
             $value = (float)str_replace(' ', '', $value);
             if (str_replace(' ', '', $statusValues[$key]) === 'approved') {
@@ -296,7 +297,6 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function getMercadoPagoPaymentMethods($accessToken)
     {
-
         $this->log('GET /v1/payment_methods', 'mercadopago');
 
         try {
@@ -413,9 +413,11 @@ class Data extends \Magento\Payment\Helper\Data
             'MPE' => 'https://www.mercadopago.com.pe/ayuda/terminos-y-politicas_194',
             'MCO' => 'https://www.mercadopago.com.co/ayuda/terminos-y-politicas_194',
         ];
+
         if (array_key_exists($localization, $site_id)) {
             return $site_id[$localization];
         }
+
         return $site_id['MLA'];
     }
 }
