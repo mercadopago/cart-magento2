@@ -221,7 +221,7 @@ class Payment extends \MercadoPago\Core\Model\Custom\Payment
     public function getPaymentOptions()
     {
         $excludePaymentMethods = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-        $listExclude           = explode(',', $excludePaymentMethods);
+        $listExclude           = is_string($excludePaymentMethods) ? explode(',', $excludePaymentMethods) : [];
         $payment_methods       = $this->_coreModel->getPaymentMethods();
         $paymentOptions        = [];
 

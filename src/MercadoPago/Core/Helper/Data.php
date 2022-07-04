@@ -303,14 +303,15 @@ class Data extends \Magento\Payment\Helper\Data
             $mp = $this->getApiInstance($accessToken);
 
             $payment_methods = $mp->get("/v1/payment_methods");
+
             $treated_payments_methods = [];
 
             foreach ($payment_methods['response'] as $payment_method) {
-                if (!isset($payment_method['payment_places'])) {
+                if (is_array($payment_method) && isset($payment_method['id']) && !isset($payment_method['payment_places'])) {
                     $payment_method['payment_places'] = PaymentPlaces::getPaymentPlaces($payment_method['id']);
                 }
 
-                $treated_payments_methods[] = $payment_method;
+                array_push($treated_payments_methods, $payment_method);
             }
 
             $payment_methods['response'] = $treated_payments_methods;

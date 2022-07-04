@@ -429,12 +429,11 @@ class Wallet
     protected function getExcludedPaymentMethods()
     {
         $excluded = [];
-        $configExcludedPaymentMethods = explode(
-            ',',
-            $this->getConfig(ConfigData::PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS)
-        );
+        $configExcludedPaymentMethods = $this->getConfig(ConfigData::PATH_CUSTOM_EXCLUDE_PAYMENT_METHODS);
+        $excludedPaymentMethods = is_string($configExcludedPaymentMethods) ?
+             explode(',', $configExcludedPaymentMethods) : [];
 
-        foreach ($configExcludedPaymentMethods as $paymentMethod) {
+        foreach ($excludedPaymentMethods as $paymentMethod) {
             $excluded[] = ['id' => $paymentMethod];
         }
 
