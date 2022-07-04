@@ -141,7 +141,7 @@ class BasicConfigProvider implements ConfigProviderInterface
             ScopeInterface::SCOPE_STORE
         );
 
-        $excludePaymentMethods = explode(",", $excludePaymentMethods);
+        $excludePaymentMethods = is_string($excludePaymentMethods) ? explode(",", $excludePaymentMethods) : [];
 
         try {
             $debit = 0;

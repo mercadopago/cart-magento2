@@ -35,7 +35,7 @@ use MercadoPago\Core\Lib\Api;
  * Class Core
  *
  * @package MercadoPago\Core\Model
- * 
+ *
  * @codeCoverageIgnore
  */
 class Core extends \Magento\Payment\Model\Method\AbstractMethod
@@ -397,17 +397,20 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      */
     protected function getCustomerInfo($customer, $order)
     {
-        $email = htmlentities($customer->getEmail());
+        $email = $customer->getEmail();
+        $email = is_string($email) ? htmlentities($email) : '';
         if ($email == "") {
             $email = $order['customer_email'];
         }
 
-        $first_name = htmlentities($customer->getFirstname());
+        $first_name = $customer->getFirstname();
+        $first_name = is_string($first_name) ? htmlentities($first_name) : '';
         if ($first_name == "") {
             $first_name = $order->getBillingAddress()->getFirstname();
         }
 
-        $last_name = htmlentities($customer->getLastname());
+        $last_name = $customer->getLastname();
+        $last_name = is_string($last_name) ? htmlentities($last_name) : '';
         if ($last_name == "") {
             $last_name = $order->getBillingAddress()->getLastname();
         }
