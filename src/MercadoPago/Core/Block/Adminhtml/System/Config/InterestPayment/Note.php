@@ -52,12 +52,12 @@ class Note extends Field
      */
     public function render(AbstractElement $element)
     {
-        $siteId = strtoupper(
-            $this->scopeConfig->getValue(
-                ConfigData::PATH_SITE_ID,
-                ScopeInterface::SCOPE_STORE
-            )
+        $getSiteId = $this->scopeConfig->getValue(
+            ConfigData::PATH_SITE_ID,
+            ScopeInterface::SCOPE_STORE
         );
+
+        $siteId = is_string($getSiteId) ? mb_strtoupper($getSiteId) : '';
 
         if ($this->hideInterestPayment($siteId, $element->getOriginalData())) {
             return "";

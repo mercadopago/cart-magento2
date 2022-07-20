@@ -74,12 +74,12 @@ class Button extends Field
     {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
 
-        $siteId = strtoupper(
-            $this->scopeConfig->getValue(
-                ConfigData::PATH_SITE_ID,
-                ScopeInterface::SCOPE_STORE
-            )
+        $getSiteId = $this->scopeConfig->getValue(
+            ConfigData::PATH_SITE_ID,
+            ScopeInterface::SCOPE_STORE
         );
+
+        $siteId = is_string($getSiteId) ? mb_strtoupper($getSiteId) : '';
 
         if ($this->hideInterestPayment($siteId, $element->getOriginalData())) {
             return "";
@@ -136,9 +136,11 @@ class Button extends Field
     {
         $objectManager = ObjectManager::getInstance();
 
-        $siteId = strtoupper(
-            $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface')->getValue(ConfigData::PATH_SITE_ID)
-        );
+        $getSiteId = $objectManager
+            ->get('Magento\Framework\App\Config\ScopeConfigInterface')
+            ->getValue(ConfigData::PATH_SITE_ID);
+
+        $siteId = is_string($getSiteId) ? mb_strtoupper($getSiteId) : '';
 
         $country = Country::getCountryToMp($siteId);
 
