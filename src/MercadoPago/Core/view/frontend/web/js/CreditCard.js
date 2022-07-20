@@ -3,6 +3,88 @@
   window.cvvLength = null;
   window.additionalInfoNeeded = {};
 
+  var mp = null;
+  var mpCardForm = null;
+
+
+  window.initCardForm = function (pk, quote, processMode, country, customMethod) {
+    mp = new MercadoPago(pk);
+
+    // Instance SDK v2
+    mpCardForm = mp.cardForm({
+      amount: String(quote.totals().base_grand_total),
+      autoMount: true,
+      processingMode: processMode,
+      form: {
+        id: 'co-mercadopago-form',
+        cardNumber: { id: 'mpCardNumber' },
+        cardholderName: { id: 'mpCardholderName' },
+        cardExpirationMonth: { id: 'mpCardExpirationMonth' },
+        cardExpirationYear: { id: 'mpCardExpirationYear' },
+        securityCode: { id: 'mpSecurityCode' },
+        installments: { id: 'mpInstallments' },
+        identificationType: { id: 'mpDocType' },
+        identificationNumber: { id: 'mpDocNumber' },
+        issuer: { id: 'mpIssuer' }
+      },
+      callbacks: {
+        onFormMounted: error => {
+          if (error) return console.warn('FormMounted handling error: ', error);
+        },
+        onFormUnmounted: error => {
+          if (error) return console.warn('FormMounted handling error: ', error);
+          fullClearInputs()
+          setTimeout(() => {
+            initCardForm(pk, quote, processMode, country, customMethod)
+          }, 5000);
+        },
+        onIdentificationTypesReceived: (error, identificationTypes) => {
+          if (error) return console.warn('IdentificationTypes handling error: ', error);
+        },
+        onInstallmentsReceived: (error, installments) => {
+          if (error) {
+            return console.warn('Installments handling error: ', error)
+          }
+
+          setChangeEventOnInstallments(country, installments.payer_costs);
+        },
+        onCardTokenReceived: (error, token) => {
+          if (error) {
+            showErrors(error);
+            return console.warn('Token handling error: ', error);
+          }
+
+          customMethod.placeOrder();
+        },
+        onPaymentMethodsReceived: (error, paymentMethods) => {
+          clearInputs();
+
+          if (error) {
+            return console.warn('PaymentMethods handling error: ', error);
+          }
+
+          setImageCard(paymentMethods[0].thumbnail);
+          setCvvLength(paymentMethods[0].settings[0].security_code.length);
+          handleInstallments(paymentMethods[0].payment_type_id);
+          loadAdditionalInfo(paymentMethods[0].additional_info_needed);
+          additionalInfoHandler();
+        },
+      },
+    });
+  }
+
+  window.mpDeleteCardForm = function () {
+    mpCardForm.unmount()
+  }
+
+  window.getMpCardFormData = function () {
+    return mpCardForm.getCardFormData();
+  }
+
+  window.mpCreateCardToken = function () {
+    mpCardForm.createCardToken();
+  }
+
   window.getFormCustom = function () {
     return document.querySelector('#co-mercadopago-form');
   }
@@ -107,6 +189,12 @@
     document.getElementById('mpDocNumber').value = '';
     document.getElementById('mpSecurityCode').value = '';
     document.getElementById('mpCardholderName').value = '';
+  }
+
+  window.fullClearInputs = function () {
+    clearInputs()
+    document.getElementById('mpCardNumber').value = '';
+    document.getElementById("mpInstallments").value = ''
   }
 
   window.validateFixedInputs = function () {
@@ -234,7 +322,7 @@
 
   window.handleInstallments = function (payment_type_id) {
     if (payment_type_id === 'debit_card') {
-      document.getElementById('mpInstallments').setAttribute("disabled","disabled");
+      document.getElementById('mpInstallments').setAttribute("disabled", "disabled");
     } else {
       document.getElementById('mpInstallments').removeAttribute("disabled");
     }

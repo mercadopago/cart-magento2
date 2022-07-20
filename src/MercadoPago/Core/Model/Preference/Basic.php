@@ -303,7 +303,7 @@ class Basic extends AbstractMethod
     {
         $excludedMethods          = [];
         $excluded_payment_methods = $config['exclude_payment_methods'];
-        $arr_epm                  = explode(",", $excluded_payment_methods);
+        $arr_epm                  = is_string($excluded_payment_methods) ? explode(",", $excluded_payment_methods) : [];
 
         if (count($arr_epm) > 0) {
             foreach ($arr_epm as $m) {

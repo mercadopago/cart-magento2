@@ -28,6 +28,11 @@
     return v.replace(/\D/g, '');
   }
 
+  // eslint-disable-next-line no-unused-vars -- hugo
+  window.mintegerletter = function (v) {
+    return v.replace(/[^A-Za-z0-9]+/g, '');
+  }
+
   // eslint-disable-next-line no-unused-vars
   window.mcc = function (v) {
     v = v.replace(/\D/g, '');
