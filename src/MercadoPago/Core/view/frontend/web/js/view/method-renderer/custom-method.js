@@ -36,8 +36,6 @@ define(
   ) {
     'use strict';
 
-
-
     return Component.extend({
       defaults: {
         template: 'MercadoPago_Core/payment/custom_method'
@@ -49,6 +47,7 @@ define(
 
       initApp: function () {
         if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
+          quote.totals.subscribe(this.totalsObserver.bind(this));
           setChangeEventOnCardNumber();
           setChangeEventExpirationDate();
           initCardForm(
@@ -58,6 +57,13 @@ define(
             this.getCountry(),
             this
           );
+        }
+      },
+
+      totalsObserver: function() {
+        if (quote.totals().base_grand_total !== this.priceOnSelect) {
+          this.priceOnSelect = quote.totals().base_grand_total;
+          mpRemountCardForm();
         }
       },
 
