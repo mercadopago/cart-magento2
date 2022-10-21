@@ -126,8 +126,13 @@ class BasicConfigProvider implements ConfigProviderInterface
      */
     public function makeBannerCheckout()
     {
-        $accessToken = $this->_scopeConfig->getValue(
-            ConfigData::PATH_ACCESS_TOKEN,
+        // $accessToken = $this->_scopeConfig->getValue(
+        //     ConfigData::PATH_ACCESS_TOKEN,
+        //     ScopeInterface::SCOPE_WEBSITE
+        // );
+
+        $publicKey = $this->_scopeConfig->getValue(
+            ConfigData::PATH_PUBLIC_KEY,
             ScopeInterface::SCOPE_WEBSITE
         );
 
@@ -149,7 +154,7 @@ class BasicConfigProvider implements ConfigProviderInterface
             $ticket = 0;
             $choMethods = [];
 
-            $paymentMethods = $this->_coreHelper->getMercadoPagoPaymentMethods($accessToken);
+            $paymentMethods = $this->_coreHelper->getMercadoPagoPaymentMethods($publicKey);
 
             foreach ($paymentMethods['response'] as $pm) {
                 if (!in_array($pm['id'], $excludePaymentMethods)) {

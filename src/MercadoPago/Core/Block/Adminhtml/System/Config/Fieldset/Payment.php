@@ -26,17 +26,17 @@ class Payment extends Fieldset
      * Checkout Custom Card
      */
     const CHECKOUT_CUSTOM_CARD = 'custom_checkout';
-  
+
     /**
      * Checkout Custom Pix
      */
     const CHECKOUT_CUSTOM_PIX= 'custom_checkout_pix';
-  
+
     /**
      * Checkout Custom Ticket
      */
     const CHECKOUT_CUSTOM_TICKET = 'custom_checkout_ticket';
-  
+
     /**
      * Checkout Custom Bank Transfer
      */
@@ -128,16 +128,16 @@ class Payment extends Fieldset
         return parent::render($element);
     }
 
-    public function getPaymentMethods($accessToken)
+    public function getPaymentMethods($publicKey)
     {
-        $paymentMethods = $this->coreHelper->getMercadoPagoPaymentMethods($accessToken);
+        $paymentMethods = $this->coreHelper->getMercadoPagoPaymentMethods($publicKey);
 
         return $paymentMethods;
     }
 
     /**
      * Disables the given payment if it is currently active
-     * 
+     *
      * @param $paymentId
      */
     protected function disablePayment($paymentId)
@@ -175,19 +175,20 @@ class Payment extends Fieldset
      */
     protected function hideInvalidCheckoutOptions($paymentId)
     {
-        $accessToken = $this->coreHelper->getAccessToken();
+        // $accessToken = $this->coreHelper->getAccessToken();
+        $publicKey = $this->coreHelper->getPublicKey();
 
-        if (!$this->coreHelper->isValidAccessToken($accessToken)) {
+        if (!$this->coreHelper->isValidPublicKey($publicKey)) {
             return true;
         }
 
         $cacheKey = Cache::VALID_PAYMENT_METHODS;
         $validCheckoutOptions = json_decode($this->cache->getFromCache($cacheKey));
         if (!$validCheckoutOptions) {
-            $validCheckoutOptions = $this->getAvailableCheckoutOptions($accessToken);
+            $validCheckoutOptions = $this->getAvailableCheckoutOptions($publicKey);
             $this->cache->saveCache($cacheKey, json_encode($validCheckoutOptions));
         }
-        
+
         $paymentIdWithoutPrefix = implode('_', array_slice(explode('_', $paymentId), 4));
 
         return !in_array($paymentIdWithoutPrefix, $validCheckoutOptions);
@@ -199,11 +200,11 @@ class Payment extends Fieldset
      * @param string $accessToken
      * @return array
      */
-    public function getAvailableCheckoutOptions($accessToken)
+    public function getAvailableCheckoutOptions($publicKey)
     {
         try {
             $availableCheckouts = array();
-            $paymentMethods = $this->getPaymentMethods($accessToken);
+            $paymentMethods = $this->getPaymentMethods($publicKey);
 
             foreach ($paymentMethods['response'] as $paymentMethod) {
                 switch (strtolower($paymentMethod['payment_type_id'])) {

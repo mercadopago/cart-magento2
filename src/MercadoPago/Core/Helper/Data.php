@@ -210,7 +210,29 @@ class Data extends \Magento\Payment\Helper\Data
             return true;
         }
 
-        $response = $this->getMercadoPagoPaymentMethods($accessToken);
+        // $response = $this->getMercadoPagoPaymentMethods($accessToken);
+
+        // if ((!$response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
+        //     return false;
+        // }
+
+        $this->_mpCache->saveCache($cacheKey, true);
+        return true;
+    }
+
+    /**
+     * @param $accessToken
+     * @return bool
+     */
+    public function isValidPublicKey($publicKey)
+    {
+        $cacheKey = Cache::IS_VALID_AT . $publicKey;
+
+        if ($this->_mpCache->getFromCache($cacheKey)) {
+            return true;
+        }
+
+        $response = $this->getMercadoPagoPaymentMethods($publicKey);
 
         if ((!$response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
             return false;
@@ -310,13 +332,13 @@ class Data extends \Magento\Payment\Helper\Data
      *
      * @return array
      */
-    public function getMercadoPagoPaymentMethods($accessToken)
+    public function getMercadoPagoPaymentMethods($publicKey)
     {
         $this->log('GET /v1/bifrost/payment-methods', 'mercadopago');
 
         try {
             // $mp = $this->getApiInstance($accessToken);
-            $publicKey = $this->getPublicKey();
+            // $publicKey = $this->getPublicKey();
 
             $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
 
