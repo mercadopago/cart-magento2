@@ -235,6 +235,21 @@ class Data extends \Magento\Payment\Helper\Data
     }
 
     /**
+     * Added
+     * @param string $scopeCode
+     * @return bool|mixed
+     */
+    public function getPublicKey($scopeCode = ScopeInterface::SCOPE_STORE)
+    {
+        $publicKey = $this->scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, $scopeCode);
+        if (empty($publicKey)) {
+            return false;
+        }
+
+        return $publicKey;
+    }
+
+    /**
      * Calculate and set order MercadoPago specific subtotals based on data values
      *
      * @param $data
@@ -297,24 +312,29 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function getMercadoPagoPaymentMethods($accessToken)
     {
-        $this->log('GET /v1/payment_methods', 'mercadopago');
+        $this->log('GET /v1/bifrost/payment-methods', 'mercadopago');
 
         try {
-            $mp = $this->getApiInstance($accessToken);
+            // $mp = $this->getApiInstance($accessToken);
+            $publicKey = $this->getPublicKey();
 
-            $payment_methods = $mp->get("/v1/payment_methods");
+            $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
 
             $treated_payments_methods = [];
 
             foreach ($payment_methods['response'] as $payment_method) {
-                if (is_array($payment_method) && isset($payment_method['id']) && !isset($payment_method['payment_places'])) {
-                    $payment_method['payment_places'] = PaymentPlaces::getPaymentPlaces($payment_method['id']);
-                }
+                // if (is_array($payment_method) && isset($payment_method['id']) && !isset($payment_method['payment_places'])) {
+                //     $payment_method['payment_places'] = PaymentPlaces::getPaymentPlaces($payment_method['id']);
+                // }
 
                 array_push($treated_payments_methods, $payment_method);
             }
 
             $payment_methods['response'] = $treated_payments_methods;
+
+            // echo('<pre>');
+            // print_r($payment_methods);
+            // die();
 
             return $payment_methods;
 

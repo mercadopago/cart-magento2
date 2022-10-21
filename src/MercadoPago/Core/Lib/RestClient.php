@@ -26,6 +26,7 @@ class RestClient
      * Platform Id
      */
     const PLATAFORM_ID = "BP1EF6QIC4P001KBGQ10";
+    // const PLATAFORM_ID = "TEST_PLATFORM";
 
     /**
      * @param       $uri
