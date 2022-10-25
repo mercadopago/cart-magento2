@@ -54,6 +54,11 @@ class Data extends \Magento\Payment\Helper\Data
     const PAYMENT_TYPE_CREDIT_CARD = 'credit_card';
 
     /**
+     * plugins credentials wrapper
+     */
+    const CREDENTIALS_WRAPPER = '/plugins-credentials-wrapper/credentials';
+
+    /**
      * @var MessageInterface
      */
     protected $_messageInterface;
@@ -204,19 +209,19 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function isValidAccessToken($accessToken)
     {
-        $cacheKey = Cache::IS_VALID_AT . $accessToken;
+        $cacheToken = Cache::IS_VALID_AT . $accessToken;
 
-        if ($this->_mpCache->getFromCache($cacheKey)) {
+        if ($this->_mpCache->getFromCache($cacheToken)) {
             return true;
         }
 
-        // $response = $this->getMercadoPagoPaymentMethods($accessToken);
+        $response = RestClient::get(self::CREDENTIALS_WRAPPER, null, ['Authorization: Bearer ' . $accessToken]);
 
-        // if ((!$response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
-        //     return false;
-        // }
+        if ((!$response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
+            return false;
+        }
 
-        $this->_mpCache->saveCache($cacheKey, true);
+        $this->_mpCache->saveCache($cacheToken, true);
         return true;
     }
 
@@ -226,13 +231,13 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function isValidPublicKey($publicKey)
     {
-        $cacheKey = Cache::IS_VALID_AT . $publicKey;
+        $cacheKey = Cache::IS_VALID_PK . $publicKey;
 
         if ($this->_mpCache->getFromCache($cacheKey)) {
             return true;
         }
 
-        $response = $this->getMercadoPagoPaymentMethods($publicKey);
+        $response = RestClient::get(self::CREDENTIALS_WRAPPER . '?public_key=' . $publicKey, null);
 
         if ((!$response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
             return false;
@@ -241,7 +246,6 @@ class Data extends \Magento\Payment\Helper\Data
         $this->_mpCache->saveCache($cacheKey, true);
         return true;
     }
-
     /**
      * @param string $scopeCode
      * @return bool|mixed
@@ -332,15 +336,14 @@ class Data extends \Magento\Payment\Helper\Data
      *
      * @return array
      */
-    public function getMercadoPagoPaymentMethods($publicKey)
+    public function getMercadoPagoPaymentMethods()
     {
         $this->log('GET /v1/bifrost/payment-methods', 'mercadopago');
 
         try {
-            // $mp = $this->getApiInstance($accessToken);
-            // $publicKey = $this->getPublicKey();
+            $publicKey = $this->getPublicKey();
 
-            $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
+            $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID_METHODS]);
 
             return $payment_methods;
 

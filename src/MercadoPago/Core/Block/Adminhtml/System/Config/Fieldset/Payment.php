@@ -128,9 +128,9 @@ class Payment extends Fieldset
         return parent::render($element);
     }
 
-    public function getPaymentMethods($publicKey)
+    public function getPaymentMethods()
     {
-        $paymentMethods = $this->coreHelper->getMercadoPagoPaymentMethods($publicKey);
+        $paymentMethods = $this->coreHelper->getMercadoPagoPaymentMethods();
 
         return $paymentMethods;
     }
@@ -176,16 +176,16 @@ class Payment extends Fieldset
     protected function hideInvalidCheckoutOptions($paymentId)
     {
         // $accessToken = $this->coreHelper->getAccessToken();
-        $publicKey = $this->coreHelper->getPublicKey();
+        // $publicKey = $this->coreHelper->getPublicKey();
 
-        if (!$this->coreHelper->isValidPublicKey($publicKey)) {
-            return true;
-        }
+        // if (!$this->coreHelper->isValidPublicKey($publicKey)) {
+        //     return true;
+        // }
 
         $cacheKey = Cache::VALID_PAYMENT_METHODS;
         $validCheckoutOptions = json_decode($this->cache->getFromCache($cacheKey));
         if (!$validCheckoutOptions) {
-            $validCheckoutOptions = $this->getAvailableCheckoutOptions($publicKey);
+            $validCheckoutOptions = $this->getAvailableCheckoutOptions();
             $this->cache->saveCache($cacheKey, json_encode($validCheckoutOptions));
         }
 
@@ -200,11 +200,11 @@ class Payment extends Fieldset
      * @param string $accessToken
      * @return array
      */
-    public function getAvailableCheckoutOptions($publicKey)
+    public function getAvailableCheckoutOptions()
     {
         try {
             $availableCheckouts = array();
-            $paymentMethods = $this->getPaymentMethods($publicKey);
+            $paymentMethods = $this->getPaymentMethods();
 
             foreach ($paymentMethods['response'] as $paymentMethod) {
                 switch (strtolower($paymentMethod['payment_type_id'])) {

@@ -14,6 +14,7 @@ use Magento\Framework\View\Element\Context;
 class Cache
 {
     const PREFIX_KEY = 'MP_';
+    const IS_VALID_PK = 'IS_VALID_PUBLIC_KEY';
     const IS_VALID_AT = 'IS_VALID_ACCESS_TOKEN';
     const VALID_PAYMENT_METHODS = 'VALID_PAYMENT_METHODS';
 

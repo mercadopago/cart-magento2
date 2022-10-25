@@ -131,10 +131,10 @@ class BasicConfigProvider implements ConfigProviderInterface
         //     ScopeInterface::SCOPE_WEBSITE
         // );
 
-        $publicKey = $this->_scopeConfig->getValue(
-            ConfigData::PATH_PUBLIC_KEY,
-            ScopeInterface::SCOPE_WEBSITE
-        );
+        // $publicKey = $this->_scopeConfig->getValue(
+        //     ConfigData::PATH_PUBLIC_KEY,
+        //     ScopeInterface::SCOPE_WEBSITE
+        // );
 
         $maxInstallments = $this->_scopeConfig->getValue(
             ConfigData::PATH_BASIC_MAX_INSTALLMENTS,
@@ -154,7 +154,7 @@ class BasicConfigProvider implements ConfigProviderInterface
             $ticket = 0;
             $choMethods = [];
 
-            $paymentMethods = $this->_coreHelper->getMercadoPagoPaymentMethods($publicKey);
+            $paymentMethods = $this->_coreHelper->getMercadoPagoPaymentMethods();
 
             foreach ($paymentMethods['response'] as $pm) {
                 if (!in_array($pm['id'], $excludePaymentMethods)) {
