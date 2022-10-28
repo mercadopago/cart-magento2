@@ -402,6 +402,8 @@ class Basic extends AbstractMethod
         $mpApiInstance = $this->_helperData->getApiInstance($config['access_token']);
         $response      = $mpApiInstance->create_preference($arr);
 
+//        $this->_transaction->create($payment, $order, $response['response']['id'], $response['response']);
+
         $this->_helperData->log("create preference result", 'mercadopago-basic.log', $response);
 
         if (!is_array($arr)) {

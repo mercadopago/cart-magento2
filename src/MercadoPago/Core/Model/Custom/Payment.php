@@ -41,6 +41,7 @@ use MercadoPago\Core\Model\Api\V1\Exception;
 use MercadoPago\Core\Model\Core;
 use MercadoPago\Core\Block\Adminhtml\System\Config\Version;
 use MercadoPago\Core\Model\Notifications\Topics\Payment as PaymentNotification;
+use MercadoPago\Core\Model\Transaction;
 
 /**
  * Class Payment
@@ -266,6 +267,8 @@ class Payment extends Cc implements GatewayInterface
      */
     protected $_statusDetailMessage;
 
+    private $_transaction;
+
     /**
      * @param MercadopagoData $helperData
      * @param CheckoutSession $checkoutSession
@@ -317,7 +320,8 @@ class Payment extends Cc implements GatewayInterface
         Image $helperImage,
         OrderInterface $order,
         PaymentNotification $paymentNotification,
-        StatusDetailMessage $statusDetailMessage
+        StatusDetailMessage $statusDetailMessage,
+        Transaction $transaction
     ) {
         parent::__construct(
             $context,
@@ -347,6 +351,7 @@ class Payment extends Cc implements GatewayInterface
         $this->_order               = $order;
         $this->_paymentNotification = $paymentNotification;
         $this->_statusDetailMessage = $statusDetailMessage;
+        $this->_transaction = $transaction;
     }//end __construct()
 
     /**
@@ -492,6 +497,12 @@ class Payment extends Cc implements GatewayInterface
 
                 throw new LocalizedException($this->getRejectedStatusDetailMessage($statusDetail));
             }
+
+            /** @var \Magento\Sales\Model\Order\Payment $payment */
+            $order       = $this->getInfoInstance()->getOrder();
+            $payment     = $order->getPayment();
+
+            $this->_transaction->create($payment, $order, $response['response']['id'], $response['response'], $response['response']['status']);
 
             $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $response['response']);
             return true;

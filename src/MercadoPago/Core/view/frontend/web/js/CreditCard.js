@@ -5,7 +5,7 @@
 
   var mp = null;
   var mpCardForm = null;
-
+  var mpRemountCardForm = false;
 
   window.initCardForm = function (pk, quote, processMode, country, customMethod) {
     mp = new MercadoPago(pk);
@@ -34,9 +34,15 @@
         onFormUnmounted: error => {
           if (error) return console.warn('FormMounted handling error: ', error);
           fullClearInputs()
-          setTimeout(() => {
-            initCardForm(pk, quote, processMode, country, customMethod)
-          }, 5000);
+
+          if (mpRemountCardForm) {
+            initCardForm(pk, quote, processMode, country, customMethod);
+            mpRemountCardForm = false;
+          } else {
+            setTimeout(() => {
+              initCardForm(pk, quote, processMode, country, customMethod)
+            }, 5000);
+          }
         },
         onIdentificationTypesReceived: (error, identificationTypes) => {
           if (error) return console.warn('IdentificationTypes handling error: ', error);
