@@ -54,7 +54,7 @@ class Transaction
             case self::STATUS_PENDING:
                 return TransactionInterface::TYPE_AUTH;
             default:
-                return TransactionInterface::TYPE_PAYMENT;
+                return TransactionInterface::TYPE_ORDER;
         }
     }
 }
