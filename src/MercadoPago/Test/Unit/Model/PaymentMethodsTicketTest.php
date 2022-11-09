@@ -67,7 +67,7 @@ class PaymentMethodsTicketTest extends TestCase
 
         $this->coreHelperMock->expects(self::any())
         ->method('getMercadoPagoPaymentMethods')
-        ->with('APP_USR-00000000000-000000-000000-0000000000')
+        ->with()
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES);
 
         $this->assertEquals(PaymentMethodsConfigMock::PAYMENT_METHODS_CONFIG_SUCCESS, $this->paymentMethodsTicket->toOptionArray());
