@@ -7,6 +7,8 @@ class PaymentResponseMock
 
   public const PAYMENT_METHODS_URI = '/v1/bifrost/payment-methods';
 
+  public const PLATFORM_ID = 'TEST';
+
   public const RESPONSE_PAYMENT_METHODS_SUCCESS = [
     'response' => [
       0 => [

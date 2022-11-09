@@ -342,14 +342,6 @@ class Data extends \Magento\Payment\Helper\Data
 
         try {
             $publicKey = $this->getPublicKey();
-            $accessToken = $this->getAccessToken();
-
-            // $keyResponse = RestClient::get(self::CREDENTIALS_WRAPPER . '?public_key=' . $publicKey, null);
-            // $tokenResponse = RestClient::get(self::CREDENTIALS_WRAPPER, null, ['Authorization: Bearer ' . $accessToken]);
-
-            // if ($keyResponse['response']['client_id'] !== $tokenResponse['response']['client_id']) {
-            //     return [];
-            // }
 
             $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID_METHODS]);
 

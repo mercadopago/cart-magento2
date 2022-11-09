@@ -188,9 +188,6 @@ class CustomConfigProvider implements ConfigProviderInterface
      */
     public function getPaymentMethods()
     {
-        // $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_WEBSITE);
-        // $publicKey = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_WEBSITE);
-
         try {
             $cards = [];
             $paymentMethods = $this->_coreHelper->getMercadoPagoPaymentMethods();

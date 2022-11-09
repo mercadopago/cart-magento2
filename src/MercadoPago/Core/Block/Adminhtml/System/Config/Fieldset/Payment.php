@@ -175,13 +175,6 @@ class Payment extends Fieldset
      */
     protected function hideInvalidCheckoutOptions($paymentId)
     {
-        // $accessToken = $this->coreHelper->getAccessToken();
-        // $publicKey = $this->coreHelper->getPublicKey();
-
-        // if (!$this->coreHelper->isValidPublicKey($publicKey)) {
-        //     return true;
-        // }
-
         $cacheKey = Cache::VALID_PAYMENT_METHODS;
         $validCheckoutOptions = json_decode($this->cache->getFromCache($cacheKey));
         if (!$validCheckoutOptions) {

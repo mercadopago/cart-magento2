@@ -126,16 +126,6 @@ class BasicConfigProvider implements ConfigProviderInterface
      */
     public function makeBannerCheckout()
     {
-        // $accessToken = $this->_scopeConfig->getValue(
-        //     ConfigData::PATH_ACCESS_TOKEN,
-        //     ScopeInterface::SCOPE_WEBSITE
-        // );
-
-        // $publicKey = $this->_scopeConfig->getValue(
-        //     ConfigData::PATH_PUBLIC_KEY,
-        //     ScopeInterface::SCOPE_WEBSITE
-        // );
-
         $maxInstallments = $this->_scopeConfig->getValue(
             ConfigData::PATH_BASIC_MAX_INSTALLMENTS,
             ScopeInterface::SCOPE_STORE
