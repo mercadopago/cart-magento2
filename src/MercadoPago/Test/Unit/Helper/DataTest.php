@@ -8,6 +8,7 @@ use MercadoPago\Test\Unit\Mock\PaymentResponseMock;
 use MercadoPago\Test\Unit\Mock\PaymentMethodsConfigMock;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use MercadoPago\Core\Lib\RestClient;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -94,6 +95,11 @@ class DataTest extends TestCase
     private $apiMock;
 
     /**
+     * @var MockObject
+     */
+    private $restClientMock;
+
+    /**
      * @inheritdoc
      */
     protected function setUp(): void
@@ -117,15 +123,16 @@ class DataTest extends TestCase
         $this->composerInformationMock = $arguments['composerInformation'];
         $this->moduleResourceMock = $arguments['moduleResource'];
         $this->apiMock = $arguments['api'];
+        $this->restClientMock = $arguments['restClient'];
 
         $this->data = $objectManagerHelper->getObject($className, $arguments);
     }
 
     public function testGetMercadoPagoPaymentMethods_successResponse_returnArrayWithPaymentPlaces(): void
     {
-        $this->apiMock->expects($this->once())
+        $this->restClientMock->expects($this->once())
         ->method('get')
-        ->with(PaymentResponseMock::PAYMENT_METHODS_URI)
+        ->with(PaymentResponseMock::PAYMENT_METHODS_URI, null, ['Authorization: APP_USR-00000000000-000000-000000-0000000000', 'X-platform-id: ' . PaymentResponseMock::PLATFORM_ID])
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS);
 
         $this->assertEquals(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES, $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));
@@ -133,9 +140,9 @@ class DataTest extends TestCase
 
     public function testGetMercadoPagoPaymentMethods_exception_returnEmpty(): void
     {
-        $this->apiMock->expects($this->once())
+        $this->restClientMock->expects($this->once())
         ->method('get')
-        ->with(PaymentResponseMock::PAYMENT_METHODS_URI)
+        ->with(PaymentResponseMock::PAYMENT_METHODS_URI, null, ['Authorization: APP_USR-00000000000-000000-000000-0000000000', 'X-platform-id: ' . PaymentResponseMock::PLATFORM_ID])
         ->willReturn(null);
 
         $this->assertEquals([], $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));

@@ -106,6 +106,11 @@ class Data extends \Magento\Payment\Helper\Data
     protected $_api;
 
     /**
+     * @var RestClient $restclient
+     */
+    protected $_restClient;
+
+    /**
      * Data constructor.
      * @param Message\MessageInterface $messageInterface
      * @param Cache $mpCache
@@ -122,6 +127,7 @@ class Data extends \Magento\Payment\Helper\Data
      * @param ComposerInformation $composerInformation
      * @param ResourceInterface $moduleResource
      * @param Api $api
+     * @param RestClient $restclient
      */
     public function __construct(
         Message\MessageInterface $messageInterface,
@@ -138,7 +144,8 @@ class Data extends \Magento\Payment\Helper\Data
         Switcher $switcher,
         ComposerInformation $composerInformation,
         ResourceInterface $moduleResource,
-        Api $api
+        Api $api,
+        RestClient $restClient
     ) {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
@@ -150,6 +157,7 @@ class Data extends \Magento\Payment\Helper\Data
         $this->_composerInformation = $composerInformation;
         $this->_moduleResource = $moduleResource;
         $this->_api = $api;
+        $this->_restClient = $restClient;
     }
 
     /**
@@ -343,7 +351,7 @@ class Data extends \Magento\Payment\Helper\Data
         try {
             $publicKey = $this->getPublicKey();
 
-            $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID_METHODS]);
+            $payment_methods = $this->_restClient->get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
 
             $treated_payments_methods = [];
 
