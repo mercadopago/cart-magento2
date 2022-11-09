@@ -26,8 +26,26 @@ class Transaction
     public function create(
         Payment $payment,
         Order $order,
+        string $transactionId
+    ): void
+    {
+        try {
+            $payment->setTransactionId($transactionId);
+
+            $this->_transactionBuilder
+                ->setPayment($payment)
+                ->setOrder($order)
+                ->setTransactionId($transactionId)
+                ->build(TransactionInterface::TYPE_ORDER);
+        } catch (\Exception $e) {
+            $this->_mercadoPagoData->log("Failed creating transaction id $transactionId with message {$e->getMessage()}");
+        }
+    }
+
+    public function update(
+        Payment $payment,
+        Order $order,
         string $transactionId,
-        array $additionalData,
         string $status
     ): void
     {
@@ -38,7 +56,6 @@ class Transaction
                 ->setPayment($payment)
                 ->setOrder($order)
                 ->setTransactionId($transactionId)
-                ->setAdditionalInformation([Payment\Transaction::RAW_DETAILS => $additionalData])
                 ->build($this->statusTransform($status));
         } catch (\Exception $e) {
             $this->_mercadoPagoData->log("Failed creating transaction id $transactionId with message {$e->getMessage()}");

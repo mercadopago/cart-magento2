@@ -80,6 +80,8 @@
 "Enabling this option will show the discount coupon amount in the order details","Se você habilitar essa opção, o valor do cupom de desconto será mostrado no total do pedido."
 "Integrator ID","Integrator ID"
 "With this number, we identify all your transactions and know how many sales we process with your account. Become a certified Mercado Pago partner and request your integrator_id <a href=""https://docs.google.com/forms/d/1EeO__nZuqHf4cb81NpwtDSybPT7COluSZVrXR4A8F7Q/viewform?edit_requested=true"" target=""_blank"">here</a>.","Com este número, identificamos todas as suas transações e sabemos quantas vendas processamos com sua conta. Torne-se um parceiro certificado do Mercado Pago e solicite seu integrator_id <a href=""https://docs.google.com/forms/d/e/1FAIpQLScTwPlLRVW2rB_BnCxekUnfJu9rn-tUMh8ENAnqpxLeB8ULUw/viewform"" target=""_blank"">aqui</a>."
+"Save Transaction", "Salvar Transação"
+"Enable this function to save transaction records.","Habilite esta função para salvar registros de transações."
 "Email Options","Opções de Email"
 "Order creation email","E-mail de criação de pedidos"
 "Email sent when the order is created does not mean that the payment has been approved","Um e-mail será enviado quando o pedido for criado, isso não significa que o pagamento foi aprovado."
