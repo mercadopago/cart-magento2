@@ -502,7 +502,9 @@ class Payment extends Cc implements GatewayInterface
             $order       = $this->getInfoInstance()->getOrder();
             $payment     = $order->getPayment();
 
-            $this->_transaction->create($payment, $order, $response['response']['id'], $response['response'], $response['response']['status']);
+            if ($this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
+                $this->_transaction->create($payment, $order, $response['response']['id'], $response['response'], $response['response']['status']);
+            }
 
             $this->getInfoInstance()->setAdditionalInformation('paymentResponse', $response['response']);
             return true;
