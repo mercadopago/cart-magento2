@@ -463,7 +463,9 @@ abstract class TopicsAbstract
             }
 
             if ($this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
-                $this->_mpHelper->log('Update Transaction', 'mercadopago-basic.log', $payment, $order, $statusOrder);
+                $this->_mpHelper->log('Update Transaction Payment', 'mercadopago-basic.log', $payment);
+                $this->_mpHelper->log('Update Transaction Order', 'mercadopago-basic.log', $order);
+                $this->_mpHelper->log('Update Transaction Status', 'mercadopago-basic.log', $statusOrder);
                 $this->_transaction->update($payment, $order, $statusOrder);
             }
 

@@ -11,10 +11,7 @@ use Magento\Sales\Model\Order\Payment;
 use Magento\Sales\Model\Order\Payment\Transaction\Builder;
 use Magento\Sales\Api\TransactionRepositoryInterface;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
-
-
 use Magento\Framework\Data\Collection;
-use MercadoPago\Core\Helper\Data as mpHelper;
 
 class Transaction
 {
@@ -34,18 +31,12 @@ class Transaction
 
     private SortOrderBuilder $_sortOrderBuilder;
 
-     /**
-     * @var mpHelper
-     */
-    protected $_mpHelper;
-
     public function __construct(Builder $transactionBuilder,
         MercadopagoData $mercadoPagoData,
         TransactionRepositoryInterface $transactionRepository,
         FilterBuilder $filterBuilder,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        SortOrderBuilder $sortOrderBuilder,
-        mpHelper $mpHelper
+        SortOrderBuilder $sortOrderBuilder
     )
     {
         $this->_transactionBuilder = $transactionBuilder;
@@ -54,7 +45,6 @@ class Transaction
         $this->_filterBuilder = $filterBuilder;
         $this->_searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->_sortOrderBuilder = $sortOrderBuilder;
-        $this->_mpHelper = $mpHelper;
     }
 
     public function create(
@@ -85,10 +75,10 @@ class Transaction
     ): void
     {
         try {
-            $this->_mpHelper->log('Transaction - Start', 'mercadopago.log');
+            $this->_mercadoPagoData->log('Transaction - Start');
             $result = $this->getListTransactionByOrderId($order->getIncrementId());
-            $this->_mpHelper->log('Transaction - getListTransactionByOrderId', 'mercadopago.log', $order->getIncrementId());
-            $this->_mpHelper->log('Transaction - getListTransactionByOrderId Result', 'mercadopago.log', $result);
+            $this->_mercadoPagoData->log('Transaction - getListTransactionByOrderId', $order->getIncrementId());
+            $this->_mercadoPagoData->log('Transaction - getListTransactionByOrderId Result', $result);
 
             if (empty($result)){
                 return;
