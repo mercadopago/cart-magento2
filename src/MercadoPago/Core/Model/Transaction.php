@@ -7,6 +7,8 @@ use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment;
 use Magento\Sales\Model\Order\Payment\Transaction\Builder;
 use MercadoPago\Core\Helper\Data as MercadopagoData;
+use Magento\Sales\Api\TransactionRepositoryInterface;
+
 
 class Transaction
 {
@@ -17,22 +19,26 @@ class Transaction
 
     private MercadopagoData $_mercadoPagoData;
 
-    public function __construct(Builder $transactionBuilder, MercadopagoData $mercadoPagoData)
+    private TransactionRepositoryInterface $_transactionRepository;
+
+
+    public function __construct(Builder $transactionBuilder, MercadopagoData $mercadoPagoData, TransactionRepositoryInterface $transactionRepository)
     {
         $this->_transactionBuilder = $transactionBuilder;
         $this->_mercadoPagoData = $mercadoPagoData;
+        $this->_transactionRepository = $transactionRepository;
     }
 
     public function create(
         Payment $payment,
         Order $order,
         string $transactionId
-    ): void
+    )
     {
         try {
             $payment->setTransactionId($transactionId);
 
-            $this->_transactionBuilder
+           return $this->_transactionBuilder
                 ->setPayment($payment)
                 ->setOrder($order)
                 ->setTransactionId($transactionId)
@@ -60,6 +66,11 @@ class Transaction
         } catch (\Exception $e) {
             $this->_mercadoPagoData->log("Failed creating transaction id $transactionId with message {$e->getMessage()}");
         }
+    }
+
+    public function save($transaction)
+    {
+        return $this->_transactionRepository->save($transaction);
     }
 
     private function statusTransform(string $status): string

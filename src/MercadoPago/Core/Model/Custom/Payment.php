@@ -504,6 +504,7 @@ class Payment extends Cc implements GatewayInterface
 
             if ($this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
                 $this->_transaction->create($payment, $order, $response['response']['id']);
+                $this->_helperData->log('Saved Transaction', 'mercadopago-basic.log');
                 #$this->_transaction->update($payment, $order, $response['response']['id'], 'approved');
             }
 
