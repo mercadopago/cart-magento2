@@ -123,14 +123,13 @@ class DataTest extends TestCase
         $this->composerInformationMock = $arguments['composerInformation'];
         $this->moduleResourceMock = $arguments['moduleResource'];
         $this->apiMock = $arguments['api'];
-        $this->restClientMock = $arguments['restClient'];
 
         $this->data = $objectManagerHelper->getObject($className, $arguments);
     }
 
     public function testGetMercadoPagoPaymentMethods_successResponse_returnArrayWithPaymentPlaces(): void
     {
-        $this->restClientMock->expects($this->once())
+        $this->apiMock->expects($this->once())
         ->method('get')
         ->with(PaymentResponseMock::PAYMENT_METHODS_URI, null, ['Authorization: APP_USR-00000000000-000000-000000-0000000000', 'X-platform-id: ' . PaymentResponseMock::PLATFORM_ID])
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS);
@@ -140,7 +139,7 @@ class DataTest extends TestCase
 
     public function testGetMercadoPagoPaymentMethods_exception_returnEmpty(): void
     {
-        $this->restClientMock->expects($this->once())
+        $this->apiMock->expects($this->once())
         ->method('get')
         ->with(PaymentResponseMock::PAYMENT_METHODS_URI, null, ['Authorization: APP_USR-00000000000-000000-000000-0000000000', 'X-platform-id: ' . PaymentResponseMock::PLATFORM_ID])
         ->willReturn(null);
