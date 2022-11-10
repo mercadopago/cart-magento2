@@ -44,7 +44,7 @@
             <label>Save Transaction</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/mercadopago/save_transaction</config_path>
-            <comment>Enable this function to save transaction records.</comment>
+            <comment>Enable this function to save your payment transaction history. You can check them in the "Transactions" menu or in each order detail.`</comment>
         </field>
 
         <field id="heading_email" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1">

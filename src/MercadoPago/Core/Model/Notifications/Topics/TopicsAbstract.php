@@ -20,6 +20,7 @@ use MercadoPago\Core\Helper\Data;
 use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Helper\Round;
+use MercadoPago\Core\Model\Transaction;
 
 abstract class TopicsAbstract
 {
@@ -81,6 +82,11 @@ abstract class TopicsAbstract
     protected $_invoiceService;
 
     /**
+     * @var Transaction
+     */
+    private $_transaction;
+
+    /**
      * TopicsAbstract constructor.
      * @param ScopeConfigInterface $scopeConfig
      * @param Data $dataHelper
@@ -93,6 +99,7 @@ abstract class TopicsAbstract
      * @param TransactionFactory $transactionFactory
      * @param InvoiceSender $invoiceSender
      * @param InvoiceService $invoiceService
+     * @param Transaction $transaction
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -105,7 +112,8 @@ abstract class TopicsAbstract
         OrderCommentSender $orderCommentSender,
         TransactionFactory $transactionFactory,
         InvoiceSender $invoiceSender,
-        InvoiceService $invoiceService
+        InvoiceService $invoiceService,
+        Transaction $transaction
     ) {
         $this->_dataHelper = $dataHelper;
         $this->_scopeConfig = $scopeConfig;
@@ -118,6 +126,7 @@ abstract class TopicsAbstract
         $this->_transactionFactory = $transactionFactory;
         $this->_invoiceSender = $invoiceSender;
         $this->_invoiceService = $invoiceService;
+        $this->_transaction = $transaction;
     }
 
     /**
@@ -451,6 +460,11 @@ abstract class TopicsAbstract
                 $order->cancel();
             } else {
                 $order->setState($this->_getAssignedState($statusOrder));
+            }
+
+            if ($this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
+                $this->_mpHelper->log('Update Transaction', 'mercadopago-basic.log', $payment, $order, $statusOrder);
+                $this->_transaction->update($payment, $order, $statusOrder);
             }
 
             $order->addStatusToHistory($statusOrder, $message, true);
