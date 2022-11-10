@@ -18,7 +18,7 @@ use MercadoPago\Core\Helper\Data;
  * Class ConfigObserver
  *
  * @package MercadoPago\Core\Observer
- * 
+ *
  * @codeCoverageIgnore
  */
 class ConfigObserver implements ObserverInterface
@@ -198,17 +198,23 @@ class ConfigObserver implements ObserverInterface
 
         $this->coreHelper->log("Valid user test", self::LOG_NAME);
 
+        $publicKey = $this->_scopeConfig->getValue(
+            ConfigData::PATH_PUBLIC_KEY,
+            ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
+
         $accessToken = $this->_scopeConfig->getValue(
             ConfigData::PATH_ACCESS_TOKEN,
             ScopeInterface::SCOPE_WEBSITE,
             $this->_scopeCode
         );
 
-        if (!$accessToken) {
+        if (!$publicKey || !$accessToken) {
             return;
         }
 
-        $mp = $this->coreHelper->getApiInstance($accessToken);
+        $mp = $this->coreHelper->getApiInstance($publicKey, $accessToken);
         $user = $mp->get("/users/me");
         $this->coreHelper->log("API Users response", self::LOG_NAME, $user);
 

@@ -106,11 +106,6 @@ class Data extends \Magento\Payment\Helper\Data
     protected $_api;
 
     /**
-     * @var RestClient $restclient
-     */
-    protected $_restClient;
-
-    /**
      * Data constructor.
      * @param Message\MessageInterface $messageInterface
      * @param Cache $mpCache
@@ -127,7 +122,6 @@ class Data extends \Magento\Payment\Helper\Data
      * @param ComposerInformation $composerInformation
      * @param ResourceInterface $moduleResource
      * @param Api $api
-     * @param RestClient $restclient
      */
     public function __construct(
         Message\MessageInterface $messageInterface,
@@ -144,8 +138,7 @@ class Data extends \Magento\Payment\Helper\Data
         Switcher $switcher,
         ComposerInformation $composerInformation,
         ResourceInterface $moduleResource,
-        Api $api,
-        RestClient $restClient
+        Api $api
     ) {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
@@ -157,7 +150,6 @@ class Data extends \Magento\Payment\Helper\Data
         $this->_composerInformation = $composerInformation;
         $this->_moduleResource = $moduleResource;
         $this->_api = $api;
-        $this->_restClient = $restClient;
     }
 
     /**
@@ -192,21 +184,26 @@ class Data extends \Magento\Payment\Helper\Data
      * @return Api
      * @throws LocalizedException
      */
-    public function getApiInstance($accessToken = null)
+    public function getApiInstance($publicKey = null, $accessToken = null)
     {
-        if (is_null($accessToken)) {
-            throw new LocalizedException(__('The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
+        if (is_null($publicKey) || is_null($accessToken)) {
+            throw new LocalizedException(__('The PUBLIC_KEY or ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
+        }
+
+        if (self::$_instance !== null) {
+            return self::$_instance;
         }
 
         $api = $this->_api;
         $api->set_access_token($accessToken);
+        $api->set_public_key($publicKey);
         $api->set_platform(self::PLATFORM_OPENPLATFORM);
-
         $api->set_type(self::TYPE);
-        RestClient::setModuleVersion((string)$this->getModuleVersion());
-        RestClient::setUrlStore($this->getUrlStore());
-        RestClient::setEmailAdmin($this->scopeConfig->getValue('trans_email/ident_sales/email', ScopeInterface::SCOPE_STORE));
-        RestClient::setCountryInitial($this->getCountryInitial());
+
+        $api->set_module_version((string)$this->getModuleVersion());
+        $api->set_url_store($this->getUrlStore());
+        $api->set_email_admin($this->scopeConfig->getValue('trans_email/ident_sales/email', ScopeInterface::SCOPE_STORE));
+        $api->set_country_initial($this->getCountryInitial());
 
         return $api;
     }
@@ -215,72 +212,28 @@ class Data extends \Magento\Payment\Helper\Data
      * @param $accessToken
      * @return bool
      */
-    public function isValidAccessToken($accessToken)
-    {
-        $cacheToken = Cache::IS_VALID_AT . $accessToken;
-
-        if ($this->_mpCache->getFromCache($cacheToken)) {
-            return true;
-        }
-
-        $response = RestClient::get(self::CREDENTIALS_WRAPPER, null, ['Authorization: Bearer ' . $accessToken]);
-
-        if ((!$response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
-            return false;
-        }
-
-        $this->_mpCache->saveCache($cacheToken, true);
-        return true;
-    }
-
-    /**
-     * @param $accessToken
-     * @return bool
-     */
-    public function isValidPublicKey($publicKey)
+    public function validateCredentials($publicKey, $accessToken)
     {
         $cacheKey = Cache::IS_VALID_PK . $publicKey;
+        $cacheToken = Cache::IS_VALID_AT . $accessToken;
 
-        if ($this->_mpCache->getFromCache($cacheKey)) {
+        if ($this->_mpCache->getFromCache($cacheToken) && $this->_mpCache->getFromCache($cacheKey)) {
             return true;
         }
 
-        $response = RestClient::get(self::CREDENTIALS_WRAPPER . '?public_key=' . $publicKey, null);
+        $api = $this->getApiInstance($publicKey, $accessToken);
 
-        if ((!$response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
-            return false;
+        $keyResponse = $api->validate_public_key($publicKey);
+        $tokenResponse = $api->validade_access_token($accessToken);
+
+        if ($keyResponse['client_id'] !== $tokenResponse['client_id']) {
+            throw new Exception('Invalid credentials');
         }
 
         $this->_mpCache->saveCache($cacheKey, true);
+        $this->_mpCache->saveCache($cacheToken, true);
+
         return true;
-    }
-    /**
-     * @param string $scopeCode
-     * @return bool|mixed
-     */
-    public function getAccessToken($scopeCode = ScopeInterface::SCOPE_STORE)
-    {
-        $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, $scopeCode);
-        if (empty($accessToken)) {
-            return false;
-        }
-
-        return $accessToken;
-    }
-
-    /**
-     * Added
-     * @param string $scopeCode
-     * @return bool|mixed
-     */
-    public function getPublicKey($scopeCode = ScopeInterface::SCOPE_STORE)
-    {
-        $publicKey = $this->scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, $scopeCode);
-        if (empty($publicKey)) {
-            return false;
-        }
-
-        return $publicKey;
     }
 
     /**
@@ -348,10 +301,14 @@ class Data extends \Magento\Payment\Helper\Data
     {
         $this->log('GET /v1/bifrost/payment-methods', 'mercadopago');
 
-        try {
-            $publicKey = $this->getPublicKey();
+        $publicKey = $this->scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
 
-            $payment_methods = $this->_restClient->get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
+        $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
+
+        try {
+            $mp = $this->getApiInstance($publicKey, $accessToken);
+
+            $payment_methods = $mp->get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
 
             $treated_payments_methods = [];
 

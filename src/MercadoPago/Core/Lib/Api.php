@@ -2,12 +2,14 @@
 
 namespace MercadoPago\Core\Lib;
 
+use Exception;
+
 /**
  * MercadoPago Integration Library
  * Access MercadoPago for payments integration
  *
  * @author hcasatti
- * 
+ *
  * @codeCoverageIgnore
  *
  */
@@ -31,6 +33,14 @@ class Api implements ApiInterface
      * @var mixed
      */
     private $ll_access_token;
+    /**
+     * @var mixed
+     */
+    private $ll_public_key;
+    /**
+     * @var Cache
+     */
+    protected $_mpCache;
     /**
      * @var
      */
@@ -88,9 +98,48 @@ class Api implements ApiInterface
         return $this->sandbox;
     }
 
+    public function set_module_version($version)
+    {
+        RestClient::setModuleVersion((string)$version);
+    }
+
+    public function set_url_store($store)
+    {
+        RestClient::setUrlStore($store);
+    }
+
+    public function set_email_admin($email_admin)
+    {
+        RestClient::setEmailAdmin($email_admin);
+    }
+
+    public function set_country_initial($country_initial)
+    {
+        RestClient::setCountryInitial($country_initial);
+    }
+
+    /* **************************************************************************************** */
+
+    /* Credentials */
+
+    /**
+     * @param null $access_token
+     *
+     * @return void
+     */
     public function set_access_token($access_token)
     {
         $this->ll_access_token = $access_token;
+    }
+
+    /**
+     * @param null $public_key
+     *
+     * @return void
+     */
+    public function set_public_key($public_key)
+    {
+        $this->ll_public_key = $public_key;
     }
 
     /**
@@ -121,6 +170,63 @@ class Api implements ApiInterface
 
         return $this->access_data['access_token'];
     }
+
+    /**
+     * Get Public Key for API use
+     *
+     * @return false|mixed
+     * @throws \Exception
+     */
+    public function get_public_key()
+    {
+        if (isset($this->ll_public_key) && !is_null($this->ll_public_key)) {
+            return $this->ll_public_key;
+        }
+
+        $app_client_values = $this->build_query([
+            'client_id' => $this->client_id,
+            'client_secret' => $this->client_secret,
+            'grant_type' => 'client_credentials'
+        ]);
+
+        $access_data = RestClient::post("/oauth/token", $app_client_values, "application/x-www-form-urlencoded");
+
+        if ($access_data["status"] != 200) {
+            throw new \Exception($access_data['response']['message'], $access_data['status']);
+        }
+
+        $this->access_data = $access_data['response'];
+
+        return $this->access_data['public_key'];
+    }
+
+    /**
+     *
+     */
+    public function validate_public_key($public_key)
+    {
+        $response_key = RestClient::get('plugins-credentials-wrapper/credentials?public_key=' . $public_key, null, []);
+        if ((!$response_key) || (isset($response_key['status']) && ($response_key['status'] == 401 || $response_key['status'] == 400))) {
+            return false;
+        }
+        return $response_key;
+    }
+
+    /**
+     *
+     */
+    public function validade_access_token($access_token)
+    {
+        $response_token = RestClient::get('plugins-credentials-wrapper/credentials', null, ['Authorization: Bearer ' . $access_token]);
+        if ((!$response_token)|| (isset($response_token['status']) && ($response_token['status'] == 401 || $response_token['status'] == 400))) {
+            return false;
+        }
+        return $response_token;
+    }
+
+    /* **************************************************************************************** */
+
+    /* Payment & Preference */
 
     /**
      * Get information for specific authorized payment
@@ -264,6 +370,10 @@ class Api implements ApiInterface
         return RestClient::post("/checkout/custom/create_payment", $info, null, ["Authorization: Bearer " . $access_token]);
     }
 
+    /* **************************************************************************************** */
+
+    /* Customer */
+
     /**
      * @param $payer_email
      * @return mixed
@@ -388,6 +498,56 @@ class Api implements ApiInterface
             ["Authorization: Bearer " . $access_token]
         );
     }
+
+    /* **************************************************************************************** */
+
+    /* Payment methods */
+
+    /**
+     *
+     */
+    public function get_payment_methods()
+    {
+        try {
+            $publicKey = $this->get_public_key();
+
+            $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
+
+            $treated_payments_methods = [];
+
+            foreach ($payment_methods['response'] as $payment_method) {
+                if (is_array($payment_method) && isset($payment_method['id']) && !isset($payment_method['payment_places'])) {
+                    $payment_method['payment_places'] = [];
+                }
+                array_push($treated_payments_methods, $payment_method);
+            }
+
+            $payment_methods['response'] = $treated_payments_methods;
+
+            return $payment_methods;
+
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    public function validate_credentials()
+    {
+        $access_token = $this->get_access_token();
+        $public_key = $this->get_public_key();
+
+        $token_response = RestClient::get('/plugins-credentials-wrapper/credentials', null, ['Authorization: Bearer ' . $access_token]);
+        $key_response = RestClient::get('/plugins-credentials-wrapper/credentials?public_key=' . $public_key, null, []);
+
+        if ($token_response['client_id'] !== $key_response['client_id']) {
+            throw new Exception('Invalid credentials');
+        }
+
+        return true;
+
+    }
+
+    /* **************************************************************************************** */
 
     /* Generic resource call methods */
 

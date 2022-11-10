@@ -128,6 +128,7 @@ class Basic extends AbstractMethod
             'sponsor_id' => $this->_scopeConfig->getValue(ConfigData::PATH_SPONSOR_ID, ScopeInterface::SCOPE_STORE),
             'category_id' => $this->_scopeConfig->getValue(ConfigData::PATH_ADVANCED_CATEGORY, ScopeInterface::SCOPE_STORE),
             'country' => $this->_scopeConfig->getValue(ConfigData::PATH_SITE_ID, ScopeInterface::SCOPE_STORE),
+            'public_key' => $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE),
             'access_token' => $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE),
             'binary_mode' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_BINARY_MODE, ScopeInterface::SCOPE_STORE),
             'expiration_time_preference' => $this->_scopeConfig->getValue(ConfigData::PATH_BASIC_EXPIRATION_TIME_PREFERENCE, ScopeInterface::SCOPE_STORE),
@@ -399,7 +400,7 @@ class Basic extends AbstractMethod
     {
         $this->_helperData->log("make array", 'mercadopago-basic.log', $arr);
 
-        $mpApiInstance = $this->_helperData->getApiInstance($config['access_token']);
+        $mpApiInstance = $this->_helperData->getApiInstance($config['public_key'], $config['access_token']);
         $response      = $mpApiInstance->create_preference($arr);
 
         $this->_helperData->log("create preference result", 'mercadopago-basic.log', $response);
@@ -523,7 +524,7 @@ class Basic extends AbstractMethod
 
             $this->_helperData->log("make array", 'mercadopago-basic.log', $arr);
 
-            $mpApiInstance = $this->_helperData->getApiInstance($config['access_token']);
+            $mpApiInstance = $this->_helperData->getApiInstance($config['public_key'], $config['access_token']);
             $response      = $mpApiInstance->create_preference($arr);
 
             $this->_helperData->log("create preference result", 'mercadopago-basic.log', $response);

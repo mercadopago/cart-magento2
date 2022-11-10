@@ -105,6 +105,13 @@ class RefundObserverBeforeSave implements ObserverInterface
             return;
         }
 
+        //Get public key
+        $publicKey = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if (empty($publicKey)) {
+            $this->throwRefundException(__("Refund can not be performed because PUBLIC_KEY has not been configured."));
+            return;
+        }
+
         //Get access token
         $accessToken = $this->scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if (empty($accessToken)) {
@@ -116,7 +123,7 @@ class RefundObserverBeforeSave implements ObserverInterface
         $paymentID = $paymentResponse['id'];
 
         //Get Sdk Instance
-        $mp = $this->dataHelper->getApiInstance($accessToken);
+        $mp = $this->dataHelper->getApiInstance($publicKey, $accessToken);
 
         //Get Payment detail
         $response = $mp->get("/v1/payments/" . $paymentID);

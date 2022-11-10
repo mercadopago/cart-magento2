@@ -684,9 +684,10 @@ class Payment extends Cc implements GatewayInterface
      */
     public function checkAndcreateCard($customer, $token, $payment)
     {
+        $publicKey = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
         $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
 
-        $mp = $this->_helperData->getApiInstance($accessToken);
+        $mp = $this->_helperData->getApiInstance($publicKey, $accessToken);
 
         foreach ($customer['cards'] as $card) {
             if ($card['first_six_digits'] == $payment['card']['first_six_digits']
@@ -738,8 +739,12 @@ class Payment extends Cc implements GatewayInterface
         if (!$this->_accessToken) {
             $this->_accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
         }
+        // get public_key
+        if (!$this->_publicKey) {
+            $this->_publicKey = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
+        }
 
-        $mp = $this->_helperData->getApiInstance($this->_accessToken);
+        $mp = $this->_helperData->getApiInstance($this->_public_key, $this->_accessToken);
 
         $customer = $mp->get('/v1/customers/search', ['email' => $email]);
 
