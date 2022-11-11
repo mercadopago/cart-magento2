@@ -124,9 +124,9 @@ class DataTest extends TestCase
     public function testGetMercadoPagoPaymentMethods_successResponse_returnArrayWithPaymentPlaces(): void
     {
         $this->apiMock->expects($this->once())
-        ->method('get')
-        ->with(PaymentResponseMock::PAYMENT_METHODS_URI)
-        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS);
+        ->method('get_payment_methods')
+        ->with(PaymentResponseMock::KEY_MOCK)
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES);
 
         $this->assertEquals(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES, $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));
     }
@@ -134,8 +134,8 @@ class DataTest extends TestCase
     public function testGetMercadoPagoPaymentMethods_exception_returnEmpty(): void
     {
         $this->apiMock->expects($this->once())
-        ->method('get')
-        ->with(PaymentResponseMock::PAYMENT_METHODS_URI)
+        ->method('get_payment_methods')
+        ->with(PaymentResponseMock::KEY_MOCK)
         ->willReturn(null);
 
         $this->assertEquals([], $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));
