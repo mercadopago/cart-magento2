@@ -312,16 +312,6 @@ class Data extends \Magento\Payment\Helper\Data
 
             $payment_methods = $mp->get_payment_methods($publicKey);
 
-            $treated_payments_methods = [];
-
-            foreach ($payment_methods['response'] as $payment_method) {
-                if (is_array($payment_method) && isset($payment_method['id']) && !isset($payment_method['payment_places'])) {
-                    $payment_method['payment_places'] = [];
-                }
-                array_push($treated_payments_methods, $payment_method);
-            }
-
-            $payment_methods['response'] = $treated_payments_methods;
             return $payment_methods;
         } catch (Exception $e) {
             return [];
