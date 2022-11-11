@@ -744,7 +744,7 @@ class Payment extends Cc implements GatewayInterface
             $this->_publicKey = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
         }
 
-        $mp = $this->_helperData->getApiInstance($this->_public_key, $this->_accessToken);
+        $mp = $this->_helperData->getApiInstance($this->_publicKey, $this->_accessToken);
 
         $customer = $mp->get('/v1/customers/search', ['email' => $email]);
 
