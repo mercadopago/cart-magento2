@@ -128,7 +128,7 @@ class ConfigObserver implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        $this->validateAccessToken();
+        $this->validateCredentials();
         $this->setUserInfo();
         $this->checkBanner('mercadopago_custom');
         $this->checkBanner('mercadopago_customticket');
@@ -215,6 +215,7 @@ class ConfigObserver implements ObserverInterface
         }
 
         $mp = $this->coreHelper->getApiInstance($publicKey, $accessToken);
+
         $user = $mp->get("/users/me");
         $this->coreHelper->log("API Users response", self::LOG_NAME, $user);
 
@@ -253,11 +254,11 @@ class ConfigObserver implements ObserverInterface
     }
 
     /**
-     * Validate current accessToken
+     * Validate current credentials
      *
      * @throws LocalizedException
      */
-    protected function validateAccessToken()
+    protected function validateCredentials()
     {
         $accessToken = $this->_scopeConfig->getValue(
             ConfigData::PATH_ACCESS_TOKEN,
@@ -265,9 +266,15 @@ class ConfigObserver implements ObserverInterface
             $this->_scopeCode
         );
 
-        if (!empty($accessToken)) {
-            if (!$this->coreHelper->isValidAccessToken($accessToken)) {
-                throw new LocalizedException(__('Mercado Pago - Custom Checkout: Invalid access token'));
+        $publicKey = $this->_scopeConfig->getValue(
+            ConfigData::PATH_PUBLIC_KEY,
+            ScopeInterface::SCOPE_WEBSITE,
+            $this->_scopeCode
+        );
+
+        if (!empty($accessToken) && !empty($publicKey)) {
+            if (!$this->coreHelper->validateCredentials($publicKey, $accessToken)) {
+                throw new LocalizedException(__('Mercado Pago - Custom Checkout: Invalid credentials'));
             }
         }
     }

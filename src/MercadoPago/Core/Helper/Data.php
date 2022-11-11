@@ -190,9 +190,9 @@ class Data extends \Magento\Payment\Helper\Data
             throw new LocalizedException(__('The PUBLIC_KEY or ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
         }
 
-        if (self::$_instance !== null) {
-            return self::$_instance;
-        }
+        // if (self::$_instance !== null) {
+        //     return self::$_instance;
+        // }
 
         $api = $this->_api;
         $api->set_access_token($accessToken);
@@ -305,10 +305,12 @@ class Data extends \Magento\Payment\Helper\Data
 
         $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
 
+        if (!$this->validateCredentials($publicKey, $accessToken)) return [];
+
         try {
             $mp = $this->getApiInstance($publicKey, $accessToken);
 
-            $payment_methods = $mp->get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
+            $payment_methods = $mp->get_payment_methods($publicKey);
 
             $treated_payments_methods = [];
 
@@ -320,9 +322,7 @@ class Data extends \Magento\Payment\Helper\Data
             }
 
             $payment_methods['response'] = $treated_payments_methods;
-
             return $payment_methods;
-
         } catch (Exception $e) {
             return [];
         }

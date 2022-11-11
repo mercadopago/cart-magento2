@@ -181,7 +181,6 @@ class Payment extends Fieldset
             $validCheckoutOptions = $this->getAvailableCheckoutOptions();
             $this->cache->saveCache($cacheKey, json_encode($validCheckoutOptions));
         }
-
         $paymentIdWithoutPrefix = implode('_', array_slice(explode('_', $paymentId), 4));
 
         return !in_array($paymentIdWithoutPrefix, $validCheckoutOptions);
@@ -202,7 +201,7 @@ class Payment extends Fieldset
             foreach ($paymentMethods['response'] as $paymentMethod) {
                 switch (strtolower($paymentMethod['payment_type_id'])) {
                     case 'credit_card':
-                    case 'debid_card':
+                    case 'debit_card':
                     case 'prepaid_card':
                         if (!in_array(self::CHECKOUT_CUSTOM_CARD, $availableCheckouts)) {
                             $availableCheckouts[] = self::CHECKOUT_CUSTOM_CARD;

@@ -205,11 +205,11 @@ class Api implements ApiInterface
      */
     public function validate_public_key($public_key)
     {
-        $response_key = RestClient::get('plugins-credentials-wrapper/credentials?public_key=' . $public_key, null, []);
-        if ((!$response_key) || (isset($response_key['status']) && ($response_key['status'] == 401 || $response_key['status'] == 400))) {
+        $key_response = RestClient::get('/plugins-credentials-wrapper/credentials?public_key=' . $public_key, null, []);
+        if ((!$key_response) || (isset($key_response['status']) && ($key_response['status'] == 401 || $key_response['status'] == 400))) {
             return false;
         }
-        return $response_key;
+        return $key_response['response'];
     }
 
     /**
@@ -217,11 +217,11 @@ class Api implements ApiInterface
      */
     public function validade_access_token($access_token)
     {
-        $response_token = RestClient::get('plugins-credentials-wrapper/credentials', null, ['Authorization: Bearer ' . $access_token]);
-        if ((!$response_token)|| (isset($response_token['status']) && ($response_token['status'] == 401 || $response_token['status'] == 400))) {
+        $token_response = RestClient::get('/plugins-credentials-wrapper/credentials', null, ['Authorization: Bearer ' . $access_token]);
+        if ((!$token_response)|| (isset($token_response['status']) && ($token_response['status'] == 401 || $token_response['status'] == 400))) {
             return false;
         }
-        return $response_token;
+        return $token_response['response'];
     }
 
     /* **************************************************************************************** */
@@ -373,7 +373,6 @@ class Api implements ApiInterface
     /* **************************************************************************************** */
 
     /* Customer */
-
     /**
      * @param $payer_email
      * @return mixed
@@ -464,7 +463,7 @@ class Api implements ApiInterface
         $url = "/discount_campaigns?transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code";
         return RestClient::get($url, null, ["Authorization: Bearer " . $access_token]);
     }
-    
+
     /**
      * @param $id
      * @return array
@@ -506,11 +505,9 @@ class Api implements ApiInterface
     /**
      *
      */
-    public function get_payment_methods()
+    public function get_payment_methods($publicKey)
     {
         try {
-            $publicKey = $this->get_public_key();
-
             $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
 
             $treated_payments_methods = [];
@@ -529,22 +526,6 @@ class Api implements ApiInterface
         } catch (Exception $e) {
             return [];
         }
-    }
-
-    public function validate_credentials()
-    {
-        $access_token = $this->get_access_token();
-        $public_key = $this->get_public_key();
-
-        $token_response = RestClient::get('/plugins-credentials-wrapper/credentials', null, ['Authorization: Bearer ' . $access_token]);
-        $key_response = RestClient::get('/plugins-credentials-wrapper/credentials?public_key=' . $public_key, null, []);
-
-        if ($token_response['client_id'] !== $key_response['client_id']) {
-            throw new Exception('Invalid credentials');
-        }
-
-        return true;
-
     }
 
     /* **************************************************************************************** */

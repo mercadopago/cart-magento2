@@ -630,14 +630,14 @@ class Payment extends Cc implements GatewayInterface
             return false;
         }
 
-        $public_key = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
-        if (empty($public_key)) {
+        $publicKey = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
+        if (empty($publicKey)) {
             $this->_helperData->log('CustomPayment::isAvailable - Module not available because public_key has not been configured.');
             return false;
         }
 
-        if (!$this->_helperData->isValidAccessToken($accessToken)) {
-            $this->_helperData->log('CustomPayment::isAvailable - Module not available because access_token is not valid.');
+        if (!$this->_helperData->validateCredentials($publicKey, $accessToken)) {
+            $this->_helperData->log('CustomPayment::isAvailable - Module not available because credentials are not valid.');
             return false;
         }
 

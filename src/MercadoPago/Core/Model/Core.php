@@ -807,15 +807,15 @@ class Core extends \Magento\Payment\Model\Method\AbstractMethod
      */
     protected function getMercadoPagoInstance()
     {
-        if (!$this->_public_key) {
-            $this->_public_key = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if (!$this->_publicKey) {
+            $this->_publicKey = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_PUBLIC_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
         if (!$this->_accessToken) {
             $this->_accessToken = $this->_scopeConfig->getValue(\MercadoPago\Core\Helper\ConfigData::PATH_ACCESS_TOKEN, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
-        return $this->_coreHelper->getApiInstance($this->_public_key, $this->_accessToken);
+        return $this->_coreHelper->getApiInstance($this->_publicKey, $this->_accessToken);
     }
 
     /**
