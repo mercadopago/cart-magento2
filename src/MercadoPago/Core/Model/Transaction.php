@@ -74,19 +74,20 @@ class Transaction
         string $status
     ): void
     {
+        $orderId = $order->getIncrementId();
         try {
             $this->_mercadoPagoData->log('Transaction - Start');
-            $result = $this->getListTransactionByOrderId($order->getIncrementId());
-            $this->_mercadoPagoData->log('Transaction - getListTransactionByOrderId', $order->getIncrementId());
-            $this->_mercadoPagoData->log('Transaction - getListTransactionByOrderId Result', $result);
+            $this->_mercadoPagoData->log('Transaction - getListTransactionByOrderId', 'transaction', $orderId);
+            $result = $this->getListTransactionByOrderId($orderId);
+            $this->_mercadoPagoData->log('Transaction - getListTransactionByOrderId Result', 'transaction', $result);
 
             if (empty($result)){
                 return;
             }
+            $transactionId = reset($result)->getTxnId();
+            $this->_mercadoPagoData->log('Transaction - transactionId', 'transaction', $transactionId);
 
-            $transactionId = $result[0]->getTransactionId();
-            $transactionIdIncrement = $transactionId + "_" + sizeof($result);
-
+            $transactionIdIncrement = $transactionId . "_" . sizeof($result);
             $this->_mercadoPagoData->log("Transaction - transactionId $transactionId - transactionIdIncrement $transactionIdIncrement");
 
             $payment->setTransactionId($transactionIdIncrement);
@@ -100,7 +101,7 @@ class Transaction
                 ->build($this->statusTransform($status));
 
         } catch (\Exception $e) {
-            $this->_mercadoPagoData->log("Failed creating transaction id $transactionId with message {$e->getMessage()}");
+            $this->_mercadoPagoData->log("Failed creating transaction to order $orderId with message {$e->getMessage()}");
         }
     }
 
