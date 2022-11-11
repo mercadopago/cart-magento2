@@ -151,8 +151,8 @@ class Payment extends TopicsAbstract
             $paymentOrder = $order->getPayment();
             $this->_mpHelper->log('Update Transaction Payment', self::LOG_NAME, $paymentOrder);
             $this->_mpHelper->log('Update Transaction Order', self::LOG_NAME, $order->getId());
-            $this->_mpHelper->log('Update Transaction Status', self::LOG_NAME, $newOrderStatus);
-            $this->_transaction->update($paymentOrder, $order, $newOrderStatus);
+            $this->_mpHelper->log('Update Transaction Status', self::LOG_NAME, $payment['status']);
+            $this->_transaction->update($paymentOrder, $order, $payment['status']);
         }
 
         $order = self::setStatusAndComment($order, $newOrderStatus, $message);

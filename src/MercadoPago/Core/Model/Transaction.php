@@ -17,7 +17,16 @@ class Transaction
 {
     public const STATUS_APPROVED = 'approved';
     public const STATUS_PENDING = 'pending';
-    public const STATUS_PROCESSING = 'processing';
+    public const STATUS_IN_PROCESS = 'in_process';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_CHARGED_BACK = 'charged_back';
+    public const STATUS_IN_MEDIATION = 'in_mediation';
+    public const STATUS_REFUNDED = 'refunded';
+    //public const STATUS_PARTIALLY_REFUNDED = 'refunded';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_CANCELED = 'canceled';
+    //public const STATUS_REFUND_AVAILABLE = 'refunded_available';
+    //public const STATUS_CANCEL_AVAILABLE = 'cancel_available';
 
     private Builder $_transactionBuilder;
 
@@ -31,7 +40,8 @@ class Transaction
 
     private SortOrderBuilder $_sortOrderBuilder;
 
-    public function __construct(Builder $transactionBuilder,
+    public function __construct(
+        Builder $transactionBuilder,
         MercadopagoData $mercadoPagoData,
         TransactionRepositoryInterface $transactionRepository,
         FilterBuilder $filterBuilder,
@@ -57,12 +67,11 @@ class Transaction
             $payment->setTransactionId($transactionId);
             $payment->setIsTransactionClosed(false);
 
-           return $this->_transactionBuilder
+            return $this->_transactionBuilder
                 ->setPayment($payment)
                 ->setOrder($order)
                 ->setTransactionId($transactionId)
                 ->build(TransactionInterface::TYPE_ORDER);
-
         } catch (\Exception $e) {
             $this->_mercadoPagoData->log("Failed creating transaction id $transactionId with message {$e->getMessage()}");
         }
@@ -72,8 +81,7 @@ class Transaction
         Payment $payment,
         Order $order,
         string $status
-    ): void
-    {
+    ): void {
         $orderId = $order->getIncrementId();
         try {
             $this->_mercadoPagoData->log('Transaction - Start');
@@ -81,7 +89,7 @@ class Transaction
             $result = $this->getListTransactionByOrderId($orderId);
             $this->_mercadoPagoData->log('Transaction - getListTransactionByOrderId Result', 'transaction', $result);
 
-            if (empty($result)){
+            if (empty($result)) {
                 return;
             }
             $transactionId = reset($result)->getTxnId();
@@ -99,27 +107,26 @@ class Transaction
                 ->setOrder($order)
                 ->setTransactionId($transactionIdIncrement)
                 ->build($this->statusTransform($status));
-
         } catch (\Exception $e) {
             $this->_mercadoPagoData->log("Failed creating transaction to order $orderId with message {$e->getMessage()}");
         }
     }
 
-    public function save($transaction)
-    {
+    public function save(
+        TransactionInterface $transaction
+    ): TransactionInterface {
         return $this->_transactionRepository->save($transaction);
     }
 
     private function statusTransform(string $status): string
     {
-        switch ($status)
-        {
+        switch ($status) {
             case self::STATUS_APPROVED:
                 return TransactionInterface::TYPE_CAPTURE;
-            case self::STATUS_PENDING:
-                return TransactionInterface::TYPE_AUTH;
-            case self::STATUS_PROCESSING:
-                return TransactionInterface::TYPE_AUTH;
+            case (self::STATUS_CANCELLED || self::STATUS_REJECTED || self::STATUS_CANCELED):
+                return TransactionInterface::TYPE_VOID;
+            case (self::STATUS_REFUNDED || self::STATUS_CHARGED_BACK):
+                return TransactionInterface::TYPE_REFUNDED;
             default:
                 return TransactionInterface::TYPE_ORDER;
         }

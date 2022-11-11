@@ -440,7 +440,7 @@ abstract class TopicsAbstract
             $couponMP = $payment['coupon_amount'];
             $paidTotal = $payment['transaction_details']['total_paid_amount'];
 
-            if($couponMP > 0){
+            if ($couponMP > 0) {
                 $paidTotal += $couponMP;
             }
 
@@ -466,8 +466,8 @@ abstract class TopicsAbstract
                 $paymentOrder = $order->getPayment();
                 $this->_mpHelper->log('Update Transaction Payment', 'mercadopago-basic.log', $paymentOrder);
                 $this->_mpHelper->log('Update Transaction Order', 'mercadopago-basic.log', $order);
-                $this->_mpHelper->log('Update Transaction Status', 'mercadopago-basic.log', $statusOrder);
-                $this->_transaction->update($paymentOrder, $order, $statusOrder);
+                $this->_mpHelper->log('Update Transaction Status', 'mercadopago-basic.log', $payment['status']);
+                $this->_transaction->update($paymentOrder, $order, $payment['status']);
             }
 
             $order->addStatusToHistory($statusOrder, $message, true);
