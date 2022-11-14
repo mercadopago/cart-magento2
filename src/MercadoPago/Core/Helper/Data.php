@@ -305,8 +305,6 @@ class Data extends \Magento\Payment\Helper\Data
 
         $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
 
-        if (!$this->validateCredentials($publicKey, $accessToken)) return [];
-
         try {
             $mp = $this->getApiInstance($publicKey, $accessToken);
 

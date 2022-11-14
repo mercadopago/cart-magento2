@@ -130,7 +130,7 @@ class PaymentTest extends TestCase
         $this->coreHelperMock
         ->expects($this->any())
         ->method('getMercadoPagoPaymentMethods')
-        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS);
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES);
 
         $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
 

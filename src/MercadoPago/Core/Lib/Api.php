@@ -503,7 +503,9 @@ class Api implements ApiInterface
     /* Payment methods */
 
     /**
-     *
+     * @param $publicKey
+     * @return array
+     * @throws Exception
      */
     public function get_payment_methods($publicKey)
     {
