@@ -135,13 +135,10 @@ class Transaction
             case self::STATUS_APPROVED:
                 return TransactionInterface::TYPE_CAPTURE;
             case self::STATUS_CANCELLED:
-                return TransactionInterface::TYPE_VOID;
             case self::STATUS_CANCELED:
-                return TransactionInterface::TYPE_VOID;
             case self::STATUS_REJECTED:
                 return TransactionInterface::TYPE_VOID;
             case self::STATUS_REFUNDED:
-                return TransactionInterface::TYPE_REFUND;
             case self::STATUS_CHARGED_BACK:
                 return TransactionInterface::TYPE_REFUND;
             default:
