@@ -90,16 +90,17 @@ class Transaction
 
             $transactionId = reset($result)->getTxnId();
             $transactionIdIncrement = $transactionId . "_" . sizeof($result);
+            $typeStatus = $this->statusTransform($status);
 
             $payment->setTransactionId($transactionIdIncrement);
             $payment->setParentTransactionId($transactionId);
-            $payment->setIsTransactionClosed(true);
+            $payment->setIsTransactionClosed($typeStatus == TransactionInterface::TYPE_ORDER ? false : true);
 
             $this->_transactionBuilder
                 ->setPayment($payment)
                 ->setOrder($order)
                 ->setTransactionId($transactionIdIncrement)
-                ->build($this->statusTransform($status));
+                ->build($typeStatus);
         } catch (\Exception $e) {
             $this->_mercadoPagoData->log("Failed creating transaction to order $orderId with message {$e->getMessage()}");
         }
