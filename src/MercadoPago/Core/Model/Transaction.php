@@ -22,17 +22,35 @@ class Transaction
     public const STATUS_CANCELLED = 'cancelled';
     public const STATUS_CANCELED = 'canceled';
 
-    private Builder $_transactionBuilder;
+    /**
+     * @var Builder
+     */
+    private $_transactionBuilder;
 
-    private MercadopagoData $_mercadoPagoData;
+    /**
+     * @var MercadopagoData
+     */
+    private $_mercadoPagoData;
 
-    private TransactionRepositoryInterface $_transactionRepository;
+    /**
+     * @var TransactionRepositoryInterface
+     */
+    private $_transactionRepository;
 
-    private FilterBuilder $_filterBuilder;
+    /**
+     * @var FilterBuilder
+     */
+    private $_filterBuilder;
 
-    private SearchCriteriaBuilder $_searchCriteriaBuilder;
+    /**
+     * @var SearchCriteriaBuilder
+     */
+    private $_searchCriteriaBuilder;
 
-    private SortOrderBuilder $_sortOrderBuilder;
+    /**
+     * @var SortOrderBuilder
+     */
+    private $_sortOrderBuilder;
 
     public function __construct(
         Builder $transactionBuilder,
