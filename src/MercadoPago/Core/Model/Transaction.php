@@ -17,16 +17,12 @@ class Transaction
 {
     public const STATUS_APPROVED = 'approved';
     public const STATUS_PENDING = 'pending';
-    public const STATUS_IN_PROCESS = 'in_process';
     public const STATUS_REJECTED = 'rejected';
     public const STATUS_CHARGED_BACK = 'charged_back';
-    public const STATUS_IN_MEDIATION = 'in_mediation';
     public const STATUS_REFUNDED = 'refunded';
-    //public const STATUS_PARTIALLY_REFUNDED = 'refunded';
     public const STATUS_CANCELLED = 'cancelled';
     public const STATUS_CANCELED = 'canceled';
-    //public const STATUS_REFUND_AVAILABLE = 'refunded_available';
-    //public const STATUS_CANCEL_AVAILABLE = 'cancel_available';
+
 
     private Builder $_transactionBuilder;
 
@@ -123,10 +119,16 @@ class Transaction
         switch ($status) {
             case self::STATUS_APPROVED:
                 return TransactionInterface::TYPE_CAPTURE;
-            case (self::STATUS_CANCELLED || self::STATUS_REJECTED || self::STATUS_CANCELED):
+            case self::STATUS_CANCELLED:
                 return TransactionInterface::TYPE_VOID;
-            case (self::STATUS_REFUNDED || self::STATUS_CHARGED_BACK):
-                return TransactionInterface::TYPE_REFUNDED;
+            case self::STATUS_CANCELED:
+                return TransactionInterface::TYPE_VOID;
+            case self::STATUS_REJECTED:
+                return TransactionInterface::TYPE_VOID;
+            case self::STATUS_REFUNDED:
+                return TransactionInterface::TYPE_REFUND;
+            case self::STATUS_CHARGED_BACK:
+                return TransactionInterface::TYPE_REFUND;
             default:
                 return TransactionInterface::TYPE_ORDER;
         }
