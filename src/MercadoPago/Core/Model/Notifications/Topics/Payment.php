@@ -149,9 +149,6 @@ class Payment extends TopicsAbstract
 
         if ($this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
             $paymentOrder = $order->getPayment();
-            $this->_mpHelper->log('Update Transaction Payment', self::LOG_NAME, $paymentOrder);
-            $this->_mpHelper->log('Update Transaction Order', self::LOG_NAME, $order->getId());
-            $this->_mpHelper->log('Update Transaction Status', self::LOG_NAME, $payment['status']);
             $this->_transaction->update($paymentOrder, $order, $payment['status']);
         }
 

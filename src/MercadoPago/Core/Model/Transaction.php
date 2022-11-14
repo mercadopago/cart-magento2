@@ -16,13 +16,11 @@ use Magento\Framework\Data\Collection;
 class Transaction
 {
     public const STATUS_APPROVED = 'approved';
-    public const STATUS_PENDING = 'pending';
     public const STATUS_REJECTED = 'rejected';
     public const STATUS_CHARGED_BACK = 'charged_back';
     public const STATUS_REFUNDED = 'refunded';
     public const STATUS_CANCELLED = 'cancelled';
     public const STATUS_CANCELED = 'canceled';
-
 
     private Builder $_transactionBuilder;
 
@@ -60,6 +58,10 @@ class Transaction
     )
     {
         try {
+            $orderId = $order->getIncrementId();
+
+            $this->_mercadoPagoData->log("Create Transaction - Order $orderId");
+
             $payment->setTransactionId($transactionId);
             $payment->setIsTransactionClosed(false);
 
@@ -80,19 +82,14 @@ class Transaction
     ): void {
         $orderId = $order->getIncrementId();
         try {
-            $this->_mercadoPagoData->log('Transaction - Start');
-            $this->_mercadoPagoData->log('Transaction - getListTransactionByOrderId', 'transaction', $orderId);
+            $this->_mercadoPagoData->log("Update Transaction - Order $orderId - Status $status");
             $result = $this->getListTransactionByOrderId($orderId);
-            $this->_mercadoPagoData->log('Transaction - getListTransactionByOrderId Result', 'transaction', $result);
-
             if (empty($result)) {
                 return;
             }
-            $transactionId = reset($result)->getTxnId();
-            $this->_mercadoPagoData->log('Transaction - transactionId', 'transaction', $transactionId);
 
+            $transactionId = reset($result)->getTxnId();
             $transactionIdIncrement = $transactionId . "_" . sizeof($result);
-            $this->_mercadoPagoData->log("Transaction - transactionId $transactionId - transactionIdIncrement $transactionIdIncrement");
 
             $payment->setTransactionId($transactionIdIncrement);
             $payment->setParentTransactionId($transactionId);
@@ -108,9 +105,8 @@ class Transaction
         }
     }
 
-    public function save(
-        TransactionInterface $transaction
-    ): TransactionInterface {
+    public function save(TransactionInterface $transaction): TransactionInterface
+    {
         return $this->_transactionRepository->save($transaction);
     }
 

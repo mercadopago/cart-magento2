@@ -138,7 +138,9 @@ class OrderCancelPlugin
                 if ($response['status'] == 200) {
                     $this->dataHelper->log('OrderCancelPlugin::salesOrderBeforeCancel - Payment canceled', 'mercadopago-custom.log', $response);
                     $this->messageManager->addSuccessMessage('Mercado Pago - ' . __('Payment canceled.'));
-                    $this->transaction->update($this->order->getPayment(), $this->order, $response['response']['status']);
+                    if ($this->scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
+                        $this->transaction->update($this->order->getPayment(), $this->order, $response['response']['status']);
+                    }
                 } else {
                     $this->throwCancelationException(__('Could not cancel the payment because of an error returned by the API Mercado Pago.'), $response);
                     $this->messageManager->addErrorMessage($response['status'] . ' ' . $response['response']['message']);

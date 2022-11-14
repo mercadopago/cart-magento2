@@ -3,6 +3,7 @@
 namespace MercadoPago\Core\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
+use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Model\Transaction;
 
 /**
@@ -156,11 +157,13 @@ class RefundObserverBeforeSave implements ObserverInterface
                     $this->messageManager->addSuccessMessage($successMessageRefund);
                     $this->dataHelper->log("RefundObserverBeforeSave::creditMemoRefundBeforeSave - " . $successMessageRefund, 'mercadopago-custom.log', $responseRefund);
 
-                    $responseUpdate = $mp->get("/v1/payments/" . $paymentID);
-                    if($responseUpdate['response']['status_detail'] == 'partially_refunded'){
-                        $this->transaction->update($paymentOrder, $order, Transaction::STATUS_REFUNDED);
-                    } else {
-                        $this->transaction->update($paymentOrder, $order, $responseUpdate['response']['status']);
+                    if ($this->scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
+                        $responseUpdate = $mp->get("/v1/payments/" . $paymentID);
+                        if ($responseUpdate['response']['status_detail'] == 'partially_refunded') {
+                            $this->transaction->update($paymentOrder, $order, Transaction::STATUS_REFUNDED);
+                        } else {
+                            $this->transaction->update($paymentOrder, $order, $responseUpdate['response']['status']);
+                        }
                     }
 
                 } else {

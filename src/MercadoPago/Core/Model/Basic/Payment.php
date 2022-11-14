@@ -23,8 +23,6 @@ use MercadoPago\Core\Helper\Data as dataHelper;
 use MercadoPago\Core\Model\Preference\Basic;
 use MercadoPago\Core\Model\Transaction;
 
-
-
 /**
  * Class Payment
  *
@@ -53,7 +51,6 @@ class Payment extends AbstractMethod
     protected $_urlBuilder;
 
     protected $_basic;
-
 
     /**
      *  Overrides fields
@@ -105,6 +102,7 @@ class Payment extends AbstractMethod
      * @param ScopeConfigInterface       $scopeConfig
      * @param Logger                     $logger
      * @param Basic                      $basic
+     * @param Transaction                $transaction
      * @param array                      $data
      */
     public function __construct(
@@ -177,7 +175,6 @@ class Payment extends AbstractMethod
                 if ($this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
                     $createTransaction  = $this->_transaction->create($payment, $order, $response['response']['id']);
                     $this->_transaction->save($createTransaction);
-                    $this->_helperData->log('Saved Transaction', 'mercadopago-basic.log');
                 }
             } else {
                 $message = 'Processing error in the payment gateway. Please contact the administrator.';
