@@ -5,6 +5,7 @@ namespace MercadoPago\Core\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Model\Transaction;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Class RefundObserverBeforeSave
