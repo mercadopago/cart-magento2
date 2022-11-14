@@ -79,6 +79,11 @@
     });
   }
 
+  window.mpRemountCardForm = function () {
+    mpRemountCardForm = true;
+    mpCardForm.unmount();
+  }
+
   window.mpDeleteCardForm = function () {
     mpCardForm.unmount()
   }
@@ -200,7 +205,8 @@
   window.fullClearInputs = function () {
     clearInputs()
     document.getElementById('mpCardNumber').value = '';
-    document.getElementById("mpInstallments").value = ''
+    document.getElementById("mpInstallments").value = '';
+    document.getElementById("mpInstallments").innerHTML = '';
   }
 
   window.validateFixedInputs = function () {
