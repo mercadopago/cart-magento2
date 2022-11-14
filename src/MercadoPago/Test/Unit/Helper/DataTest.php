@@ -123,6 +123,7 @@ class DataTest extends TestCase
 
     public function testGetMercadoPagoPaymentMethods_successResponse_returnArrayWithPaymentPlaces(): void
     {
+        /*
         // mock scopeConfig call
         $this->scopeConfigMock->expects->once()
         ->method('getValue')
@@ -134,6 +135,7 @@ class DataTest extends TestCase
         ->with('payment/mercadopago/access_token')
         ->willReturn(PaymentResponseMock::TOKEN_MOCK);
 
+        */
         // mock api call
         $this->apiMock->expects($this->once())
         ->method('get_payment_methods')
