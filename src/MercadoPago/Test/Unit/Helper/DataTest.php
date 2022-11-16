@@ -117,26 +117,23 @@ class DataTest extends TestCase
         $this->composerInformationMock = $arguments['composerInformation'];
         $this->moduleResourceMock = $arguments['moduleResource'];
         $this->apiMock = $arguments['api'];
+        $this->scopeConfigMock = $arguments['scopeConfig'];
 
         $this->data = $objectManagerHelper->getObject($className, $arguments);
     }
 
     public function testGetMercadoPagoPaymentMethods_successResponse_returnArrayWithPaymentPlaces(): void
     {
-        /*
-        // mock scopeConfig call
-        $this->scopeConfigMock->expects->once()
+        $this->scopeConfigMock->expects($this->once())
         ->method('getValue')
         ->with('payment/mercadopago/public_key')
         ->willReturn(PaymentResponseMock::KEY_MOCK);
 
-        $this->scopeConfigMock->expects->once()
+        $this->scopeConfigMock->expects($this->once())
         ->method('getValue')
         ->with('payment/mercadopago/access_token')
         ->willReturn(PaymentResponseMock::TOKEN_MOCK);
 
-        */
-        // mock api call
         $this->apiMock->expects($this->once())
         ->method('get_payment_methods')
         ->with(PaymentResponseMock::KEY_MOCK)

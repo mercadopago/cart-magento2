@@ -5,6 +5,7 @@ namespace MercadoPago\Core\Helper;
 use Exception;
 use Magento\Backend\Block\Store\Switcher;
 use Magento\Framework\App\Config\Initial;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Composer\ComposerInformation;
@@ -20,7 +21,6 @@ use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Lib\Api;
-use MercadoPago\Core\Lib\RestClient;
 use MercadoPago\Core\Logger\Logger;
 
 /**
@@ -106,6 +106,11 @@ class Data extends \Magento\Payment\Helper\Data
     protected $_api;
 
     /**
+     * @var ScopeConfigInterface $scopeConfig
+     */
+    protected $_scopeConfig;
+
+    /**
      * Data constructor.
      * @param Message\MessageInterface $messageInterface
      * @param Cache $mpCache
@@ -122,6 +127,7 @@ class Data extends \Magento\Payment\Helper\Data
      * @param ComposerInformation $composerInformation
      * @param ResourceInterface $moduleResource
      * @param Api $api
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         Message\MessageInterface $messageInterface,
@@ -138,7 +144,8 @@ class Data extends \Magento\Payment\Helper\Data
         Switcher $switcher,
         ComposerInformation $composerInformation,
         ResourceInterface $moduleResource,
-        Api $api
+        Api $api,
+        ScopeConfigInterface $scopeConfig
     ) {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
@@ -150,6 +157,7 @@ class Data extends \Magento\Payment\Helper\Data
         $this->_composerInformation = $composerInformation;
         $this->_moduleResource = $moduleResource;
         $this->_api = $api;
+        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
@@ -161,7 +169,7 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function log($message, $name = "mercadopago", $array = null)
     {
-        $actionLog = $this->scopeConfig->getValue(
+        $actionLog = $this->_scopeConfig->getValue(
             ConfigData::PATH_ADVANCED_LOG,
             ScopeInterface::SCOPE_STORE
         );
@@ -202,7 +210,7 @@ class Data extends \Magento\Payment\Helper\Data
 
         $api->set_module_version((string)$this->getModuleVersion());
         $api->set_url_store($this->getUrlStore());
-        $api->set_email_admin($this->scopeConfig->getValue('trans_email/ident_sales/email', ScopeInterface::SCOPE_STORE));
+        $api->set_email_admin($this->_scopeConfig->getValue('trans_email/ident_sales/email', ScopeInterface::SCOPE_STORE));
         $api->set_country_initial($this->getCountryInitial());
 
         return $api;
@@ -301,9 +309,9 @@ class Data extends \Magento\Payment\Helper\Data
     {
         $this->log('GET /v1/bifrost/payment-methods', 'mercadopago');
 
-        $publicKey = $this->scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
+        $publicKey = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
 
-        $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
+        $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
 
         try {
             $mp = $this->getApiInstance($publicKey, $accessToken);
