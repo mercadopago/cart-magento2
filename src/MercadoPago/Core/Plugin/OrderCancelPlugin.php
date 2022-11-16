@@ -12,6 +12,7 @@ use Magento\Sales\Model\Order;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data;
+use MercadoPago\Core\Model\Transaction;
 
 /**
  * Class OrderCancelPlugin
@@ -39,19 +40,27 @@ class OrderCancelPlugin
     protected $scopeConfig;
 
     /**
+     * @var Transaction
+     */
+    protected $transaction;
+
+    /**
      * OrderCancelPlugin constructor.
      * @param Context $context
      * @param Data $dataHelper
      * @param ScopeConfigInterface $scopeConfig
+     * @param Transaction $transaction
      */
     public function __construct(
         Context $context,
         Data $dataHelper,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        Transaction $transaction
     ) {
         $this->messageManager = $context->getMessageManager();
         $this->dataHelper     = $dataHelper;
         $this->scopeConfig    = $scopeConfig;
+        $this->transaction    = $transaction;
     } //end __construct()
 
     /**
@@ -129,6 +138,9 @@ class OrderCancelPlugin
                 if ($response['status'] == 200) {
                     $this->dataHelper->log('OrderCancelPlugin::salesOrderBeforeCancel - Payment canceled', 'mercadopago-custom.log', $response);
                     $this->messageManager->addSuccessMessage('Mercado Pago - ' . __('Payment canceled.'));
+                    if ($this->scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
+                        $this->transaction->update($this->order->getPayment(), $this->order, $response['response']['status']);
+                    }
                 } else {
                     $this->throwCancelationException(__('Could not cancel the payment because of an error returned by the API Mercado Pago.'), $response);
                     $this->messageManager->addErrorMessage($response['status'] . ' ' . $response['response']['message']);
