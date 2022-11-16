@@ -21,6 +21,7 @@ use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\ConfigData;
 use MercadoPago\Core\Helper\Data as dataHelper;
 use MercadoPago\Core\Model\Preference\Basic;
+use MercadoPago\Core\Model\Transaction;
 
 /**
  * Class Payment
@@ -82,6 +83,7 @@ class Payment extends AbstractMethod
 
     protected $_isInitializeNeeded = true;
 
+    private $_transaction;
 
     /**
      * Payment constructor.
@@ -100,6 +102,7 @@ class Payment extends AbstractMethod
      * @param ScopeConfigInterface       $scopeConfig
      * @param Logger                     $logger
      * @param Basic                      $basic
+     * @param Transaction                $transaction
      * @param array                      $data
      */
     public function __construct(
@@ -117,6 +120,7 @@ class Payment extends AbstractMethod
         ScopeConfigInterface $scopeConfig,
         Logger $logger,
         Basic $basic,
+        Transaction $transaction,
         array $data=[]
     ) {
         parent::__construct(
@@ -140,6 +144,7 @@ class Payment extends AbstractMethod
         $this->_urlBuilder      = $urlBuilder;
         $this->_scopeConfig     = $scopeConfig;
         $this->_basic           = $basic;
+        $this->_transaction     = $transaction;
 
     }//end __construct()
 
@@ -163,6 +168,14 @@ class Payment extends AbstractMethod
                     'status'     => 201,
                 ];
                 $this->_helperData->log('Array preference ok', 'mercadopago-basic.log');
+
+                $order              = $this->_orderFactory->create()->loadByIncrementId($response['response']['external_reference']);
+                $payment            = $order->getPayment();
+
+                if ($this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
+                    $createTransaction  = $this->_transaction->create($payment, $order, $response['response']['id']);
+                    $this->_transaction->save($createTransaction);
+                }
             } else {
                 $message = 'Processing error in the payment gateway. Please contact the administrator.';
                 if ($response['status'] == 500) {
