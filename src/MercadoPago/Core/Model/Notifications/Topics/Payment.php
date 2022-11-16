@@ -20,6 +20,7 @@ use MercadoPago\Core\Helper\Response;
 use MercadoPago\Core\Helper\Round;
 use MercadoPago\Core\Lib\RestClient;
 use MercadoPago\Core\Model\Core;
+use MercadoPago\Core\Model\Transaction;
 
 class Payment extends TopicsAbstract
 {
@@ -46,6 +47,11 @@ class Payment extends TopicsAbstract
     protected $_coreModel;
 
     /**
+     * @var Transaction
+     */
+    protected $_transaction;
+
+    /**
      * Payment constructor.
      *
      * @param mpHelper $mpHelper
@@ -60,6 +66,7 @@ class Payment extends TopicsAbstract
      * @param TransactionFactory $transactionFactory
      * @param InvoiceSender $invoiceSender
      * @param InvoiceService $invoiceService
+     * @param Transaction $transaction
      */
     public function __construct(
         mpHelper             $mpHelper,
@@ -73,14 +80,16 @@ class Payment extends TopicsAbstract
         OrderCommentSender   $orderCommentSender,
         TransactionFactory   $transactionFactory,
         InvoiceSender        $invoiceSender,
-        InvoiceService       $invoiceService
+        InvoiceService       $invoiceService,
+        Transaction          $transaction
     )
     {
         $this->_mpHelper = $mpHelper;
         $this->_scopeConfig = $scopeConfig;
         $this->_coreModel = $coreModel;
+        $this->_transaction = $transaction;
 
-        parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService);
+        parent::__construct($scopeConfig, $mpHelper, $orderFactory, $creditmemoFactory, $messageInterface, $statusFactory, $orderSender, $orderCommentSender, $transactionFactory, $invoiceSender, $invoiceService, $transaction);
     } //end __construct()
 
     /**
@@ -136,6 +145,11 @@ class Payment extends TopicsAbstract
                     'new_order_status' => $newOrderStatus,
                 ],
             ];
+        }
+
+        if ($this->_scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
+            $paymentOrder = $order->getPayment();
+            $this->_transaction->update($paymentOrder, $order, $payment['status']);
         }
 
         $order = self::setStatusAndComment($order, $newOrderStatus, $message);

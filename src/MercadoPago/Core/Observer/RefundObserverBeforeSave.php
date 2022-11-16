@@ -3,6 +3,9 @@
 namespace MercadoPago\Core\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
+use MercadoPago\Core\Helper\ConfigData;
+use MercadoPago\Core\Model\Transaction;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Class RefundObserverBeforeSave
@@ -34,6 +37,10 @@ class RefundObserverBeforeSave implements ObserverInterface
      */
     protected $dataHelper;
 
+    /**
+     * @var Transaction
+     */
+    protected $transaction;
 
     /**
      * RefundObserverBeforeSave constructor.
@@ -42,17 +49,20 @@ class RefundObserverBeforeSave implements ObserverInterface
      * @param \Magento\Framework\App\Action\Context $context
      * @param \MercadoPago\Core\Helper\Data $dataHelper
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \MercadoPago\Core\Model\Transaction $transaction
      */
     public function __construct(
         \Magento\Backend\Model\Session $session,
         \Magento\Framework\App\Action\Context $context,
         \MercadoPago\Core\Helper\Data $dataHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \MercadoPago\Core\Model\Transaction $transaction
     ) {
         $this->session = $session;
         $this->messageManager = $context->getMessageManager();
         $this->dataHelper = $dataHelper;
         $this->scopeConfig = $scopeConfig;
+        $this->transaction = $transaction;
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
@@ -147,6 +157,16 @@ class RefundObserverBeforeSave implements ObserverInterface
                     $successMessageRefund = "Mercado Pago - " . __('Refund of %1 was processed successfully.', $amountRefund);
                     $this->messageManager->addSuccessMessage($successMessageRefund);
                     $this->dataHelper->log("RefundObserverBeforeSave::creditMemoRefundBeforeSave - " . $successMessageRefund, 'mercadopago-custom.log', $responseRefund);
+
+                    if ($this->scopeConfig->isSetFlag(ConfigData::PATH_ADVANCED_SAVE_TRANSACTION, ScopeInterface::SCOPE_STORE)) {
+                        $responseUpdate = $mp->get("/v1/payments/" . $paymentID);
+                        if ($responseUpdate['response']['status_detail'] == 'partially_refunded') {
+                            $this->transaction->update($paymentOrder, $order, Transaction::STATUS_REFUNDED);
+                        } else {
+                            $this->transaction->update($paymentOrder, $order, $responseUpdate['response']['status']);
+                        }
+                    }
+
                 } else {
                     $this->throwRefundException(__("Could not process the refund, The Mercado Pago API returned an unexpected error. Check the log files."), $responseRefund);
                 }
