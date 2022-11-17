@@ -75,6 +75,7 @@
                 <financing_cost>0</financing_cost>
                 <consider_discount>0</consider_discount>
                 <integrator_id></integrator_id>
+                <save_transaction>0</save_transaction>
                 <email_order_create>1</email_order_create>
                 <email_order_update>pending,approved,in_process,in_mediation,rejected,cancelled,refunded,charged_back
                 </email_order_update>
