@@ -505,7 +505,6 @@ class Api implements ApiInterface
     /**
      * @param $publicKey
      * @return array
-     * @throws Exception
      */
     public function get_payment_methods($publicKey)
     {
@@ -525,7 +524,7 @@ class Api implements ApiInterface
 
             return $payment_methods;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e){
             return [];
         }
     }

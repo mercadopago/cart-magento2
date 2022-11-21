@@ -198,10 +198,6 @@ class Data extends \Magento\Payment\Helper\Data
             throw new LocalizedException(__('The PUBLIC_KEY or ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
         }
 
-        // if (self::$_instance !== null) {
-        //     return self::$_instance;
-        // }
-
         $api = $this->_api;
         $api->set_access_token($accessToken);
         $api->set_public_key($publicKey);
@@ -234,8 +230,9 @@ class Data extends \Magento\Payment\Helper\Data
         $keyResponse = $api->validate_public_key($publicKey);
         $tokenResponse = $api->validade_access_token($accessToken);
 
-        if ($keyResponse['client_id'] !== $tokenResponse['client_id']) {
-            throw new Exception('Invalid credentials');
+        if (!$keyResponse || !$tokenResponse || ($keyResponse['client_id'] !== $tokenResponse['client_id'])) {
+            $this->log('Invalid credential pair');
+            return false;
         }
 
         $this->_mpCache->saveCache($cacheKey, true);
@@ -301,8 +298,6 @@ class Data extends \Magento\Payment\Helper\Data
     /**
      * return the list of payment methods or false
      *
-     * @param mixed|null $accessToken
-     *
      * @return array
      */
     public function getMercadoPagoPaymentMethods()
@@ -313,15 +308,19 @@ class Data extends \Magento\Payment\Helper\Data
 
         $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
 
+        if (!$this->validateCredentials($publicKey, $accessToken)) {
+            return [];
+        }
+
         try {
             $mp = $this->getApiInstance($publicKey, $accessToken);
 
             $payment_methods = $mp->get_payment_methods($publicKey);
-
-            return $payment_methods;
         } catch (Exception $e) {
             return [];
         }
+
+        return $payment_methods;
     }
 
     /**
