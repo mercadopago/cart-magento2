@@ -94,6 +94,11 @@ class DataTest extends TestCase
     private $apiMock;
 
     /**
+     * @var MockObject
+     */
+    private $scopeConfigMock;
+
+    /**
      * @inheritdoc
      */
     protected function setUp(): void
@@ -144,6 +149,16 @@ class DataTest extends TestCase
 
     public function testGetMercadoPagoPaymentMethods_exception_returnEmpty(): void
     {
+        $this->scopeConfigMock->expects($this->once())
+        ->method('getValue')
+        ->with('payment/mercadopago/public_key')
+        ->willReturn(PaymentResponseMock::KEY_MOCK);
+
+        $this->scopeConfigMock->expects($this->once())
+        ->method('getValue')
+        ->with('payment/mercadopago/access_token')
+        ->willReturn(PaymentResponseMock::TOKEN_MOCK);
+
         $this->apiMock->expects($this->once())
         ->method('get_payment_methods')
         ->with(PaymentResponseMock::KEY_MOCK)
