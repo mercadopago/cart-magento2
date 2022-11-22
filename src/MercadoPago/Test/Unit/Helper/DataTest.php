@@ -131,13 +131,12 @@ class DataTest extends TestCase
     {
         $this->scopeConfigMock->expects($this->once())
         ->method('getValue')
-        ->with('payment/mercadopago/public_key')
-        ->willReturn(PaymentResponseMock::KEY_MOCK);
-
-        $this->scopeConfigMock->expects($this->once())
-        ->method('getValue')
-        ->with('payment/mercadopago/access_token')
-        ->willReturn(PaymentResponseMock::TOKEN_MOCK);
+        ->with(
+            $this->returnValueMap([
+                ["payment/mercadopago/public_key", PaymentResponseMock::KEY_MOCK],
+                ["payment/mercadopago/access_token", PaymentResponseMock::TOKEN_MOCK]
+            ])
+        );
 
         $this->apiMock->expects($this->once())
         ->method('get_payment_methods')
@@ -151,13 +150,12 @@ class DataTest extends TestCase
     {
         $this->scopeConfigMock->expects($this->once())
         ->method('getValue')
-        ->with('payment/mercadopago/public_key')
-        ->willReturn(PaymentResponseMock::KEY_MOCK);
-
-        $this->scopeConfigMock->expects($this->once())
-        ->method('getValue')
-        ->with('payment/mercadopago/access_token')
-        ->willReturn(PaymentResponseMock::TOKEN_MOCK);
+        ->with(
+            $this->returnValueMap([
+                ["payment/mercadopago/public_key", PaymentResponseMock::KEY_MOCK],
+                ["payment/mercadopago/access_token", PaymentResponseMock::TOKEN_MOCK]
+            ])
+        );
 
         $this->apiMock->expects($this->once())
         ->method('get_payment_methods')
