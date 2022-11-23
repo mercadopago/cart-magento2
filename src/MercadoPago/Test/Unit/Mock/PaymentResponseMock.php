@@ -1062,19 +1062,13 @@ class PaymentResponseMock
   ];
 
   public const KEY_RESPONSE_MOCK = [
-    'response' => [
-        'is_test' => true,
-        'client_id' => 0000000000001,
-    ],
-    'status' => 200,
+    'is_test' => true,
+    'client_id' => 0000000000001,
   ];
 
   public const TOKEN_RESPONSE_MOCK = [
-    'response' => [
-        'homologated' => false,
-        'is_test' => true,
-        'client_id' => 0000000000001,
-    ],
-    'status' => 200,
+    'homologated' => false,
+    'is_test' => true,
+    'client_id' => 0000000000001,
   ];
 }
