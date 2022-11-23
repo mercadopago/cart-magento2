@@ -43,7 +43,7 @@ abstract class PaymentMethodsAbstract implements \Magento\Framework\Option\Array
         try {
             $response = $this->coreHelper->getMercadoPagoPaymentMethods();
 
-            if ($response['status'] > 201) {
+            if (!isset($response['status']) || $response['status'] > 201) {
                 return ['methods' => $methods];
             }
 
