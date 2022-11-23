@@ -172,7 +172,7 @@ class DataTest extends TestCase
         $this->apiMock->expects($this->any())
         ->method('get_payment_methods')
         ->with(PaymentResponseMock::KEY_MOCK)
-        ->willReturn(null);
+        ->willReturn([]);
 
         $this->assertEquals([], $this->data->getMercadoPagoPaymentMethods());
     }
