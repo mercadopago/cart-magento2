@@ -129,12 +129,22 @@ class DataTest extends TestCase
 
     public function testGetMercadoPagoPaymentMethods_successResponse_returnArrayWithPaymentPlaces(): void
     {
-        $this->scopeConfigMock->expects($this->atLeast(2))
+        $this->scopeConfigMock->expects($this->any())
         ->method('getValue')
         ->withConsecutive(['payment/mercadopago/public_key'], ['payment/mercadopago/access_token'])
         ->willReturnOnConsecutiveCalls(PaymentResponseMock::KEY_MOCK, PaymentResponseMock::TOKEN_MOCK);
 
-        $this->apiMock->expects($this->once())
+        $this->apiMock->expects($this->any())
+        ->method('validate_public_key')
+        ->with(PaymentResponseMock::KEY_RESPONSE_MOCK)
+        ->willReturn();
+
+        $this->apiMock->expects($this->any())
+        ->method('validade_access_token')
+        ->with(PaymentResponseMock::TOKEN_RESPONSE_MOCK)
+        ->willReturn();
+
+        $this->apiMock->expects($this->any())
         ->method('get_payment_methods')
         ->with(PaymentResponseMock::KEY_MOCK)
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES);
@@ -144,12 +154,22 @@ class DataTest extends TestCase
 
     public function testGetMercadoPagoPaymentMethods_exception_returnEmpty(): void
     {
-        $this->scopeConfigMock->expects($this->atLeast(2))
+        $this->scopeConfigMock->expects($this->any())
         ->method('getValue')
         ->withConsecutive(['payment/mercadopago/public_key'], ['payment/mercadopago/access_token'])
         ->willReturnOnConsecutiveCalls(PaymentResponseMock::KEY_MOCK, PaymentResponseMock::TOKEN_MOCK);
 
-        $this->apiMock->expects($this->once())
+        $this->apiMock->expects($this->any())
+        ->method('validate_public_key')
+        ->with(PaymentResponseMock::KEY_RESPONSE_MOCK)
+        ->willReturn();
+
+        $this->apiMock->expects($this->any())
+        ->method('validade_access_token')
+        ->with(PaymentResponseMock::TOKEN_RESPONSE_MOCK)
+        ->willReturn();
+
+        $this->apiMock->expects($this->any())
         ->method('get_payment_methods')
         ->with(PaymentResponseMock::KEY_MOCK)
         ->willReturn(null);
