@@ -161,13 +161,13 @@ class DataTest extends TestCase
 
         $this->apiMock->expects($this->any())
         ->method('validate_public_key')
-        ->with(PaymentResponseMock::KEY_RESPONSE_MOCK)
-        ->willReturn();
+        ->with(PaymentResponseMock::KEY_MOCK)
+        ->willReturn(PaymentResponseMock::KEY_RESPONSE_MOCK);
 
         $this->apiMock->expects($this->any())
         ->method('validade_access_token')
-        ->with(PaymentResponseMock::TOKEN_RESPONSE_MOCK)
-        ->willReturn();
+        ->with(PaymentResponseMock::TOKEN_MOCK)
+        ->willReturn(PaymentResponseMock::TOKEN_RESPONSE_MOCK);
 
         $this->apiMock->expects($this->any())
         ->method('get_payment_methods')
