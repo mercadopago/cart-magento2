@@ -122,10 +122,6 @@ class PaymentTest extends TestCase
     }
 
     public function testGetAvailableCheckoutsOptions_success_returnOptions(): void {
-        // $this->coreHelperMock
-        // ->expects($this->any())
-        // ->method('getPublicKey')
-        // ->willReturn('public_key');
 
         $this->coreHelperMock
         ->expects($this->any())
@@ -138,10 +134,6 @@ class PaymentTest extends TestCase
     }
 
     public function testGetAvailableCheckoutsOptions_success_returnOptionsWithPix(): void {
-        // $this->coreHelperMock
-        // ->expects($this->any())
-        // ->method('getPublicKey')
-        // ->willReturn('public_key');
 
         $this->coreHelperMock
         ->expects($this->any())
@@ -154,10 +146,6 @@ class PaymentTest extends TestCase
     }
 
     public function testGetAvailableCheckoutsOptions_failure_returnEmpty(): void {
-        // $this->coreHelperMock
-        // ->expects($this->any())
-        // ->method('getPublicKey')
-        // ->willReturn('public_key');
 
         $this->coreHelperMock
         ->expects($this->any())
@@ -170,10 +158,6 @@ class PaymentTest extends TestCase
     }
 
     public function testGetAvailableCheckoutsOptions_exception_returnEmpty(): void {
-        // $this->coreHelperMock
-        // ->expects($this->any())
-        // ->method('getPublicKey')
-        // ->willReturn('public_key');
 
         $this->coreHelperMock
         ->expects($this->any())

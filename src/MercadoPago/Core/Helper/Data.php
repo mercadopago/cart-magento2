@@ -302,8 +302,6 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function getMercadoPagoPaymentMethods()
     {
-        // $this->log('GET /v1/bifrost/payment-methods', 'mercadopago');
-
         $publicKey = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
 
         $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
