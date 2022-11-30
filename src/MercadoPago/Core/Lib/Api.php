@@ -172,35 +172,6 @@ class Api implements ApiInterface
     }
 
     /**
-     * Get Public Key for API use
-     *
-     * @return false|mixed
-     * @throws \Exception
-     */
-    public function get_public_key()
-    {
-        if (isset($this->ll_public_key) && !is_null($this->ll_public_key)) {
-            return $this->ll_public_key;
-        }
-
-        $app_client_values = $this->build_query([
-            'client_id' => $this->client_id,
-            'client_secret' => $this->client_secret,
-            'grant_type' => 'client_credentials'
-        ]);
-
-        $access_data = RestClient::post("/oauth/token", $app_client_values, "application/x-www-form-urlencoded");
-
-        if ($access_data["status"] != 200) {
-            throw new \Exception($access_data['response']['message'], $access_data['status']);
-        }
-
-        $this->access_data = $access_data['response'];
-
-        return $this->access_data['public_key'];
-    }
-
-    /**
      *
      */
     public function validate_public_key($public_key)
