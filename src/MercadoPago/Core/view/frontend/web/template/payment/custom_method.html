@@ -1,4 +1,19 @@
 <div class="payment-method" data-bind="css: { '_active': (getCode() == isChecked()) }">
+    <style>
+        #form-checkout {
+          display: flex;
+          flex-direction: column;
+          max-width: 600px;
+        }
+
+        .container {
+          height: 18px;
+          display: inline-block;
+          border: 1px solid rgb(118, 118, 118);
+          border-radius: 2px;
+          padding: 1px 2px;
+        }
+      </style>
     <div class="payment-method-title field choice">
         <input
             type="radio"
@@ -96,16 +111,7 @@
                         <!-- ko i18n: 'Card number'--><!-- /ko -->
                         <em>*</em>
                     </label>
-                    <input
-                        type="text"
-                        id="mpCardNumber"
-                        data-checkout="mpCardNumber"
-                        autocomplete="off"
-                        maxlength="24"
-                        minlength="13"
-                        onkeyup="maskInput(this, mcc)"
-                    />
-
+                    <div id="mpCardNumber"></div>
                     <small id="mp-error-205" class="mp-form-error" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
                     <small id="mp-error-E301" class="mp-form-error mp-error-E301" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
 
@@ -138,17 +144,7 @@
                             <!-- ko i18n: 'Expiration date'--><!-- /ko -->
                             <em>*</em>
                         </label>
-                        <input
-                            type="text"
-                            id="mpCardExpirationDate"
-                            data-checkout="mpCardExpirationDate"
-                            autocomplete="off"
-                            minlength="7"
-                            maxlength="7"
-                            placeholder="MM/AAAA"
-                            style="width: 95%;"
-                            onkeyup="maskInput(this, mdate)"
-                        />
+                        <div id="mpCardExpirationDate" class="container"></div>
 
                         <small id="mp-error-208" class="mp-form-error" data-main="#mpCardExpirationDate"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
                         <small id="mp-error-325" class="mp-form-error" data-main="#mpCardExpirationDate"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
@@ -163,21 +159,9 @@
                             <!-- ko i18n: 'Security code'--><!-- /ko -->
                             <em>*</em>
                         </label>
-                        <input
-                            type="text"
+                        <div
                             id="mpSecurityCode"
-                            data-checkout="mpSecurityCode"
-                            autocomplete="off"
-                            minlength="3"
-                            maxlength="4"
-                            onkeyup="maskInput(this, minteger);"
-                        />
-                        <small class="mp-box-inputs mp-pl-2">
-                            <!-- ko i18n: 'The last 3 digits in the back of the card'--><!-- /ko -->
-                        </small>
-
-                        <small id="mp-error-224" class="mp-form-error mp-pt-0" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
-                        <small id="mp-error-E302" class="mp-form-error mp-pt-0" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid security code'--><!-- /ko --></small>
+                        ></div>
                     </div>
                 </div>
 
@@ -224,7 +208,7 @@
                     <label for="mpInstallments">
                         <!-- ko i18n: 'Installments'--><!-- /ko -->
                     </label>
-                    <select id="mpInstallments" data-checkout="mpInstallments" name="mercadopago_custom[installments]"></select>
+                    <select id="mpInstallments" ></select>
                     <small id="id-installments-status" class="mp-form-error"></small>
                 </div>
 
@@ -257,10 +241,10 @@
                 <!--/ko-->
             </div>
 
-            <div>
-                <input id="mpCardExpirationMonth" type="hidden" />
-                <input id="mpCardExpirationYear" type="hidden" />
-            </div>
+            <!-- <div>
+                <div id="mpCardExpirationMonth" type="hidden" /></div>
+                <div id="mpCardExpirationYear" type="hidden" /></div>
+            </div> -->
 
             <div class="wb-cho-button-frame"></div>
         </form>
