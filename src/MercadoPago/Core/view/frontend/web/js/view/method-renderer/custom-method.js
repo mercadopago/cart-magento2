@@ -48,8 +48,6 @@ define(
       initApp: function () {
         if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           quote.totals.subscribe(this.totalsObserver.bind(this));
-          setChangeEventOnCardNumber();
-          setChangeEventExpirationDate();
           initCardForm(
             this.getPublicKey(),
             quote,
@@ -63,6 +61,7 @@ define(
       totalsObserver: function() {
         if (quote.totals().base_grand_total !== this.priceOnSelect) {
           this.priceOnSelect = quote.totals().base_grand_total;
+          console.log('observer')
           mpRemountCardForm();
         }
       },
@@ -282,7 +281,7 @@ define(
           'method': this.item.method,
           'additional_data': {
             'payment[method]': this.getCode(),
-            'card_expiration_month': document.getElementById('mpCardExpirationDate').value,
+            // 'card_expiration_month': document.getElementById('mpCardExpirationDate').value,
             // 'card_expiration_month': document.getElementById('mpCardExpirationMonth').value,
             // 'card_expiration_year': document.getElementById('mpCardExpirationYear').value,
             'card_holder_name': document.getElementById('mpCardholderName').value,

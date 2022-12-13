@@ -1,18 +1,5 @@
 <div class="payment-method" data-bind="css: { '_active': (getCode() == isChecked()) }">
     <style>
-
-        .container {
-            width: 100%;
-    background-color: #fff;
-    border: 1px solid #cecece;
-    padding: 5px;
-    border-radius: 3px;
-    color: #666;
-    height: 32px;
-    margin-top: 0;
-    max-width: unset;
-    box-sizing: border-box;
-        }
       </style>
     <div class="payment-method-title field choice">
         <input
@@ -116,7 +103,6 @@
                     data-checkout="mpCardNumber"
                     ></div>
                     <small id="invalid_type_cardNumber" class="mp-form-error" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
-                    <small id="invalid_length_cardNumber" class="mp-form-error mp-error-E301" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
 
                     <div class="mp-payment-methods-container" data-bind="foreach: getPaymentMethods()">
                         <div class="mp-payment-method-logo-container">
@@ -169,7 +155,6 @@
                             data-checkout="mpSecurityCode"
                         ></div>
                         <small id="invalid_type_securityCode" class="mp-form-error" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid card expiration date'--><!-- /ko --></small>
-
                     </div>
                 </div>
 
@@ -197,6 +182,7 @@
                         />
 
                         <small id="invalid_length_securityCode" class="mp-form-error" data-main="#mpDocNumber"><!-- ko i18n: 'Invalid document number'--><!-- /ko --></small>
+
                     </div>
                 </div>
 
@@ -248,12 +234,6 @@
                     <!-- ko template: getTemplate() --><!-- /ko -->
                 <!--/ko-->
             </div>
-
-            <!-- <div>
-                <div id="mpCardExpirationMonth" type="number" ></div>
-                <div id="mpCardExpirationYear"  type="number"></div>
-            </div> -->
-
             <div class="wb-cho-button-frame"></div>
         </form>
 
