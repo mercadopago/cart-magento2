@@ -103,6 +103,7 @@
                     data-checkout="mpCardNumber"
                     ></div>
                     <small id="invalid_type_cardNumber" class="mp-form-error" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
+                    <small id="invalid_length_cardNumber" class="mp-form-error" data-main="#mpCardNumber"><!-- ko i18n: 'Invalid card number'--><!-- /ko --></small>
 
                     <div class="mp-payment-methods-container" data-bind="foreach: getPaymentMethods()">
                         <div class="mp-payment-method-logo-container">
@@ -137,11 +138,13 @@
                             id="mpCardExpirationDate"
                             class="container"
                             data-checkout="mpCardExpirationDate"
+                            style="width: 95%;"
                         ></div>
 
                         <small id="invalid_type_expirationDate_expirationMonth" class="mp-form-error" data-main="#mpCardExpirationDate"><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
                         <small id="invalid_length_expirationDate_expirationYear" class="mp-form-error" data-main=#mpCardExpirationDate><!-- ko i18n: 'Invalid card expiration month'--><!-- /ko --></small>
                         <small id="invalid_type_expirationDate_expirationYear" class="mp-form-error" data-main=#mpCardExpirationDate><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
+                        <small id="invalid_value_expirationDate_expirationYear" class="mp-form-error" data-main=#mpCardExpirationDate><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
                     </div>
 
                     <div class="mp-box-inputs mp-col-50 mp-display-flex">
@@ -155,6 +158,8 @@
                             data-checkout="mpSecurityCode"
                         ></div>
                         <small id="invalid_type_securityCode" class="mp-form-error" data-main="#mpSecurityCode"><!-- ko i18n: 'Invalid card expiration date'--><!-- /ko --></small>
+                        <small id="invalid_length_securityCode" class="mp-form-error" data-main=#mpCardExpirationDate><!-- ko i18n: 'Invalid card expiration year'--><!-- /ko --></small>
+
                     </div>
                 </div>
 
@@ -181,7 +186,7 @@
                             onkeyup="maskInput(this, mintegerletter);"
                         />
 
-                        <small id="invalid_length_securityCode" class="mp-form-error" data-main="#mpDocNumber"><!-- ko i18n: 'Invalid document number'--><!-- /ko --></small>
+                        <small id="mp-error-324" class="mp-form-error" data-main="#mpDocNumber"><!-- ko i18n: 'Invalid document number'--><!-- /ko --></small>
 
                     </div>
                 </div>
@@ -203,7 +208,7 @@
                         <!-- ko i18n: 'Installments'--><!-- /ko -->
                     </label>
                     <select id="mpInstallments" data-checkout="mpInstallments"></select>
-                    <small id="id-installments-status" class="mp-form-error" data-main="#mpInstallments"></small>
+                    <small id="id-installments-status" class="mp-form-error" data-main="#mpInstallments">Invalid number of installments</small>
                 </div>
 
                 <div id="mp-box-input-tax-cft">

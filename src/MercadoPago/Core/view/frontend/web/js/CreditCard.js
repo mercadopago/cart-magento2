@@ -69,7 +69,7 @@
             }, 5000);
           }
         },
-        onIdentificationTypesReceived: (error, identificationTypes) => {
+        onIdentificationTypesReceived: (error) => {
           if (error) return console.warn('IdentificationTypes handling error: ', error);
         },
         onInstallmentsReceived: (error, installments) => {
@@ -80,7 +80,7 @@
           setChangeEventOnInstallments(country, installments.payer_costs);
         },
         onCardTokenReceived: (error, token) => {
-          console.log('token', token)
+          console.log('error', error)
           if (error) {
             showErrors(error);
             return console.warn('Token handling error: ', error);
@@ -89,6 +89,7 @@
           customMethod.placeOrder();
         },
         onPaymentMethodsReceived: (error, paymentMethods) => {
+
           clearInputs();
           if (error) {
             return console.warn('PaymentMethods handling error: ', error);
@@ -113,9 +114,6 @@
               }
             }
           }
-        },
-        onBinChange: function (bin){
-          console.log('bin', bin)
         }
       },
     });
@@ -125,24 +123,29 @@
 window.showErrors = function (errors){
 var form = this.getFormCustom();
 
-console.log('form', form)
+showIframeErrors(errors)
+//chamar aqui uma função que valida somente os campos com iframe e ver se
+//algum erro relacionado ao tamanho e tipo da string foi retornado
+
 console.log('error', errors)
 errors.forEach((error) => {
 
   errorField = error.field
+  console.log('errorField', errorField)
 
   if(error.field === 'expirationDate') {
    errorField = expirationDateHandler(error)
   }
 
+  console.log('error cause', error.cause)
   let formatedError = `${error.cause}_${errorField}`
 
   var span = undefined
+  console.log('formated error', formatedError)
 
   span = form.querySelector(`#${formatedError}`)
   if (span !== undefined) {
     span.style.display = 'block';
-
   }
 focusInputError();
 });
@@ -152,6 +155,7 @@ focusInputError();
 
 window.expirationDateHandler = function (error){
 expiration = error.message.includes('expirationMonth') ?  `${error.field}_expirationMonth`:`${error.field}_expirationYear`
+console.log('expiration:', expiration)
 return expiration;
 }
 
@@ -176,14 +180,6 @@ return expiration;
   window.getFormCustom = function () {
     return document.querySelector('#co-mercadopago-form');
   }
-
-  // window.setChangeEventOnCardNumber = function () {
-  //   document.getElementById('mpCardNumber').addEventListener('keyup', function (e) {
-  //     if (e.target.value.length <= 4) {
-  //       clearInputs();
-  //     }
-  //   });
-  // }
 
   window.setChangeEventExpirationDate = function () {
     document.getElementById('mpCardExpirationDate').addEventListener('change', function (e) {
@@ -215,7 +211,6 @@ return expiration;
 
 //--------------------------ok-----------------------------------------
   window.loadAdditionalInfo = function (sdkAdditionalInfoNeeded) {
-    console.log('sdkAdditional', sdkAdditionalInfoNeeded)
     additionalInfoNeeded = {
       issuer: false,
       cardholder_name: false,
@@ -286,12 +281,12 @@ return expiration;
   }
 //-------------------------------------ok-------------------------------
   window.validateFixedInputs = function () {
+    mpCardForm.createCardToken() //to activate callback onCardTokenReceived and verify error ocurrencies
     console.log('entrei em fixed')
 
     var emptyInputs = false;
     var form = this.getFormCustom();
     var cardFormData = getMpCardFormData()
-    console.log(cardFormData)
 
     var formInputs = form.querySelectorAll('[data-checkout]');
     // var fixedInputs = [
@@ -311,7 +306,6 @@ return expiration;
       if (fixedInputs.indexOf(element.getAttribute('data-checkout')) > -1) {
         if (element.value === -1 || element.value === '' || element.value === undefined) {
           var small = form.querySelectorAll('small[data-main="#' + element.id + '"]');
-console.log('element.getAttribute', element.getAttribute('data-checkout'))
 
           if(element.getAttribute('data-checkout') !== 'mpCardNumber'){
             if (small.length > 0) {
@@ -336,7 +330,7 @@ console.log('element.getAttribute', element.getAttribute('data-checkout'))
     return emptyInputs;
   }
 //-------------------------------------------------------------------------
-//---------------------ok--------------------------------
+//---------------------ok--------------------------------------------------
   window.validateAdditionalInputs = function () {
     console.log('entrei em additional')
     var emptyInputs = false;
@@ -386,12 +380,12 @@ console.log('element.getAttribute', element.getAttribute('data-checkout'))
 
 //---------------------ok--------------------------------
 
-  window.focusInputError = function () {
-    if (document.querySelectorAll('.mp-form-control-error') !== undefined) {
-      var formInputs = document.querySelectorAll('.mp-form-control-error');
-      formInputs[0].focus();
-    }
-  }
+window.focusInputError = function () {
+if (document.querySelectorAll('.mp-form-control-error') !== undefined) {
+  var formInputs = document.querySelectorAll('.mp-form-control-error');
+  formInputs[0].focus();
+}
+}
 //------------------------------------------------------
 
 //---------------------ok--------------------------------
@@ -438,5 +432,27 @@ console.log('element.getAttribute', element.getAttribute('data-checkout'))
         document.querySelector('#mp-tax-tea-text').innerHTML = tea;
       }
     }
+  }
+
+  window.showIframeErrors = (errors) => {
+    var form = this.getFormCustom();
+
+    console.log('showIframe', errors)
+
+    errors.forEach(error => {
+      console.log('os erros são seus 1', error.field)
+
+      if(error.field === 'expirationDate'){
+
+          let field = document.querySelector('#mpCardExpirationDate')
+          field.classList.add('mp-form-control-error')
+      }
+
+      if(error.field === 'securityCode'){
+        let field = document.querySelector('#mpSecurityCode')
+        field.classList.add('mp-form-control-error')
+    }
+    })
+    focusInputError()
   }
 }).call(this);

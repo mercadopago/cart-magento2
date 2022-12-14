@@ -305,7 +305,6 @@ define(
         hideErrors();
 
         var fixedInputs = validateFixedInputs();
-        fixedInputs
         var additionalInputs = validateAdditionalInputs();
         if (fixedInputs || additionalInputs) {
           focusInputError();
