@@ -281,9 +281,6 @@ define(
           'method': this.item.method,
           'additional_data': {
             'payment[method]': this.getCode(),
-            // 'card_expiration_month': document.getElementById('mpCardExpirationDate').value,
-            // 'card_expiration_month': document.getElementById('mpCardExpirationMonth').value,
-            // 'card_expiration_year': document.getElementById('mpCardExpirationYear').value,
             'card_holder_name': document.getElementById('mpCardholderName').value,
             'doc_type': document.getElementById('mpDocType').value,
             'doc_number': document.getElementById('mpDocNumber').value,
