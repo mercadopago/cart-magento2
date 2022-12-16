@@ -477,10 +477,10 @@ class Api implements ApiInterface
      * @param $publicKey
      * @return array
      */
-    public function get_payment_methods($publicKey)
+    public function get_payment_methods($accesToken)
     {
         try {
-            $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: ' . $publicKey, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
+            $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: Bearer ' . $accesToken, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
 
             $treated_payments_methods = [];
 

@@ -313,7 +313,7 @@ class Data extends \Magento\Payment\Helper\Data
         try {
             $mp = $this->getApiInstance($publicKey, $accessToken);
 
-            $payment_methods = $mp->get_payment_methods($publicKey);
+            $payment_methods = $mp->get_payment_methods($accessToken);
         } catch (Exception $e) {
             return [];
         }
