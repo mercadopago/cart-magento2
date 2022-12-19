@@ -115,7 +115,6 @@
         },
         onValidityChange: function (error, field) {
           if (error) {
-            console.log("errrroor", error);
             if (field == "cardNumber") {
               if (error[0].code !== "invalid_length") {
                 document.querySelector("#mpCardNumber", "no-repeat #fff");
@@ -133,9 +132,8 @@
 
   window.showErrors = function (errors) {
     var form = this.getFormCustom();
-    console.log("show errors", errors);
     var sdkErrors = trackedSDKErrors();
-    console.log("tracked errors", trackedSDKErrors());
+
     showIframeErrors(errors);
 
     //used to exhibt only one message
@@ -355,6 +353,9 @@
 
     if (additionalInfoNeeded.cardholder_identification_number) {
       var docNumber = document.getElementById("mpDocNumber");
+      var documentType = document.getElementById("mpDocType");
+      var strDocType = documentType.value;
+
       if (
         docNumber.value === "-1" ||
         docNumber.value === "" ||
@@ -364,8 +365,20 @@
         document.getElementById("mp-error-empty-doc-number").style.display =
           "block";
         emptyInputs = true;
+      } else if (strDocType.toLowerCase() === "cpf") {
+        let validator = verifyCPF(docNumber.value);
+
+        if (!validator) {
+          docNumber.classList.add("mp-form-control-error");
+          document.getElementById("mp-error-empty-doc-number").style.display =
+            "block";
+          emptyInputs = true;
+        } else {
+          emptyInputs = false;
+        }
       }
     }
+
     return emptyInputs;
   };
 
@@ -487,7 +500,7 @@
       },
       {
         code: "mp009",
-        message: `"expirationYear value should be greater or equal than ${currentYear}."`,
+        message: `expirationYear value should be greater or equal than ${currentYear}.`,
       },
       {
         code: "mp010",
@@ -503,5 +516,33 @@
       },
     ];
     return sdkErrors;
+  };
+
+  //CPF validator
+  window.verifyCPF = function (strCPF) {
+    var sum;
+    var remainder;
+    sum = 0;
+    if (strCPF == "00000000000") return false;
+
+    for (i = 1; i <= 9; i++)
+      sum = sum + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+
+    remainder = (sum * 10) % 11;
+
+    if (remainder == 10 || remainder == 11) remainder = 0;
+    if (remainder != parseInt(strCPF.substring(9, 10))) return false;
+
+    sum = 0;
+    for (i = 1; i <= 10; i++)
+      sum = sum + parseInt(strCPF.substring(i - 1, i)) * (12 - i);
+    remainder = (sum * 10) % 11;
+
+    if (remainder == 10 || remainder == 11) remainder = 0;
+    if (remainder != parseInt(strCPF.substring(10, 11))) {
+      document.getElementById("mpDocNumber");
+      return false;
+    }
+    return true;
   };
 }.call(this));

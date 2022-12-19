@@ -61,7 +61,6 @@ define(
       totalsObserver: function() {
         if (quote.totals().base_grand_total !== this.priceOnSelect) {
           this.priceOnSelect = quote.totals().base_grand_total;
-          console.log('observer')
           mpRemountCardForm();
         }
       },
@@ -300,9 +299,9 @@ define(
 
       prePlaceOrder: function () {
         hideErrors();
-
         var fixedInputs = validateFixedInputs();
         var additionalInputs = validateAdditionalInputs();
+
         if (fixedInputs || additionalInputs) {
           focusInputError();
           return false;
