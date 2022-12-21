@@ -107,7 +107,6 @@
           if (error) {
             return console.warn("PaymentMethods handling error: ", error);
           }
-
           setImageCard(paymentMethods[0].thumbnail);
           handleInstallments(paymentMethods[0].payment_type_id);
           loadAdditionalInfo(paymentMethods[0].additional_info_needed);
@@ -117,11 +116,7 @@
           if (error) {
             if (field == "cardNumber") {
               if (error[0].code !== "invalid_length") {
-                document.querySelector("#mpCardNumber", "no-repeat #fff");
-                fullClearInputs();
-                hideErrors();
-                mpCardForm.unmount();
-                mpCardForm.mount();
+                onCardCleaning();
               }
             }
           }
@@ -365,7 +360,7 @@
         document.getElementById("mp-error-empty-doc-number").style.display =
           "block";
         emptyInputs = true;
-      } else if (strDocType.toLowerCase() === "cpf") {
+      } else if (strDocType.toLowerCase() === "cpf" && docNumber !== "") {
         let validator = verifyCPF(docNumber.value);
 
         if (!validator) {
@@ -458,7 +453,6 @@
         field.classList.add("mp-form-control-error");
       }
     });
-    focusInputError();
   };
 
   window.trackedSDKErrors = function () {
@@ -500,7 +494,7 @@
       },
       {
         code: "mp009",
-        message: `expirationYear value should be greater or equal than ${currentYear}.`,
+        message: `"expirationYear value should be greater or equal than ${currentYear}."`,
       },
       {
         code: "mp010",
@@ -540,9 +534,21 @@
 
     if (remainder == 10 || remainder == 11) remainder = 0;
     if (remainder != parseInt(strCPF.substring(10, 11))) {
-      document.getElementById("mpDocNumber");
       return false;
     }
     return true;
+  };
+
+  window.onCardCleaning = function () {
+    document.querySelector("#mpCardNumber", "no-repeat #fff");
+    var issuerField = document.getElementById("mpIssuer");
+    if (issuerField) {
+      document.getElementById("mpIssuer").innerHTML = " ";
+    }
+    additionalInfoHandler();
+    fullClearInputs();
+    hideErrors();
+    mpCardForm.unmount();
+    mpCardForm.mount();
   };
 }.call(this));
