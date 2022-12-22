@@ -164,8 +164,8 @@
 
   window.expirationDateHandler = function (error) {
     expiration = error.message.includes("expirationMonth")
-      ? `${error.field}_expirationMonth`
-      : `${error.field}_expirationYear`;
+      ? error.field + '_expirationMonth'
+      : error.field + '_expirationYear'
     return expiration;
   };
 
@@ -278,7 +278,6 @@
   };
 
   window.validateFixedInputs = function () {
-    mpCardForm.createCardToken(); //to activate callback onCardTokenReceived and verify error ocurrencies
 
     var emptyInputs = false;
     var form = this.getFormCustom();
