@@ -107,6 +107,7 @@
           if (error) {
             return console.warn("PaymentMethods handling error: ", error);
           }
+
           setImageCard(paymentMethods[0].thumbnail);
           handleInstallments(paymentMethods[0].payment_type_id);
           loadAdditionalInfo(paymentMethods[0].additional_info_needed);
@@ -116,7 +117,11 @@
           if (error) {
             if (field == "cardNumber") {
               if (error[0].code !== "invalid_length") {
-                onCardCleaning();
+                document.querySelector("#mpCardNumber", "no-repeat #fff");
+                fullClearInputs();
+                hideErrors();
+                mpCardForm.unmount();
+                mpCardForm.mount();
               }
             }
           }
@@ -127,39 +132,51 @@
 
   window.showErrors = function (errors) {
     var form = this.getFormCustom();
-    var sdkErrors = trackedSDKErrors();
 
-    showIframeErrors(errors);
+    var sdkErrors = trackedSDKErrors();
 
     //used to exhibt only one message
     var previousField = undefined;
 
-    errors.forEach((error) => {
-      if (error.field && previousField !== error.field) {
-        errorField = error.field;
+    let errorMessage = errors.message || errors[0].message
+    let errorField = errors.field || errors[0]?.field
 
-        if (error.field === "expirationDate") {
-          errorField = expirationDateHandler(error);
+    if( errorMessage &&  !errors.field){
+      otherMessages(errors)
+    }
+
+if (errors.length >= 1){
+
+  showIframeErrors(errors);
+
+  errors.forEach((error) => {
+    if (error.field && previousField !== error.field) {
+      errorField = error.field;
+
+      if (error.field === "expirationDate") {
+        errorField = expirationDateHandler(error);
+      }
+
+      let formatedError = `${error.cause}_${errorField}`;
+
+      var span = undefined;
+
+      sdkErrors.forEach((sdkError) => {
+        if (error.message === sdkError.message) {
+          span = form.querySelector('#'+formatedError+'_'+sdkError.code);
+          if (span !== undefined) {
+            span.style.display = "block";
+          }
         }
 
-        let formatedError = `${error.cause}_${errorField}`;
+        previousField = error.field;
+      });
+    }
+    focusInputError();
+  });
+}
 
-        var span = undefined;
 
-        sdkErrors.forEach((sdkError) => {
-          if (error.message === sdkError.message) {
-            span = form.querySelector(`#${formatedError}_${sdkError.code}`);
-
-            if (span !== undefined) {
-              span.style.display = "block";
-            }
-          }
-
-          previousField = error.field;
-        });
-      }
-      focusInputError();
-    });
   };
 
   window.expirationDateHandler = function (error) {
@@ -281,27 +298,38 @@
 
     var emptyInputs = false;
     var form = this.getFormCustom();
-
     var formInputs = form.querySelectorAll("[data-checkout]");
-
-    var fixedInputs = ["mpInstallments"];
+    var fixedInputs = ["mpInstallments", "mpCardNumber"];
+    var mpInstallments = document.getElementById('mpInstallments').value
 
     for (var x = 0; x < formInputs.length; x++) {
       var element = formInputs[x];
+      var attribute = element.getAttribute("data-checkout")
 
-      if (fixedInputs.indexOf(element.getAttribute("data-checkout")) > -1) {
+      if (fixedInputs.indexOf(attribute) > -1) {
+
         if (
           element.value === -1 ||
           element.value === "" ||
           element.value === undefined
         ) {
+
           var small = form.querySelectorAll(
             'small[data-main="#' + element.id + '"]'
-          );
+          )
 
-          small[0].style.display = "block";
-          element.classList.add("mp-form-control-error");
-          emptyInputs = true;
+          if(attribute === 'mpCardNumber' && mpInstallments === '' || mpInstallments === undefined){
+            small[0].style.display = "block";
+            element.classList.add("mp-form-control-error");
+            emptyInputs = true;
+          }
+
+          if(attribute !== 'mpCardNumber'){
+            small[0].style.display = "block";
+            element.classList.add("mp-form-control-error");
+            emptyInputs = true;
+          }
+
         }
       }
     }
@@ -327,7 +355,8 @@
       var inputCardholderName = document.getElementById("mpCardholderName");
       if (
         inputCardholderName.value === "-1" ||
-        inputCardholderName.value === ""
+        inputCardholderName.value === "" ||
+       !/^[a-zA-ZãÃáÁàÀâÂäÄẽẼéÉèÈêÊëËĩĨíÍìÌîÎïÏõÕóÓòÒôÔöÖũŨúÚùÙûÛüÜçÇ’ñÑ .']+$/.test(inputCardholderName.value)
       ) {
         inputCardholderName.classList.add("mp-form-control-error");
         document.getElementById(
@@ -359,7 +388,7 @@
         document.getElementById("mp-error-empty-doc-number").style.display =
           "block";
         emptyInputs = true;
-      } else if (strDocType.toLowerCase() === "cpf" && docNumber !== "") {
+      } else if (strDocType.toLowerCase() === "cpf") {
         let validator = verifyCPF(docNumber.value);
 
         if (!validator) {
@@ -437,21 +466,24 @@
   };
 
   window.showIframeErrors = (errors) => {
-    errors.forEach((error) => {
-      if (error.field === "expirationDate") {
-        let field = document.querySelector("#mpCardExpirationDate");
-        field.classList.add("mp-form-control-error");
-      }
 
-      if (error.field === "securityCode") {
-        let field = document.querySelector("#mpSecurityCode");
-        field.classList.add("mp-form-control-error");
-      }
-      if (error.field === "cardNumber") {
-        let field = document.querySelector("#mpCardNumber");
-        field.classList.add("mp-form-control-error");
-      }
-    });
+      errors.forEach((error) => {
+        if (error.field === "expirationDate") {
+          let field = document.querySelector("#mpCardExpirationDate");
+          field.classList.add("mp-form-control-error");
+        }
+
+        if (error.field === "securityCode") {
+          let field = document.querySelector("#mpSecurityCode");
+          field.classList.add("mp-form-control-error");
+        }
+        if (error.field === "cardNumber") {
+          let field = document.querySelector("#mpCardNumber");
+          field.classList.add("mp-form-control-error");
+        }
+      });
+
+    focusInputError();
   };
 
   window.trackedSDKErrors = function () {
@@ -493,7 +525,7 @@
       },
       {
         code: "mp009",
-        message: `"expirationYear value should be greater or equal than ${currentYear}."`,
+        message: `expirationYear value should be greater or equal than ${currentYear}.`,
       },
       {
         code: "mp010",
@@ -506,6 +538,10 @@
       {
         code: "mp012",
         message: `expirationMonth value should be greater than '${currentMonth}' or expirationYear value should be greater than '${currentYear}'.`,
+      },
+      {
+        code: "mp013",
+        message: "securityCode should be of length '3'.",
       },
     ];
     return sdkErrors;
@@ -533,21 +569,38 @@
 
     if (remainder == 10 || remainder == 11) remainder = 0;
     if (remainder != parseInt(strCPF.substring(10, 11))) {
+      document.getElementById("mpDocNumber");
       return false;
     }
     return true;
   };
 
-  window.onCardCleaning = function () {
-    document.querySelector("#mpCardNumber", "no-repeat #fff");
-    var issuerField = document.getElementById("mpIssuer");
-    if (issuerField) {
-      document.getElementById("mpIssuer").innerHTML = " ";
-    }
-    additionalInfoHandler();
-    fullClearInputs();
-    hideErrors();
-    mpCardForm.unmount();
-    mpCardForm.mount();
-  };
+
+  window.otherMessages = function (error) {
+      var errorMessageOnly = [
+        "cardholder.identification.number",
+        "cardholderName"
+      ]
+
+      errorMessageOnly.forEach( field => {
+        let errorMessage = error.message || error[0].message
+
+        if(errorMessage.includes(field)){
+          switch (field) {
+            case 'cardholder.identification.number':
+              let docNumber = document.getElementById("mpDocNumber");
+        docNumber.classList.add("mp-form-control-error");
+        document.getElementById('mp-error-empty-doc-number').style.display = 'block';
+              break;
+              case 'cardholderName':
+                let cardholderName = document.getElementById("mpCardholderName");
+          cardholderName.classList.add("mp-form-control-error");
+          document.getElementById('mp-error-empty-cardholder-name').style.display = 'block';
+                break;
+            default:
+              break;
+          }
+        }
+      } )
+  }
 }.call(this));
