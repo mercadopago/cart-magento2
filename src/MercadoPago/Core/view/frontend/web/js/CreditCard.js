@@ -120,8 +120,7 @@
                 document.querySelector("#mpCardNumber", "no-repeat #fff");
                 fullClearInputs();
                 hideErrors();
-                mpCardForm.unmount();
-                mpCardForm.mount();
+                window.mpRemountCardForm();
               }
             }
           }
