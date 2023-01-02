@@ -538,6 +538,10 @@
         code: "mp013",
         message: "securityCode should be of length '3'.",
       },
+      {
+        code: "mp014",
+        message: "cardNumber should be of length '16'.",
+      },
     ];
     return sdkErrors;
   };

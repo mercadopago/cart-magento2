@@ -522,6 +522,7 @@ Cannot operate between users from different countries.", "Não é possível oper
 "Expiration year value should be greater or equal than current year", "O valor do ano de expiração deve ser maior ou igual ao do ano atual"
 "Expiration year value should be greater or equal than 2022", "O ano de vencimento deve ser maior or igual a 2022"
 "Card number should be of length 15", "O número do cartão deve ter 15 dígitos"
+"Card number should be of length 16", "O número do cartão deve ter 16 dígitos"
 "Security code should be of length 4", "O código de segurança deve ter 4 dígitos"
 "Expiration month should be a value from 1 to 12", "O mês de vencimento deve ser um dígito entre 1 e 12"
 "Expiration month or expiration year value is invalid", "O valor do mês ou do ano de expiração é inválido"
