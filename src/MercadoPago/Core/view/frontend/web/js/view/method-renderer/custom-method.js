@@ -48,8 +48,6 @@ define(
       initApp: function () {
         if (window.checkoutConfig.payment[this.getCode()] !== undefined) {
           quote.totals.subscribe(this.totalsObserver.bind(this));
-          setChangeEventOnCardNumber();
-          setChangeEventExpirationDate();
           initCardForm(
             this.getPublicKey(),
             quote,
@@ -282,8 +280,6 @@ define(
           'method': this.item.method,
           'additional_data': {
             'payment[method]': this.getCode(),
-            'card_expiration_month': document.getElementById('mpCardExpirationMonth').value,
-            'card_expiration_year': document.getElementById('mpCardExpirationYear').value,
             'card_holder_name': document.getElementById('mpCardholderName').value,
             'doc_type': document.getElementById('mpDocType').value,
             'doc_number': document.getElementById('mpDocNumber').value,
@@ -303,16 +299,11 @@ define(
 
       prePlaceOrder: function () {
         hideErrors();
-
         var fixedInputs = validateFixedInputs();
         var additionalInputs = validateAdditionalInputs();
 
         if (fixedInputs || additionalInputs) {
           focusInputError();
-          return false;
-        }
-
-        if (!validateCvv()) {
           return false;
         }
 
