@@ -5,6 +5,7 @@ namespace MercadoPago\Core\Helper;
 use Exception;
 use Magento\Backend\Block\Store\Switcher;
 use Magento\Framework\App\Config\Initial;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Composer\ComposerInformation;
@@ -20,7 +21,6 @@ use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\ScopeInterface;
 use MercadoPago\Core\Helper\Message\MessageInterface;
 use MercadoPago\Core\Lib\Api;
-use MercadoPago\Core\Lib\RestClient;
 use MercadoPago\Core\Logger\Logger;
 
 /**
@@ -52,6 +52,11 @@ class Data extends \Magento\Payment\Helper\Data
     const STATUS_ACTIVE = 'active';
 
     const PAYMENT_TYPE_CREDIT_CARD = 'credit_card';
+
+    /**
+     * plugins credentials wrapper
+     */
+    const CREDENTIALS_WRAPPER = '/plugins-credentials-wrapper/credentials';
 
     /**
      * @var MessageInterface
@@ -101,6 +106,11 @@ class Data extends \Magento\Payment\Helper\Data
     protected $_api;
 
     /**
+     * @var ScopeConfigInterface $scopeConfig
+     */
+    protected $_scopeConfig;
+
+    /**
      * Data constructor.
      * @param Message\MessageInterface $messageInterface
      * @param Cache $mpCache
@@ -117,6 +127,7 @@ class Data extends \Magento\Payment\Helper\Data
      * @param ComposerInformation $composerInformation
      * @param ResourceInterface $moduleResource
      * @param Api $api
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         Message\MessageInterface $messageInterface,
@@ -133,7 +144,8 @@ class Data extends \Magento\Payment\Helper\Data
         Switcher $switcher,
         ComposerInformation $composerInformation,
         ResourceInterface $moduleResource,
-        Api $api
+        Api $api,
+        ScopeConfigInterface $scopeConfig
     ) {
         parent::__construct($context, $layoutFactory, $paymentMethodFactory, $appEmulation, $paymentConfig, $initialConfig);
         $this->_messageInterface = $messageInterface;
@@ -145,6 +157,7 @@ class Data extends \Magento\Payment\Helper\Data
         $this->_composerInformation = $composerInformation;
         $this->_moduleResource = $moduleResource;
         $this->_api = $api;
+        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
@@ -156,7 +169,7 @@ class Data extends \Magento\Payment\Helper\Data
      */
     public function log($message, $name = "mercadopago", $array = null)
     {
-        $actionLog = $this->scopeConfig->getValue(
+        $actionLog = $this->_scopeConfig->getValue(
             ConfigData::PATH_ADVANCED_LOG,
             ScopeInterface::SCOPE_STORE
         );
@@ -179,21 +192,22 @@ class Data extends \Magento\Payment\Helper\Data
      * @return Api
      * @throws LocalizedException
      */
-    public function getApiInstance($accessToken = null)
+    public function getApiInstance($publicKey = null, $accessToken = null)
     {
-        if (is_null($accessToken)) {
-            throw new LocalizedException(__('The ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
+        if (is_null($publicKey) || is_null($accessToken)) {
+            throw new LocalizedException(__('The PUBLIC_KEY or ACCESS_TOKEN has not been configured, without this credential the module will not work correctly.'));
         }
 
         $api = $this->_api;
         $api->set_access_token($accessToken);
+        $api->set_public_key($publicKey);
         $api->set_platform(self::PLATFORM_OPENPLATFORM);
-
         $api->set_type(self::TYPE);
-        RestClient::setModuleVersion((string)$this->getModuleVersion());
-        RestClient::setUrlStore($this->getUrlStore());
-        RestClient::setEmailAdmin($this->scopeConfig->getValue('trans_email/ident_sales/email', ScopeInterface::SCOPE_STORE));
-        RestClient::setCountryInitial($this->getCountryInitial());
+
+        $api->set_module_version((string)$this->getModuleVersion());
+        $api->set_url_store($this->getUrlStore());
+        $api->set_email_admin($this->_scopeConfig->getValue('trans_email/ident_sales/email', ScopeInterface::SCOPE_STORE));
+        $api->set_country_initial($this->getCountryInitial());
 
         return $api;
     }
@@ -202,36 +216,29 @@ class Data extends \Magento\Payment\Helper\Data
      * @param $accessToken
      * @return bool
      */
-    public function isValidAccessToken($accessToken)
+    public function validateCredentials($publicKey, $accessToken)
     {
-        $cacheKey = Cache::IS_VALID_AT . $accessToken;
+        $cacheKey = Cache::IS_VALID_PK . $publicKey;
+        $cacheToken = Cache::IS_VALID_AT . $accessToken;
 
-        if ($this->_mpCache->getFromCache($cacheKey)) {
+        if ($this->_mpCache->getFromCache($cacheToken) && $this->_mpCache->getFromCache($cacheKey)) {
             return true;
         }
 
-        $response = $this->getMercadoPagoPaymentMethods($accessToken);
+        $api = $this->getApiInstance($publicKey, $accessToken);
 
-        if ((!$response) || (isset($response['status']) && ($response['status'] == 401 || $response['status'] == 400))) {
+        $keyResponse = $api->validate_public_key($publicKey);
+        $tokenResponse = $api->validade_access_token($accessToken);
+
+        if (!$keyResponse || !$tokenResponse || ($keyResponse['client_id'] !== $tokenResponse['client_id'])) {
+            $this->log('Invalid credential pair');
             return false;
         }
 
         $this->_mpCache->saveCache($cacheKey, true);
+        $this->_mpCache->saveCache($cacheToken, true);
+
         return true;
-    }
-
-    /**
-     * @param string $scopeCode
-     * @return bool|mixed
-     */
-    public function getAccessToken($scopeCode = ScopeInterface::SCOPE_STORE)
-    {
-        $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, $scopeCode);
-        if (empty($accessToken)) {
-            return false;
-        }
-
-        return $accessToken;
     }
 
     /**
@@ -291,36 +298,27 @@ class Data extends \Magento\Payment\Helper\Data
     /**
      * return the list of payment methods or false
      *
-     * @param mixed|null $accessToken
-     *
      * @return array
      */
-    public function getMercadoPagoPaymentMethods($accessToken)
+    public function getMercadoPagoPaymentMethods()
     {
-        $this->log('GET /v1/payment_methods', 'mercadopago');
+        $publicKey = $this->_scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
+
+        $accessToken = $this->_scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
+
+        if (!$this->validateCredentials($publicKey, $accessToken)) {
+            return [];
+        }
 
         try {
-            $mp = $this->getApiInstance($accessToken);
+            $mp = $this->getApiInstance($publicKey, $accessToken);
 
-            $payment_methods = $mp->get("/v1/payment_methods");
-
-            $treated_payments_methods = [];
-
-            foreach ($payment_methods['response'] as $payment_method) {
-                if (is_array($payment_method) && isset($payment_method['id']) && !isset($payment_method['payment_places'])) {
-                    $payment_method['payment_places'] = PaymentPlaces::getPaymentPlaces($payment_method['id']);
-                }
-
-                array_push($treated_payments_methods, $payment_method);
-            }
-
-            $payment_methods['response'] = $treated_payments_methods;
-
-            return $payment_methods;
-
+            $payment_methods = $mp->get_payment_methods($accessToken);
         } catch (Exception $e) {
             return [];
         }
+
+        return $payment_methods;
     }
 
     /**

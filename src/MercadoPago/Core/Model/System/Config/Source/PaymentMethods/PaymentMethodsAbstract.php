@@ -40,14 +40,10 @@ abstract class PaymentMethodsAbstract implements \Magento\Framework\Option\Array
         $methods = [];
         $methods[] = ["value" => "", "label" => __("Accept all payment methods")];
 
-        $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_WEBSITE, $this->_switcher->getWebsiteId());
-        if (empty($accessToken)) {
-            return ['methods' => $methods];
-        }
-
         try {
-            $response = $this->coreHelper->getMercadoPagoPaymentMethods($accessToken);
-            if ($response['status'] > 201) {
+            $response = $this->coreHelper->getMercadoPagoPaymentMethods();
+
+            if (!isset($response['status']) || $response['status'] > 201) {
                 return ['methods' => $methods];
             }
 
