@@ -2,6 +2,8 @@
 
 namespace MercadoPago\Core\Model\System\Config\Source;
 
+use MercadoPago\Core\Helper\ConfigData;
+
 /**
  * Class Category
  *
@@ -37,7 +39,7 @@ class Category implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         try {
-            $access_token = $this->coreHelper->getAccessToken();
+            $access_token = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN);
             $response = \MercadoPago\Core\Lib\RestClient::get("/item_categories", null, ["Authorization: Bearer " . $access_token]);
         } catch (\Exception $e) {
             $this->coreHelper->log("Category:: An error occurred at the time of obtaining the categories: " . $e);

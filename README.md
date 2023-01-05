@@ -1,84 +1,87 @@
-<p align="center">
-  <a href="https://www.mercadopago.com/">
-    <img src="https://http2.mlstatic.com/ui/navigation/5.18.4/mercadopago/logo__large@2x.png" height="80" width="auto" alt="MercadoPago">
-  </a>
-</p>
+# Deprecation Notice and Update of Mercado Pago Payment Plugin for Adobe Commerce (Magento)
 
-# Magento 2 - Mercado Pago Module (v3.18.0)
+Dear Users and Developers,
 
-The Mercado Pago plugin for Magento 2 allows you to expand the functionalities of your online store and offer a unique payment experience for your customers.
+We would like to inform you that the current version of the Mercado Pago payment plugin for Adobe Commerce (Magento) has been officially deprecated and will no longer receive updates. We appreciate your support over the years.
 
-## Documentation in English
+### Deprecation Details:
+- All previous versions of the Mercado Pago payment plugin for Magento (Now Adobe Commerce).
+- **Status:** No further updates or bug fixes will be provided for this version.
 
-For a better experience, you will be redirected to our site by clicking on the links below:
+### New Version Available:
+A new version of the Mercado Pago payment plugin for Adobe Commerce (Magento) is now available. It has been designed to provide a more advanced, secure, and optimized experience for users. To access the new version, please visit our official repository on GitHub:
 
--   [Requirements to integrate](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_requirements_to_integrate)
--   [Features](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_features)
--   [Installation](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_installation)
--   [Configure Checkout Custom](<https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_credit_card_and_ticket_configuration_(custom_checkout)>)
--   [Configure Checkout Pro](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_basic_checkout_configuration)
--   [Payment Notification Status Settings](https://www.mercadopago.com.br/developers/en/guides/plugins/official/magento-two#bookmark_payment_notification_status_settings)
+### Repository: [https://github.com/mercadopago/adb-payment](https://github.com/mercadopago/adb-payment)
 
-## Documentación en Español
+### Key Features of the New Version
+- **Compatibility:** The new version is fully compatible with the latest versions of Magento/Adobe Commerce, ensuring a seamless and uncomplicated integration.
+- **Enhanced Security:** We have implemented advanced security measures to protect transactions and customer data.
+- **Optimized Performance:** The new version offers improved performance to ensure a fast and efficient payment experience.
+- **Ongoing Support:** We will provide technical support and regular updates for the new version, ensuring access to the latest improvements and fixes.
+- **Native 2-Card Payment:** We provide native support for payments with 2 cards. Give your customers the flexibility to split payments between two cards, making purchases more accessible and convenient.
 
-Para una mejor experiencia, será redirigido a nuestro sitio haciendo clic en los links a abajo:
+### Recommended Action:
+We recommend all users and developers using the Mercado Pago payment plugin for Adobe Commerce Magento to migrate to the new version as soon as possible. The deprecated version will no longer receive updates, which could result in security and functionality issues in the future.
 
--   [Requisitos para integrar](https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_requisitos_para_integrar)
--   [Instalación](https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_instalaci%C3%B3n)
--   [Configurar Checkout Custom](<https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_configuraci%C3%B3n_de_la_tarjeta_de_cr%C3%A9dito_y_tickets_(custom_checkout)>)
--   [Configurar Checkout de Pro](https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_configuraci%C3%B3n_de_basic_checkout)
--   [Configuración de estado de las notificaciones de Pago](https://www.mercadopago.com.br/developers/es/guides/plugins/official/magento-two#bookmark_configuraci%C3%B3n_de_estado_de_las_notificaciones_de_pago)
+We appreciate your understanding and cooperation during this transition process. If you have any questions or need assistance, feel free to contact us through our support channels.
 
-## Documentação em Português
+Sincerely, \
+Mercado Pago Team
 
-Para uma melhor experiência, você será redirecionado para o nosso site, clicando nos links abaixo:
+# Aviso de Obsolescencia y Actualización del Plugin de Pagos Mercado Pago para Adobe Commerce (Magento)
+Estimados Usuarios y Desarrolladores,
 
--   [Requisitos para integrar](https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_requisitos_para_integrar)
--   [Instalação](https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_instala%C3%A7%C3%A3o)
--   [Configurar Checkout Custom](<https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_configura%C3%A7%C3%B5es_de_cart%C3%A3o_de_cr%C3%A9dito_e_boleto_(custom_checkout)>)
--   [Configurar Checkout Pro](https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_configura%C3%A7%C3%B5es_de_basic_checkout)
--   [Configurações de status de Notificações de Pagamento](https://www.mercadopago.com.br/developers/pt/guides/plugins/official/magento-two#bookmark_configura%C3%A7%C3%B5es_de_status_de_notifica%C3%A7%C3%B5es_de_pagamento)
+Nos gustaría informarles que la versión actual del plugin de pagos de Mercado Pago para Adobe Commerce (Magento) ha sido oficialmente declarada obsoleta y no recibirá más actualizaciones. Agradecemos su apoyo a lo largo de los años.
 
-## Support
+### Detalles de la deprecación:
+- Todas las versiones anteriores del plugin de pagos de Mercado Pago para Magento (Ahora Adobe Commerce).
+- **Estado:** No se brindarán más actualizaciones ni correcciones de errores para esta versión.
 
-Something's wrong? [Get in touch with our support](https://www.mercadopago.com.ar/developers/en/support)
+### Nueva Versión Disponible:
+Ya está disponible una nueva versión del plugin de pagos de Mercado Pago para Adobe Commerce (Magento). Ha sido diseñada para brindar una experiencia más avanzada, segura y optimizada para los usuarios. Para acceder a la nueva versión, por favor, visite nuestro repositorio oficial en GitHub:
 
-## How to code unit tests
+### Repositorio:** [https://github.com/mercadopago/adb-payment-23](https://github.com/mercadopago/adb-payment-23)
 
-This description is intended to help the developer to run the plugin unit tests
+### Principales Características de la Nueva Versión:
+- **Compatibilidad:** La nueva versión es completamente compatible con las últimas versiones de Magento/Adobe Commerce, asegurando una integración fluida y sin complicaciones.
+- **Seguridad Mejorada:** Hemos implementado medidas de seguridad avanzadas para proteger las transacciones y los datos de los clientes.
+- **Rendimiento Optimizado:** La nueva versión ofrece un rendimiento mejorado para asegurar una experiencia de pago rápida y eficiente.
+- **Soporte Continuo:** Brindaremos soporte técnico y actualizaciones regulares para la nueva versión, asegurando que tenga acceso a las últimas mejoras y correcciones.
+- **Pago con 2 tarjetas de forma nativa:** Ofrecemos pagos con 2 tarjetas de forma nativa. Brinde a sus clientes la flexibilidad de dividir el pago entre dos tarjetas, facilitando las compras y haciéndolas más convenientes.
 
-### Where to write tests - Test project structure
+### Acción Recomendada:
+Recomendamos a todos los usuarios y desarrolladores que utilizan el plugin de pagos de Mercado Pago para Adobe Commerce Magento que migren a la nueva versión tan pronto como sea posible. La versión obsoleta no recibirá más actualizaciones, lo que podría resultar en problemas de seguridad y funcionalidad en el futuro.
 
-The plugin is divided into two directories in src:
+Agradecemos su comprensión y colaboración durante este proceso de transición. Si tiene alguna pregunta o necesita asistencia, no dude en ponerse en contacto con nosotros a través de nuestros canales de soporte.
 
--   Core : where are the codes for all the functionalities
--   Test/Unit: where are the unit tests
+Atentamente, \
+Equipo Mercado Pago
 
-"Test/Unit" mirrors the Core folder, so, if in the Core folder I have a "foo" directory with the file "bar":
+# Aviso de Deprecação e Atualização do Plugin de Pagamentos Mercado Pago para Adobe Commerce (Magento)
+Prezados Usuários e Desenvolvedores,
 
-```
-Core/foo/bar.php
-```
+Gostaríamos de informar que a versão atual do plugin de pagamentos do Mercado Pago para Adobe Commerce Magento foi oficialmente deprecada e não receberá mais atualizações. Agradecemos pelo seu apoio ao longo dos anos.
 
-means that the test folder should look like this (same folder, suffixing the file with "Test"):
+### Detalhes da Deprecação:
+- Todas as versões anteriores do plugin de pagamentos Mercado Pago para Magento (Atual Adobe Commerce).
+- **Status:** Não serão fornecidas mais atualizações, correções de bugs para essa versão. \
 
-```
-Test/Unit/foo/barTest.php
-```
+### Nova Versão Disponível:
+Uma nova versão do plugin de pagamentos Mercado Pago para Adobe Commerce Magento já está disponível. Ela foi projetada para fornecer uma experiência mais avançada, segura e otimizada para os usuários. Para acessar a nova versão, por favor, visite o nosso repositório oficial no GitHub: \
 
-### Running tests in development environment
+#### Repositório [https://github.com/mercadopago/adb-payment](https://github.com/mercadopago/adb-payment) \
 
-Once this plugin is installed in your development environment with Magento, use the phpUnit that is already installed in magento to run the tests.
-You can do this by calling phpUnit inside Magento's "vendor" directory and pointing to the plugin's installation location (which will probably be app/code/MercadoPago), for example:
+### Principais Recursos da Nova Versão:
+- **Compatibilidade:** A nova versão é totalmente compatível com as últimas versões do Magento/Adobe Commerce, garantindo uma integração suave e sem complicações.
+- **Segurança Aprimorada:** Implementamos medidas de segurança avançadas para proteger as transações e os dados dos clientes.
+- **Desempenho Otimizado:** A nova versão oferece um desempenho aprimorado para garantir uma experiência de pagamento rápida e eficiente.
+- **Suporte Contínuo:** Estaremos fornecendo suporte técnico e atualizações regulares para a nova versão, garantindo que você tenha acesso às melhorias e correções mais recentes.
+- **Pagamento com 2 cartões nativo:** Fornecemos pagamentos com 2 cartões de forma nativa. Dê aos seus clientes a flexibilidade de dividir o pagamento entre dois cartões, tornando as compras mais acessíveis e convenientes.
 
-```bash
-magento/vendor/phpunit/phpunit/phpunit --whitelist magento2/app/code/MercadoPago/Core magento/app/code/MercadoPago/Test
-```
+### Ação Recomendada:
+Recomendamos que todos os usuários e desenvolvedores que utilizam o plugin de pagamentos Mercado Pago para Adobe Commerce Magento migrem para a nova versão sempre que possível. A versão deprecada não receberá mais atualizações, o que pode resultar em problemas de segurança e funcionalidades no futuro.
 
--   `magento/vendor/phpunit/phpunit/phpunit`: calls phpUnit
--   `--whitelist magento2/app/code/MercadoPago/Core `: Whitelist <dir> for code coverage analysis.
--   `--whitelist magento2/app/code/MercadoPago/Test `: Directory where phpUnit will find the tests.
+Agradecemos pela sua compreensão e colaboração durante esse processo de transição. Se você tiver alguma dúvida ou precisar de assistência, sinta-se à vontade para entrar em contato conosco através dos nossos canais de suporte.
 
-### Tests on GitHub Actions Workflow
-
-Every time you submit a pull request to this repository, a workflow will be triggered that will run the unit tests. If your unit test fails, you won't be able to merge the pull request.
+Atenciosamente, \
+Equipe Mercado Pago
