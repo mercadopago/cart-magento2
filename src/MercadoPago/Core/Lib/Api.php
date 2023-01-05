@@ -2,12 +2,14 @@
 
 namespace MercadoPago\Core\Lib;
 
+use Exception;
+
 /**
  * MercadoPago Integration Library
  * Access MercadoPago for payments integration
  *
  * @author hcasatti
- * 
+ *
  * @codeCoverageIgnore
  *
  */
@@ -31,6 +33,14 @@ class Api implements ApiInterface
      * @var mixed
      */
     private $ll_access_token;
+    /**
+     * @var mixed
+     */
+    private $ll_public_key;
+    /**
+     * @var Cache
+     */
+    protected $_mpCache;
     /**
      * @var
      */
@@ -88,9 +98,48 @@ class Api implements ApiInterface
         return $this->sandbox;
     }
 
+    public function set_module_version($version)
+    {
+        RestClient::setModuleVersion((string)$version);
+    }
+
+    public function set_url_store($store)
+    {
+        RestClient::setUrlStore($store);
+    }
+
+    public function set_email_admin($email_admin)
+    {
+        RestClient::setEmailAdmin($email_admin);
+    }
+
+    public function set_country_initial($country_initial)
+    {
+        RestClient::setCountryInitial($country_initial);
+    }
+
+    /* **************************************************************************************** */
+
+    /* Credentials */
+
+    /**
+     * @param null $access_token
+     *
+     * @return void
+     */
     public function set_access_token($access_token)
     {
         $this->ll_access_token = $access_token;
+    }
+
+    /**
+     * @param null $public_key
+     *
+     * @return void
+     */
+    public function set_public_key($public_key)
+    {
+        $this->ll_public_key = $public_key;
     }
 
     /**
@@ -121,6 +170,34 @@ class Api implements ApiInterface
 
         return $this->access_data['access_token'];
     }
+
+    /**
+     *
+     */
+    public function validate_public_key($public_key)
+    {
+        $key_response = RestClient::get('/plugins-credentials-wrapper/credentials?public_key=' . $public_key, null, []);
+        if ((!$key_response) || (isset($key_response['status']) && ($key_response['status'] == 401 || $key_response['status'] == 400))) {
+            return false;
+        }
+        return $key_response['response'];
+    }
+
+    /**
+     *
+     */
+    public function validade_access_token($access_token)
+    {
+        $token_response = RestClient::get('/plugins-credentials-wrapper/credentials', null, ['Authorization: Bearer ' . $access_token]);
+        if ((!$token_response)|| (isset($token_response['status']) && ($token_response['status'] == 401 || $token_response['status'] == 400))) {
+            return false;
+        }
+        return $token_response['response'];
+    }
+
+    /* **************************************************************************************** */
+
+    /* Payment & Preference */
 
     /**
      * Get information for specific authorized payment
@@ -264,6 +341,9 @@ class Api implements ApiInterface
         return RestClient::post("/checkout/custom/create_payment", $info, null, ["Authorization: Bearer " . $access_token]);
     }
 
+    /* **************************************************************************************** */
+
+    /* Customer */
     /**
      * @param $payer_email
      * @return mixed
@@ -354,7 +434,7 @@ class Api implements ApiInterface
         $url = "/discount_campaigns?transaction_amount=$transaction_amount&payer_email=$payer_email&coupon_code=$coupon_code";
         return RestClient::get($url, null, ["Authorization: Bearer " . $access_token]);
     }
-    
+
     /**
      * @param $id
      * @return array
@@ -388,6 +468,39 @@ class Api implements ApiInterface
             ["Authorization: Bearer " . $access_token]
         );
     }
+
+    /* **************************************************************************************** */
+
+    /* Payment methods */
+
+    /**
+     * @param $publicKey
+     * @return array
+     */
+    public function get_payment_methods($accesToken)
+    {
+        try {
+            $payment_methods = RestClient::get('/v1/bifrost/payment-methods', null, ['Authorization: Bearer ' . $accesToken, 'X-platform-id: ' . RestClient::PLATAFORM_ID]);
+
+            $treated_payments_methods = [];
+
+            foreach ($payment_methods['response'] as $payment_method) {
+                if (is_array($payment_method) && isset($payment_method['id']) && !isset($payment_method['payment_places'])) {
+                    $payment_method['payment_places'] = [];
+                }
+                array_push($treated_payments_methods, $payment_method);
+            }
+
+            $payment_methods['response'] = $treated_payments_methods;
+
+            return $payment_methods;
+
+        } catch (\Exception $e){
+            return [];
+        }
+    }
+
+    /* **************************************************************************************** */
 
     /* Generic resource call methods */
 

@@ -1,5 +1,4 @@
 (function () {
-
   window.cvvLength = null;
   window.additionalInfoNeeded = {};
 
@@ -7,7 +6,13 @@
   var mpCardForm = null;
   var mpRemountCardForm = false;
 
-  window.initCardForm = function (pk, quote, processMode, country, customMethod) {
+  window.initCardForm = function (
+    pk,
+    quote,
+    processMode,
+    country,
+    customMethod
+  ) {
     mp = new MercadoPago(pk);
 
     // Instance SDK v2
@@ -15,41 +20,76 @@
       amount: String(quote.totals().base_grand_total),
       autoMount: true,
       processingMode: processMode,
+      iframe: true,
       form: {
-        id: 'co-mercadopago-form',
-        cardNumber: { id: 'mpCardNumber' },
-        cardholderName: { id: 'mpCardholderName' },
-        cardExpirationMonth: { id: 'mpCardExpirationMonth' },
-        cardExpirationYear: { id: 'mpCardExpirationYear' },
-        securityCode: { id: 'mpSecurityCode' },
-        installments: { id: 'mpInstallments' },
-        identificationType: { id: 'mpDocType' },
-        identificationNumber: { id: 'mpDocNumber' },
-        issuer: { id: 'mpIssuer' }
+        id: "co-mercadopago-form",
+        cardNumber: {
+          id: "mpCardNumber",
+          placeholder: "0000 0000 0000 0000",
+          style: {
+            "font-size": "14px",
+            "font-family": "Helvetica Neue",
+          },
+        },
+        cardholderName: {
+          id: "mpCardholderName",
+        },
+        cardExpirationDate: {
+          id: "mpCardExpirationDate",
+          placeholder: "MM/YY",
+          mode: "short",
+          style: {
+            "font-size": "14px",
+            "font-family": "Helvetica Neue",
+          },
+        },
+        securityCode: {
+          id: "mpSecurityCode",
+          placeholder: "CVC",
+          style: {
+            "font-size": "14px",
+            "font-family": "Helvetica Neue",
+          },
+        },
+        installments: {
+          id: "mpInstallments",
+        },
+        identificationType: {
+          id: "mpDocType",
+        },
+        identificationNumber: {
+          id: "mpDocNumber",
+        },
+        issuer: {
+          id: "mpIssuer",
+        },
       },
       callbacks: {
-        onFormMounted: error => {
-          if (error) return console.warn('FormMounted handling error: ', error);
+        onFormMounted: (error) => {
+          if (error) return console.warn("FormMounted handling error: ", error);
+          additionalInfoHandler();
         },
-        onFormUnmounted: error => {
-          if (error) return console.warn('FormMounted handling error: ', error);
-          fullClearInputs()
+        onFormUnmounted: (error) => {
+          fullClearInputs();
+
+          if (error) return console.warn("FormMounted handling error: ", error);
 
           if (mpRemountCardForm) {
             initCardForm(pk, quote, processMode, country, customMethod);
             mpRemountCardForm = false;
           } else {
             setTimeout(() => {
-              initCardForm(pk, quote, processMode, country, customMethod)
+              initCardForm(pk, quote, processMode, country, customMethod);
             }, 5000);
           }
         },
-        onIdentificationTypesReceived: (error, identificationTypes) => {
-          if (error) return console.warn('IdentificationTypes handling error: ', error);
+        onIdentificationTypesReceived: (error) => {
+          if (error)
+            return console.warn("IdentificationTypes handling error: ", error);
         },
         onInstallmentsReceived: (error, installments) => {
           if (error) {
-            return console.warn('Installments handling error: ', error)
+            return console.warn("Installments handling error: ", error);
           }
 
           setChangeEventOnInstallments(country, installments.payer_costs);
@@ -57,309 +97,523 @@
         onCardTokenReceived: (error, token) => {
           if (error) {
             showErrors(error);
-            return console.warn('Token handling error: ', error);
+            return console.warn("Token handling error: ", error);
           }
 
           customMethod.placeOrder();
         },
         onPaymentMethodsReceived: (error, paymentMethods) => {
           clearInputs();
-
           if (error) {
-            return console.warn('PaymentMethods handling error: ', error);
+            return console.warn("PaymentMethods handling error: ", error);
           }
 
           setImageCard(paymentMethods[0].thumbnail);
-          setCvvLength(paymentMethods[0].settings[0].security_code.length);
           handleInstallments(paymentMethods[0].payment_type_id);
           loadAdditionalInfo(paymentMethods[0].additional_info_needed);
           additionalInfoHandler();
         },
+        onValidityChange: function (error, field) {
+          if (error) {
+            if (field == "cardNumber") {
+              if (error[0].code !== "invalid_length") {
+                onCardCleaning();
+              }
+            }
+          }
+        },
       },
     });
-  }
+  };
+
+  window.showErrors = function (errors) {
+    var form = this.getFormCustom();
+
+    var sdkErrors = trackedSDKErrors();
+
+    //used to exhibt only one message
+    var previousField = undefined;
+
+    let errorMessage = errors.message || errors[0].message;
+    let errorField = errors.field || errors[0]?.field;
+
+    if (errorMessage && !errors.field) {
+      otherMessages(errors);
+    }
+
+    if (errors.length >= 1) {
+      showIframeErrors(errors);
+
+      errors.forEach((error) => {
+        if (error.field && previousField !== error.field) {
+          errorField = error.field;
+
+          if (error.field === "expirationDate") {
+            errorField = expirationDateHandler(error);
+          }
+
+          let formatedError = `${error.cause}_${errorField}`;
+
+          var span = undefined;
+
+          sdkErrors.forEach((sdkError) => {
+            if (error.message === sdkError.message) {
+              span = form.querySelector(
+                "#" + formatedError + "_" + sdkError.code
+              );
+              if (span !== undefined) {
+                span.style.display = "block";
+              }
+            }
+
+            previousField = error.field;
+          });
+        }
+        focusInputError();
+      });
+    }
+  };
+
+  window.expirationDateHandler = function (error) {
+    expiration = error.message.includes("expirationMonth")
+      ? error.field + "_expirationMonth"
+      : error.field + "_expirationYear";
+    return expiration;
+  };
 
   window.mpRemountCardForm = function () {
     mpRemountCardForm = true;
     mpCardForm.unmount();
-  }
+  };
 
   window.mpDeleteCardForm = function () {
-    mpCardForm.unmount()
-  }
+    mpCardForm.unmount();
+  };
 
   window.getMpCardFormData = function () {
     return mpCardForm.getCardFormData();
-  }
+  };
 
   window.mpCreateCardToken = function () {
     mpCardForm.createCardToken();
-  }
+  };
 
   window.getFormCustom = function () {
-    return document.querySelector('#co-mercadopago-form');
-  }
-
-  window.setChangeEventOnCardNumber = function () {
-    document.getElementById('mpCardNumber').addEventListener('keyup', function (e) {
-      if (e.target.value.length <= 4) {
-        clearInputs();
-      }
-    });
-  }
-
-  window.setChangeEventExpirationDate = function () {
-    document.getElementById('mpCardExpirationDate').addEventListener('change', function (e) {
-      var card_expiration_date = document.getElementById('mpCardExpirationDate').value;
-      var card_expiration_month = card_expiration_date.split('/')[0] | '';
-      var card_expiration_year = card_expiration_date.split('/')[1] | '';
-
-      document.getElementById('mpCardExpirationMonth').value = ('0' + card_expiration_month).slice(-2);
-      document.getElementById('mpCardExpirationYear').value = card_expiration_year;
-    });
-  }
+    return document.querySelector("#co-mercadopago-form");
+  };
 
   window.setChangeEventOnInstallments = function (siteId, payer_costs) {
-    if (siteId === 'MLA') {
-      document.querySelector('#mpInstallments').addEventListener('change', function (e) {
-        showTaxes(payer_costs);
-      });
+    if (siteId === "MLA") {
+      document
+        .querySelector("#mpInstallments")
+        .addEventListener("change", function (e) {
+          showTaxes(payer_costs);
+        });
     }
-  }
-
+  };
   window.setImageCard = function (secureThumbnail) {
-    var mpCardNumber = document.getElementById('mpCardNumber');
-    mpCardNumber.style.background = 'url(' + secureThumbnail + ') 98% 50% no-repeat #fff';
-    mpCardNumber.style.backgroundSize = 'auto 24px';
-  }
-
-  window.setCvvLength = function (length) {
-    cvvLength = length;
-  }
+    var mpCardNumber = document.getElementById("mpCardNumber");
+    mpCardNumber.style.background =
+      "url(" + secureThumbnail + ") 98% 50% no-repeat #fff";
+    mpCardNumber.style.backgroundSize = "auto 24px";
+  };
 
   window.loadAdditionalInfo = function (sdkAdditionalInfoNeeded) {
     additionalInfoNeeded = {
       issuer: false,
       cardholder_name: false,
       cardholder_identification_type: false,
-      cardholder_identification_number: false
+      cardholder_identification_number: false,
     };
-
     for (var i = 0; i < sdkAdditionalInfoNeeded.length; i++) {
-      if (sdkAdditionalInfoNeeded[i] === 'issuer_id') {
+      if (sdkAdditionalInfoNeeded[i] === "issuer_id") {
         additionalInfoNeeded.issuer = true;
       }
-      if (sdkAdditionalInfoNeeded[i] === 'cardholder_name') {
+      if (sdkAdditionalInfoNeeded[i] === "cardholder_name") {
         additionalInfoNeeded.cardholder_name = true;
       }
-      if (sdkAdditionalInfoNeeded[i] === 'cardholder_identification_type') {
+      if (sdkAdditionalInfoNeeded[i] === "cardholder_identification_type") {
         additionalInfoNeeded.cardholder_identification_type = true;
       }
-      if (sdkAdditionalInfoNeeded[i] === 'cardholder_identification_number') {
+      if (sdkAdditionalInfoNeeded[i] === "cardholder_identification_number") {
         additionalInfoNeeded.cardholder_identification_number = true;
       }
     }
-  }
+  };
 
   window.additionalInfoHandler = function () {
     if (additionalInfoNeeded.cardholder_name) {
-      document.getElementById('mp-card-holder-div').style.display = 'block';
+      document.getElementById("mp-card-holder-div").style.display = "block";
     } else {
-      document.getElementById('mp-card-holder-div').style.display = 'none';
+      document.getElementById("mp-card-holder-div").style.display = "none";
     }
 
     if (additionalInfoNeeded.issuer) {
-      document.getElementById('mp-issuer-div').style.display = 'block';
+      document.getElementById("mp-issuer-div").style.display = "block";
     } else {
-      document.getElementById('mp-issuer-div').style.display = 'none';
+      document.getElementById("mp-issuer-div").style.display = "none";
     }
 
     if (additionalInfoNeeded.cardholder_identification_type) {
-      document.getElementById('mp-doc-type-div').style.display = 'block';
+      document.getElementById("mp-doc-type-div").style.display = "block";
     } else {
-      document.getElementById('mp-doc-type-div').style.display = 'none';
+      document.getElementById("mp-doc-type-div").style.display = "none";
     }
 
     if (additionalInfoNeeded.cardholder_identification_number) {
-      document.getElementById('mp-doc-number-div').style.display = 'block';
+      document.getElementById("mp-doc-number-div").style.display = "block";
     } else {
-      document.getElementById('mp-doc-number-div').style.display = 'none';
+      document.getElementById("mp-doc-number-div").style.display = "none";
     }
 
-    if (additionalInfoNeeded.cardholder_identification_type && additionalInfoNeeded.cardholder_identification_number) {
-      document.getElementById('mp-doc-div').style.display = 'block';
+    if (
+      additionalInfoNeeded.cardholder_identification_type &&
+      additionalInfoNeeded.cardholder_identification_number
+    ) {
+      document.getElementById("mp-doc-div").style.display = "block";
     } else {
-      document.getElementById('mp-doc-div').style.display = 'none';
+      document.getElementById("mp-doc-div").style.display = "none";
     }
-  }
+  };
 
   window.clearInputs = function () {
     hideErrors();
-    document.getElementById('mpCardNumber').style.background = 'no-repeat #fff';
-    document.getElementById('mpCardExpirationDate').value = '';
-    document.getElementById('mpDocNumber').value = '';
-    document.getElementById('mpSecurityCode').value = '';
-    document.getElementById('mpCardholderName').value = '';
-  }
+    document.querySelector("#mpDocNumber").value = "";
+    document.querySelector("#mpCardholderName").value = "";
+  };
 
   window.fullClearInputs = function () {
-    clearInputs()
-    document.getElementById('mpCardNumber').value = '';
-    document.getElementById("mpInstallments").value = '';
-    document.getElementById("mpInstallments").innerHTML = '';
-  }
+    clearInputs();
+    setImageCard("");
+    document.getElementById("mpInstallments").value = "";
+    document.getElementById("mpInstallments").innerHTML = "";
+  };
 
   window.validateFixedInputs = function () {
     var emptyInputs = false;
     var form = this.getFormCustom();
-    var formInputs = form.querySelectorAll('[data-checkout]');
-    var fixedInputs = [
-      'mpCardNumber',
-      'mpCardExpirationDate',
-      'mpSecurityCode',
-      'mpInstallments'
-    ];
+    var formInputs = form.querySelectorAll("[data-checkout]");
+    var fixedInputs = ["mpInstallments", "mpCardNumber"];
+    var mpInstallments = document.getElementById("mpInstallments").value;
 
     for (var x = 0; x < formInputs.length; x++) {
       var element = formInputs[x];
+      var attribute = element.getAttribute("data-checkout");
 
-      if (fixedInputs.indexOf(element.getAttribute('data-checkout')) > -1) {
-        if (element.value === -1 || element.value === '') {
-          var small = form.querySelectorAll('small[data-main="#' + element.id + '"]');
+      if (fixedInputs.indexOf(attribute) > -1) {
+        if (
+          element.value === -1 ||
+          element.value === "" ||
+          element.value === undefined
+        ) {
+          var small = form.querySelectorAll(
+            'small[data-main="#' + element.id + '"]'
+          );
 
-          if (small.length > 0) {
-            small[0].style.display = 'block';
+          if (
+            (attribute === "mpCardNumber" && mpInstallments === "") ||
+            mpInstallments === undefined
+          ) {
+            small[0].style.display = "block";
+            element.classList.add("mp-form-control-error");
+            emptyInputs = true;
           }
 
-          element.classList.add('mp-form-control-error');
-          emptyInputs = true;
+          if (attribute !== "mpCardNumber") {
+            small[0].style.display = "block";
+            element.classList.add("mp-form-control-error");
+            emptyInputs = true;
+          }
         }
       }
     }
-
     return emptyInputs;
-  }
+  };
 
   window.validateAdditionalInputs = function () {
     var emptyInputs = false;
 
     if (additionalInfoNeeded.issuer) {
-      var inputMpIssuer = document.getElementById('mpIssuer');
-      if (inputMpIssuer.value === '-1' || inputMpIssuer.value === '') {
-        inputMpIssuer.classList.add('mp-form-control-error');
+      var inputMpIssuer = document.getElementById("mpIssuer");
+      if (
+        inputMpIssuer.value === "-1" ||
+        inputMpIssuer.value === "" ||
+        inputMpIssuer.value === undefined
+      ) {
+        inputMpIssuer.classList.add("mp-form-control-error");
         emptyInputs = true;
       }
     }
 
     if (additionalInfoNeeded.cardholder_name) {
-      var inputCardholderName = document.getElementById('mpCardholderName');
-      if (inputCardholderName.value === '-1' || inputCardholderName.value === '') {
-        inputCardholderName.classList.add('mp-form-control-error');
-        document.getElementById('mp-error-221').style.display = 'block';
+      var inputCardholderName = document.getElementById("mpCardholderName");
+      if (
+        inputCardholderName.value === "-1" ||
+        inputCardholderName.value === "" ||
+        !/^[a-zA-ZãÃáÁàÀâÂäÄẽẼéÉèÈêÊëËĩĨíÍìÌîÎïÏõÕóÓòÒôÔöÖũŨúÚùÙûÛüÜçÇ’ñÑ .']+$/.test(
+          inputCardholderName.value
+        )
+      ) {
+        inputCardholderName.classList.add("mp-form-control-error");
+        document.getElementById(
+          "mp-error-empty-cardholder-name"
+        ).style.display = "block";
         emptyInputs = true;
       }
     }
 
     if (additionalInfoNeeded.cardholder_identification_type) {
-      var inputDocType = document.getElementById('mpDocType');
-      if (inputDocType.value === '-1' || inputDocType.value === '') {
-        inputDocType.classList.add('mp-form-control-error');
+      var inputDocType = document.getElementById("mpDocType");
+      if (inputDocType.value === "-1" || inputDocType.value === "") {
+        inputDocType.classList.add("mp-form-control-error");
         emptyInputs = true;
       }
     }
 
     if (additionalInfoNeeded.cardholder_identification_number) {
-      var docNumber = document.getElementById('mpDocNumber');
-      if (docNumber.value === '-1' || docNumber.value === '' || ! /^[a-zA-Z0-9]+$/.test(docNumber.value)) {
-        docNumber.classList.add('mp-form-control-error');
-        document.getElementById('mp-error-324').style.display = 'block';
+      var docNumber = document.getElementById("mpDocNumber");
+      var documentType = document.getElementById("mpDocType");
+      var strDocType = documentType.value;
+
+      if (
+        docNumber.value === "-1" ||
+        docNumber.value === "" ||
+        !/^[a-zA-Z0-9]+$/.test(docNumber.value)
+      ) {
+        docNumber.classList.add("mp-form-control-error");
+        document.getElementById("mp-error-empty-doc-number").style.display =
+          "block";
         emptyInputs = true;
+      } else if (strDocType.toLowerCase() === "cpf") {
+        let validator = verifyCPF(docNumber.value);
+
+        if (!validator) {
+          docNumber.classList.add("mp-form-control-error");
+          document.getElementById("mp-error-empty-doc-number").style.display =
+            "block";
+          emptyInputs = true;
+        } else {
+          emptyInputs = false;
+        }
       }
     }
 
     return emptyInputs;
-  }
-
-  window.validateCvv = function () {
-    var span = getFormCustom().querySelectorAll('small[data-main="#mpSecurityCode"]');
-    var cvvInput = document.getElementById('mpSecurityCode');
-    var cvvValidation = cvvLength === cvvInput.value.length;
-
-    if (!cvvValidation) {
-      span[0].style.display = 'block';
-      cvvInput.classList.add('mp-form-control-error');
-      cvvInput.focus();
-    }
-
-    return cvvValidation;
-  }
-
-  window.showErrors = function (error) {
-    var form = this.getFormCustom();
-    var serializedError = error.cause || error;
-
-    for (var x = 0; x < serializedError.length; x++) {
-      var code = serializedError[x].code;
-      var span = undefined;
-
-      span = form.querySelector('#mp-error-' + code);
-
-      if (span !== undefined) {
-        span.style.display = 'block';
-        form.querySelector(span.getAttribute('data-main')).classList.add('mp-form-control-error');
-      }
-    }
-
-    focusInputError();
-  }
+  };
 
   window.focusInputError = function () {
-    if (document.querySelectorAll('.mp-form-control-error') !== undefined) {
-      var formInputs = document.querySelectorAll('.mp-form-control-error');
+    if (document.querySelectorAll(".mp-form-control-error") !== undefined) {
+      var formInputs = document.querySelectorAll(".mp-form-control-error");
       formInputs[0].focus();
     }
-  }
+  };
 
   window.hideErrors = function () {
-    for (var x = 0; x < document.querySelectorAll('[data-checkout]').length; x++) {
-      var field = document.querySelectorAll('[data-checkout]')[x];
-      field.classList.remove('mp-form-control-error');
+    for (
+      var x = 0;
+      x < document.querySelectorAll("[data-checkout]").length;
+      x++
+    ) {
+      var field = document.querySelectorAll("[data-checkout]")[x];
+      field.classList.remove("mp-form-control-error");
     }
 
-    for (var y = 0; y < document.querySelectorAll('.mp-form-error').length; y++) {
-      var small = document.querySelectorAll('.mp-form-error')[y];
-      small.style.display = 'none';
+    for (
+      var y = 0;
+      y < document.querySelectorAll(".mp-form-error").length;
+      y++
+    ) {
+      var small = document.querySelectorAll(".mp-form-error")[y];
+      small.style.display = "none";
     }
-  }
+  };
 
   window.handleInstallments = function (payment_type_id) {
-    if (payment_type_id === 'debit_card') {
-      document.getElementById('mpInstallments').setAttribute("disabled", "disabled");
+    if (payment_type_id === "debit_card") {
+      document
+        .getElementById("mpInstallments")
+        .setAttribute("disabled", "disabled");
     } else {
-      document.getElementById('mpInstallments').removeAttribute("disabled");
+      document.getElementById("mpInstallments").removeAttribute("disabled");
     }
-  }
+  };
 
   /**
    * Show taxes resolution 51/2017 for MLA
    */
   window.showTaxes = function (payer_costs) {
-    var installmentsSelect = document.querySelector('#mpInstallments');
+    var installmentsSelect = document.querySelector("#mpInstallments");
 
     for (var i = 0; i < payer_costs.length; i++) {
       if (payer_costs[i].installments === installmentsSelect.value) {
-        var taxes_split = payer_costs[i].labels[0].split('|');
-        var cft = taxes_split[0].replace('_', ' ');
-        var tea = taxes_split[1].replace('_', ' ');
+        var taxes_split = payer_costs[i].labels[0].split("|");
+        var cft = taxes_split[0].replace("_", " ");
+        var tea = taxes_split[1].replace("_", " ");
 
-        if (cft === 'CFT 0,00%' && tea === 'TEA 0,00%') {
-          cft = '';
-          tea = '';
+        if (cft === "CFT 0,00%" && tea === "TEA 0,00%") {
+          cft = "";
+          tea = "";
         }
 
-        document.querySelector('#mp-tax-cft-text').innerHTML = cft;
-        document.querySelector('#mp-tax-tea-text').innerHTML = tea;
+        document.querySelector("#mp-tax-cft-text").innerHTML = cft;
+        document.querySelector("#mp-tax-tea-text").innerHTML = tea;
       }
     }
-  }
-}).call(this);
+  };
+
+  window.showIframeErrors = (errors) => {
+    errors.forEach((error) => {
+      if (error.field === "expirationDate") {
+        let field = document.querySelector("#mpCardExpirationDate");
+        field.classList.add("mp-form-control-error");
+      }
+
+      if (error.field === "securityCode") {
+        let field = document.querySelector("#mpSecurityCode");
+        field.classList.add("mp-form-control-error");
+      }
+      if (error.field === "cardNumber") {
+        let field = document.querySelector("#mpCardNumber");
+        field.classList.add("mp-form-control-error");
+      }
+    });
+
+    focusInputError();
+  };
+
+  window.trackedSDKErrors = function () {
+    var date = new Date();
+    var currentYear = date.getFullYear();
+    var currentMonth = date.getMonth();
+    var sdkErrors = [
+      {
+        code: "mp001",
+        message: "cardNumber should be a number.",
+      },
+      {
+        code: "mp002",
+        message: "cardNumber should be of length between '8' and '19'.",
+      },
+      {
+        code: "mp003",
+        message: "expirationMonth should be a number.",
+      },
+      {
+        code: "mp004",
+        message: "expirationYear should be of length '2'.",
+      },
+      {
+        code: "mp005",
+        message: "expirationYear should be a number.",
+      },
+      {
+        code: "mp006",
+        message: "securityCode should be a number.",
+      },
+      {
+        code: "mp007",
+        message: "securityCode should be of length '3' or '4'.",
+      },
+      {
+        code: "mp008",
+        message: "expirationMonth should be a value from 1 to 12.",
+      },
+      {
+        code: "mp009",
+        message: `expirationYear value should be greater or equal than ${currentYear}.`,
+      },
+      {
+        code: "mp010",
+        message: "securityCode should be of length '4'.",
+      },
+      {
+        code: "mp011",
+        message: "cardNumber should be of length '15'.",
+      },
+      {
+        code: "mp012",
+        message: `expirationMonth value should be greater than '${currentMonth}' or expirationYear value should be greater than '${currentYear}'.`,
+      },
+      {
+        code: "mp013",
+        message: "securityCode should be of length '3'.",
+      },
+      {
+        code: "mp014",
+        message: "cardNumber should be of length '16'.",
+      },
+    ];
+    return sdkErrors;
+  };
+
+  //CPF validator
+  window.verifyCPF = function (strCPF) {
+    var sum;
+    var remainder;
+    sum = 0;
+    if (strCPF == "00000000000") return false;
+
+    for (i = 1; i <= 9; i++)
+      sum = sum + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+
+    remainder = (sum * 10) % 11;
+
+    if (remainder == 10 || remainder == 11) remainder = 0;
+    if (remainder != parseInt(strCPF.substring(9, 10))) return false;
+
+    sum = 0;
+    for (i = 1; i <= 10; i++)
+      sum = sum + parseInt(strCPF.substring(i - 1, i)) * (12 - i);
+    remainder = (sum * 10) % 11;
+
+    if (remainder == 10 || remainder == 11) remainder = 0;
+    if (remainder != parseInt(strCPF.substring(10, 11))) {
+      document.getElementById("mpDocNumber");
+      return false;
+    }
+    return true;
+  };
+
+  window.otherMessages = function (error) {
+    var errorMessageOnly = [
+      "cardholder.identification.number",
+      "cardholderName",
+    ];
+
+    errorMessageOnly.forEach((field) => {
+      let errorMessage = error.message || error[0].message;
+
+      if (errorMessage.includes(field)) {
+        switch (field) {
+          case "cardholder.identification.number":
+            let docNumber = document.getElementById("mpDocNumber");
+            docNumber.classList.add("mp-form-control-error");
+            document.getElementById("mp-error-empty-doc-number").style.display =
+              "block";
+            break;
+          case "cardholderName":
+            let cardholderName = document.getElementById("mpCardholderName");
+            cardholderName.classList.add("mp-form-control-error");
+            document.getElementById(
+              "mp-error-empty-cardholder-name"
+            ).style.display = "block";
+            break;
+          default:
+            break;
+        }
+      }
+    });
+  };
+
+  window.onCardCleaning = function () {
+    document.querySelector("#mpCardNumber", "no-repeat #fff");
+    var issuerField = document.getElementById("mpIssuer");
+    if (issuerField) {
+      document.getElementById("mpIssuer").innerHTML = " ";
+    }
+    additionalInfoHandler();
+    fullClearInputs();
+    hideErrors();
+    window.mpRemountCardForm();
+  };
+}.call(this));

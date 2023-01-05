@@ -113,8 +113,13 @@ class OrderCancelPlugin
             return;
         }
 
-        $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
+        $publicKey = $this->scopeConfig->getValue(ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE);
+        if (empty($publicKey)) {
+            $this->throwCancelationException(__("Refund can not be performed because PUBLIC_KEY has not been configured."));
+            return;
+        }
 
+        $accessToken = $this->scopeConfig->getValue(ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE);
         if (empty($accessToken)) {
             $this->throwCancelationException(__('Cancellation can not be performed because ACCESS_TOKEN has not been configured.'));
             return;
@@ -124,7 +129,7 @@ class OrderCancelPlugin
         $paymentID = $paymentResponse['id'];
 
         // Get Sdk Instance
-        $mp = $this->dataHelper->getApiInstance($accessToken);
+        $mp = $this->dataHelper->getApiInstance($publicKey, $accessToken);
 
         // Get Payment detail
         $urlGet   = '/v1/payments/' . $paymentID;
