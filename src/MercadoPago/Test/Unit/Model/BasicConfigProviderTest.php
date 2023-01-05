@@ -93,18 +93,18 @@ class BasicConfigProviderTest extends TestCase
         ->expects($this->any())
         ->method('getMethodInstance')
          ->willReturn($this->abstractMethodMock);
-        
+
         $this->urlMock = $this->getMockBuilder(UrlInterface::class)
         ->setMethods(['getUrl'])
         ->disableOriginalConstructor()
         ->getMockForAbstractClass();
-        
+
         $this->contextMock = $this->getMockBuilder(Context::class)
         ->disableOriginalConstructor()
         ->getMock();
-        
+
         $arguments['context'] = $this->contextMock;
-        
+
         $this->contextMock->expects($this->any())
         ->method('getUrl')
         ->willReturn($this->urlMock);
@@ -189,6 +189,7 @@ class BasicConfigProviderTest extends TestCase
     {
         $valueMap = [
             [ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE, null, 'some_access_token'],
+            [ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE, null, 'some_public_key'],
             [ConfigData::PATH_BASIC_MAX_INSTALLMENTS, ScopeInterface::SCOPE_STORE, null, 2],
             [ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE, null, '']
         ];
@@ -216,6 +217,7 @@ class BasicConfigProviderTest extends TestCase
     {
         $valueMap = [
             [ConfigData::PATH_ACCESS_TOKEN, ScopeInterface::SCOPE_STORE, null, 'some_access_token'],
+            [ConfigData::PATH_PUBLIC_KEY, ScopeInterface::SCOPE_STORE, null, 'some_public_key'],
             [ConfigData::PATH_BASIC_MAX_INSTALLMENTS, ScopeInterface::SCOPE_STORE, null, 1],
             [ConfigData::PATH_BASIC_EXCLUDE_PAYMENT_METHODS, ScopeInterface::SCOPE_STORE, null, 'paycash,amex']
         ];

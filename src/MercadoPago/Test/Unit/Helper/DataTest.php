@@ -94,6 +94,11 @@ class DataTest extends TestCase
     private $apiMock;
 
     /**
+     * @var MockObject
+     */
+    private $scopeConfigMock;
+
+    /**
      * @inheritdoc
      */
     protected function setUp(): void
@@ -117,27 +122,58 @@ class DataTest extends TestCase
         $this->composerInformationMock = $arguments['composerInformation'];
         $this->moduleResourceMock = $arguments['moduleResource'];
         $this->apiMock = $arguments['api'];
+        $this->scopeConfigMock = $arguments['scopeConfig'];
 
         $this->data = $objectManagerHelper->getObject($className, $arguments);
     }
 
     public function testGetMercadoPagoPaymentMethods_successResponse_returnArrayWithPaymentPlaces(): void
     {
-        $this->apiMock->expects($this->once())
-        ->method('get')
-        ->with(PaymentResponseMock::PAYMENT_METHODS_URI)
-        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS);
+        $this->scopeConfigMock->expects($this->any())
+        ->method('getValue')
+        ->withConsecutive(['payment/mercadopago/public_key'], ['payment/mercadopago/access_token'])
+        ->willReturnOnConsecutiveCalls(PaymentResponseMock::KEY_MOCK, PaymentResponseMock::TOKEN_MOCK);
 
-        $this->assertEquals(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES, $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));
+        $this->apiMock->expects($this->any())
+        ->method('validate_public_key')
+        ->with(PaymentResponseMock::KEY_MOCK)
+        ->willReturn(PaymentResponseMock::KEY_RESPONSE_MOCK);
+
+        $this->apiMock->expects($this->any())
+        ->method('validade_access_token')
+        ->with(PaymentResponseMock::TOKEN_MOCK)
+        ->willReturn(PaymentResponseMock::TOKEN_RESPONSE_MOCK);
+
+        $this->apiMock->expects($this->any())
+        ->method('get_payment_methods')
+        ->with(PaymentResponseMock::TOKEN_MOCK)
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES);
+
+        $this->assertEquals(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES, $this->data->getMercadoPagoPaymentMethods());
     }
 
     public function testGetMercadoPagoPaymentMethods_exception_returnEmpty(): void
     {
-        $this->apiMock->expects($this->once())
-        ->method('get')
-        ->with(PaymentResponseMock::PAYMENT_METHODS_URI)
-        ->willReturn(null);
+        $this->scopeConfigMock->expects($this->any())
+        ->method('getValue')
+        ->withConsecutive(['payment/mercadopago/public_key'], ['payment/mercadopago/access_token'])
+        ->willReturnOnConsecutiveCalls(PaymentResponseMock::KEY_MOCK, PaymentResponseMock::TOKEN_MOCK);
 
-        $this->assertEquals([], $this->data->getMercadoPagoPaymentMethods('APP_USR-00000000000-000000-000000-0000000000'));
+        $this->apiMock->expects($this->any())
+        ->method('validate_public_key')
+        ->with(PaymentResponseMock::KEY_MOCK)
+        ->willReturn(PaymentResponseMock::KEY_RESPONSE_MOCK);
+
+        $this->apiMock->expects($this->any())
+        ->method('validade_access_token')
+        ->with(PaymentResponseMock::TOKEN_MOCK)
+        ->willReturn(PaymentResponseMock::TOKEN_RESPONSE_MOCK);
+
+        $this->apiMock->expects($this->any())
+        ->method('get_payment_methods')
+        ->with(PaymentResponseMock::TOKEN_MOCK)
+        ->willReturn([]);
+
+        $this->assertEquals([], $this->data->getMercadoPagoPaymentMethods());
     }
 }

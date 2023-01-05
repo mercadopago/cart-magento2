@@ -126,11 +126,6 @@ class BasicConfigProvider implements ConfigProviderInterface
      */
     public function makeBannerCheckout()
     {
-        $accessToken = $this->_scopeConfig->getValue(
-            ConfigData::PATH_ACCESS_TOKEN,
-            ScopeInterface::SCOPE_WEBSITE
-        );
-
         $maxInstallments = $this->_scopeConfig->getValue(
             ConfigData::PATH_BASIC_MAX_INSTALLMENTS,
             ScopeInterface::SCOPE_STORE
@@ -149,7 +144,7 @@ class BasicConfigProvider implements ConfigProviderInterface
             $ticket = 0;
             $choMethods = [];
 
-            $paymentMethods = $this->_coreHelper->getMercadoPagoPaymentMethods($accessToken);
+            $paymentMethods = $this->_coreHelper->getMercadoPagoPaymentMethods();
 
             foreach ($paymentMethods['response'] as $pm) {
                 if (!in_array($pm['id'], $excludePaymentMethods)) {

@@ -658,8 +658,16 @@ class Wallet
      */
     public function getMercadoPagoInstance()
     {
-        return $this->helperData->getApiInstance($this->getAccessToken());
+        return $this->helperData->getApiInstance($this->getPublicKey(), $this->getAccessToken());
     }//end getMercadoPagoInstance()
+
+    /**
+     * @return mixed
+     */
+    protected function getPublicKey()
+    {
+        return $this->getConfig(ConfigData::PATH_PUBLIC_KEY);
+    }//end getPublicKey()
 
     /**
      * @return mixed

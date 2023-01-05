@@ -98,7 +98,7 @@ class PaymentTest extends TestCase
         $this->scopeConfigMock->expects(self::any())
         ->method('getValue')
         ->willReturn('APP_USR-00000000000-000000-000000-0000000000');
-        
+
         $this->coreHelperMock->expects(self::any())
         ->method('getMercadoPagoPaymentMethods')
         ->with('APP_USR-00000000000-000000-000000-0000000000')
@@ -122,65 +122,49 @@ class PaymentTest extends TestCase
     }
 
     public function testGetAvailableCheckoutsOptions_success_returnOptions(): void {
-        $this->coreHelperMock
-        ->expects($this->any())
-        ->method('getAccessToken')
-        ->willReturn('access_token');
 
         $this->coreHelperMock
         ->expects($this->any())
         ->method('getMercadoPagoPaymentMethods')
-        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS);
+        ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_WITH_PAYMENT_PLACES);
 
-        $checkoutOptions = $this->payment->getAvailableCheckoutOptions('access_token');
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
 
         $this->assertEquals($checkoutOptions, array(Payment::CHECKOUT_CUSTOM_CARD, Payment::CHECKOUT_CUSTOM_TICKET, Payment::CHECKOUT_CUSTOM_BANK_TRANSFER));
     }
 
     public function testGetAvailableCheckoutsOptions_success_returnOptionsWithPix(): void {
-        $this->coreHelperMock
-        ->expects($this->any())
-        ->method('getAccessToken')
-        ->willReturn('access_token');
 
         $this->coreHelperMock
         ->expects($this->any())
         ->method('getMercadoPagoPaymentMethods')
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_SUCCESS_MLB);
 
-        $checkoutOptions = $this->payment->getAvailableCheckoutOptions('access_token');
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
 
         $this->assertEquals($checkoutOptions, array(Payment::CHECKOUT_CUSTOM_CARD, Payment::CHECKOUT_CUSTOM_PIX, Payment::CHECKOUT_CUSTOM_TICKET));
     }
 
     public function testGetAvailableCheckoutsOptions_failure_returnEmpty(): void {
-        $this->coreHelperMock
-        ->expects($this->any())
-        ->method('getAccessToken')
-        ->willReturn('access_token');
 
         $this->coreHelperMock
         ->expects($this->any())
         ->method('getMercadoPagoPaymentMethods')
         ->willReturn(PaymentResponseMock::RESPONSE_PAYMENT_METHODS_FAILURE);
 
-        $checkoutOptions = $this->payment->getAvailableCheckoutOptions('access_token');
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
 
         $this->assertEquals($checkoutOptions, array());
     }
 
     public function testGetAvailableCheckoutsOptions_exception_returnEmpty(): void {
-        $this->coreHelperMock
-        ->expects($this->any())
-        ->method('getAccessToken')
-        ->willReturn('access_token');
 
         $this->coreHelperMock
         ->expects($this->any())
         ->method('getMercadoPagoPaymentMethods')
         ->will($this->throwException(new \Exception()));
 
-        $checkoutOptions = $this->payment->getAvailableCheckoutOptions('access_token');
+        $checkoutOptions = $this->payment->getAvailableCheckoutOptions();
 
         $this->assertEquals($checkoutOptions, array());
     }
